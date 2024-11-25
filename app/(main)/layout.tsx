@@ -1,0 +1,51 @@
+import '@fontsource/poppins';
+import '@fontsource/poppins/100.css';
+import '@fontsource/poppins/200.css';
+import '@fontsource/poppins/300.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/poppins/700.css';
+import '@fontsource/poppins/800.css';
+import '@fontsource/poppins/900.css';
+import '@mantine/core/styles/global.css';
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
+
+import { DEFAULT_THEME, MantineProvider, createTheme, mergeMantineTheme } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
+import '@mantine/notifications/styles.css';
+import { fontFamily, breakpoints, colors } from "@/config/theme";
+import {
+  emotionTransform,
+  MantineEmotionProvider,
+} from '@mantine/emotion';
+
+const theme = mergeMantineTheme(
+  DEFAULT_THEME,
+  createTheme({
+    fontFamily,
+    breakpoints,
+    colors,
+  }),
+);
+
+export default function MainLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className="bg-background">
+        <MantineProvider theme={theme} stylesTransform={emotionTransform}>
+          <MantineEmotionProvider>
+            <Notifications />
+            {children}
+          </MantineEmotionProvider>
+        </MantineProvider>
+      </body>
+    </html>
+  )
+}
+
