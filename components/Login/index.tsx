@@ -22,7 +22,7 @@ const LoginClient = () => {
           logoUrl="/images/atok-logo.png"
         />
 
-        <Divider size={'lg'} bg={'#FEFEFE'} c={'#FEFEFE'} w={'80%'} mb={50} />
+        <Divider size={'md'} bg={'#FEFEFE'} c={'#FEFEFE'} w={'80%'} mb={30} />
 
         <Stack align={'center'} justify={'center'}>
           <Title order={1} fw={800}>PROCUREMENT SYSTEM</Title>

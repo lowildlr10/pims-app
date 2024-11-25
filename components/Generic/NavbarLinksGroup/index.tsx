@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { IconChevronRight } from '@tabler/icons-react';
 import { Anchor, Box, Collapse, Flex, Group, Text, ThemeIcon, UnstyledButton } from '@mantine/core';
 import classes from '@/styles/generic/navbarlinksgroup.module.css';
-import { LinksGroupProps } from '@/types/GenericTypes';
 import Link from 'next/link';
 
 export function LinksGroupClient({ icon: Icon, label, module, initiallyOpened, link, links }: LinksGroupProps) {

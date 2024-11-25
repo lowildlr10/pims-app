@@ -1,4 +1,4 @@
-export type LayoutSidebarProps = {
+type LayoutSidebarProps = {
   user: any;
   type?: 'main' | 'settings';
   permissions?: string[];
@@ -11,7 +11,7 @@ type Link = {
   module?: string;
 };
 
-export type LinksGroupProps = {
+type LinksGroupProps = {
   module?: string;
   label: string;
   icon: React.FC<any>;
@@ -20,12 +20,12 @@ export type LinksGroupProps = {
   links?: Link[];
 };
 
-export type UserButtonProps = {
+type UserButtonProps = {
   user: any;
   handleOpen?: () => void;
 };
 
-export type ModalProps = {
+type ModalProps = {
   type: 'primary' | 'secondary' | 'warning' | 'danger' | 'info';
   title: string;
   open: boolean;

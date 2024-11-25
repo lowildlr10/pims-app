@@ -3,7 +3,6 @@
 import { IconChevronRight } from '@tabler/icons-react';
 import { Avatar, Group, Text, UnstyledButton } from '@mantine/core';
 import classes from '@/styles/generic/userbutton.module.css';
-import { UserButtonProps } from '@/types/GenericTypes';
 
 export function UserButtonClient({ user, handleOpen }: UserButtonProps) {
   return (

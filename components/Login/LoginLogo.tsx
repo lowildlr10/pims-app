@@ -1,8 +1,6 @@
 'use client';
 
 import React from 'react';
-// import NextImage from 'next/image';
-import { LoginLogoProps } from '@/types/LoginTypes';
 import { Image, Stack, Title } from '@mantine/core';
 
 const LoginLogoClient = ({logoUrl, companyName}: LoginLogoProps) => {
@@ -10,6 +8,7 @@ const LoginLogoClient = ({logoUrl, companyName}: LoginLogoProps) => {
     <Stack
       justify={'center'}
       align={'center'}
+      h={300}
     >
       <Image 
         src={logoUrl} 

@@ -12,7 +12,7 @@ import '@mantine/core/styles/global.css';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-import { DEFAULT_THEME, MantineProvider, createTheme, mergeMantineTheme } from '@mantine/core';
+import { ColorSchemeScript, DEFAULT_THEME, MantineProvider, createTheme, mergeMantineTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
 import { fontFamily, breakpoints, colors } from "@/config/theme";
@@ -38,7 +38,8 @@ export default function MainLayout({
   return (
     <html lang="en">
       <body className="bg-background">
-        <MantineProvider theme={theme} stylesTransform={emotionTransform}>
+        <ColorSchemeScript defaultColorScheme="light" />
+        <MantineProvider theme={theme} stylesTransform={emotionTransform} defaultColorScheme={'light'}>
           <MantineEmotionProvider>
             <Notifications />
             {children}

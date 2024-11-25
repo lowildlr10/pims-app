@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import API from "@/libs/API";
 import { expireCookie, setCookie } from "@/libs/Cookie";
-import { LoginFormType } from "@/types/LoginTypes";
 
 const useAuth = () => {
   const [loading, setLoading] = useState(false);

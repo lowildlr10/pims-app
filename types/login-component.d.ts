@@ -1,9 +1,9 @@
-export type LoginLogoProps = {
+type LoginLogoProps = {
   logoUrl: string;
   companyName: string;
 };
 
-export type LoginFormType = {
+type LoginFormType = {
   login: string;
   password: string;
 };

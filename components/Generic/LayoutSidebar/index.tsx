@@ -1,15 +1,13 @@
 'use client';
 
-import { AppShell, Box, Burger, Group, Image, ScrollArea, Title } from '@mantine/core';
+import { AppShell, Burger, Group, Image, ScrollArea, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { MantineLogo } from '@mantinex/mantine-logo';
 import { LinksGroupClient } from '../NavbarLinksGroup';
-import classes from '@/styles/generic/sidebar.module.css';
 import { IconArrowBack, IconBuildingWarehouse, IconCash, IconGauge, IconLibrary, IconLoader, IconNotes, IconSettings2, IconShoppingCartFilled, IconUser, IconUserCog } from '@tabler/icons-react';
 import { UserButtonClient } from '../UserButton';
 import { useEffect, useState } from 'react';
-import { LayoutSidebarProps, LinksGroupProps } from '@/types/GenericTypes';
 import { ModalClient } from '../Modal';
+import classes from '@/styles/generic/sidebar.module.css';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: IconLoader, link: '/' },

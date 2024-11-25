@@ -1,12 +1,26 @@
 'use client';
 
 import { Modal, Button, Group } from '@mantine/core';
-import { ModalProps } from '@/types/GenericTypes';
 import useAuth from '@/hooks/useAuth';
 import { IconLogout2 } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
+import { useEffect } from 'react';
 
 export function ModalClient({type, title, open, handleClose}: ModalProps) {
-  const { loading, logout } = useAuth();
+  const { loading, message, error, logout } = useAuth();
+
+  useEffect(() => {
+    if (loading) return;
+    if (!message) return;
+    
+    notifications.show({
+      title: error ? 'Failed!' : 'Success!',
+      message: message,
+      color: error ? 'red' : 'green',
+      autoClose: 3000,
+      position: 'top-right',
+    });
+  }, [loading]);
 
   return (
     <Modal
