@@ -129,7 +129,17 @@ const LoginFormClient = () => {
 
         <Group justify="right" mt="lg">
           <Anchor
-            onClick={(event) => event.preventDefault()}
+            onClick={(event) => {
+              event.preventDefault();
+
+              notifications.show({
+                title: 'Password Reset',
+                message: 'Please contact your administrator to reset your password.',
+                color: 'blue',
+                autoClose: 3000,
+                position: 'top-right',
+              });
+            }}
             href="#"
             size="sm"
             fw={700}
