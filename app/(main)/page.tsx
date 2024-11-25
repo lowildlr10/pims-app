@@ -16,7 +16,11 @@ const DashboardPage = async () => {
   if (!!user === false) redirect('/login');
 
   return (
-    <LayoutSidebarClient>
+    <LayoutSidebarClient 
+      user={user}
+      permissions={permissions}
+      type={'main'}
+    >
       <DashboardClient />
     </LayoutSidebarClient>
   )

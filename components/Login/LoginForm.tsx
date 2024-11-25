@@ -1,7 +1,7 @@
 'use client';
 
 import { useForm } from "@mantine/form";
-import { IconLock, IconUser } from '@tabler/icons-react';
+import { IconLock, IconLogin2, IconUser } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 
 import {
@@ -78,10 +78,10 @@ const LoginFormClient = () => {
       bd={'none'}
     >
       <Stack>
-        <Title order={3} ta={'center'}>
+        <Title order={2} ta={'center'}>
           Hello!
         </Title>
-        <Text size="md" ta={'center'}>
+        <Text size="lg" ta={'center'}>
           Login your account
         </Text>
       </Stack>
@@ -148,7 +148,7 @@ const LoginFormClient = () => {
             autoContrast
             fullWidth
           >
-            Login
+            <IconLogin2 size={18} />&nbsp;Login
           </Button>
         </Group>
       </form>

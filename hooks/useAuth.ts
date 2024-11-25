@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import API from "@/libs/API";
 import { expireCookie, setCookie } from "@/libs/Cookie";
 import { LoginFormType } from "@/types/LoginTypes";
-import { redirect } from "next/navigation";
 
 const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +21,7 @@ const useAuth = () => {
             setError(false);
             setLoading(false);
 
-            redirect('/');
+            window.location.href = '/';
           })
           .catch((err) => {
             setMessage(err?.response?.data?.message ?? err.message);
@@ -53,7 +52,7 @@ const useAuth = () => {
           expireCookie('access_token');
           setError(false);
 
-          redirect('/login');
+          window.location.href = '/login';
         })
         .catch((err) => {
           setMessage(err?.response?.data?.message ?? err.message);

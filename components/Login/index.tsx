@@ -14,7 +14,7 @@ const LoginClient = () => {
         c={'#FEFEFE'}
         w={'40%'}
         gap={0}
-        justify={'flex-start'}
+        justify={'center'}
         align={'center'}
       >
         <LoginLogoClient 
@@ -40,7 +40,7 @@ const LoginClient = () => {
           style={{ position: "absolute", bottom: "0px", marginBottom: "10px" }}
         >
           <Text c="dimmed" size="11px" mt="10%">
-            @ 2022 ALL RIGHTS RESERVED
+            @ 2024 ALL RIGHTS RESERVED
           </Text>
         </footer>
       </Stack>

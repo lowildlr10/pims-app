@@ -15,8 +15,12 @@ const page = async () => {
   if (!!user === false) redirect('/login');
 
   return (
-    <LayoutSidebarClient>
-      Redirect..
+    <LayoutSidebarClient
+      user={user}
+      permissions={permissions}
+      type={'settings'}
+    >
+      Profile Settings
     </LayoutSidebarClient>
   )
 }

@@ -12,23 +12,33 @@ export const getPermissions = async () => {
 };
 
 const getUserData = async () => {
-  const basePath = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const accessToken = getAccessToken();
-  const response = await fetch(`${basePath}/api/v1/me`, {
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-    },
-  });
+  try {
+    const basePath = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const accessToken = getAccessToken();
+    const response = await fetch(`${basePath}/api/v1/me`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
 
-  if (response.status !== 200) {
+    if (response.status !== 200) {
+      expireCookie('access_token');
+      return {
+        data: {
+          user: null,
+          permissions: null
+        }
+      };
+    }
+
+    return await response.json();
+  } catch (error) {
     expireCookie('access_token');
     return {
       data: {
         user: null,
         permissions: null
       }
-    }
+    };
   }
-
-  return await response.json();
 }
