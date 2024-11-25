@@ -12,6 +12,7 @@ type Link = {
 };
 
 type LinksGroupProps = {
+  permissions?: any;
   module?: string;
   label: string;
   icon: React.FC<any>;

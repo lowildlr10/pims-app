@@ -5,7 +5,8 @@
 }
 
 .form {
-  border-right: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-7));
+  border-right: 1px solid
+    light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-7));
   min-height: 900px;
   max-width: 450px;
   padding-top: 80px;
@@ -17,6 +18,5 @@
 
 .title {
   color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-  font-family:
-    var(--mantine-font-family);
+  font-family: var(--mantine-font-family);
 }

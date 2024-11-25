@@ -1,13 +1,26 @@
 'use client';
 
-import { AppShell, Burger, Group, Image, ScrollArea, Title } from '@mantine/core';
+import { AppShell, Burger, Group, Image, ScrollArea } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
-import { IconArrowBack, IconBuildingWarehouse, IconCash, IconGauge, IconLibrary, IconLoader, IconNotes, IconSettings2, IconShoppingCartFilled, IconUser, IconUserCog } from '@tabler/icons-react';
+import {
+  IconArrowBack,
+  IconBuildingWarehouse,
+  IconCash,
+  IconGauge,
+  IconLibrary,
+  IconLoader,
+  IconSettings2,
+  IconShoppingCart,
+  IconSitemap,
+  IconUser,
+  IconUserCog,
+} from '@tabler/icons-react';
 import { UserButtonClient } from '../UserButton';
 import { useEffect, useState } from 'react';
 import { ModalClient } from '../Modal';
 import classes from '@/styles/generic/sidebar.module.css';
+import { Text } from '@mantine/core';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: IconLoader, link: '/' },
@@ -17,15 +30,31 @@ const defaultMainMenus: LinksGroupProps[] = [
   {
     label: 'Procurement',
     module: 'procurement',
-    icon: IconShoppingCartFilled,
+    icon: IconShoppingCart,
     initiallyOpened: true,
     links: [
       { label: 'Purchase Requests', module: 'pr', link: '/procurement/pr' },
-      { label: 'Request for Quotations', module: 'rfq', link: '/procurement/rfq' },
-      { label: 'Abstract of Quotations', module: 'aoq', link: '/procurement/aoq' },
+      {
+        label: 'Request for Quotations',
+        module: 'rfq',
+        link: '/procurement/rfq',
+      },
+      {
+        label: 'Abstract of Quotations',
+        module: 'aoq',
+        link: '/procurement/aoq',
+      },
       { label: 'Purchase/Job Orders', module: 'po', link: '/procurement/po' },
-      { label: 'Inspection and Acceptance Report', module: 'iar', link: '/procurement/iar' },
-      { label: 'Obligation Request and Status', module: 'ors', link: '/procurement/ors' },
+      {
+        label: 'Inspection and Acceptance Report',
+        module: 'iar',
+        link: '/procurement/iar',
+      },
+      {
+        label: 'Obligation Request and Status',
+        module: 'ors',
+        link: '/procurement/ors',
+      },
       { label: 'Disbursement Voucher', module: 'dv', link: '/procurement/dv' },
     ],
   },
@@ -35,9 +64,21 @@ const defaultMainMenus: LinksGroupProps[] = [
     icon: IconBuildingWarehouse,
     initiallyOpened: false,
     links: [
-      { label: 'Requisition and Issue Slip', module: 'ris', link: '/inventory/ris' },
-      { label: 'Inventory Custodian Slip', module: 'ics', link: '/inventory/ics' },
-      { label: 'Aknowledgement Receipt of Equipment', module: 'are', link: '/inventory/are' },
+      {
+        label: 'Requisition and Issue Slip',
+        module: 'ris',
+        link: '/inventory/ris',
+      },
+      {
+        label: 'Inventory Custodian Slip',
+        module: 'ics',
+        link: '/inventory/ics',
+      },
+      {
+        label: 'Aknowledgement Receipt of Equipment',
+        module: 'are',
+        link: '/inventory/are',
+      },
     ],
   },
   {
@@ -54,22 +95,64 @@ const defaultMainMenus: LinksGroupProps[] = [
 ];
 
 const defaultSettingsMenus: LinksGroupProps[] = [
-  { label: 'Profile', icon: IconUser, link: '/settings' },
+  { label: 'User Profile', icon: IconUser, link: '/settings' },
+  {
+    label: 'Company Profile',
+    module: 'company',
+    icon: IconSitemap,
+    link: '/settings/company-profile',
+  },
   {
     label: 'Library',
     module: 'library',
     icon: IconLibrary,
     initiallyOpened: false,
     links: [
-      { label: 'Inventory Classifications', module: 'lib-inv-class', link: '/settings/library/inventory-classifications' },
-      { label: 'MFO PAP', module: 'lib-inv-class', link: '/settings/library/inventory-classifications' },
-      { label: 'Modes of Procurement', module: 'lib-inv-class', link: '/settings/library/inventory-classifications' },
-      { label: 'Funding Soruces', module: 'lib-inv-class', link: '/settings/library/inventory-classifications' },
-      { label: 'Signatories', module: 'lib-inv-class', link: '/settings/library/inventory-classifications' },
-      { label: 'Suppliers', module: 'lib-inv-class', link: '/settings/library/inventory-classifications' },
-      { label: 'UACS Object Codes', module: 'lib-inv-class', link: '/settings/library/inventory-classifications' },
-      { label: 'Unit of Issues', module: 'lib-inv-class', link: '/settings/library/inventory-classifications' },
-      { label: 'Paper Sizes', module: 'lib-inv-class', link: '/settings/library/inventory-classifications' },
+      {
+        label: 'Inventory Classifications',
+        module: 'lib-inv-class',
+        link: '/settings/library/inventory-classifications',
+      },
+      {
+        label: 'MFO PAP',
+        module: 'lib-inv-class',
+        link: '/settings/library/inventory-classifications',
+      },
+      {
+        label: 'Modes of Procurement',
+        module: 'lib-inv-class',
+        link: '/settings/library/inventory-classifications',
+      },
+      {
+        label: 'Funding Soruces',
+        module: 'lib-inv-class',
+        link: '/settings/library/inventory-classifications',
+      },
+      {
+        label: 'Signatories',
+        module: 'lib-inv-class',
+        link: '/settings/library/inventory-classifications',
+      },
+      {
+        label: 'Suppliers',
+        module: 'lib-inv-class',
+        link: '/settings/library/inventory-classifications',
+      },
+      {
+        label: 'UACS Object Codes',
+        module: 'lib-inv-class',
+        link: '/settings/library/inventory-classifications',
+      },
+      {
+        label: 'Unit of Issues',
+        module: 'lib-inv-class',
+        link: '/settings/library/inventory-classifications',
+      },
+      {
+        label: 'Paper Sizes',
+        module: 'lib-inv-class',
+        link: '/settings/library/inventory-classifications',
+      },
     ],
   },
   {
@@ -78,8 +161,16 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     icon: IconUserCog,
     initiallyOpened: false,
     links: [
-      { label: 'Departments', module: 'check', link: '/settings/accounts/departments' },
-      { label: 'Sections', module: 'check', link: '/settings/accounts/sections' },
+      {
+        label: 'Departments',
+        module: 'check',
+        link: '/settings/accounts/departments',
+      },
+      {
+        label: 'Sections',
+        module: 'check',
+        link: '/settings/accounts/sections',
+      },
       { label: 'Roles', module: 'deposit', link: '/settings/accounts/roles' },
       { label: 'Users', module: 'check', link: '/settings/accounts/users' },
     ],
@@ -87,9 +178,16 @@ const defaultSettingsMenus: LinksGroupProps[] = [
   { label: 'Exit', icon: IconArrowBack, link: '/' },
 ];
 
-export function LayoutSidebarClient({ user, type, permissions, children }: LayoutSidebarProps) {
+export function LayoutSidebarClient({
+  user,
+  type,
+  permissions,
+  children,
+}: LayoutSidebarProps) {
   const [menus, setMenus] = useState<LinksGroupProps[]>(defaultMenu);
-  const links = menus.map((item) => <LinksGroupClient {...item} key={item.label} />);
+  const links = menus.map((item) => (
+    <LinksGroupClient {...item} key={item.label} permissions={permissions} />
+  ));
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [opened, { open, close }] = useDisclosure(false);
@@ -99,7 +197,7 @@ export function LayoutSidebarClient({ user, type, permissions, children }: Layou
       case 'main':
         setMenus(defaultMainMenus);
         break;
-      
+
       case 'settings':
         setMenus(defaultSettingsMenus);
         break;
@@ -109,7 +207,7 @@ export function LayoutSidebarClient({ user, type, permissions, children }: Layou
         break;
     }
   }, [type]);
-  
+
   return (
     <AppShell
       header={{ height: 60 }}
@@ -119,21 +217,31 @@ export function LayoutSidebarClient({ user, type, permissions, children }: Layou
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
       mih={'100vh'}
-      padding="md"
+      padding='md'
     >
       <AppShell.Header>
-        <Group h="100%" px="md">
-          <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
-          <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
-          {/* <MantineLogo size={30} /> */}
-
+        <Group h='100%' px='md'>
+          <Burger
+            opened={mobileOpened}
+            onClick={toggleMobile}
+            hiddenFrom='sm'
+            size='sm'
+          />
+          <Burger
+            opened={desktopOpened}
+            onClick={toggleDesktop}
+            visibleFrom='sm'
+            size='sm'
+          />
           <Group>
-            <Image width={30} height={30} src={'/images/atok-logo.png'} />
-            <Title size={'xl'}>Procurement System</Title>
+            <Image width={30} height={30} src={'/images/atok-logo.png'} alt={'LGU-Atok'} />
+            <Text size={'lg'} fw={400}>
+              Procurement System
+            </Text>
           </Group>
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">
+      <AppShell.Navbar p='md'>
         <ScrollArea className={classes.links}>
           <div className={classes.linksInner}>{links}</div>
         </ScrollArea>
@@ -142,7 +250,7 @@ export function LayoutSidebarClient({ user, type, permissions, children }: Layou
           <UserButtonClient user={user} handleOpen={open} />
         </div>
 
-        <ModalClient 
+        <ModalClient
           type='primary'
           title={user.fullname}
           open={opened}

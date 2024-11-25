@@ -1,5 +1,5 @@
-import { getAccessToken } from "@/libs/Auth";
-import { expireCookie } from "@/libs/Cookie";
+import { getAccessToken } from '@/libs/Auth';
+import { expireCookie } from '@/libs/Cookie';
 
 export const getUser = async () => {
   const data = await getUserData();
@@ -17,7 +17,7 @@ const getUserData = async () => {
     const accessToken = getAccessToken();
     const response = await fetch(`${basePath}/api/v1/me`, {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
@@ -26,8 +26,8 @@ const getUserData = async () => {
       return {
         data: {
           user: null,
-          permissions: null
-        }
+          permissions: null,
+        },
       };
     }
 
@@ -37,8 +37,8 @@ const getUserData = async () => {
     return {
       data: {
         user: null,
-        permissions: null
-      }
+        permissions: null,
+      },
     };
   }
-}
+};

@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
-import API from "@/libs/API";
-import { expireCookie, setCookie } from "@/libs/Cookie";
+import { useState, useCallback } from 'react';
+import API from '@/libs/API';
+import { expireCookie, setCookie } from '@/libs/Cookie';
 
 const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -12,8 +12,7 @@ const useAuth = () => {
 
     try {
       if (loginData.login && loginData.password) {
-        API
-          .post('/login', loginData)
+        API.post('/login', loginData)
           .then(({ data }) => {
             setCookie('access_token', data.access_token, 86400);
             setMessage(data.message);
@@ -44,8 +43,7 @@ const useAuth = () => {
     setError(false);
 
     try {
-      API
-        .post('/logout')
+      API.post('/logout')
         .then(({ data }) => {
           setMessage(data?.message);
           expireCookie('access_token');

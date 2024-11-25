@@ -16,14 +16,10 @@ const DashboardPage = async () => {
   if (!!user === false) redirect('/login');
 
   return (
-    <LayoutSidebarClient 
-      user={user}
-      permissions={permissions}
-      type={'main'}
-    >
-      <DashboardClient />
+    <LayoutSidebarClient user={user} permissions={permissions} type={'main'}>
+      <DashboardClient user={user} />
     </LayoutSidebarClient>
-  )
-}
+  );
+};
 
 export default DashboardPage;

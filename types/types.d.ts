@@ -1,19 +1,20 @@
 type RoleType = {
   id?: string;
   role_name?: string;
-}
+};
 
 type UserType = {
   id?: string;
+  fullname?: string;
   firstname?: string;
   middlename?: string;
   lastname?: string;
   sex?: 'male' | 'female';
   department_id?: string;
   section_id?: string;
-  position_id?:string;
-  designation_id?:string;
-  username?:string;
+  position_id?: string;
+  designation_id?: string;
+  username?: string;
   email?: string;
   phone?: string;
   password?: string;
@@ -41,5 +42,5 @@ type UserType = {
     id?: string;
     designation_name?: string;
   };
-  roles: Role[]
-}
+  roles: Role[];
+};
