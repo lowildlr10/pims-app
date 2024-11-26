@@ -234,7 +234,12 @@ export function LayoutSidebarClient({
             size='sm'
           />
           <Group>
-            <Image width={30} height={30} src={'/images/atok-logo.png'} alt={'LGU-Atok'} />
+            <Image
+              width={30}
+              height={30}
+              src={'/images/atok-logo.png'}
+              alt={'LGU-Atok'}
+            />
             <Text size={'lg'} fw={400}>
               Procurement System
             </Text>

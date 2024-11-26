@@ -1,42 +1,24 @@
 'use client';
 
 import {
+  Avatar,
+  Box,
   Divider,
+  Flex,
   Group,
   Paper,
   ScrollArea,
   Stack,
-  TextInput,
   Title,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import React from 'react';
+import React, { useState } from 'react';
+import { IconSignature, IconUserCog } from '@tabler/icons-react';
+import UserProfileFormClient from './UserProfileForm';
+import SignatureFormClient from './SignatureForm';
+import { Tabs } from '@mantine/core';
 
 const UserProfileClient = ({ user }: UserProfileProps) => {
-  const form = useForm({
-    mode: 'controlled',
-    initialValues: {
-      firstname: user?.firstname ?? '',
-      middlename: user?.middlename ?? '',
-      lastname: user?.lastname ?? '',
-      sex: user?.sex ?? '',
-      department_id: user?.department_id ?? '',
-      section_id: user?.section_id ?? '',
-      position_id: user?.position_id ?? '',
-      designation_id: user?.designation_id ?? '',
-      username: user?.username ?? '',
-      email: user?.email ?? '',
-      phone: user?.phone ?? '',
-      password: '',
-      avatar: user?.avatar ?? '',
-      allow_signature: user?.allow_signature ?? '',
-      signature: user?.signature ?? '',
-    },
-
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-    },
-  });
+  const [activeTab, setActiveTab] = useState<string | null>('information');
 
   return (
     <Stack p={20}>
@@ -51,43 +33,54 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
       <Divider />
 
       <Paper shadow='xs' p='xl'>
-        <form>
-          <ScrollArea>
-            <Stack>
-              <Group justify={'center'} align={'center'}>
-                <TextInput
-                  label='First Name'
-                  placeholder='Juan'
-                  value={form.values.firstname}
-                  onChange={(event) =>
-                    form.setFieldValue('firstname', event.currentTarget.value)
-                  }
-                  error={form.errors.firstname && ''}
-                  required
-                />
-                <TextInput
-                  label='Middle Name'
-                  placeholder=''
-                  value={form.values.middlename}
-                  onChange={(event) =>
-                    form.setFieldValue('middlename', event.currentTarget.value)
-                  }
-                  error={form.errors.middlename && ''}
-                />
-                <TextInput
-                  label='Last Name'
-                  placeholder=''
-                  value={form.values.lastname}
-                  onChange={(event) =>
-                    form.setFieldValue('lastname', event.currentTarget.value)
-                  }
-                  error={form.errors.lastname && ''}
-                  required
-                />
-              </Group>
-            </Stack>
-          </ScrollArea>
-        </form>
+        <Flex>
+          <Stack align={'center'} justify={'flex-start'} p={'md'} w={'25%'}>
+            <Box mb={10}>
+              <Avatar size={250} />
+            </Box>
+
+            <Divider size={'sm'} w={'100%'} my={20} />
+
+            <Tabs
+              orientation='vertical'
+              value={activeTab}
+              onChange={setActiveTab}
+              sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+            >
+              <Tabs.List>
+                <Tabs.Tab
+                  py={10}
+                  fz={'md'}
+                  value='information'
+                  leftSection={<IconUserCog size='1rem' stroke={1.5} />}
+                >
+                  User Information
+                </Tabs.Tab>
+                <Tabs.Tab
+                  py={10}
+                  fz={'md'}
+                  value='signature'
+                  leftSection={<IconSignature size='1rem' stroke={1.5} />}
+                >
+                  Signature
+                </Tabs.Tab>
+              </Tabs.List>
+            </Tabs>
+          </Stack>
+          <Stack align={'center'} justify={'top'} p={'md'} w={'75%'}>
+            <Tabs value={activeTab} onChange={setActiveTab}>
+              <Tabs.Panel value={'information'}>
+                <ScrollArea>
+                  <UserProfileFormClient user={user} />
+                </ScrollArea>
+              </Tabs.Panel>
+              <Tabs.Panel value='signature'>
+                <SignatureFormClient />
+              </Tabs.Panel>
+            </Tabs>
+            <ScrollArea></ScrollArea>
+          </Stack>
+        </Flex>
       </Paper>
     </Stack>
   );
