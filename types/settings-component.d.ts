@@ -15,3 +15,7 @@ type SignatureFormProps = {
 type AvatarFormProps = {
   user: UserType;
 };
+
+type SignatureFormProps = {
+  user: UserType;
+};

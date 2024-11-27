@@ -9,7 +9,7 @@ const MainContainerClient = ({
   children,
 }: MainContainerProps) => {
   return (
-    <Paper shadow='sm' p='xl' h={'calc(100vh - 6em)'}>
+    <Paper shadow='sm' p='xl' h={{ base: '100%', lg: 'calc(100vh - 6em)' }}>
       <Group>
         <Stack gap={0}>
           {secondaryTtile && <Text c={'gray'}>{secondaryTtile}</Text>}
