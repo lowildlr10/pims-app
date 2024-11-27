@@ -17,16 +17,20 @@ const AvatarFormClient = ({ user }: AvatarFormProps) => {
   });
 
   useEffect(() => {
+    if (!file) return;
     handleProcessAvatar();
   }, [file]);
+
+  useEffect(() => {
+    if (!form.values.avatar || !file) return;
+    handleUpdateAvatar();
+  }, [form.values.avatar]);
 
   const handleProcessAvatar = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64String = event.target?.result as string;
       form.setFieldValue('avatar', base64String);
-      form.onSubmit(() => console.log());
-      handleUpdateAvatar();
     };
 
     if (file === null) {
@@ -58,7 +62,7 @@ const AvatarFormClient = ({ user }: AvatarFormProps) => {
           autoClose: 3000,
           position: 'top-right',
         });
-        form.resetDirty();
+        // form.resetDirty();
         setLoading(false);
       })
       .catch((err) => {

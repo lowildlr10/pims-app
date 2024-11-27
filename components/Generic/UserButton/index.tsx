@@ -9,17 +9,17 @@ export function UserButtonClient({ user, handleOpen }: UserButtonProps) {
     <UnstyledButton className={classes.user} onClick={handleOpen}>
       <Group>
         <Avatar
-          src='https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png'
+          src={user?.avatar ?? undefined}
           radius='xl'
         />
 
         <div style={{ flex: 1 }}>
           <Text size='sm' fw={500}>
-            {user.fullname}
+            {user?.fullname}
           </Text>
 
           <Text c='dimmed' size='xs'>
-            {user.position.position_name}
+            {user?.position?.position_name}
           </Text>
         </div>
 

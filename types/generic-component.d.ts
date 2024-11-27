@@ -22,7 +22,7 @@ type LinksGroupProps = {
 };
 
 type UserButtonProps = {
-  user: any;
+  user: UserType;
   handleOpen?: () => void;
 };
 
