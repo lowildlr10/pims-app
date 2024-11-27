@@ -6,10 +6,12 @@ type UserProfileUpdateSectionType = 'information' | 'signature';
 
 type UserProfileFormProps = {
   user: UserType;
-  transitionStyle?: React.CSSProperties;
 };
 
 type SignatureFormProps = {
   user: UserType;
-  transitionStyle?: React.CSSProperties;
+};
+
+type AvatarFormProps = {
+  user: UserType;
 };

@@ -1,6 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import DashboardClient from '@/components/Dashboard';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
+import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -10,14 +11,19 @@ export const metadata = {
 };
 
 const DashboardPage = async () => {
-  const user = await getUser();
-  const permissions = await getPermissions();
+  const user: UserType = await getUser();
+  const permissions: PermissionType = await getPermissions();
 
-  if (!!user === false) redirect('/login');
+  if (!user) redirect('/login');
 
   return (
     <LayoutSidebarClient user={user} permissions={permissions} type={'main'}>
-      <DashboardClient user={user} />
+      <MainContainerClient
+        secondaryTtile={'Welcome Back,'}
+        title={user.fullname ?? ''}
+      >
+        <DashboardClient user={user} />
+      </MainContainerClient>
     </LayoutSidebarClient>
   );
 };

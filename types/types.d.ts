@@ -1,3 +1,7 @@
+type PermissionType = {
+  permissions: string[];
+};
+
 type RoleType = {
   id?: string;
   role_name?: string;

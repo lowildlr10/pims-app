@@ -25,6 +25,7 @@ import { Text } from '@mantine/core';
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: IconLoader, link: '/' },
 ];
+
 const defaultMainMenus: LinksGroupProps[] = [
   { label: 'Dashboard', icon: IconGauge, link: '/' },
   {
@@ -262,7 +263,9 @@ export function LayoutSidebarClient({
           handleClose={close}
         />
       </AppShell.Navbar>
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main bg={'var(--mantine-color-gray-1)'}>
+        {children}
+      </AppShell.Main>
     </AppShell>
   );
 }

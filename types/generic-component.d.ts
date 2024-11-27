@@ -1,7 +1,7 @@
 type LayoutSidebarProps = {
   user: any;
   type?: 'main' | 'settings';
-  permissions?: string[];
+  permissions?: PermissionType;
   children: React.ReactNode;
 };
 
@@ -31,4 +31,10 @@ type ModalProps = {
   title: string;
   open: boolean;
   handleClose: () => void;
+};
+
+type MainContainerProps = {
+  secondaryTtile?: string;
+  title: string;
+  children: React.ReactNode;
 };

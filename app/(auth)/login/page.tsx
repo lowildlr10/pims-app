@@ -8,9 +8,9 @@ export const metadata = {
 };
 
 async function LoginPage() {
-  const user = await getUser();
+  const user: UserType = await getUser();
 
-  if (!!user === true) redirect('/');
+  if (user) redirect('/');
 
   return (
     <div className='flex min-h-full flex-col justify-center px-6 py-12 lg:px-8'>

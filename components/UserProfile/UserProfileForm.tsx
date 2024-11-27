@@ -1,17 +1,25 @@
 import {
   Autocomplete,
+  Button,
+  Divider,
   Group,
   InputBase,
-  NativeSelect,
+  LoadingOverlay,
   PasswordInput,
   Stack,
   TextInput,
 } from '@mantine/core';
 import { IMaskInput } from 'react-imask';
 import { useForm } from '@mantine/form';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { IconCancel, IconPencil, IconPencilCog } from '@tabler/icons-react';
+import API from '@/libs/API';
+import { notifications } from '@mantine/notifications';
+import { Select } from '@mantine/core';
 
 const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
+  const [loading, setLoading] = useState(false);
+  const [enableUpdate, setEnableUpdate] = useState(false);
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -19,17 +27,12 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
       middlename: user?.middlename ?? '',
       lastname: user?.lastname ?? '',
       sex: user?.sex ?? '',
-      department_id: user?.department_id ?? '',
-      section_id: user?.section_id ?? '',
-      position_id: user?.position_id ?? '',
-      designation_id: user?.designation_id ?? '',
+      position: user?.position?.position_name ?? '',
+      designation: user?.designation?.designation_name ?? '',
       username: user?.username ?? '',
       email: user?.email ?? '',
       phone: user?.phone ?? '+639',
       password: '',
-      avatar: user?.avatar ?? '',
-      allow_signature: user?.allow_signature ?? '',
-      signature: user?.signature ?? '',
     },
 
     validate: {
@@ -37,8 +40,63 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
     },
   });
 
+  useEffect(() => {
+    form.reset();
+  }, [enableUpdate]);
+
+  const handleUpdateProfile = () => {
+    setLoading(true);
+
+    API.put(`/accounts/users/${user.id}`, {
+      ...form.values,
+      update_type: 'profile',
+    })
+      .then((res) => {
+        notifications.show({
+          title: 'Success!',
+          message: res?.data?.message,
+          color: 'green',
+          autoClose: 3000,
+          position: 'top-right',
+        });
+        form.resetDirty();
+        setLoading(false);
+        setEnableUpdate(false);
+      })
+      .catch((err) => {
+        const errors = err?.response?.data?.errors;
+
+        if (typeof errors === 'object') {
+          Object.keys(errors)?.forEach((key) => {
+            notifications.show({
+              title: 'Failed!',
+              message: errors[key][0],
+              color: 'red',
+              autoClose: 3000,
+              position: 'top-right',
+            });
+          });
+        } else {
+          notifications.show({
+            title: 'Failed!',
+            message: err?.response?.data?.message ?? err.message,
+            color: 'red',
+            autoClose: 3000,
+            position: 'top-right',
+          });
+        }
+
+        setLoading(false);
+      });
+  };
+
   return (
-    <form>
+    <form onSubmit={form.onSubmit(() => handleUpdateProfile())}>
+      <LoadingOverlay
+        visible={loading}
+        zIndex={1000}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+      />
       <Group justify={'center'} align={'flex-start'} gap={100}>
         <Stack>
           <TextInput
@@ -50,7 +108,8 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
               form.setFieldValue('firstname', event.currentTarget.value)
             }
             error={form.errors.firstname && ''}
-            required
+            readOnly={!enableUpdate}
+            required={enableUpdate}
           />
           <TextInput
             size={'md'}
@@ -61,6 +120,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
               form.setFieldValue('middlename', event.currentTarget.value)
             }
             error={form.errors.middlename && ''}
+            readOnly={!enableUpdate}
           />
           <TextInput
             size={'md'}
@@ -71,9 +131,10 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
               form.setFieldValue('lastname', event.currentTarget.value)
             }
             error={form.errors.lastname && ''}
-            required
+            readOnly={!enableUpdate}
+            required={enableUpdate}
           />
-          <NativeSelect
+          <Select
             size={'md'}
             label='Sex'
             data={[
@@ -81,21 +142,28 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
               { label: 'Female', value: 'female' },
             ]}
             value={form.values.sex}
-            onChange={(event) =>
-              form.setFieldValue('sex', event.currentTarget.value)
+            onChange={(_value, option) =>
+              form.setFieldValue('sex', option.value)
             }
-            required
+            readOnly={!enableUpdate}
+            required={enableUpdate}
           />
           <Autocomplete
             size={'md'}
             label='Position'
             data={['React', 'Angular', 'Vue', 'Svelte']}
-            required
+            value={form.values.position}
+            onChange={(value) => form.setFieldValue('position', value)}
+            readOnly={!enableUpdate}
+            required={enableUpdate}
           />
           <Autocomplete
             size={'md'}
             label='Designation'
             data={['React', 'Angular', 'Vue', 'Svelte']}
+            value={form.values.designation}
+            onChange={(value) => form.setFieldValue('designation', value)}
+            readOnly={!enableUpdate}
           />
           <TextInput
             size={'md'}
@@ -106,6 +174,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
               form.setFieldValue('email', event.currentTarget.value)
             }
             error={form.errors.phone && ''}
+            readOnly={!enableUpdate}
           />
           <InputBase
             size={'md'}
@@ -118,6 +187,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
               form.setFieldValue('phone', event.currentTarget.value)
             }
             error={form.errors.phone && ''}
+            readOnly={!enableUpdate}
           />
         </Stack>
 
@@ -131,7 +201,8 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
               form.setFieldValue('username', event.currentTarget.value)
             }
             error={form.errors.username && ''}
-            required
+            readOnly={!enableUpdate}
+            required={enableUpdate}
           />
           <PasswordInput
             size={'md'}
@@ -142,7 +213,47 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
               form.setFieldValue('password', event.currentTarget.value)
             }
             error={form.errors.username && ''}
+            readOnly={!enableUpdate}
           />
+
+          <Divider size={'sm'} />
+
+          {!enableUpdate ? (
+            <Button
+              size={'md'}
+              leftSection={<IconPencilCog size={18} />}
+              variant='outline'
+              onClick={() => setEnableUpdate(!enableUpdate)}
+            >
+              Toggle Update
+            </Button>
+          ) : (
+            <Group justify={'space-between'}>
+              <Button
+                type={'submit'}
+                size={'md'}
+                leftSection={<IconPencil size={18} />}
+                variant='filled'
+                color='blue'
+                loading={loading}
+                loaderProps={{ type: 'dots' }}
+                autoContrast
+                fullWidth
+              >
+                Update
+              </Button>
+              <Button
+                size={'md'}
+                leftSection={<IconCancel size={18} />}
+                variant='outline'
+                color={'gray'}
+                fullWidth
+                onClick={() => setEnableUpdate(!enableUpdate)}
+              >
+                Cancel
+              </Button>
+            </Group>
+          )}
         </Stack>
       </Group>
     </form>
