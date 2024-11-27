@@ -22,7 +22,7 @@ const page = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Profile'}>
+      <MainContainerClient title={'User Profile'}>
         <UserProfileClient user={user} />
       </MainContainerClient>
     </LayoutSidebarClient>

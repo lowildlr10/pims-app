@@ -1,9 +1,10 @@
 import API from '@/libs/API';
+import { getErrors } from '@/libs/Errors';
+import { notify } from '@/libs/Notification';
 import Helper from '@/utils/Helpers';
 import { Avatar, Button, FileButton, LoadingOverlay } from '@mantine/core';
 import { Group } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
 import React, { useEffect, useState } from 'react';
 
 const AvatarFormClient = ({ user }: AvatarFormProps) => {
@@ -42,7 +43,9 @@ const AvatarFormClient = ({ user }: AvatarFormProps) => {
       if (file instanceof File) {
         reader.readAsDataURL(file);
       }
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
 
     return;
   };
@@ -55,38 +58,24 @@ const AvatarFormClient = ({ user }: AvatarFormProps) => {
       update_type: 'avatar',
     })
       .then((res) => {
-        notifications.show({
+        notify({
           title: 'Success!',
           message: res?.data?.message,
           color: 'green',
-          autoClose: 3000,
-          position: 'top-right',
         });
-        // form.resetDirty();
+        form.resetDirty();
         setLoading(false);
       })
       .catch((err) => {
-        const errors = err?.response?.data?.errors;
+        const errors = getErrors(err);
 
-        if (typeof errors === 'object') {
-          Object.keys(errors)?.forEach((key) => {
-            notifications.show({
-              title: 'Failed!',
-              message: errors[key][0],
-              color: 'red',
-              autoClose: 3000,
-              position: 'top-right',
-            });
-          });
-        } else {
-          notifications.show({
+        errors.forEach((error) => {
+          notify({
             title: 'Failed!',
-            message: err?.response?.data?.message ?? err.message,
+            message: error,
             color: 'red',
-            autoClose: 3000,
-            position: 'top-right',
           });
-        }
+        });
 
         setLoading(false);
       });

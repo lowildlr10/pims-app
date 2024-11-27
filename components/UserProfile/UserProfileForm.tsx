@@ -14,8 +14,9 @@ import { useForm } from '@mantine/form';
 import React, { useEffect, useState } from 'react';
 import { IconCancel, IconPencil, IconPencilCog } from '@tabler/icons-react';
 import API from '@/libs/API';
-import { notifications } from '@mantine/notifications';
 import { Select } from '@mantine/core';
+import { getErrors } from '@/libs/Errors';
+import { notify } from '@/libs/Notification';
 
 const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
   const [loading, setLoading] = useState(false);
@@ -52,39 +53,26 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
       update_type: 'profile',
     })
       .then((res) => {
-        notifications.show({
+        notify({
           title: 'Success!',
           message: res?.data?.message,
           color: 'green',
-          autoClose: 3000,
-          position: 'top-right',
         });
+
         form.resetDirty();
         setLoading(false);
         setEnableUpdate(false);
       })
       .catch((err) => {
-        const errors = err?.response?.data?.errors;
+        const errors = getErrors(err);
 
-        if (typeof errors === 'object') {
-          Object.keys(errors)?.forEach((key) => {
-            notifications.show({
-              title: 'Failed!',
-              message: errors[key][0],
-              color: 'red',
-              autoClose: 3000,
-              position: 'top-right',
-            });
-          });
-        } else {
-          notifications.show({
-            title: 'Failed!',
-            message: err?.response?.data?.message ?? err.message,
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
             color: 'red',
-            autoClose: 3000,
-            position: 'top-right',
           });
-        }
+        });
 
         setLoading(false);
       });

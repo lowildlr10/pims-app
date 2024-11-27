@@ -16,21 +16,23 @@ import {
   Title,
 } from '@mantine/core';
 import useAuth from '@/hooks/useAuth';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { notify } from '@/libs/Notification';
 
 const LoginFormClient = () => {
   const { loading, error, message, login } = useAuth();
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     if (loading) return;
     if (!message) return;
 
-    notifications.show({
+    if (!error) setLoggedIn(true);
+
+    notify({
       title: error ? 'Failed!' : 'Success!',
       message: message,
       color: error ? 'red' : 'green',
-      autoClose: 3000,
-      position: 'top-right',
     });
 
     form.reset();
@@ -91,6 +93,7 @@ const LoginFormClient = () => {
               form.setFieldValue('login', event.currentTarget.value)
             }
             error={form.errors.login && 'Invalid username or email'}
+            disabled={loggedIn}
           />
 
           <PasswordInput
@@ -106,6 +109,7 @@ const LoginFormClient = () => {
               form.errors.password &&
               'Password should include at least 6 characters'
             }
+            disabled={loggedIn}
           />
         </Stack>
 
@@ -140,6 +144,7 @@ const LoginFormClient = () => {
             loaderProps={{ type: 'dots' }}
             autoContrast
             fullWidth
+            disabled={loggedIn}
           >
             <IconLogin2 size={18} />
             &nbsp;Login

@@ -8,10 +8,7 @@ export function UserButtonClient({ user, handleOpen }: UserButtonProps) {
   return (
     <UnstyledButton className={classes.user} onClick={handleOpen}>
       <Group>
-        <Avatar
-          src={user?.avatar ?? undefined}
-          radius='xl'
-        />
+        <Avatar src={user?.avatar ?? undefined} radius='xl' />
 
         <div style={{ flex: 1 }}>
           <Text size='sm' fw={500}>
