@@ -8,12 +8,12 @@ type LayoutSidebarProps = {
 type Link = {
   label: string;
   link: string;
-  module?: string;
+  allowedPermissions?: string[];
 };
 
 type LinksGroupProps = {
   permissions?: any;
-  module?: string;
+  allowedPermissions?: string[];
   label: string;
   icon: React.FC<any>;
   initiallyOpened?: boolean;

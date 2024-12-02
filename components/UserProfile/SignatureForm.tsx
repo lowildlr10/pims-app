@@ -2,7 +2,14 @@ import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import Helper from '@/utils/Helpers';
-import { Button, FileButton, Image, LoadingOverlay, Stack, Switch } from '@mantine/core';
+import {
+  Button,
+  FileButton,
+  Image,
+  LoadingOverlay,
+  Stack,
+  Switch,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconUpload } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
@@ -14,7 +21,7 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
     mode: 'controlled',
     initialValues: {
       signature: user.signature ?? '',
-      allow_signature: user.allow_signature ?? false
+      allow_signature: user.allow_signature ?? false,
     },
   });
 
@@ -113,31 +120,37 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
                     ? `${form.values.signature}?${new Date().getTime()}`
                     : form.values.signature
                 }
-                fallbackSrc={"/images/signature-fallback.png"}
+                fallbackSrc={'/images/signature-fallback.png'}
                 alt={'Signature'}
               />
             </Button>
           )}
         </FileButton>
 
-        <Switch 
+        <Switch
           label={'Enable signature?'}
-          description={'Once enabled, it will appear on the required forms and documents.'}
-          size="md" 
-          onLabel="YES" 
-          offLabel="NO" 
+          description={
+            'Once enabled, it will appear on the required forms and documents.'
+          }
+          size='md'
+          onLabel='YES'
+          offLabel='NO'
           checked={form.values.allow_signature}
-          onChange={(event) => form.setFieldValue('allow_signature', event.currentTarget.checked)}
+          onChange={(event) =>
+            form.setFieldValue('allow_signature', event.currentTarget.checked)
+          }
         />
 
-        <Button 
+        <Button
           loading={loading}
           loaderProps={{ type: 'dots' }}
           size={'lg'}
           type={'submit'}
-          leftSection={<IconUpload size={24} />} 
+          leftSection={<IconUpload size={24} />}
           fullWidth
-        >Save</Button>
+        >
+          Save
+        </Button>
       </Stack>
     </form>
   );

@@ -12,12 +12,18 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
   const [activeTab, setActiveTab] = useState<string | null>('information');
 
   return (
-    <Flex 
-      direction={{ 
+    <Flex
+      direction={{
         base: 'column',
-        lg: 'row' 
-      }}>
-      <Stack align={'center'} justify={'flex-start'} p={'md'} w={{ base: '100%', lg: '25%' }}>
+        lg: 'row',
+      }}
+    >
+      <Stack
+        align={'center'}
+        justify={'flex-start'}
+        p={'md'}
+        w={{ base: '100%', lg: '25%' }}
+      >
         <Box mb={10}>
           <AvatarFormClient user={user} />
         </Box>
@@ -50,7 +56,12 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
           </Tabs.List>
         </Tabs>
       </Stack>
-      <Stack align={'center'} justify={'top'} p={'md'} w={{ md: '100%', lg: '75%' }}>
+      <Stack
+        align={'center'}
+        justify={'top'}
+        p={'md'}
+        w={{ md: '100%', lg: '75%' }}
+      >
         <Tabs value={activeTab} onChange={setActiveTab}>
           <Tabs.Panel value={'information'}>
             <ScrollArea h={{ md: '100%', lg: 'calc(100vh - 18em)' }}>
