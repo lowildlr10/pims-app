@@ -35,7 +35,6 @@ export function LinksGroupClient({
           href={link.link ?? '#'}
           key={link.label}
           underline={'never'}
-          onClick={(event) => event.preventDefault()}
         >
           {link.label}
         </Anchor>

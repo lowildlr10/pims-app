@@ -31,6 +31,8 @@ const defaultMainMenus: LinksGroupProps[] = [
   {
     label: 'Procurement',
     allowedPermissions: [
+      'super:*',
+      'head:*',
       'pr:*',
       'rfq:*',
       'aoq:*',
@@ -51,85 +53,100 @@ const defaultMainMenus: LinksGroupProps[] = [
     links: [
       {
         label: 'Purchase Requests',
-        allowedPermissions: ['pr:*', 'pr:view'],
+        allowedPermissions: ['super:*', 'head:*', 'pr:*', 'pr:view'],
         link: '/procurement/pr',
       },
       {
         label: 'Request for Quotations',
-        allowedPermissions: ['rfq:*', 'rfq:view'],
+        allowedPermissions: ['super:*', 'head:*', 'rfq:*', 'rfq:view'],
         link: '/procurement/rfq',
       },
       {
         label: 'Abstract of Quotations',
-        allowedPermissions: ['aoq:*', 'aoq:view'],
+        allowedPermissions: ['super:*', 'head:*', 'aoq:*', 'aoq:view'],
         link: '/procurement/aoq',
       },
       {
         label: 'Purchase/Job Orders',
-        allowedPermissions: ['po:*', 'po:view'],
+        allowedPermissions: ['super:*', 'head:*', 'po:*', 'po:view'],
         link: '/procurement/po',
       },
       {
         label: 'Inspection and Acceptance Report',
-        allowedPermissions: ['iar:*', 'iar:view'],
+        allowedPermissions: ['super:*', 'head:*', 'iar:*', 'iar:view'],
         link: '/procurement/iar',
       },
       {
         label: 'Obligation Request and Status',
-        allowedPermissions: ['ors:*', 'ors:view'],
+        allowedPermissions: ['super:*', 'head:*', 'ors:*', 'ors:view'],
         link: '/procurement/ors',
       },
       {
         label: 'Disbursement Voucher',
-        allowedPermissions: ['dv:*', 'dv:view'],
+        allowedPermissions: ['super:*', 'head:*', 'dv:*', 'dv:view'],
         link: '/procurement/dv',
       },
     ],
   },
   {
     label: 'Inventory',
-    allowedPermissions: [
-      'ris:*',
-      'ics:*',
-      'are:*',
-      'ris:view',
-      'ics:view',
-      'are:view',
-    ],
+    allowedPermissions: ['super:*', 'head:*', 'inventory:*', 'inventory:view'],
     icon: IconBuildingWarehouse,
     initiallyOpened: false,
     links: [
       {
         label: 'Requisition and Issue Slip',
-        allowedPermissions: ['ris:*', 'ris:view'],
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'inventory:*',
+          'inventory:view',
+        ],
         link: '/inventory/ris',
       },
       {
         label: 'Inventory Custodian Slip',
-        allowedPermissions: ['ics:*', 'ics:view'],
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'inventory:*',
+          'inventory:view',
+        ],
         link: '/inventory/ics',
       },
       {
         label: 'Aknowledgement Receipt of Equipment',
-        allowedPermissions: ['are:*', 'are:view'],
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'inventory:*',
+          'inventory:view',
+        ],
         link: '/inventory/are',
       },
     ],
   },
   {
     label: 'Payment',
-    allowedPermissions: ['check:*', 'deposit:*', 'check:view', 'deposit:view'],
+    allowedPermissions: [
+      'super:*',
+      'head:*',
+      'check:*',
+      'deposit:*',
+      'check:view',
+      'deposit:view',
+    ],
     icon: IconCash,
     initiallyOpened: false,
     links: [
       {
         label: 'Check',
-        allowedPermissions: ['check:*', 'check:view'],
+        allowedPermissions: ['super:*', 'head:*', 'check:*', 'check:view'],
         link: '/payment/check',
       },
       {
         label: 'Bank Deposit',
-        allowedPermissions: ['deposit:*', 'deposit:view'],
+        allowedPermissions: ['super:*', 'head:*', 'deposit:*', 'deposit:view'],
         link: '/payment/deposit',
       },
     ],
@@ -141,7 +158,7 @@ const defaultSettingsMenus: LinksGroupProps[] = [
   { label: 'User Profile', icon: IconUser, link: '/settings' },
   {
     label: 'Company Profile',
-    allowedPermissions: ['company:*', 'company:view'],
+    allowedPermissions: ['super:*', 'head:*', 'company:*', 'company:view'],
     icon: IconSitemap,
     link: '/settings/company-profile',
   },
@@ -152,47 +169,47 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     links: [
       {
         label: 'Inventory Classifications',
-        allowedPermissions: ['inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'MFO PAP',
-        allowedPermissions: ['inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Modes of Procurement',
-        allowedPermissions: ['inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Funding Soruces',
-        allowedPermissions: ['inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Signatories',
-        allowedPermissions: ['inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Suppliers',
-        allowedPermissions: ['inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'UACS Object Codes',
-        allowedPermissions: ['inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Unit of Issues',
-        allowedPermissions: ['inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Paper Sizes',
-        allowedPermissions: ['inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
         link: '/settings/library/inventory-classifications',
       },
     ],
@@ -200,6 +217,12 @@ const defaultSettingsMenus: LinksGroupProps[] = [
   {
     label: 'User Management',
     allowedPermissions: [
+      'super:*',
+      'head:*',
+      'account-department:*',
+      'account-section:*',
+      'account-role:*',
+      'account-user:*',
       'account-department:view',
       'account-section:view',
       'account-role:view',
@@ -209,24 +232,34 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: [
       {
-        label: 'Departments',
-        allowedPermissions: ['account-department:view'],
-        link: '/settings/accounts/departments',
-      },
-      {
-        label: 'Sections',
-        allowedPermissions: ['account-section:view'],
-        link: '/settings/accounts/sections',
+        label: 'Departments and Sections',
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'account-department:*',
+          'account-department:view',
+        ],
+        link: '/settings/user-management/departments',
       },
       {
         label: 'Roles',
-        allowedPermissions: ['account-role:view'],
-        link: '/settings/accounts/roles',
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'account-role:*',
+          'account-role:view',
+        ],
+        link: '/settings/user-management/roles',
       },
       {
         label: 'Users',
-        allowedPermissions: ['account-user:view'],
-        link: '/settings/accounts/users',
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'account-user:*',
+          'account-user:view',
+        ],
+        link: '/settings/user-management/users',
       },
     ],
   },

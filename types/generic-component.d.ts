@@ -38,3 +38,16 @@ type MainContainerProps = {
   title: string;
   children: React.ReactNode;
 };
+
+type DynamicAutocompleteProps = {
+  endpoint: string;
+  endpointParams?: any;
+  column?: string;
+  label?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  value?: string;
+  limit?: number;
+  readOnly?: boolean;
+  required?: boolean;
+  onChange?: (value: string) => void;
+};

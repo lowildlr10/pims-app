@@ -95,12 +95,14 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
-      <Stack>
+      <Stack justify={'flex-start'} px={'xl'}>
         <FileButton onChange={setFile} accept='image/png'>
           {(props) => (
             <Button
               h={300}
-              variant={'transparent'}
+              variant={'light'}
+              color={'gray'}
+              mb={50}
               {...props}
               fullWidth
               autoContrast
@@ -133,6 +135,7 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
             'Once enabled, it will appear on the required forms and documents.'
           }
           size='md'
+          mb={80}
           onLabel='YES'
           offLabel='NO'
           checked={form.values.allow_signature}
@@ -141,16 +144,24 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
           }
         />
 
-        <Button
-          loading={loading}
-          loaderProps={{ type: 'dots' }}
-          size={'lg'}
-          type={'submit'}
-          leftSection={<IconUpload size={24} />}
-          fullWidth
+        <Stack
+          pos={'absolute'}
+          bottom={5}
+          right={0}
+          w={{ base: '100%', lg: 'auto' }}
+          px={20}
         >
-          Save
-        </Button>
+          <Button
+            loading={loading}
+            loaderProps={{ type: 'dots' }}
+            size={'md'}
+            type={'submit'}
+            leftSection={<IconUpload size={24} />}
+            fullWidth
+          >
+            Save
+          </Button>
+        </Stack>
       </Stack>
     </form>
   );

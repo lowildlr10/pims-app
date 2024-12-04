@@ -62,17 +62,24 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
         p={'md'}
         w={{ md: '100%', lg: '75%' }}
       >
-        <Tabs value={activeTab} onChange={setActiveTab}>
+        <Tabs value={activeTab} onChange={setActiveTab} w={'100%'}>
           <Tabs.Panel value={'information'}>
-            <ScrollArea h={{ md: '100%', lg: 'calc(100vh - 18em)' }}>
+            <ScrollArea
+              h={{ md: '100%', lg: 'calc(100vh - 18em)' }}
+              px={{ base: 'md', lg: 'xl' }}
+            >
               <UserProfileFormClient user={user} />
             </ScrollArea>
           </Tabs.Panel>
           <Tabs.Panel value='signature'>
-            <SignatureFormClient user={user} />
+            <ScrollArea
+              h={{ md: '100%', lg: 'calc(100vh - 18em)' }}
+              px={{ base: 'md', lg: 100 }}
+            >
+              <SignatureFormClient user={user} />
+            </ScrollArea>
           </Tabs.Panel>
         </Tabs>
-        <ScrollArea></ScrollArea>
       </Stack>
     </Flex>
   );

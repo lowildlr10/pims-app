@@ -1,7 +1,5 @@
 import {
-  Autocomplete,
   Button,
-  Divider,
   Group,
   InputBase,
   LoadingOverlay,
@@ -17,6 +15,7 @@ import API from '@/libs/API';
 import { Select } from '@mantine/core';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
+import DynamicAutocomplete from '../Generic/DynamicAutocomplete';
 
 const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
   const [loading, setLoading] = useState(false);
@@ -85,8 +84,8 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
-      <Group justify={'center'} align={'flex-start'} gap={100}>
-        <Stack>
+      <Group justify={'center'} align={'flex-start'} gap={50}>
+        <Stack flex={{ base: '100%', lg: '1' }}>
           <TextInput
             size={'md'}
             label='First Name'
@@ -136,19 +135,45 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
             readOnly={!enableUpdate}
             required={enableUpdate}
           />
-          <Autocomplete
+          <TextInput
+            size={'md'}
+            label='Department'
+            description={
+              'Please contact your administrator to update this field'
+            }
+            placeholder=''
+            value={user.department?.department_name}
+            disabled={enableUpdate}
+            readOnly={true}
+          />
+          <TextInput
+            size={'md'}
+            label='Section'
+            description={
+              'Please contact your administrator to update this field'
+            }
+            placeholder=''
+            value={user.section?.section_name}
+            disabled={enableUpdate}
+            readOnly={true}
+          />
+          <DynamicAutocomplete
+            endpoint={'/accounts/positions'}
+            endpointParams={{ paginated: false }}
+            column={'position_name'}
             size={'md'}
             label='Position'
-            data={['React', 'Angular', 'Vue', 'Svelte']}
             value={form.values.position}
             onChange={(value) => form.setFieldValue('position', value)}
             readOnly={!enableUpdate}
             required={enableUpdate}
           />
-          <Autocomplete
+          <DynamicAutocomplete
+            endpoint={'/accounts/designations'}
+            endpointParams={{ paginated: false }}
+            column={'designation_name'}
             size={'md'}
             label='Designation'
-            data={['React', 'Angular', 'Vue', 'Svelte']}
             value={form.values.designation}
             onChange={(value) => form.setFieldValue('designation', value)}
             readOnly={!enableUpdate}
@@ -179,7 +204,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
           />
         </Stack>
 
-        <Stack>
+        <Stack w={'100%'} flex={{ base: '100%', lg: '1' }}>
           <TextInput
             size={'md'}
             label='Username'
@@ -193,6 +218,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
             required={enableUpdate}
           />
           <PasswordInput
+            mb={enableUpdate ? 140 : 80}
             size={'md'}
             label='Password'
             description={'Fill out to change password'}
@@ -204,44 +230,50 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
             readOnly={!enableUpdate}
           />
 
-          <Divider size={'sm'} />
-
-          {!enableUpdate ? (
-            <Button
-              size={'md'}
-              leftSection={<IconPencilCog size={18} />}
-              variant='outline'
-              onClick={() => setEnableUpdate(!enableUpdate)}
-            >
-              Toggle Update
-            </Button>
-          ) : (
-            <Group justify={'space-between'}>
-              <Button
-                type={'submit'}
-                size={'md'}
-                leftSection={<IconPencil size={18} />}
-                variant='filled'
-                color='blue'
-                loading={loading}
-                loaderProps={{ type: 'dots' }}
-                autoContrast
-                fullWidth
-              >
-                Update
-              </Button>
+          <Stack
+            pos={'absolute'}
+            bottom={5}
+            right={0}
+            w={{ base: '100%', lg: 'auto' }}
+            px={20}
+          >
+            {!enableUpdate ? (
               <Button
                 size={'md'}
-                leftSection={<IconCancel size={18} />}
+                leftSection={<IconPencilCog size={18} />}
                 variant='outline'
-                color={'gray'}
-                fullWidth
                 onClick={() => setEnableUpdate(!enableUpdate)}
               >
-                Cancel
+                Toggle Update
               </Button>
-            </Group>
-          )}
+            ) : (
+              <Group justify={'space-between'}>
+                <Button
+                  type={'submit'}
+                  size={'md'}
+                  leftSection={<IconPencil size={18} />}
+                  variant='filled'
+                  color='blue'
+                  loading={loading}
+                  loaderProps={{ type: 'dots' }}
+                  autoContrast
+                  fullWidth
+                >
+                  Update
+                </Button>
+                <Button
+                  size={'md'}
+                  leftSection={<IconCancel size={18} />}
+                  variant='outline'
+                  color={'gray'}
+                  fullWidth
+                  onClick={() => setEnableUpdate(!enableUpdate)}
+                >
+                  Cancel
+                </Button>
+              </Group>
+            )}
+          </Stack>
         </Stack>
       </Group>
     </form>

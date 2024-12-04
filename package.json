@@ -43,7 +43,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-imask": "^7.6.1",
-    "recharts": "^2.13.3"
+    "recharts": "^2.13.3",
+    "use-debounce": "^10.0.4"
   },
   "devDependencies": {
     "@types/node": "^20",
