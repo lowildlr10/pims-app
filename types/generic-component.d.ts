@@ -51,3 +51,14 @@ type DynamicAutocompleteProps = {
   required?: boolean;
   onChange?: (value: string) => void;
 };
+
+type TableHeader = {
+  id: string;
+  label: string;
+  width?: string | number;
+}
+
+type TableDataType = {
+  head?: TableHeader[];
+  body?: any;
+}

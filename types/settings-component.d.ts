@@ -19,3 +19,22 @@ type AvatarFormProps = {
 type SignatureFormProps = {
   user: UserType;
 };
+
+type DepartmentSectionProps = {
+  user: UserType;
+  permissions: PermissionType;
+};
+
+type DepartmentResponse = {
+  data: DepartmentType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type CollapseType = {
+  [id: string]: boolean
+}

@@ -5,6 +5,8 @@ type PermissionType = {
 type RoleType = {
   id?: string;
   role_name?: string;
+  created_at?: string;
+  updated_at?: string;
 };
 
 type UserType = {
@@ -42,9 +44,36 @@ type UserType = {
     id?: string;
     designation_name?: string;
   };
-  designation?: {
-    id?: string;
-    designation_name?: string;
-  };
   roles: Role[];
+  created_at?: string;
+  updated_at?: string;
 };
+
+type DepartmentType = {
+  id?: string;
+  department_name?: string;
+  active?: boolean;
+  department_head_id?: string;
+  head?: {
+    id?: string;
+    firstname?: string;
+    lastname?: string;
+  }
+  sections?: SectionType[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+type SectionType = {
+  id?: string;
+  section_name?: string;
+  active?: boolean;
+  section_head_id?: string;
+  head?: {
+    id?: string;
+    firstname?: string;
+    lastname?: string;
+  }
+  created_at?: string;
+  updated_at?: string;
+}

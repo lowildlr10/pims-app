@@ -22,12 +22,15 @@ import { notify } from '@/libs/Notification';
 const LoginFormClient = () => {
   const { loading, error, message, login } = useAuth();
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (loading) return;
     if (!message) return;
 
     if (!error) setLoggedIn(true);
+
+    setIsSuccess(true);
 
     notify({
       title: error ? 'Failed!' : 'Success!',
@@ -140,7 +143,7 @@ const LoginFormClient = () => {
             size='md'
             type='submit'
             color={'#426F8F'}
-            loading={loading}
+            loading={loading || isSuccess}
             loaderProps={{ type: 'dots' }}
             autoContrast
             fullWidth

@@ -1,4 +1,5 @@
 import { getPermissions, getUser } from '@/actions/user';
+import DepartmentSectionClient from '@/components/DepartmentSection';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
@@ -22,8 +23,7 @@ const DepartmentPage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'User Management - Departments and Sections'}>
-        <></>
-        {/* <DashboardClient user={user} /> */}
+        <DepartmentSectionClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

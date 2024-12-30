@@ -14,7 +14,7 @@ const MainContainerClient = ({
         <Stack gap={0}>
           {secondaryTtile && <Text c={'gray'}>{secondaryTtile}</Text>}
 
-          <Title order={secondaryTtile ? 3 : 2} fw={600}>
+          <Title order={secondaryTtile ? 4 : 3} fw={600}>
             {title}
           </Title>
         </Stack>
