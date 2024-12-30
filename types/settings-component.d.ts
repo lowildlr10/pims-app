@@ -36,5 +36,5 @@ type DepartmentResponse = {
 };
 
 type CollapseType = {
-  [id: string]: boolean
-}
+  [id: string]: boolean;
+};

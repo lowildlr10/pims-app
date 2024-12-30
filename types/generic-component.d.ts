@@ -56,9 +56,46 @@ type TableHeader = {
   id: string;
   label: string;
   width?: string | number;
-}
+};
 
 type TableDataType = {
   head?: TableHeader[];
+  subHead?: TableHeader[];
   body?: any;
-}
+  subBody?: any;
+};
+
+type DataTableProps = {
+  search?: string;
+  showSearch?: boolean;
+
+  data: TableDataType;
+  perPage: number;
+  loading?: boolean;
+
+  perPage: number;
+  page: number;
+  lastPage: number;
+  from: number | string;
+  to: number | string;
+  total: number | string;
+
+  onChange?: (tableSearch?: string, _page: number, _perPage: number) => void;
+};
+
+type DataTablePaginationProps = {
+  perPage: number;
+  page: number;
+  lastPage: number;
+  from: number | string;
+  to: number | string;
+  total: number | string;
+  setPage?: (value: number) => void;
+  setPerPage?: (value: number) => void;
+};
+
+type DataTableActionsProps = {
+  search?: string;
+  showSearch?: boolean;
+  setSearch?: (value: string) => void;
+};

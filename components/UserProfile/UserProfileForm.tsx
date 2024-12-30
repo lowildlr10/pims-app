@@ -239,6 +239,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
           >
             {!enableUpdate ? (
               <Button
+                color={'var(--mantine-color-primary-9)'}
                 size={'md'}
                 leftSection={<IconPencilCog size={18} />}
                 variant='outline'
@@ -253,7 +254,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
                   size={'md'}
                   leftSection={<IconPencil size={18} />}
                   variant='filled'
-                  color='blue'
+                  color={'var(--mantine-color-primary-9)'}
                   loading={loading}
                   loaderProps={{ type: 'dots' }}
                   autoContrast
@@ -265,7 +266,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
                   size={'md'}
                   leftSection={<IconCancel size={18} />}
                   variant='outline'
-                  color={'gray'}
+                  color={'var(--mantine-color-gray-8)'}
                   fullWidth
                   onClick={() => setEnableUpdate(!enableUpdate)}
                 >

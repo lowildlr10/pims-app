@@ -58,11 +58,11 @@ type DepartmentType = {
     id?: string;
     firstname?: string;
     lastname?: string;
-  }
+  };
   sections?: SectionType[];
   created_at?: string;
   updated_at?: string;
-}
+};
 
 type SectionType = {
   id?: string;
@@ -73,7 +73,7 @@ type SectionType = {
     id?: string;
     firstname?: string;
     lastname?: string;
-  }
+  };
   created_at?: string;
   updated_at?: string;
-}
+};
