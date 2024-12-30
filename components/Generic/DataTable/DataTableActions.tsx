@@ -120,11 +120,13 @@ const DataTableActionsClient = ({
               color={'var(--mantine-color-primary-9)'}
               type={'submit'}
               mb={'sm'}
+              size={'sm'}
               fullWidth
             >
               Search
             </Button>
             <Button
+              size={'sm'}
               variant={'outline'}
               color={'var(--mantine-color-tertiary-9)'}
               onClick={handleClearSearch}

@@ -9,11 +9,19 @@ import {
   Stack,
   Table,
 } from '@mantine/core';
-import { IconArrowDown, IconArrowUp, IconPlus } from '@tabler/icons-react';
+import {
+  IconArrowDown,
+  IconArrowUp,
+  IconPlus,
+  IconSortAscending2Filled,
+  IconSortDescending2Filled,
+} from '@tabler/icons-react';
 import DataTablePaginationClient from './DataTablePaginations';
 import DataTableActionsClient from './DataTableActions';
 
 const DataTableClient = ({
+  columnSort,
+  sortDirection,
   search,
   showSearch,
   data,
@@ -31,6 +39,8 @@ const DataTableClient = ({
   const [tableSearch, setTableSearch] = useState(search);
   const [tablePage, setTablePage] = useState(page);
   const [tablePerPage, setTablePerPage] = useState(perPage);
+  const [tableColumnSort, setTableColumnSort] = useState(columnSort);
+  const [tableSortDirection, setTableSortDirection] = useState(sortDirection);
 
   useEffect(() => {
     data.body?.forEach((body: any) => {
@@ -43,8 +53,21 @@ const DataTableClient = ({
   }, [data]);
 
   useEffect(() => {
-    if (onChange) onChange(tableSearch, tablePage, tablePerPage);
-  }, [tableSearch, tablePage, tablePerPage]);
+    if (onChange)
+      onChange(
+        tableSearch,
+        tablePage,
+        tablePerPage,
+        tableColumnSort,
+        tableSortDirection
+      );
+  }, [
+    tableSearch,
+    tablePage,
+    tablePerPage,
+    tableColumnSort,
+    tableSortDirection,
+  ]);
 
   const handleToggleCollapse = (id: string | undefined) => {
     if (!id) return;
@@ -77,8 +100,48 @@ const DataTableClient = ({
           <Table.Thead>
             <Table.Tr bg={'var(--mantine-color-primary-9)'} c={'white'}>
               {data.head?.map((head) => (
-                <Table.Th key={head.id} w={head.width ?? undefined}>
-                  {head.label}
+                <Table.Th
+                  key={head.id}
+                  w={head.width ?? undefined}
+                  p={head.sortable ? 0 : undefined}
+                >
+                  {head.sortable ? (
+                    <Button
+                      variant={'transparent'}
+                      c={'var(--mantine-color-white-9)'}
+                      m={0}
+                      py={'var(--mantine-spacing-sm)'}
+                      h={'auto'}
+                      justify={'left'}
+                      rightSection={
+                        <>
+                          {columnSort === head.id ? (
+                            <>
+                              {sortDirection === 'desc' ? (
+                                <IconSortDescending2Filled size={18} />
+                              ) : (
+                                <IconSortAscending2Filled size={18} />
+                              )}
+                            </>
+                          ) : (
+                            <IconSortDescending2Filled size={18} />
+                          )}
+                        </>
+                      }
+                      onClick={() => {
+                        if (loading) return;
+                        setTableColumnSort(head.id);
+                        setTableSortDirection(
+                          tableSortDirection === 'desc' ? 'asc' : 'desc'
+                        );
+                      }}
+                      fullWidth
+                    >
+                      {head.label}
+                    </Button>
+                  ) : (
+                    <>{head.label}</>
+                  )}
                 </Table.Th>
               ))}
             </Table.Tr>
@@ -202,12 +265,12 @@ const DataTableClient = ({
                                 >
                                   <Button
                                     size={'xs'}
-                                    color={'var(--mantine-color-primary-9)'}
+                                    color={'var(--mantine-color-secondary-9)'}
                                     variant='outline'
                                     leftSection={<IconPlus size={12} />}
                                     fullWidth
                                   >
-                                    Add Section
+                                    Add
                                   </Button>
                                 </Table.Td>
                               </Table.Tr>

@@ -56,6 +56,7 @@ type TableHeader = {
   id: string;
   label: string;
   width?: string | number;
+  sortable?: boolean;
 };
 
 type TableDataType = {
@@ -66,6 +67,9 @@ type TableDataType = {
 };
 
 type DataTableProps = {
+  columnSort?: string;
+  sortDirection?: string;
+
   search?: string;
   showSearch?: boolean;
 
@@ -80,7 +84,13 @@ type DataTableProps = {
   to: number | string;
   total: number | string;
 
-  onChange?: (tableSearch?: string, _page: number, _perPage: number) => void;
+  onChange?: (
+    _search?: string,
+    _page: number,
+    _perPage: number,
+    _columnSort?: string,
+    _sortDirection?: string
+  ) => void;
 };
 
 type DataTablePaginationProps = {

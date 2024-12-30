@@ -12,11 +12,13 @@ const defaultTableData: TableDataType = {
       id: 'department_name',
       label: 'Department',
       width: '70%',
+      sortable: true,
     },
     {
       id: 'headfullname',
       label: 'Department Head',
       width: '25%',
+      sortable: true,
     },
     {
       id: 'show-sections',
@@ -95,6 +97,8 @@ const DepartmentSectionClient = ({
 
   return (
     <DataTableClient
+      columnSort={columnSort}
+      sortDirection={sortDirection}
       search={search}
       data={tableData}
       perPage={perPage}
@@ -104,10 +108,12 @@ const DepartmentSectionClient = ({
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      onChange={(_search, _page, _perPage) => {
+      onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
         setPerPage(_perPage);
+        setColumnSort(_columnSort ?? columnSort);
+        setSortDirection(_sortDirection ?? 'desc');
       }}
       showSearch
     />
