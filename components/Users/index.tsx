@@ -9,55 +9,61 @@ import DataTableClient from '../Generic/DataTable';
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'department_name',
-      label: 'Department',
-      width: '70%',
-      sortable: true,
-    },
-    {
-      id: 'headfullname',
-      label: 'Department Head',
+      id: 'fullname',
+      label: 'Full Name',
       width: '25%',
       sortable: true,
     },
     {
-      id: 'show-sections',
-      label: '',
-      width: '5%',
-    },
-  ],
-  subHead: [
-    {
-      id: 'section_name',
-      label: 'Section',
-      width: '70%',
+      id: 'department_section',
+      label: 'Department - Section',
+      width: '15%',
+      sortable: true,
     },
     {
-      id: 'headfullname',
-      label: 'Section Head',
-      width: '30%',
+      id: 'position_designation',
+      label: 'Position - Designation',
+      width: '15%',
+      sortable: true,
     },
+    {
+      id: 'email',
+      label: 'Email',
+      width: '10%',
+      sortable: true,
+    },
+    {
+      id: 'phone',
+      label: 'Phone',
+      width: '10%',
+      sortable: true,
+    },
+    {
+      id: 'user_roles',
+      label: 'Roles',
+      width: '25%'
+    }
   ],
   body: [],
 };
 
-const DepartmentSectionClient = ({
+const UserssClient = ({
   user,
   permissions,
-}: DepartmentSectionProps) => {
+}: RolesProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('department_name');
+  const [columnSort, setColumnSort] = useState('firstname');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading } = useSWR<DepartmentResponse>(
+  const { data, isLoading } = useSWR<UsersResponse>(
     [
-      `/accounts/departments`,
+      `/accounts/users`,
       search,
       page,
       perPage,
@@ -81,11 +87,13 @@ const DepartmentSectionClient = ({
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: DepartmentType) => {
-      const { sections, ..._data } = body;
+    const _data = data?.data?.map((body: UserType) => {
       return {
-        ..._data,
-        subBody: sections || [],
+        ...body,
+        user_roles: body.roles?.map(role => role.role_name).join(', ') ?? '-',
+        department_section: `${body.department?.department_name} [${body.section?.section_name}]`,
+        position_designation: `${body.position?.position_name} [${body.designation?.designation_name}]`,
+        phone: body.phone ?? '-'
       };
     });
 
@@ -121,4 +129,4 @@ const DepartmentSectionClient = ({
   );
 };
 
-export default DepartmentSectionClient;
+export default UserssClient;

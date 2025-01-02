@@ -57,7 +57,7 @@ const DataTableActionsClient = ({
                 leftSection={<IconSearch size={14} stroke={3} />}
                 onClick={open}
               >
-                "{search}"
+                &quot;{search}&quot;
               </Button>
             ) : (
               <ActionIcon
@@ -87,7 +87,7 @@ const DataTableActionsClient = ({
         >
           <form
             onSubmit={form.onSubmit(() => {
-              setSearch && setSearch(form.values.search);
+              if (setSearch) setSearch(form.values.search);
               close();
             })}
           >

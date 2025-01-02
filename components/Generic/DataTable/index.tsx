@@ -20,6 +20,7 @@ import DataTablePaginationClient from './DataTablePaginations';
 import DataTableActionsClient from './DataTableActions';
 
 const DataTableClient = ({
+  permissions,
   columnSort,
   sortDirection,
   search,
@@ -81,6 +82,7 @@ const DataTableClient = ({
   return (
     <Stack>
       <DataTableActionsClient
+        permissions={permissions}
         search={tableSearch}
         setSearch={setTableSearch}
         showSearch={showSearch}
@@ -181,9 +183,9 @@ const DataTableClient = ({
                 <React.Fragment key={body.id}>
                   <Table.Tr sx={{ cursor: 'pointer' }}>
                     {data.head?.map(
-                      (head) =>
+                      (head, i) =>
                         body[head.id] && (
-                          <Table.Td key={body[head.id]} fw={500}>
+                          <Table.Td key={`${body.id}-${body[head.id]}-${i}`} fw={500} onClick={() => alert(body.id)}>
                             {body[head.id]}
                           </Table.Td>
                         )
@@ -227,7 +229,7 @@ const DataTableClient = ({
                           >
                             <Table.Thead>
                               <Table.Tr
-                                bg={'var(--mantine-color-tertiary-8)'}
+                                bg={'var(--mantine-color-secondary-9)'}
                                 c={'white'}
                               >
                                 {data.subHead?.map((subHead) => (
@@ -250,6 +252,7 @@ const DataTableClient = ({
                                         <Table.Td
                                           key={subBody[subHead.id]}
                                           fw={500}
+                                          onClick={() => alert(subBody.id)}
                                         >
                                           {subBody[subHead.id]}
                                         </Table.Td>

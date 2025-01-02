@@ -25,6 +25,11 @@ type DepartmentSectionProps = {
   permissions: PermissionType;
 };
 
+type RolesProps = {
+  user: UserType;
+  permissions: PermissionType;
+};
+
 type DepartmentResponse = {
   data: DepartmentType[];
   from: number;
@@ -35,6 +40,22 @@ type DepartmentResponse = {
   current_page: number;
 };
 
-type CollapseType = {
-  [id: string]: boolean;
+type RolesResponse = {
+  data: RoleType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type UsersResponse = {
+  data: UserType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
 };

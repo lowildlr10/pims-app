@@ -9,55 +9,37 @@ import DataTableClient from '../Generic/DataTable';
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'department_name',
-      label: 'Department',
-      width: '70%',
+      id: 'role_name',
+      label: 'Role',
+      width: '40%',
       sortable: true,
     },
     {
-      id: 'headfullname',
-      label: 'Department Head',
-      width: '25%',
-      sortable: true,
-    },
-    {
-      id: 'show-sections',
-      label: '',
-      width: '5%',
-    },
-  ],
-  subHead: [
-    {
-      id: 'section_name',
-      label: 'Section',
-      width: '70%',
-    },
-    {
-      id: 'headfullname',
-      label: 'Section Head',
-      width: '30%',
-    },
+      id: 'permissions',
+      label: 'Permissions',
+      width: '60%'
+    }
   ],
   body: [],
 };
 
-const DepartmentSectionClient = ({
+const RolesClient = ({
   user,
   permissions,
-}: DepartmentSectionProps) => {
+}: RolesProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('department_name');
+  const [columnSort, setColumnSort] = useState('role_name');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading } = useSWR<DepartmentResponse>(
+  const { data, isLoading } = useSWR<RolesResponse>(
     [
-      `/accounts/departments`,
+      `/accounts/roles`,
       search,
       page,
       perPage,
@@ -81,11 +63,10 @@ const DepartmentSectionClient = ({
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: DepartmentType) => {
-      const { sections, ..._data } = body;
+    const _data = data?.data?.map((body: RoleType) => {
       return {
-        ..._data,
-        subBody: sections || [],
+        ...body,
+        permissions: body.permissions?.join(', ') ?? '-'
       };
     });
 
@@ -121,4 +102,4 @@ const DepartmentSectionClient = ({
   );
 };
 
-export default DepartmentSectionClient;
+export default RolesClient;

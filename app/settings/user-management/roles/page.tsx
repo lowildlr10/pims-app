@@ -1,6 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
+import RolesClient from '@/components/Roles';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -22,8 +23,7 @@ const RolePage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'User Management - Roles'}>
-        <></>
-        {/* <DashboardClient user={user} /> */}
+        <RolesClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

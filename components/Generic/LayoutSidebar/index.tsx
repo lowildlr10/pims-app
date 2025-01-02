@@ -1,6 +1,7 @@
 'use client';
 
 import { AppShell, Burger, Group, Image, ScrollArea } from '@mantine/core';
+import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { useDisclosure } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
@@ -21,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { ModalClient } from '../Modal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { Text } from '@mantine/core';
+import { usePathname, useRouter } from 'next/navigation';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: IconLoader, link: '/' },
@@ -307,19 +309,21 @@ export function LayoutSidebarClient({
       mih={'100vh'}
       padding='md'
     >
-      <AppShell.Header>
+      <AppShell.Header bg={'var(--mantine-color-primary-9)'} c={'white'}>
         <Group h='100%' px='md'>
           <Burger
             opened={mobileOpened}
             onClick={toggleMobile}
             hiddenFrom='sm'
             size='sm'
+            color={'white'}
           />
           <Burger
             opened={desktopOpened}
             onClick={toggleDesktop}
             visibleFrom='sm'
             size='sm'
+            color={'white'}
           />
           <Group>
             <Image
@@ -352,6 +356,12 @@ export function LayoutSidebarClient({
       </AppShell.Navbar>
       <AppShell.Main bg={'var(--mantine-color-gray-1)'}>
         {children}
+        <ProgressBar
+          height={'4px'}
+          color={'var(--mantine-color-tertiary-1)'}
+          options={{ showSpinner: false }}
+          shallowRouting
+        />
       </AppShell.Main>
     </AppShell>
   );

@@ -67,6 +67,8 @@ type TableDataType = {
 };
 
 type DataTableProps = {
+  permissions: PermissionType;
+
   columnSort?: string;
   sortDirection?: string;
 
@@ -105,7 +107,12 @@ type DataTablePaginationProps = {
 };
 
 type DataTableActionsProps = {
+  permissions: PermissionType;
   search?: string;
   showSearch?: boolean;
   setSearch?: (value: string) => void;
+};
+
+type CollapseType = {
+  [id: string]: boolean;
 };

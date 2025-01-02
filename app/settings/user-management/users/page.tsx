@@ -1,6 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
+import UserssClient from '@/components/Users';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -22,8 +23,7 @@ const UsersPage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'User Management - Users'}>
-        <></>
-        {/* <DashboardClient user={user} /> */}
+        <UserssClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
