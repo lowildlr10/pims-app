@@ -97,6 +97,8 @@ const DepartmentSectionClient = ({
 
   return (
     <DataTableClient
+      module={'account-department'}
+      subModule={'account-section'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

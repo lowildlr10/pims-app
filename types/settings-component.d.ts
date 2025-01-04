@@ -22,12 +22,12 @@ type SignatureFormProps = {
 
 type DepartmentSectionProps = {
   user: UserType;
-  permissions: PermissionType;
+  permissions: string[];
 };
 
 type RolesProps = {
   user: UserType;
-  permissions: PermissionType;
+  permissions: string[];
 };
 
 type DepartmentResponse = {

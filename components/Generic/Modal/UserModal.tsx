@@ -6,7 +6,7 @@ import { IconLogout2 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useEffect } from 'react';
 
-export function ModalClient({ type, title, open, handleClose }: ModalProps) {
+const UserModalClient = ({ title, open, handleClose }: UserModalProps) => {
   const { loading, message, error, logout } = useAuth();
 
   useEffect(() => {
@@ -32,8 +32,6 @@ export function ModalClient({ type, title, open, handleClose }: ModalProps) {
         blur: 3,
       }}
     >
-      {/* Modal content */}
-
       <Group mt='lg' justify='flex-end'>
         <Button variant='default' onClick={handleClose}>
           Close
@@ -51,4 +49,6 @@ export function ModalClient({ type, title, open, handleClose }: ModalProps) {
       </Group>
     </Modal>
   );
-}
+};
+
+export default UserModalClient;

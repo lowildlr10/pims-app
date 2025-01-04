@@ -1,6 +1,13 @@
 'use client';
 
-import { AppShell, Burger, Group, Image, ScrollArea } from '@mantine/core';
+import {
+  AppShell,
+  Burger,
+  Group,
+  Image,
+  Loader,
+  ScrollArea,
+} from '@mantine/core';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { useDisclosure } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
@@ -10,7 +17,6 @@ import {
   IconCash,
   IconGauge,
   IconLibrary,
-  IconLoader,
   IconSettings2,
   IconShoppingCart,
   IconSitemap,
@@ -19,13 +25,12 @@ import {
 } from '@tabler/icons-react';
 import { UserButtonClient } from '../UserButton';
 import { useEffect, useState } from 'react';
-import { ModalClient } from '../Modal';
+import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { Text } from '@mantine/core';
-import { usePathname, useRouter } from 'next/navigation';
 
 const defaultMenu: LinksGroupProps[] = [
-  { label: 'Loading...', icon: IconLoader, link: '/' },
+  { label: 'Loading...', icon: Loader, link: '/' },
 ];
 
 const defaultMainMenus: LinksGroupProps[] = [
@@ -347,8 +352,7 @@ export function LayoutSidebarClient({
           <UserButtonClient user={user} handleOpen={open} />
         </div>
 
-        <ModalClient
-          type='primary'
+        <UserModalClient
           title={user.fullname}
           open={opened}
           handleClose={close}

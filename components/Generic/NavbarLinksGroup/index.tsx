@@ -30,7 +30,7 @@ export function LinksGroupClient({
   const items = (hasLinks ? links : []).map(
     (link) =>
       (link?.allowedPermissions?.some((permission) =>
-        permissions.includes(permission)
+        permissions?.includes(permission)
       ) ||
         !allowedPermissions) && (
         <Anchor
@@ -39,7 +39,11 @@ export function LinksGroupClient({
           href={link.link ?? '#'}
           key={link.label}
           underline={'never'}
-          bg={pathname === link.link ? 'var(--mantine-color-tertiary-1)' : undefined}
+          bg={
+            pathname === link.link
+              ? 'var(--mantine-color-tertiary-1)'
+              : undefined
+          }
           c={pathname === link.link ? 'black' : undefined}
         >
           {link.label}
@@ -48,7 +52,9 @@ export function LinksGroupClient({
   );
 
   useEffect(() => {
-     (hasLinks ? links : []).forEach(link => link.link === pathname && setOpened(true));
+    (hasLinks ? links : []).forEach(
+      (link) => link.link === pathname && setOpened(true)
+    );
   }, [hasLinks, links, pathname]);
 
   return (
@@ -67,11 +73,14 @@ export function LinksGroupClient({
             href={link ?? '#'}
             underline={'never'}
             c={'inherit'}
-            
           >
             <Group justify='space-between' gap={0}>
               <Flex align={'center'}>
-                <ThemeIcon color={'var(--mantine-color-primary-9)'} variant='light' size={30}>
+                <ThemeIcon
+                  color={'var(--mantine-color-primary-9)'}
+                  variant='light'
+                  size={30}
+                >
                   <Icon size={18} />
                 </ThemeIcon>
                 <Box ml='md'>{label}</Box>

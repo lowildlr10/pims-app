@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
   Button,
   Collapse,
@@ -18,8 +18,14 @@ import {
 } from '@tabler/icons-react';
 import DataTablePaginationClient from './DataTablePaginations';
 import DataTableActionsClient from './DataTableActions';
+import { useDisclosure } from '@mantine/hooks';
+import UpdateModalClient from '../Modal/UpdateModal';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import CreateModalClient from '../Modal/CreateModal';
 
 const DataTableClient = ({
+  module,
+  subModule,
   permissions,
   columnSort,
   sortDirection,
@@ -42,6 +48,27 @@ const DataTableClient = ({
   const [tablePerPage, setTablePerPage] = useState(perPage);
   const [tableColumnSort, setTableColumnSort] = useState(columnSort);
   const [tableSortDirection, setTableSortDirection] = useState(sortDirection);
+
+  const [formData, setFormData] = useState<any>();
+
+  const [
+    createModalOpened,
+    { open: openCreateModal, close: closeCreateModal },
+  ] = useDisclosure(false);
+  const [createModalTitle, setCreateModalTitle] = useState('Create');
+  const [createUrl, setCreateUrl] = useState('');
+
+  const [
+    updateModalOpened,
+    { open: openUpdateModal, close: closeUpdateModal },
+  ] = useDisclosure(false);
+  const [updateModalTitle, setUpdateModalTitle] = useState('Update');
+  const [updateUrl, setUpdateUrl] = useState('');
+
+  const [updateModuleTitleKey, setModulelTitleKey] = useState('');
+  const [updateSubModuleTitleKey, setSubModulelTitleKey] = useState('');
+  const [subButtonLabel, setSubButtonLabel] = useState('');
+  const [parentId, setParentId] = useState('');
 
   useEffect(() => {
     data.body?.forEach((body: any) => {
@@ -70,6 +97,47 @@ const DataTableClient = ({
     tableSortDirection,
   ]);
 
+  useEffect(() => {
+    if (!module) return;
+
+    switch (module) {
+      case 'account-department':
+        setSubButtonLabel('Sections');
+        setModulelTitleKey('department_name');
+        break;
+
+      case 'account-role':
+        setModulelTitleKey('role_name');
+        break;
+
+      case 'account-user':
+        setModulelTitleKey('fullname');
+        break;
+
+      default:
+        setCreateModalTitle('Create');
+        break;
+    }
+  }, [module]);
+
+  useEffect(() => {
+    if (!subModule) return;
+
+    switch (subModule) {
+      case 'account-section':
+        setCreateModalTitle('Add Section');
+        setSubModulelTitleKey('section_name');
+        setCreateUrl('/account/sections');
+        break;
+
+      default:
+        setCreateModalTitle('Create');
+        break;
+    }
+  }, [subModule]);
+
+  useEffect(() => console.log(formData), [formData]);
+
   const handleToggleCollapse = (id: string | undefined) => {
     if (!id) return;
 
@@ -79,9 +147,63 @@ const DataTableClient = ({
     });
   };
 
+  const handleOpenUpdateModal = (
+    title: string,
+    id: string,
+    module?: ModuleType
+  ) => {
+    setFormData(data.body?.find((form: any) => form.id === id));
+
+    switch (module) {
+      case 'account-department':
+        setUpdateUrl(`/account/departments/${id}`);
+        break;
+      case 'account-section':
+        const formData = data.body?.find((body: any) =>
+          body?.subBody.some((subBody: any) => subBody.id === id)
+        );
+        setUpdateUrl(`/account/sections/${id}`);
+        setFormData(
+          formData?.subBody.find((subBody: any) => subBody.id === id)
+        );
+        break;
+      case 'account-role':
+        setUpdateUrl(`/account/roles/${id}`);
+        break;
+      case 'account-user':
+        setUpdateUrl(`/account/users/${id}`);
+        break;
+      default:
+        break;
+    }
+
+    setUpdateModalTitle(title);
+    openUpdateModal();
+  };
+
+  const renderDynamicTdContent = (value: any): ReactNode => {
+    if (typeof value === 'string') {
+      return value;
+    } else if (typeof value === 'number') {
+      return `₱${value.toFixed(2)}`;
+    } else if (Array.isArray(value)) {
+      return value.join(', ');
+    } else if (value instanceof Date) {
+      return value.toLocaleDateString();
+    } else if (React.isValidElement(value)) {
+      return value;
+    } else if (value && typeof value === 'object') {
+      return JSON.stringify(value);
+    } else if (typeof value === 'undefined') {
+    } else {
+      return <span>-</span>;
+    }
+  };
+
   return (
     <Stack>
       <DataTableActionsClient
+        module={module}
         permissions={permissions}
         search={tableSearch}
         setSearch={setTableSearch}
@@ -184,9 +306,20 @@ const DataTableClient = ({
                   <Table.Tr sx={{ cursor: 'pointer' }}>
                     {data.head?.map(
                       (head, i) =>
-                        body[head.id] && (
-                          <Table.Td key={`${body.id}-${body[head.id]}-${i}`} fw={500} onClick={() => alert(body.id)}>
-                            {body[head.id]}
+                        typeof body[head.id] !== 'undefined' && (
+                          <Table.Td
+                            valign={'top'}
+                            key={`${body.id}-${body[head.id]}-${i}`}
+                            fw={500}
+                            onClick={() =>
+                              handleOpenUpdateModal(
+                                `Update ${body[updateModuleTitleKey]}`,
+                                body.id,
+                                module
+                              )
+                            }
+                          >
+                            {renderDynamicTdContent(body[head.id])}
                           </Table.Td>
                         )
                     )}
@@ -207,7 +340,7 @@ const DataTableClient = ({
                           onClick={() => handleToggleCollapse(body.id)}
                         >
                           {collapseStates[body.id ?? ''] ? 'Hide' : 'Show'}{' '}
-                          Sections
+                          {subButtonLabel}
                         </Button>
                       </Table.Td>
                     )}
@@ -252,31 +385,47 @@ const DataTableClient = ({
                                         <Table.Td
                                           key={subBody[subHead.id]}
                                           fw={500}
-                                          onClick={() => alert(subBody.id)}
+                                          onClick={() =>
+                                            handleOpenUpdateModal(
+                                              `Update ${subBody[updateSubModuleTitleKey]}`,
+                                              subBody.id,
+                                              subModule
+                                            )
+                                          }
                                         >
-                                          {subBody[subHead.id]}
+                                          {renderDynamicTdContent(
+                                            subBody[subHead.id]
+                                          )}
                                         </Table.Td>
                                       )
                                   )}
                                 </Table.Tr>
                               ))}
 
-                              <Table.Tr>
-                                <Table.Td
-                                  bg={'white'}
-                                  colSpan={data.head?.length}
-                                >
-                                  <Button
-                                    size={'xs'}
-                                    color={'var(--mantine-color-secondary-9)'}
-                                    variant='outline'
-                                    leftSection={<IconPlus size={12} />}
-                                    fullWidth
+                              {getAllowedPermissions(subModule, 'create')?.some(
+                                (permission) => permissions.includes(permission)
+                              ) && (
+                                <Table.Tr>
+                                  <Table.Td
+                                    bg={'white'}
+                                    colSpan={data.head?.length}
                                   >
-                                    Add
-                                  </Button>
-                                </Table.Td>
-                              </Table.Tr>
+                                    <Button
+                                      size={'xs'}
+                                      color={'var(--mantine-color-secondary-9)'}
+                                      variant='outline'
+                                      leftSection={<IconPlus size={12} />}
+                                      onClick={() => {
+                                        setParentId(body.id);
+                                        openCreateModal();
+                                      }}
+                                      fullWidth
+                                    >
+                                      Add
+                                    </Button>
+                                  </Table.Td>
+                                </Table.Tr>
+                              )}
                             </Table.Tbody>
                           </Table>
                         </Collapse>
@@ -288,6 +437,22 @@ const DataTableClient = ({
           </Table.Tbody>
         </Table>
       </ScrollArea>
+
+      <CreateModalClient
+        title={createModalTitle}
+        url={createUrl}
+        data={formData}
+        opened={createModalOpened}
+        close={closeCreateModal}
+      />
+
+      <UpdateModalClient
+        title={updateModalTitle}
+        url={updateUrl}
+        data={formData}
+        opened={updateModalOpened}
+        close={closeUpdateModal}
+      />
 
       <DataTablePaginationClient
         perPage={perPage}

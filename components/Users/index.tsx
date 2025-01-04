@@ -5,25 +5,26 @@ import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
+import { Badge } from '@mantine/core';
 
 const defaultTableData: TableDataType = {
   head: [
     {
       id: 'fullname',
       label: 'Full Name',
-      width: '25%',
+      width: '26%',
       sortable: true,
     },
     {
       id: 'department_section',
       label: 'Department - Section',
-      width: '15%',
+      width: '17%',
       sortable: true,
     },
     {
       id: 'position_designation',
       label: 'Position - Designation',
-      width: '15%',
+      width: '17%',
       sortable: true,
     },
     {
@@ -41,16 +42,13 @@ const defaultTableData: TableDataType = {
     {
       id: 'user_roles',
       label: 'Roles',
-      width: '25%'
-    }
+      width: '20%',
+    },
   ],
   body: [],
 };
 
-const UserssClient = ({
-  user,
-  permissions,
-}: RolesProps) => {
+const UserssClient = ({ user, permissions }: RolesProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -90,10 +88,17 @@ const UserssClient = ({
     const _data = data?.data?.map((body: UserType) => {
       return {
         ...body,
-        user_roles: body.roles?.map(role => role.role_name).join(', ') ?? '-',
+        user_roles: (
+          <>
+            {body.roles?.map((role, i) => (
+              <Badge mr={4} color={'var(--mantine-color-primary-9)'} key={i}>
+                {role.role_name}
+              </Badge>
+            )) ?? '-'}
+          </>
+        ),
         department_section: `${body.department?.department_name} [${body.section?.section_name}]`,
         position_designation: `${body.position?.position_name} [${body.designation?.designation_name}]`,
-        phone: body.phone ?? '-'
       };
     });
 
@@ -105,6 +110,7 @@ const UserssClient = ({
 
   return (
     <DataTableClient
+      module={'account-user'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

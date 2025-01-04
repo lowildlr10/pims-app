@@ -1,7 +1,7 @@
 type LayoutSidebarProps = {
   user: any;
   type?: 'main' | 'settings';
-  permissions?: PermissionType;
+  permissions?: string[];
   children: React.ReactNode;
 };
 
@@ -12,7 +12,7 @@ type Link = {
 };
 
 type LinksGroupProps = {
-  permissions?: any;
+  permissions?: string[];
   allowedPermissions?: string[];
   label: string;
   icon: React.FC<any>;
@@ -26,8 +26,7 @@ type UserButtonProps = {
   handleOpen?: () => void;
 };
 
-type ModalProps = {
-  type: 'primary' | 'secondary' | 'warning' | 'danger' | 'info';
+type UserModalProps = {
   title: string;
   open: boolean;
   handleClose: () => void;
@@ -63,11 +62,13 @@ type TableDataType = {
   head?: TableHeader[];
   subHead?: TableHeader[];
   body?: any;
-  subBody?: any;
 };
 
 type DataTableProps = {
-  permissions: PermissionType;
+  module?: ModuleType;
+  subModule?: ModuleType;
+
+  permissions: string[];
 
   columnSort?: string;
   sortDirection?: string;
@@ -107,10 +108,44 @@ type DataTablePaginationProps = {
 };
 
 type DataTableActionsProps = {
-  permissions: PermissionType;
+  module?: ModuleType;
+  permissions: string[];
   search?: string;
   showSearch?: boolean;
   setSearch?: (value: string) => void;
+};
+
+type SearchModalProps = {
+  search: string;
+  opened: boolean;
+  close: () => void;
+  setSearch?: (value: string) => void;
+};
+
+type ModuleType =
+  | 'account-department'
+  | 'account-section'
+  | 'account-role'
+  | 'account-user';
+
+type CreateModalProps = {
+  title: string;
+  content?: ModuleType;
+  url: string;
+  data: any;
+  opened: boolean;
+  fullscreen?: boolean;
+  close: () => void;
+};
+
+type UpdateModalProps = {
+  title: string;
+  content?: CreateUpdateModalContentType;
+  url: string;
+  data: any;
+  opened: boolean;
+  fullscreen?: boolean;
+  close: () => void;
 };
 
 type CollapseType = {

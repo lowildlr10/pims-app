@@ -5,6 +5,7 @@ import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
+import { Badge } from '@mantine/core';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -17,16 +18,13 @@ const defaultTableData: TableDataType = {
     {
       id: 'permissions',
       label: 'Permissions',
-      width: '60%'
-    }
+      width: '60%',
+    },
   ],
   body: [],
 };
 
-const RolesClient = ({
-  user,
-  permissions,
-}: RolesProps) => {
+const RolesClient = ({ user, permissions }: RolesProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -66,7 +64,15 @@ const RolesClient = ({
     const _data = data?.data?.map((body: RoleType) => {
       return {
         ...body,
-        permissions: body.permissions?.join(', ') ?? '-'
+        permissions: (
+          <>
+            {body.permissions?.map((permission, i) => (
+              <Badge mr={4} color={'var(--mantine-color-primary-9)'} key={i}>
+                {permission}
+              </Badge>
+            )) ?? '-'}
+          </>
+        ),
       };
     });
 
@@ -78,6 +84,7 @@ const RolesClient = ({
 
   return (
     <DataTableClient
+      module={'account-role'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
