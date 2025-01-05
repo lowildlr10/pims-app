@@ -12,13 +12,13 @@ const defaultTableData: TableDataType = {
     {
       id: 'role_name',
       label: 'Role',
-      width: '40%',
+      width: '25%',
       sortable: true,
     },
     {
       id: 'permissions',
       label: 'Permissions',
-      width: '60%',
+      width: '75%',
     },
   ],
   body: [],
@@ -67,7 +67,12 @@ const RolesClient = ({ user, permissions }: RolesProps) => {
         permissions: (
           <>
             {body.permissions?.map((permission, i) => (
-              <Badge mr={4} color={'var(--mantine-color-primary-9)'} key={i}>
+              <Badge
+                mr={4}
+                variant={'light'}
+                color={'var(--mantine-color-primary-9)'}
+                key={i}
+              >
                 {permission}
               </Badge>
             )) ?? '-'}
@@ -105,6 +110,7 @@ const RolesClient = ({ user, permissions }: RolesProps) => {
         setSortDirection(_sortDirection ?? 'desc');
       }}
       showSearch
+      showCreate
     />
   );
 };

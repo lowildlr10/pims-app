@@ -1,13 +1,17 @@
 import { Modal } from '@mantine/core';
 import React from 'react';
+import DepartmentContentClient from './CreateUpdateContent/DepartmentContent';
+import SectionContentClient from './CreateUpdateContent/SectionContent';
 
 const UpdateModalClient = ({
   title,
-  url,
+  endpoint,
   data,
   opened,
   fullscreen,
+  content,
   close,
+  updateTable,
 }: CreateModalProps) => {
   return (
     <Modal
@@ -19,7 +23,29 @@ const UpdateModalClient = ({
       onClose={close}
       title={title ?? 'Update'}
       fullScreen={fullscreen}
-    ></Modal>
+      size={'md'}
+      centered
+    >
+      {content === 'account-department' && (
+        <DepartmentContentClient
+          endpoint={endpoint}
+          data={data}
+          type={'update'}
+          close={close}
+          updateTable={updateTable}
+        />
+      )}
+
+      {content === 'account-section' && (
+        <SectionContentClient
+          endpoint={endpoint}
+          data={data}
+          type={'update'}
+          close={close}
+          updateTable={updateTable}
+        />
+      )}
+    </Modal>
   );
 };
 

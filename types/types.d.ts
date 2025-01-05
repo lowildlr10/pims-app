@@ -63,6 +63,7 @@ type DepartmentType = {
 
 type SectionType = {
   id?: string;
+  department_id?: string;
   section_name?: string;
   active?: boolean;
   section_head_id?: string;
@@ -71,6 +72,7 @@ type SectionType = {
     firstname?: string;
     lastname?: string;
   };
+  department?: DepartmentType;
   created_at?: string;
   updated_at?: string;
 };

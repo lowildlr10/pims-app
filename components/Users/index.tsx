@@ -5,7 +5,7 @@ import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
-import { Badge } from '@mantine/core';
+import { Badge, Stack, Text } from '@mantine/core';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -97,8 +97,22 @@ const UserssClient = ({ user, permissions }: RolesProps) => {
             )) ?? '-'}
           </>
         ),
-        department_section: `${body.department?.department_name} [${body.section?.section_name}]`,
-        position_designation: `${body.position?.position_name} [${body.designation?.designation_name}]`,
+        department_section: (
+          <Stack gap={0}>
+            <Text size={'sm'}>{body.department?.department_name}</Text>
+            <Text c={'dimmed'} size={'sm'}>
+              {body.section?.section_name}
+            </Text>
+          </Stack>
+        ),
+        position_designation: (
+          <Stack gap={0}>
+            <Text size={'sm'}>{body.position?.position_name}</Text>
+            <Text c={'dimmed'} size={'sm'}>
+              {body.designation?.designation_name}
+            </Text>
+          </Stack>
+        ),
       };
     });
 
@@ -131,6 +145,7 @@ const UserssClient = ({ user, permissions }: RolesProps) => {
         setSortDirection(_sortDirection ?? 'desc');
       }}
       showSearch
+      showCreate
     />
   );
 };

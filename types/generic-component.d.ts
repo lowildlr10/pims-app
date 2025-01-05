@@ -38,6 +38,19 @@ type MainContainerProps = {
   children: React.ReactNode;
 };
 
+type DynamicSelectProps = {
+  endpoint: string;
+  endpointParams?: any;
+  column?: string;
+  label?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  value?: string;
+  limit?: number;
+  readOnly?: boolean;
+  required?: boolean;
+  onChange?: (value: string) => void;
+};
+
 type DynamicAutocompleteProps = {
   endpoint: string;
   endpointParams?: any;
@@ -75,6 +88,7 @@ type DataTableProps = {
 
   search?: string;
   showSearch?: boolean;
+  showCreate?: boolean;
 
   data: TableDataType;
   perPage: number;
@@ -112,7 +126,12 @@ type DataTableActionsProps = {
   permissions: string[];
   search?: string;
   showSearch?: boolean;
+  showCreate?: boolean;
   setSearch?: (value: string) => void;
+  handleOpenCreateModal?: (
+    parentId: string | null,
+    module: ModuleType | null
+  ) => void;
 };
 
 type SearchModalProps = {
@@ -131,21 +150,41 @@ type ModuleType =
 type CreateModalProps = {
   title: string;
   content?: ModuleType;
-  url: string;
+  endpoint: string;
   data: any;
   opened: boolean;
   fullscreen?: boolean;
+  content?: ModuleType;
   close: () => void;
+  updateTable?: (id: string | null, payload: any) => void;
 };
 
 type UpdateModalProps = {
   title: string;
-  content?: CreateUpdateModalContentType;
-  url: string;
+  content?: ModuleType;
+  endpoint: string;
   data: any;
   opened: boolean;
   fullscreen?: boolean;
+  content?: ModuleType;
   close: () => void;
+  updateTable?: (id: string | null, payload: any, isSubBody?: boolean) => void;
+};
+
+type ModalDepartmentContentProps = {
+  endpoint: string;
+  data: DepartmentType;
+  type: 'create' | 'update';
+  close: () => void;
+  updateTable?: (id: string | null, payload: any, isSubBody?: boolean) => void;
+};
+
+type ModalSectionContentProps = {
+  endpoint: string;
+  data: SectionType;
+  type: 'create' | 'update';
+  close: () => void;
+  updateTable?: (id: string | null, payload: any, isSubBody?: boolean) => void;
 };
 
 type CollapseType = {

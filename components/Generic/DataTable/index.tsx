@@ -31,6 +31,7 @@ const DataTableClient = ({
   sortDirection,
   search,
   showSearch,
+  showCreate,
   data,
   perPage,
   loading,
@@ -42,6 +43,7 @@ const DataTableClient = ({
   onChange,
 }: DataTableProps) => {
   const [collapseStates, setCollapseStates] = useState<CollapseType>({});
+  const [tableBody, setTableBody] = useState<any>(data.body);
   const [hasSubBody, setHasSubBody] = useState(false);
   const [tableSearch, setTableSearch] = useState(search);
   const [tablePage, setTablePage] = useState(page);
@@ -56,19 +58,20 @@ const DataTableClient = ({
     { open: openCreateModal, close: closeCreateModal },
   ] = useDisclosure(false);
   const [createModalTitle, setCreateModalTitle] = useState('Create');
-  const [createUrl, setCreateUrl] = useState('');
+  const [createEndpoint, setCreateEndpoint] = useState('');
+  const [createModalFullscreen, setCreateModalFullscreen] = useState(false);
+  const [currentCreateModule, setCurrentCreateModule] = useState<ModuleType>();
 
   const [
     updateModalOpened,
     { open: openUpdateModal, close: closeUpdateModal },
   ] = useDisclosure(false);
   const [updateModalTitle, setUpdateModalTitle] = useState('Update');
-  const [updateUrl, setUpdateUrl] = useState('');
+  const [updateEndpoint, setUpdateEndpoint] = useState('');
+  const [updateModalFullscreen, setUpdateModalFullscreen] = useState(false);
+  const [currentUpdateModule, setCurrentUpdateModule] = useState<ModuleType>();
 
-  const [updateModuleTitleKey, setModulelTitleKey] = useState('');
-  const [updateSubModuleTitleKey, setSubModulelTitleKey] = useState('');
   const [subButtonLabel, setSubButtonLabel] = useState('');
-  const [parentId, setParentId] = useState('');
 
   useEffect(() => {
     data.body?.forEach((body: any) => {
@@ -78,6 +81,8 @@ const DataTableClient = ({
     setCollapseStates({
       [data?.body[0]?.id as string]: true,
     });
+
+    setTableBody(data.body);
   }, [data]);
 
   useEffect(() => {
@@ -103,19 +108,15 @@ const DataTableClient = ({
     switch (module) {
       case 'account-department':
         setSubButtonLabel('Sections');
-        setModulelTitleKey('department_name');
         break;
 
       case 'account-role':
-        setModulelTitleKey('role_name');
         break;
 
       case 'account-user':
-        setModulelTitleKey('fullname');
         break;
 
       default:
-        setCreateModalTitle('Create');
         break;
     }
   }, [module]);
@@ -126,17 +127,13 @@ const DataTableClient = ({
     switch (subModule) {
       case 'account-section':
         setCreateModalTitle('Add Section');
-        setSubModulelTitleKey('section_name');
-        setCreateUrl('/account/sections');
+        setCreateEndpoint('/account/sections');
         break;
 
       default:
-        setCreateModalTitle('Create');
         break;
     }
   }, [subModule]);
-
-  useEffect(() => console.log(formData), [formData]);
 
   const handleToggleCollapse = (id: string | undefined) => {
     if (!id) return;
@@ -147,37 +144,91 @@ const DataTableClient = ({
     });
   };
 
-  const handleOpenUpdateModal = (
-    title: string,
-    id: string,
-    module?: ModuleType
+  const handleUpdateTable = (id: string | null, payload: any, isSubBody?: boolean) => {
+
+    setTableBody((prev: any[]) => prev.map((row: any) => {
+      if (id) {
+        if (isSubBody) {
+          return row.id === payload.department_id
+            ? { ...row, subBody: row.subBody.map((subRow: any) => subRow.id === id ? { ...subRow, ...payload } : subRow) }
+            : row;
+        } else {
+          return row.id === id ? { ...row, ...payload } : row;
+        }
+      } else {
+        const newRow = { id: new Date().toISOString(), ...payload };
+        if (isSubBody) {
+          return row.id === payload.department_id ? { ...row, subBody: [...row.subBody, newRow] } : row;
+        }
+        return [...prev, newRow];
+      }
+    }));
+  };
+
+  const handleOpenCreateModal = (
+    parentId: string | null,
+    module: ModuleType | null
   ) => {
-    setFormData(data.body?.find((form: any) => form.id === id));
+    setCurrentCreateModule(module ?? undefined);
 
     switch (module) {
       case 'account-department':
-        setUpdateUrl(`/account/departments/${id}`);
+        setCreateModalTitle('Create Department');
+        setCreateEndpoint('/accounts/departments');
         break;
       case 'account-section':
-        const formData = data.body?.find((body: any) =>
-          body?.subBody.some((subBody: any) => subBody.id === id)
-        );
-        setUpdateUrl(`/account/sections/${id}`);
-        setFormData(
-          formData?.subBody.find((subBody: any) => subBody.id === id)
-        );
+        setFormData({ department_id: parentId });
+        setCreateModalTitle('Add Section');
+        setCreateEndpoint('/accounts/sections');
         break;
       case 'account-role':
-        setUpdateUrl(`/account/roles/${id}`);
+        setCreateModalTitle('Create Role');
+        setCreateEndpoint('/accounts/roles');
         break;
       case 'account-user':
-        setUpdateUrl(`/account/users/${id}`);
+        setCreateModalTitle('Create User');
+        setCreateEndpoint('/accounts/users');
+        setCreateModalFullscreen(true);
         break;
       default:
         break;
     }
 
-    setUpdateModalTitle(title);
+    openCreateModal();
+  };
+
+  const handleOpenUpdateModal = (id: string, module: ModuleType | null) => {
+    setFormData(tableBody?.find((form: any) => form.id === id));
+    setCurrentUpdateModule(module ?? undefined);
+
+    switch (module) {
+      case 'account-department':
+        setUpdateEndpoint(`/accounts/departments/${id}`);
+        setUpdateModalTitle('Update Department');
+        break;
+      case 'account-section':
+        const parentBody = tableBody?.find((body: any) =>
+          body?.subBody.some((subBody: any) => subBody.id === id)
+        );
+        setUpdateEndpoint(`/accounts/sections/${id}`);
+        setUpdateModalTitle('Update Section');
+        setFormData(
+          parentBody?.subBody.find((subBody: any) => subBody.id === id)
+        );
+        break;
+      case 'account-role':
+        setUpdateEndpoint(`/accounts/roles/${id}`);
+        setUpdateModalTitle('Update Role');
+        break;
+      case 'account-user':
+        setUpdateEndpoint(`/accounts/users/${id}`);
+        setUpdateModalTitle('Update User');
+        setUpdateModalFullscreen(true);
+        break;
+      default:
+        break;
+    }
+
     openUpdateModal();
   };
 
@@ -207,7 +258,9 @@ const DataTableClient = ({
         permissions={permissions}
         search={tableSearch}
         setSearch={setTableSearch}
+        showCreate={showCreate}
         showSearch={showSearch}
+        handleOpenCreateModal={handleOpenCreateModal}
       />
 
       <ScrollArea
@@ -301,7 +354,7 @@ const DataTableClient = ({
             )}
 
             {!loading &&
-              data.body?.map((body: any) => (
+              tableBody?.map((body: any) => (
                 <React.Fragment key={body.id}>
                   <Table.Tr sx={{ cursor: 'pointer' }}>
                     {data.head?.map(
@@ -312,11 +365,7 @@ const DataTableClient = ({
                             key={`${body.id}-${body[head.id]}-${i}`}
                             fw={500}
                             onClick={() =>
-                              handleOpenUpdateModal(
-                                `Update ${body[updateModuleTitleKey]}`,
-                                body.id,
-                                module
-                              )
+                              handleOpenUpdateModal(body.id, module ?? null)
                             }
                           >
                             {renderDynamicTdContent(body[head.id])}
@@ -387,9 +436,8 @@ const DataTableClient = ({
                                           fw={500}
                                           onClick={() =>
                                             handleOpenUpdateModal(
-                                              `Update ${subBody[updateSubModuleTitleKey]}`,
                                               subBody.id,
-                                              subModule
+                                              subModule ?? null
                                             )
                                           }
                                         >
@@ -415,10 +463,12 @@ const DataTableClient = ({
                                       color={'var(--mantine-color-secondary-9)'}
                                       variant='outline'
                                       leftSection={<IconPlus size={12} />}
-                                      onClick={() => {
-                                        setParentId(body.id);
-                                        openCreateModal();
-                                      }}
+                                      onClick={() =>
+                                        handleOpenCreateModal(
+                                          body.id,
+                                          subModule ?? null
+                                        )
+                                      }
                                       fullWidth
                                     >
                                       Add
@@ -440,18 +490,24 @@ const DataTableClient = ({
 
       <CreateModalClient
         title={createModalTitle}
-        url={createUrl}
+        endpoint={createEndpoint}
         data={formData}
+        content={currentCreateModule}
+        fullscreen={createModalFullscreen}
         opened={createModalOpened}
         close={closeCreateModal}
+        updateTable={handleUpdateTable}
       />
 
       <UpdateModalClient
         title={updateModalTitle}
-        url={updateUrl}
+        endpoint={updateEndpoint}
         data={formData}
+        content={currentUpdateModule}
+        fullscreen={updateModalFullscreen}
         opened={updateModalOpened}
         close={closeUpdateModal}
+        updateTable={handleUpdateTable}
       />
 
       <DataTablePaginationClient

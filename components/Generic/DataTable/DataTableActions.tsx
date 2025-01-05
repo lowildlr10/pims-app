@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ActionIcon, Button, Group, Paper } from '@mantine/core';
-import { IconPencil, IconSearch } from '@tabler/icons-react';
+import { IconPencilPlus, IconSearch } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import SearchModalClient from '../Modal/SearchModal';
-import CreateModalClient from '../Modal/CreateModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const DataTableActionsClient = ({
@@ -13,52 +12,31 @@ const DataTableActionsClient = ({
   search,
   module,
   showSearch,
+  showCreate,
   setSearch,
+  handleOpenCreateModal,
 }: DataTableActionsProps) => {
   const [
     searchModalOpened,
     { open: openSearchModal, close: closeSearchModal },
   ] = useDisclosure(false);
-  const [
-    createModalOpened,
-    { open: openCreateModal, close: closeCreateModal },
-  ] = useDisclosure(false);
-  const [createModalTitle, setCreateModalTitle] = useState('Create');
-
-  useEffect(() => {
-    if (!module) return;
-
-    switch (module) {
-      case 'account-department':
-        setCreateModalTitle('Create Department');
-        break;
-
-      case 'account-role':
-        setCreateModalTitle('Create Role');
-        break;
-
-      case 'account-user':
-        setCreateModalTitle('Create User');
-        break;
-
-      default:
-        setCreateModalTitle('Create');
-        break;
-    }
-  }, [module]);
 
   return (
     <Paper p={'sm'}>
       <Group justify={'space-between'}>
-        {getAllowedPermissions(module, 'create')?.some((permission) =>
+        {showCreate &&
+        getAllowedPermissions(module, 'create')?.some((permission) =>
           permissions.includes(permission)
         ) ? (
           <Button
             size={'xs'}
             radius='sm'
             color={'var(--mantine-color-primary-9)'}
-            leftSection={<IconPencil size={14} />}
-            onClick={() => openCreateModal()}
+            leftSection={<IconPencilPlus size={14} />}
+            onClick={() =>
+              handleOpenCreateModal &&
+              handleOpenCreateModal(null, module ?? null)
+            }
           >
             Create
           </Button>
@@ -93,14 +71,6 @@ const DataTableActionsClient = ({
           </>
         )}
       </Group>
-
-      <CreateModalClient
-        title={createModalTitle}
-        url={'#'}
-        data={[]}
-        opened={createModalOpened}
-        close={closeCreateModal}
-      />
 
       {showSearch && (
         <SearchModalClient

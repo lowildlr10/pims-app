@@ -362,7 +362,7 @@ export function LayoutSidebarClient({
         {children}
         <ProgressBar
           height={'4px'}
-          color={'var(--mantine-color-tertiary-1)'}
+          color={'var(--mantine-color-secondary-0)'}
           options={{ showSpinner: false }}
           shallowRouting
         />

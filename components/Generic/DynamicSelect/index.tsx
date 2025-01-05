@@ -1,11 +1,10 @@
-import { Autocomplete, Loader } from '@mantine/core';
-import { useDebounce } from 'use-debounce';
+import { Loader, Select } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 
-const DynamicAutocomplete = ({
+const DynamicSelect = ({
   endpoint,
   endpointParams = {},
   column,
@@ -16,18 +15,16 @@ const DynamicAutocomplete = ({
   onChange,
   readOnly,
   required,
-}: DynamicAutocompleteProps) => {
+}: DynamicSelectProps) => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<string[]>(['Loading...']);
+  const [data, setData] = useState<{ label: string; value: string }[]>([]);
   const [inputValue, setInputValue] = useState<string | undefined>(value);
 
-  const [debouncedValue] = useDebounce(inputValue, 500);
+  useEffect(() => handleFetchData(), []);
 
   useEffect(() => {
-    if (onChange) onChange(debouncedValue ?? '');
-
-    handleFetchData();
-  }, [debouncedValue]);
+    if (onChange) onChange(inputValue ?? '');
+  }, [inputValue]);
 
   useEffect(() => {
     setInputValue(value);
@@ -35,18 +32,19 @@ const DynamicAutocomplete = ({
 
   const handleFetchData = () => {
     setLoading(true);
-    setData(['Loading...']);
 
     API.get(endpoint, {
       ...endpointParams,
-      search: inputValue,
       sort_direction: 'asc',
     })
       .then((res) => {
         setData(
           res?.data?.length > 0
-            ? res?.data?.map((item: any) => item[column ?? 'column'])
-            : ['No data.']
+            ? res.data.map((item: any) => ({
+                value: item.id,
+                label: item[column ?? 'column'],
+              }))
+            : [{ label: 'No data.', value: '' }]
         );
         setLoading(false);
       })
@@ -66,20 +64,26 @@ const DynamicAutocomplete = ({
   };
 
   return (
-    <Autocomplete
+    <Select
       size={size}
       label={label}
-      data={data}
-      limit={limit}
-      value={inputValue}
-      onChange={(value) => setInputValue(value)}
+      placeholder={label}
+      limit={limit ?? undefined}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
-      maxDropdownHeight={200}
-      rightSection={loading && <Loader color='blue' size='xs' />}
-      readOnly={readOnly}
+      data={data}
+      value={inputValue}
+      onChange={(_value, option) => setInputValue(option?.value ?? null)}
+      nothingFoundMessage={'Nothing found...'}
+      leftSection={
+        loading && <Loader color={'var(--mantine-color-primary-9)'} size='xs' />
+      }
+      searchable
+      clearable
+      maxDropdownHeight={limit ? undefined : 200}
       required={required}
+      readOnly={readOnly}
     />
   );
 };
 
-export default DynamicAutocomplete;
+export default DynamicSelect;

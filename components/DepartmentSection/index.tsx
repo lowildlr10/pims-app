@@ -5,11 +5,13 @@ import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
+import { Badge, Group, Text } from '@mantine/core';
+import { IconExclamationCircleFilled } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'department_name',
+      id: 'department_name_formatted',
       label: 'Department',
       width: '70%',
       sortable: true,
@@ -28,7 +30,7 @@ const defaultTableData: TableDataType = {
   ],
   subHead: [
     {
-      id: 'section_name',
+      id: 'section_name_formatted',
       label: 'Section',
       width: '70%',
     },
@@ -85,7 +87,39 @@ const DepartmentSectionClient = ({
       const { sections, ..._data } = body;
       return {
         ..._data,
-        subBody: sections || [],
+        subBody: sections?.map((subBody: any) => {
+          return {
+            ...subBody,
+            section_name_formatted: (
+              <Group>
+                <Text size={'sm'}>{subBody.section_name}</Text>
+                {!subBody.active && (
+                  <Badge
+                    variant={'light'}
+                    leftSection={<IconExclamationCircleFilled size={14} />}
+                    color={'var(--mantine-color-red-8)'}
+                  >
+                    Inactive
+                  </Badge>
+                )}
+              </Group>
+            )
+          }
+        }) || [],
+        department_name_formatted: (
+          <Group>
+            <Text size={'sm'}>{body.department_name}</Text>
+            {!body.active && (
+              <Badge
+                variant={'light'}
+                leftSection={<IconExclamationCircleFilled size={14} />}
+                color={'var(--mantine-color-red-8)'}
+              >
+                Inactive
+              </Badge>
+            )}
+          </Group>
+        )
       };
     });
 
@@ -119,6 +153,7 @@ const DepartmentSectionClient = ({
         setSortDirection(_sortDirection ?? 'desc');
       }}
       showSearch
+      showCreate
     />
   );
 };
