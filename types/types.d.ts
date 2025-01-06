@@ -1,6 +1,7 @@
 type RoleType = {
   id?: string;
   role_name?: string;
+  active?: boolean;
   permissions?: string[];
   created_at?: string;
   updated_at?: string;

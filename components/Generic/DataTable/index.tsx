@@ -498,7 +498,10 @@ const DataTableClient = ({
         content={currentCreateModule}
         fullscreen={createModalFullscreen}
         opened={createModalOpened}
-        close={closeCreateModal}
+        close={() => {
+          setFormData({});
+          closeCreateModal();
+        }}
         updateTable={handleUpdateTable}
       />
 
@@ -509,7 +512,10 @@ const DataTableClient = ({
         content={currentUpdateModule}
         fullscreen={updateModalFullscreen}
         opened={updateModalOpened}
-        close={closeUpdateModal}
+        close={() => {
+          setFormData({});
+          closeUpdateModal();
+        }}
         updateTable={handleUpdateTable}
       />
 

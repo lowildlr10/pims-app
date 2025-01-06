@@ -1,10 +1,11 @@
-import { LoadingOverlay, Modal } from '@mantine/core';
+import { LoadingOverlay, Modal, ScrollArea } from '@mantine/core';
 import React, { useState } from 'react';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
 import DepartmentContentClient from './CreateUpdateContent/DepartmentContent';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
+import RoleContentClient from './CreateUpdateContent/RoleContent';
 
 const CreateModalClient = ({
   title,
@@ -67,6 +68,7 @@ const CreateModalClient = ({
       title={title ?? 'Create'}
       size={'md'}
       fullScreen={fullscreen}
+      scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
       <LoadingOverlay
@@ -87,6 +89,16 @@ const CreateModalClient = ({
 
       {content === 'account-section' && (
         <SectionContentClient
+          data={data}
+          type={'create'}
+          close={close}
+          handleCreateUpdate={handleCreate}
+          setPayload={setPayload}
+        />
+      )}
+
+      {content === 'account-role' && (
+        <RoleContentClient
           data={data}
           type={'create'}
           close={close}

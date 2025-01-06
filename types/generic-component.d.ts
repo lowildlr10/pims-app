@@ -189,6 +189,14 @@ type ModalSectionContentProps = {
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
+type ModalRoleContentProps = {
+  data: RoleType;
+  type: 'create' | 'update';
+  close: () => void;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
 type CollapseType = {
   [id: string]: boolean;
 };

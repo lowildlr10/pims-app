@@ -66,7 +66,7 @@ const DepartmentSectionClient = ({
       sortDirection,
       paginated,
     ],
-    ([url, search, page, perPage, columnSort, sortDirection, paginated]: any) =>
+    ([url, search, page, perPage, columnSort, sortDirection, paginated]: GeneralResponse) =>
       API.get(url, {
         search,
         page,

@@ -1,10 +1,11 @@
-import { LoadingOverlay, Modal } from '@mantine/core';
+import { LoadingOverlay, Modal, ScrollArea } from '@mantine/core';
 import React, { useState } from 'react';
 import DepartmentContentClient from './CreateUpdateContent/DepartmentContent';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
+import RoleContentClient from './CreateUpdateContent/RoleContent';
 
 const UpdateModalClient = ({
   title,
@@ -67,6 +68,7 @@ const UpdateModalClient = ({
       title={title ?? 'Update'}
       fullScreen={fullscreen}
       size={'md'}
+      scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
       <LoadingOverlay
@@ -87,6 +89,16 @@ const UpdateModalClient = ({
 
       {content === 'account-section' && (
         <SectionContentClient
+          data={data}
+          type={'update'}
+          close={close}
+          handleCreateUpdate={handleUpdate}
+          setPayload={setPayload}
+        />
+      )}
+
+      {content === 'account-role' && (
+        <RoleContentClient
           data={data}
           type={'update'}
           close={close}
