@@ -12,7 +12,7 @@ export const metadata = {
 
 const UsersPage = async () => {
   const user: UserType = await getUser();
-  const permissions: PermissionType = await getPermissions();
+  const permissions: string[] = await getPermissions();
 
   if (!user) redirect('/login');
 
@@ -23,7 +23,7 @@ const UsersPage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'User Management - Users'}>
-        <UserssClient user={user} permissions={permissions} />
+        <UserssClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

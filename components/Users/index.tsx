@@ -48,7 +48,7 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const UserssClient = ({ user, permissions }: RolesProps) => {
+const UsersClient = ({ permissions }: UsersProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -59,7 +59,7 @@ const UserssClient = ({ user, permissions }: RolesProps) => {
     defaultTableData ?? {}
   );
 
-  const { data, isLoading } = useSWR<UsersResponse>(
+  const { data, isLoading, mutate } = useSWR<UsersResponse>(
     [
       `/accounts/users`,
       search,
@@ -137,6 +137,7 @@ const UserssClient = ({ user, permissions }: RolesProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
+      refreshData={(params) => mutate(params)}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -150,4 +151,4 @@ const UserssClient = ({ user, permissions }: RolesProps) => {
   );
 };
 
-export default UserssClient;
+export default UsersClient;

@@ -1,7 +1,10 @@
-import { Modal } from '@mantine/core';
-import React from 'react';
+import { LoadingOverlay, Modal } from '@mantine/core';
+import React, { useState } from 'react';
 import DepartmentContentClient from './CreateUpdateContent/DepartmentContent';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
+import API from '@/libs/API';
+import { notify } from '@/libs/Notification';
+import { getErrors } from '@/libs/Errors';
 
 const UpdateModalClient = ({
   title,
@@ -13,6 +16,46 @@ const UpdateModalClient = ({
   close,
   updateTable,
 }: CreateModalProps) => {
+  const [loading, setLoading] = useState(false);
+  const [payload, setPayload] = useState<object>();
+
+  const handleUpdate = () => {
+    setLoading(true);
+
+    if (!payload) {
+      setLoading(false);
+      return;
+    }
+
+    API.put(endpoint,  payload)
+      .then((res) => {
+        notify({
+          title: 'Success!',
+          message: res?.data?.message,
+          color: 'green',
+        });
+
+        if (updateTable) updateTable(data?.id ?? null, payload);        
+
+        setPayload({});
+        setLoading(false);
+        close();
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
+            color: 'red',
+          });
+        });
+
+        setLoading(false);
+      });
+  };
+  
   return (
     <Modal
       overlayProps={{
@@ -26,23 +69,29 @@ const UpdateModalClient = ({
       size={'md'}
       centered
     >
+      <LoadingOverlay
+        visible={loading}
+        zIndex={1000}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+      />
+
       {content === 'account-department' && (
         <DepartmentContentClient
-          endpoint={endpoint}
           data={data}
           type={'update'}
           close={close}
-          updateTable={updateTable}
+          handleCreateUpdate={handleUpdate}
+          setPayload={setPayload}
         />
       )}
 
       {content === 'account-section' && (
         <SectionContentClient
-          endpoint={endpoint}
           data={data}
           type={'update'}
           close={close}
-          updateTable={updateTable}
+          handleCreateUpdate={handleUpdate}
+          setPayload={setPayload}
         />
       )}
     </Modal>

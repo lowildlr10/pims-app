@@ -40,7 +40,8 @@ const DataTableClient = ({
   from,
   to,
   total,
-  onChange,
+  refreshData,
+  onChange
 }: DataTableProps) => {
   const [collapseStates, setCollapseStates] = useState<CollapseType>({});
   const [tableBody, setTableBody] = useState<any>(data.body);
@@ -163,6 +164,8 @@ const DataTableClient = ({
         return [...prev, newRow];
       }
     }));
+
+    if (refreshData) refreshData({ ...tableBody, payload });
   };
 
   const handleOpenCreateModal = (

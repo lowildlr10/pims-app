@@ -24,7 +24,7 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const RolesClient = ({ user, permissions }: RolesProps) => {
+const RolesClient = ({ permissions }: RolesProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -35,7 +35,7 @@ const RolesClient = ({ user, permissions }: RolesProps) => {
     defaultTableData ?? {}
   );
 
-  const { data, isLoading } = useSWR<RolesResponse>(
+  const { data, isLoading, mutate } = useSWR<RolesResponse>(
     [
       `/accounts/roles`,
       search,
@@ -45,7 +45,7 @@ const RolesClient = ({ user, permissions }: RolesProps) => {
       sortDirection,
       paginated,
     ],
-    ([url, search, page, perPage, columnSort, sortDirection, paginated]: any) =>
+    ([url, search, page, perPage, columnSort, sortDirection, paginated]: GeneralResponse) =>
       API.get(url, {
         search,
         page,
@@ -102,6 +102,7 @@ const RolesClient = ({ user, permissions }: RolesProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
+      refreshData={(params) => mutate(params)}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);

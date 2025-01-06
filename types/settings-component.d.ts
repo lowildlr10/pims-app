@@ -21,14 +21,26 @@ type SignatureFormProps = {
 };
 
 type DepartmentSectionProps = {
-  user: UserType;
   permissions: string[];
 };
 
 type RolesProps = {
-  user: UserType;
   permissions: string[];
 };
+
+type UsersProps = {
+  permissions: string[];
+}
+
+type GeneralResponse = [
+  url: string,
+  search: string,
+  page: number,
+  perPage: number,
+  columnSort: string,
+  sortDirection: string,
+  paginated: boolean
+];
 
 type DepartmentResponse = {
   data: DepartmentType[];

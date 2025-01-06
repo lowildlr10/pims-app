@@ -12,7 +12,7 @@ export const metadata = {
 
 const RolePage = async () => {
   const user: UserType = await getUser();
-  const permissions: PermissionType = await getPermissions();
+  const permissions: string[] = await getPermissions();
 
   if (!user) redirect('/login');
 
@@ -23,7 +23,7 @@ const RolePage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'User Management - Roles'}>
-        <RolesClient user={user} permissions={permissions} />
+        <RolesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

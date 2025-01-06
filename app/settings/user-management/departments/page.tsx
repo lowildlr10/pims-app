@@ -12,7 +12,7 @@ export const metadata = {
 
 const DepartmentPage = async () => {
   const user: UserType = await getUser();
-  const permissions: PermissionType = await getPermissions();
+  const permissions: string[] = await getPermissions();
 
   if (!user) redirect('/login');
 
@@ -23,7 +23,7 @@ const DepartmentPage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'User Management - Departments and Sections'}>
-        <DepartmentSectionClient user={user} permissions={permissions} />
+        <DepartmentSectionClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

@@ -101,6 +101,8 @@ type DataTableProps = {
   to: number | string;
   total: number | string;
 
+  refreshData?: (param: any) => void;
+
   onChange?: (
     _search?: string,
     _page: number,
@@ -172,19 +174,19 @@ type UpdateModalProps = {
 };
 
 type ModalDepartmentContentProps = {
-  endpoint: string;
   data: DepartmentType;
   type: 'create' | 'update';
   close: () => void;
-  updateTable?: (id: string | null, payload: any, isSubBody?: boolean) => void;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
 type ModalSectionContentProps = {
-  endpoint: string;
   data: SectionType;
   type: 'create' | 'update';
   close: () => void;
-  updateTable?: (id: string | null, payload: any, isSubBody?: boolean) => void;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
 type CollapseType = {
