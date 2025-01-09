@@ -1,5 +1,4 @@
 import {
-  Button,
   Checkbox,
   Divider,
   Paper,
@@ -9,13 +8,10 @@ import {
   Title,
 } from '@mantine/core';
 import React, { useEffect } from 'react';
-import { IconCancel, IconPencil, IconPencilPlus } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
 
 const RoleContentClient = ({
   data,
-  type,
-  close,
   handleCreateUpdate,
   setPayload
 }: ModalRoleContentProps) => {
@@ -43,20 +39,20 @@ const RoleContentClient = ({
             form.setFieldValue('role_name', event.currentTarget.value)
           }
           error={form.errors.role_name && ''}
-          size={'md'}
+          size={'sm'}
           required
         />
 
         <Switch
           label={'Status'}
-          mb={80}
+          mb={20}
           onLabel='Active'
           offLabel='Inactive'
           color={'var(--mantine-color-secondary-9)'}
           checked={form.values.active}
           labelPosition={'left'}
           fw={500}
-          size={'md'}
+          size={'sm'}
           sx={{ cursor: 'pointer' }}
           onChange={(event) =>
             form.setFieldValue('active', event.currentTarget.checked)
@@ -72,7 +68,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Purchase Request"
               description="Scope for Purchase Request module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -88,7 +84,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Request for Quotation"
               description="Scope for Request for Quotation module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -104,7 +100,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Abstract of Quotation"
               description="Scope for Abstract of Quotation module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -120,7 +116,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Purchase/Job Order"
               description="Scope for Purchase/Job Order module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -136,7 +132,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Inspection and Acceptance Report"
               description="Scope for Inspection and Acceptance Report module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -152,7 +148,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Obligation Request Status"
               description="Scope for Obligation Request Status module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -168,7 +164,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Disbursement Voucher"
               description="Scope for Disbursement Voucher module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -184,7 +180,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Inventory"
               description="Scope for Inventory module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -200,7 +196,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Payment"
               description="Scope for Payment module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -216,7 +212,7 @@ const RoleContentClient = ({
               defaultValue={[]}
               label="Company Profile"
               description="Scope for Company Profile module"
-              size={'md'}
+              size={'sm'}
               color={'var(--mantine-color-primary-9)'}
             >
               <Stack mt="xs">
@@ -229,30 +225,6 @@ const RoleContentClient = ({
             <Divider />
           </Stack>
         </Paper>
-
-        <Button
-          type={'submit'}
-          color={'var(--mantine-color-primary-9)'}
-          size={'md'}
-          leftSection={
-            type === 'create' ? (
-              <IconPencilPlus size={18} />
-            ) : (
-              <IconPencil size={18} />
-            )
-          }
-        >
-          {type === 'create' ? 'Create' : 'Update'}
-        </Button>
-        <Button
-          variant={'outline'}
-          size={'md'}
-          color={'var(--mantine-color-gray-8)'}
-          leftSection={<IconCancel size={18} />}
-          onClick={close}
-        >
-          Cancel
-        </Button>
       </Stack>
     </form>
   );

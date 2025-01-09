@@ -130,8 +130,10 @@ const LoginFormClient = () => {
                 position: 'top-right',
               });
             }}
+            c={'var(--mantine-color-primary-9)'}
             href='#'
             size='sm'
+            variant={'text'}
             fw={700}
           >
             Forgot password?
@@ -143,7 +145,7 @@ const LoginFormClient = () => {
             size='md'
             type='submit'
             color={'#426F8F'}
-            loading={loading || isSuccess}
+            loading={loading}
             loaderProps={{ type: 'dots' }}
             autoContrast
             fullWidth

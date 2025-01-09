@@ -175,24 +175,18 @@ type UpdateModalProps = {
 
 type ModalDepartmentContentProps = {
   data: DepartmentType;
-  type: 'create' | 'update';
-  close: () => void;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
 type ModalSectionContentProps = {
   data: SectionType;
-  type: 'create' | 'update';
-  close: () => void;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
 type ModalRoleContentProps = {
   data: RoleType;
-  type: 'create' | 'update';
-  close: () => void;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };

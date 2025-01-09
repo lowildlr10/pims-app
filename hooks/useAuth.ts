@@ -48,6 +48,7 @@ const useAuth = () => {
           setMessage(data?.message);
           expireCookie('access_token');
           setError(false);
+          setLoading(false);
 
           window.location.href = '/login';
         })

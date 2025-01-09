@@ -1,4 +1,4 @@
-import { LoadingOverlay, Modal, ScrollArea } from '@mantine/core';
+import { Button, Group, LoadingOverlay, Modal, ScrollArea, Stack } from '@mantine/core';
 import React, { useState } from 'react';
 import DepartmentContentClient from './CreateUpdateContent/DepartmentContent';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
@@ -6,6 +6,7 @@ import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
 import RoleContentClient from './CreateUpdateContent/RoleContent';
+import { IconCancel, IconPencil } from '@tabler/icons-react';
 
 const UpdateModalClient = ({
   title,
@@ -77,35 +78,60 @@ const UpdateModalClient = ({
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
 
-      {content === 'account-department' && (
-        <DepartmentContentClient
-          data={data}
-          type={'update'}
-          close={close}
-          handleCreateUpdate={handleUpdate}
-          setPayload={setPayload}
-        />
-      )}
+      <ScrollArea
+        h={{ md: '100%', lg: fullscreen ? 'calc(100vh - 7.8em)' : 'calc(100vh - 18.5em)' }}
+        sx={{ borderRadius: 5 }}
+        mb={'sm'}
+      >
+        {content === 'account-department' && (
+          <DepartmentContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
 
-      {content === 'account-section' && (
-        <SectionContentClient
-          data={data}
-          type={'update'}
-          close={close}
-          handleCreateUpdate={handleUpdate}
-          setPayload={setPayload}
-        />
-      )}
+        {content === 'account-section' && (
+          <SectionContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
 
-      {content === 'account-role' && (
-        <RoleContentClient
-          data={data}
-          type={'update'}
-          close={close}
-          handleCreateUpdate={handleUpdate}
-          setPayload={setPayload}
-        />
-      )}
+        {content === 'account-role' && (
+          <RoleContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+      </ScrollArea>
+
+      <Stack align={'end'}>
+        <Group>
+          <Button
+            onClick={handleUpdate}
+            type={'submit'}
+            color={'var(--mantine-color-primary-9)'}
+            size={'sm'}
+            leftSection={
+              <IconPencil size={18} />
+            }
+          >
+            Update
+          </Button>
+          <Button
+            variant={'outline'}
+            size={'sm'}
+            color={'var(--mantine-color-gray-8)'}
+            leftSection={<IconCancel size={18} />}
+            onClick={close}
+          >
+            Cancel
+          </Button>
+        </Group>
+      </Stack> 
     </Modal>
   );
 };

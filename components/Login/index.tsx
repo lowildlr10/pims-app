@@ -9,8 +9,8 @@ const LoginClient = () => {
   return (
     <Flex direction={'row'} mih={'100vh'} w={'100%'}>
       <Stack
-        bg={'#548DD8'}
-        c={'#FEFEFE'}
+        bg={'var(--mantine-color-primary-9)'}
+        c={'var(--mantine-color-white)'}
         w={'40%'}
         gap={0}
         justify={'center'}
@@ -21,7 +21,7 @@ const LoginClient = () => {
           logoUrl='/images/atok-logo.png'
         />
 
-        <Divider size={'md'} bg={'#FEFEFE'} c={'#FEFEFE'} w={'80%'} mb={30} />
+        <Divider size={'md'} bg={'var(--mantine-color-white)'} c={'var(--mantine-color-white)'} w={'80%'} mb={30} />
 
         <Stack align={'center'} justify={'center'}>
           <Title order={1} fw={800}>
@@ -30,7 +30,7 @@ const LoginClient = () => {
           <Text size={'md'}>v1.0.0</Text>
         </Stack>
       </Stack>
-      <Stack bg={'#FEFEFE'} w={'60%'} justify={'center'} align={'center'}>
+      <Stack bg={'var(--mantine-color-white)'} w={'60%'} justify={'center'} align={'center'}>
         <LoginFormClient />
         <footer
           style={{ position: 'absolute', bottom: '0px', marginBottom: '10px' }}

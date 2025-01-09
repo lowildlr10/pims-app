@@ -1,18 +1,14 @@
 import {
-  Button,
   Stack,
   Switch,
   TextInput,
 } from '@mantine/core';
 import React, { useEffect } from 'react';
 import DynamicSelect from '../../DynamicSelect';
-import { IconCancel, IconPencil, IconPencilPlus } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
 
 const DepartmentContentClient = ({
   data,
-  type,
-  close,
   handleCreateUpdate,
   setPayload
 }: ModalDepartmentContentProps) => {
@@ -40,7 +36,7 @@ const DepartmentContentClient = ({
             form.setFieldValue('department_name', event.currentTarget.value)
           }
           error={form.errors.department_name && ''}
-          size={'md'}
+          size={'sm'}
           required
         />
         <DynamicSelect
@@ -49,12 +45,12 @@ const DepartmentContentClient = ({
           column={'fullname'}
           label='Department Head'
           value={form.values.department_head_id}
-          size={'md'}
+          size={'sm'}
           onChange={(value) => form.setFieldValue('department_head_id', value)}
         />
         <Switch
           label={'Status'}
-          mb={80}
+          my={20}
           onLabel='Active'
           offLabel='Inactive'
           color={'var(--mantine-color-secondary-9)'}
@@ -62,34 +58,11 @@ const DepartmentContentClient = ({
           labelPosition={'left'}
           fw={500}
           sx={{ cursor: 'pointer' }}
-          size={'md'}
+          size={'sm'}
           onChange={(event) =>
             form.setFieldValue('active', event.currentTarget.checked)
           }
         />
-        <Button
-          type={'submit'}
-          color={'var(--mantine-color-primary-9)'}
-          size={'md'}
-          leftSection={
-            type === 'create' ? (
-              <IconPencilPlus size={18} />
-            ) : (
-              <IconPencil size={18} />
-            )
-          }
-        >
-          {type === 'create' ? 'Create' : 'Update'}
-        </Button>
-        <Button
-          variant={'outline'}
-          size={'md'}
-          color={'var(--mantine-color-gray-8)'}
-          leftSection={<IconCancel size={18} />}
-          onClick={close}
-        >
-          Cancel
-        </Button>
       </Stack>
     </form>
   );
