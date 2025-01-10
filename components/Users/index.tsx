@@ -5,12 +5,13 @@ import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
-import { Badge, Stack, Text } from '@mantine/core';
+import { Badge, Group, Stack, Text } from '@mantine/core';
+import { IconExclamationCircleFilled } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'fullname',
+      id: 'fullname_formatted',
       label: 'Full Name',
       width: '26%',
       sortable: true,
@@ -96,6 +97,20 @@ const UsersClient = ({ permissions }: UsersProps) => {
     const _data = data?.data?.map((body: UserType) => {
       return {
         ...body,
+        fullname_formatted: (
+          <Group>
+            <Text size={'sm'}>{body.fullname}</Text>
+            {body.restricted && (
+              <Badge
+                variant={'light'}
+                leftSection={<IconExclamationCircleFilled size={14} />}
+                color={'var(--mantine-color-red-8)'}
+              >
+                Inactive
+              </Badge>
+            )}
+          </Group>
+        ),
         user_roles: (
           <>
             {body.roles?.map((role, i) => (
