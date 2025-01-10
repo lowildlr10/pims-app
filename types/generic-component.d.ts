@@ -147,7 +147,34 @@ type ModuleType =
   | 'account-department'
   | 'account-section'
   | 'account-role'
-  | 'account-user';
+  | 'account-user'
+  | 'company'
+  | 'pr'
+  | 'rfq'
+  | 'aoq'
+  | 'po'
+  | 'iar'
+  | 'ors'
+  | 'dv'
+  | 'inventory'
+  | 'payment'
+  | 'lib-fund-source'
+  | 'lib-inv-class'
+  | 'lib-item-class'
+  | 'lib-mfo-pap'
+  | 'lib-mode-proc'
+  | 'lib-paper-size'
+  | 'lib-signatory'
+  | 'lib-supplier'
+  | 'lib-uacs-code'
+  | 'lib-unit-issue'
+  | 'super'
+  | 'head'
+  | 'supply'
+  | 'budget'
+  | 'accounting'
+  | 'cashier'
+  | 'user';
 
 type CreateModalProps = {
   title: string;
@@ -193,4 +220,29 @@ type ModalRoleContentProps = {
 
 type CollapseType = {
   [id: string]: boolean;
+};
+
+type ScopeFieldType = {
+  label: string;
+  value: string;
+  checked: boolean;
+};
+
+type PermissionsFieldType = {
+  label: string;
+  description?: string;
+  module: ModuleType;
+  checked: boolean;
+  indeterminate: boolean;
+  scopes: ScopeFieldType[];
+};
+
+type RoleIndeterminateType = {
+  module: ModuleType;
+  indeterminate: boolean;
+};
+
+type RoleCheckedType = {
+  module: ModuleType;
+  checked: boolean;
 };

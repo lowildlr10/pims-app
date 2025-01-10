@@ -41,7 +41,7 @@ const DataTableClient = ({
   to,
   total,
   refreshData,
-  onChange
+  onChange,
 }: DataTableProps) => {
   const [collapseStates, setCollapseStates] = useState<CollapseType>({});
   const [tableBody, setTableBody] = useState<any>(data.body);
@@ -145,25 +145,37 @@ const DataTableClient = ({
     });
   };
 
-  const handleUpdateTable = (id: string | null, payload: any, isSubBody?: boolean) => {
-
-    setTableBody((prev: any[]) => prev.map((row: any) => {
-      if (id) {
-        if (isSubBody) {
-          return row.id === payload.department_id
-            ? { ...row, subBody: row.subBody.map((subRow: any) => subRow.id === id ? { ...subRow, ...payload } : subRow) }
-            : row;
+  const handleUpdateTable = (
+    id: string | null,
+    payload: any,
+    isSubBody?: boolean
+  ) => {
+    setTableBody((prev: any[]) =>
+      prev.map((row: any) => {
+        if (id) {
+          if (isSubBody) {
+            return row.id === payload.department_id
+              ? {
+                  ...row,
+                  subBody: row.subBody.map((subRow: any) =>
+                    subRow.id === id ? { ...subRow, ...payload } : subRow
+                  ),
+                }
+              : row;
+          } else {
+            return row.id === id ? { ...row, ...payload } : row;
+          }
         } else {
-          return row.id === id ? { ...row, ...payload } : row;
+          const newRow = { id: new Date().toISOString(), ...payload };
+          if (isSubBody) {
+            return row.id === payload.department_id
+              ? { ...row, subBody: [...row.subBody, newRow] }
+              : row;
+          }
+          return [...prev, newRow];
         }
-      } else {
-        const newRow = { id: new Date().toISOString(), ...payload };
-        if (isSubBody) {
-          return row.id === payload.department_id ? { ...row, subBody: [...row.subBody, newRow] } : row;
-        }
-        return [...prev, newRow];
-      }
-    }));
+      })
+    );
 
     if (refreshData) refreshData({ ...tableBody, payload });
   };

@@ -16,7 +16,7 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'permissions',
+      id: 'permissions_formatted',
       label: 'Permissions',
       width: '75%',
     },
@@ -45,7 +45,15 @@ const RolesClient = ({ permissions }: RolesProps) => {
       sortDirection,
       paginated,
     ],
-    ([url, search, page, perPage, columnSort, sortDirection, paginated]: GeneralResponse) =>
+    ([
+      url,
+      search,
+      page,
+      perPage,
+      columnSort,
+      sortDirection,
+      paginated,
+    ]: GeneralResponse) =>
       API.get(url, {
         search,
         page,
@@ -64,7 +72,7 @@ const RolesClient = ({ permissions }: RolesProps) => {
     const _data = data?.data?.map((body: RoleType) => {
       return {
         ...body,
-        permissions: (
+        permissions_formatted: (
           <>
             {body.permissions?.map((permission, i) => (
               <Badge
@@ -72,6 +80,7 @@ const RolesClient = ({ permissions }: RolesProps) => {
                 variant={'light'}
                 color={'var(--mantine-color-primary-9)'}
                 key={i}
+                sx={{ cursor: 'pointer' }}
               >
                 {permission}
               </Badge>

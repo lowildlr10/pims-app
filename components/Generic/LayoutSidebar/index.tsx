@@ -175,48 +175,48 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: [
       {
-        label: 'Inventory Classifications',
-        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
+        label: 'Funding Soruces',
+        allowedPermissions: ['super:*', 'head:*', 'lib-fund-source:view'],
+        link: '/settings/library/inventory-classifications',
+      },
+      {
+        label: 'Item Classifications',
+        allowedPermissions: ['super:*', 'head:*', 'lib-item-class:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'MFO PAP',
-        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'lib-mfo-pap:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Modes of Procurement',
-        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'lib-mode-proc:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
-        label: 'Funding Soruces',
-        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
+        label: 'Print Paper Sizes',
+        allowedPermissions: ['super:*', 'head:*', 'lib-paper-size:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Signatories',
-        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'lib-signatory:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Suppliers',
-        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'lib-supplier:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'UACS Object Codes',
-        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'lib-uacs-code:view'],
         link: '/settings/library/inventory-classifications',
       },
       {
         label: 'Unit of Issues',
-        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
-        link: '/settings/library/inventory-classifications',
-      },
-      {
-        label: 'Paper Sizes',
-        allowedPermissions: ['super:*', 'head:*', 'inv-class:view'],
+        allowedPermissions: ['super:*', 'head:*', 'lib-unit-issue:view'],
         link: '/settings/library/inventory-classifications',
       },
     ],

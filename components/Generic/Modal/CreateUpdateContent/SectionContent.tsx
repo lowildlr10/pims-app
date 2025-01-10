@@ -1,8 +1,4 @@
-import {
-  Stack,
-  Switch,
-  TextInput,
-} from '@mantine/core';
+import { Stack, Switch, TextInput } from '@mantine/core';
 import React, { useEffect } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
@@ -10,7 +6,7 @@ import { useForm } from '@mantine/form';
 const SectionContentClient = ({
   data,
   handleCreateUpdate,
-  setPayload
+  setPayload,
 }: ModalSectionContentProps) => {
   const form = useForm({
     mode: 'controlled',
@@ -27,11 +23,17 @@ const SectionContentClient = ({
   }, [form.values]);
 
   return (
-    <form onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}>
+    <form
+      onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
+    >
       <Stack>
         <DynamicSelect
           endpoint={'/accounts/departments'}
-          endpointParams={{ paginated: false, show_all: true, show_inactive: true }}
+          endpointParams={{
+            paginated: false,
+            show_all: true,
+            show_inactive: true,
+          }}
           column={'department_name'}
           label='Department'
           value={form.values.department_id}

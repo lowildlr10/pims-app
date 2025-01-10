@@ -21,7 +21,13 @@ const LoginClient = () => {
           logoUrl='/images/atok-logo.png'
         />
 
-        <Divider size={'md'} bg={'var(--mantine-color-white)'} c={'var(--mantine-color-white)'} w={'80%'} mb={30} />
+        <Divider
+          size={'md'}
+          bg={'var(--mantine-color-white)'}
+          c={'var(--mantine-color-white)'}
+          w={'80%'}
+          mb={30}
+        />
 
         <Stack align={'center'} justify={'center'}>
           <Title order={1} fw={800}>
@@ -30,7 +36,12 @@ const LoginClient = () => {
           <Text size={'md'}>v1.0.0</Text>
         </Stack>
       </Stack>
-      <Stack bg={'var(--mantine-color-white)'} w={'60%'} justify={'center'} align={'center'}>
+      <Stack
+        bg={'var(--mantine-color-white)'}
+        w={'60%'}
+        justify={'center'}
+        align={'center'}
+      >
         <LoginFormClient />
         <footer
           style={{ position: 'absolute', bottom: '0px', marginBottom: '10px' }}

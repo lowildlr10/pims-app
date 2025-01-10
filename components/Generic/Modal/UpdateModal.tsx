@@ -1,4 +1,11 @@
-import { Button, Group, LoadingOverlay, Modal, ScrollArea, Stack } from '@mantine/core';
+import {
+  Button,
+  Group,
+  LoadingOverlay,
+  Modal,
+  ScrollArea,
+  Stack,
+} from '@mantine/core';
 import React, { useState } from 'react';
 import DepartmentContentClient from './CreateUpdateContent/DepartmentContent';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
@@ -29,7 +36,9 @@ const UpdateModalClient = ({
       return;
     }
 
-    API.put(endpoint,  payload)
+    console.log(payload);
+
+    API.put(endpoint, payload)
       .then((res) => {
         notify({
           title: 'Success!',
@@ -37,7 +46,7 @@ const UpdateModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(data?.id ?? null, payload);        
+        if (updateTable) updateTable(data?.id ?? null, payload);
 
         setPayload({});
         setLoading(false);
@@ -57,7 +66,7 @@ const UpdateModalClient = ({
         setLoading(false);
       });
   };
-  
+
   return (
     <Modal
       overlayProps={{
@@ -79,7 +88,10 @@ const UpdateModalClient = ({
       />
 
       <ScrollArea
-        h={{ md: '100%', lg: fullscreen ? 'calc(100vh - 7.8em)' : 'calc(100vh - 18.5em)' }}
+        h={{
+          md: '100%',
+          lg: fullscreen ? 'calc(100vh - 7.8em)' : 'calc(100vh - 18.5em)',
+        }}
         sx={{ borderRadius: 5 }}
         mb={'sm'}
       >
@@ -115,9 +127,7 @@ const UpdateModalClient = ({
             type={'submit'}
             color={'var(--mantine-color-primary-9)'}
             size={'sm'}
-            leftSection={
-              <IconPencil size={18} />
-            }
+            leftSection={<IconPencil size={18} />}
           >
             Update
           </Button>
@@ -131,7 +141,7 @@ const UpdateModalClient = ({
             Cancel
           </Button>
         </Group>
-      </Stack> 
+      </Stack>
     </Modal>
   );
 };

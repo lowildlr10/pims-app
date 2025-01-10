@@ -1,8 +1,4 @@
-import {
-  Stack,
-  Switch,
-  TextInput,
-} from '@mantine/core';
+import { Stack, Switch, TextInput } from '@mantine/core';
 import React, { useEffect } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
@@ -10,7 +6,7 @@ import { useForm } from '@mantine/form';
 const DepartmentContentClient = ({
   data,
   handleCreateUpdate,
-  setPayload
+  setPayload,
 }: ModalDepartmentContentProps) => {
   const form = useForm({
     mode: 'controlled',
@@ -26,7 +22,9 @@ const DepartmentContentClient = ({
   }, [form.values]);
 
   return (
-    <form onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}>
+    <form
+      onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
+    >
       <Stack>
         <TextInput
           label='Department Name'

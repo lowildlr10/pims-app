@@ -1,4 +1,11 @@
-import { Button, Group, LoadingOverlay, Modal, ScrollArea, Stack } from '@mantine/core';
+import {
+  Button,
+  Group,
+  LoadingOverlay,
+  Modal,
+  ScrollArea,
+  Stack,
+} from '@mantine/core';
 import React, { useState } from 'react';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
 import DepartmentContentClient from './CreateUpdateContent/DepartmentContent';
@@ -29,6 +36,8 @@ const CreateModalClient = ({
       return;
     }
 
+    console.log(payload);
+
     API.post(endpoint, payload)
       .then((res) => {
         notify({
@@ -37,7 +46,7 @@ const CreateModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(null, payload);        
+        if (updateTable) updateTable(null, payload);
 
         setPayload({});
         setLoading(false);
@@ -79,7 +88,10 @@ const CreateModalClient = ({
       />
 
       <ScrollArea
-        h={{ md: '100%', lg: fullscreen ? 'calc(100vh - 7.8em)' : 'calc(100vh - 18.5em)' }}
+        h={{
+          md: '100%',
+          lg: fullscreen ? 'calc(100vh - 7.8em)' : 'calc(100vh - 18.5em)',
+        }}
         sx={{ borderRadius: 5 }}
         mb={'sm'}
       >
@@ -115,9 +127,7 @@ const CreateModalClient = ({
             type={'submit'}
             color={'var(--mantine-color-primary-9)'}
             size={'sm'}
-            leftSection={
-              <IconPencilPlus size={18} />
-            }
+            leftSection={<IconPencilPlus size={18} />}
           >
             Create
           </Button>

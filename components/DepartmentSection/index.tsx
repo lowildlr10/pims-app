@@ -43,9 +43,7 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const DepartmentSectionClient = ({
-  permissions,
-}: DepartmentSectionProps) => {
+const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -66,7 +64,15 @@ const DepartmentSectionClient = ({
       sortDirection,
       paginated,
     ],
-    ([url, search, page, perPage, columnSort, sortDirection, paginated]: GeneralResponse) =>
+    ([
+      url,
+      search,
+      page,
+      perPage,
+      columnSort,
+      sortDirection,
+      paginated,
+    ]: GeneralResponse) =>
       API.get(url, {
         search,
         page,
@@ -86,25 +92,26 @@ const DepartmentSectionClient = ({
       const { sections, ..._data } = body;
       return {
         ..._data,
-        subBody: sections?.map((subBody: any) => {
-          return {
-            ...subBody,
-            section_name_formatted: (
-              <Group>
-                <Text size={'sm'}>{subBody.section_name}</Text>
-                {!subBody.active && (
-                  <Badge
-                    variant={'light'}
-                    leftSection={<IconExclamationCircleFilled size={14} />}
-                    color={'var(--mantine-color-red-8)'}
-                  >
-                    Inactive
-                  </Badge>
-                )}
-              </Group>
-            )
-          }
-        }) || [],
+        subBody:
+          sections?.map((subBody: any) => {
+            return {
+              ...subBody,
+              section_name_formatted: (
+                <Group>
+                  <Text size={'sm'}>{subBody.section_name}</Text>
+                  {!subBody.active && (
+                    <Badge
+                      variant={'light'}
+                      leftSection={<IconExclamationCircleFilled size={14} />}
+                      color={'var(--mantine-color-red-8)'}
+                    >
+                      Inactive
+                    </Badge>
+                  )}
+                </Group>
+              ),
+            };
+          }) || [],
         department_name_formatted: (
           <Group>
             <Text size={'sm'}>{body.department_name}</Text>
@@ -118,7 +125,7 @@ const DepartmentSectionClient = ({
               </Badge>
             )}
           </Group>
-        )
+        ),
       };
     });
 

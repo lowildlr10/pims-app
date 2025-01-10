@@ -69,7 +69,15 @@ const UsersClient = ({ permissions }: UsersProps) => {
       sortDirection,
       paginated,
     ],
-    ([url, search, page, perPage, columnSort, sortDirection, paginated]: GeneralResponse) =>
+    ([
+      url,
+      search,
+      page,
+      perPage,
+      columnSort,
+      sortDirection,
+      paginated,
+    ]: GeneralResponse) =>
       API.get(url, {
         search,
         page,

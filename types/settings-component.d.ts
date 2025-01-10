@@ -30,7 +30,7 @@ type RolesProps = {
 
 type UsersProps = {
   permissions: string[];
-}
+};
 
 type GeneralResponse = [
   url: string,
@@ -39,7 +39,7 @@ type GeneralResponse = [
   perPage: number,
   columnSort: string,
   sortDirection: string,
-  paginated: boolean
+  paginated: boolean,
 ];
 
 type DepartmentResponse = {
