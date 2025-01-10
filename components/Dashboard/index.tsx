@@ -3,7 +3,7 @@
 import React from 'react';
 
 const DashboardClient = ({ user }: DashboardProps) => {
-  return <></>;
+  return <>{user.fullname}</>;
 };
 
 export default DashboardClient;

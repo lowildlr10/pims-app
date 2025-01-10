@@ -17,6 +17,7 @@ import {
   DEFAULT_THEME,
   MantineProvider,
   createTheme,
+  mantineHtmlProps,
   mergeMantineTheme,
 } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
@@ -38,9 +39,11 @@ export default function LoginLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
+    <html lang='en' {...mantineHtmlProps}>
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body className='bg-background'>
-        <ColorSchemeScript defaultColorScheme='light' />
         <MantineProvider
           theme={theme}
           stylesTransform={emotionTransform}

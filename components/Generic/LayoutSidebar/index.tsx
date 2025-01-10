@@ -313,6 +313,8 @@ export function LayoutSidebarClient({
       }}
       mih={'100vh'}
       padding='md'
+      transitionDuration={300}
+      transitionTimingFunction='ease'
     >
       <AppShell.Header bg={'var(--mantine-color-primary-9)'} c={'white'}>
         <Group h='100%' px='md'>

@@ -23,6 +23,7 @@ const UserContentClient = ({
   const form = useForm({
     mode: 'controlled',
     initialValues: {
+      employee_id: data?.employee_id ?? '',
       firstname: data?.firstname ?? '',
       middlename: data?.middlename ?? '',
       lastname: data?.lastname ?? '',
@@ -33,7 +34,7 @@ const UserContentClient = ({
       username: data?.username ?? '',
       email: data?.email ?? '',
       phone: data?.phone ?? '+639',
-      restricted: data?.restricted ?? true,
+      restricted: data?.restricted ?? false,
       password: '',
       roles: data?.roles?.map((role) => role.id) ?? [],
     },
@@ -55,6 +56,17 @@ const UserContentClient = ({
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
+        <TextInput
+          size={'sm'}
+          label='Employee ID'
+          placeholder='Employeee ID'
+          value={form.values.employee_id}
+          onChange={(event) =>
+            form.setFieldValue('employee_id', event.currentTarget.value)
+          }
+          error={form.errors.username && ''}
+          required
+        />
         <TextInput
           size={'sm'}
           label='First Name'
@@ -96,6 +108,7 @@ const UserContentClient = ({
           ]}
           value={form.values.sex}
           onChange={(_value, option) => form.setFieldValue('sex', option.value)}
+          searchable
           required
         />
         <DynamicSelect
@@ -105,7 +118,7 @@ const UserContentClient = ({
             show_all: true,
             show_inactive: true,
           }}
-          column={'section_name'}
+          column={'department_section'}
           label='Section'
           value={form.values.section_id}
           size={'sm'}
@@ -140,7 +153,7 @@ const UserContentClient = ({
           onChange={(event) =>
             form.setFieldValue('email', event.currentTarget.value)
           }
-          error={form.errors.phone && ''}
+          error={form.errors.email && ''}
           required
         />
         <InputBase

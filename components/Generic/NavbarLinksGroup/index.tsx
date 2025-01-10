@@ -59,7 +59,7 @@ export function LinksGroupClient({
 
   return (
     (allowedPermissions?.some((permission) =>
-      permissions.includes(permission)
+      permissions?.includes(permission)
     ) ||
       !allowedPermissions) && (
       <>

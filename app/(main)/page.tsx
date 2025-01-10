@@ -12,7 +12,7 @@ export const metadata = {
 
 const DashboardPage = async () => {
   const user: UserType = await getUser();
-  const permissions: PermissionType = await getPermissions();
+  const permissions: string[] = await getPermissions();
 
   if (!user) redirect('/login');
 

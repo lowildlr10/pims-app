@@ -90,6 +90,17 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
         <Stack flex={{ base: '100%', lg: '1' }}>
           <TextInput
             size={'md'}
+            label='Employee ID'
+            description={
+              'Please contact your administrator to update this field'
+            }
+            placeholder=''
+            value={user?.employee_id ?? ''}
+            disabled={enableUpdate}
+            readOnly={true}
+          />
+          <TextInput
+            size={'md'}
             label='First Name'
             placeholder='Juan'
             value={form.values.firstname}

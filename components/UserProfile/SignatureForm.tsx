@@ -26,10 +26,6 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
   });
 
   useEffect(() => {
-    console.log(form);
-  }, [form]);
-
-  useEffect(() => {
     if (!file) return;
     handleProcessSignature();
   }, [file]);

@@ -9,6 +9,7 @@ type RoleType = {
 
 type UserType = {
   id?: string;
+  employee_id?: string;
   fullname?: string;
   firstname?: string;
   middlename?: string;
