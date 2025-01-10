@@ -1,11 +1,9 @@
 'use client';
 
-import React from 'react'
+import React from 'react';
 
-const DashboardClient = () => {
-  return (
-    <div>DashboardClient</div>
-  )
+const DashboardClient = ({ user }: DashboardProps) => {
+  return <>{user.fullname}</>;
 };
 
 export default DashboardClient;

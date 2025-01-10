@@ -12,14 +12,17 @@ import '@mantine/core/styles/global.css';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-import { DEFAULT_THEME, MantineProvider, createTheme, mergeMantineTheme } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
-import { fontFamily, breakpoints, colors } from "@/config/theme";
 import {
-  emotionTransform,
-  MantineEmotionProvider,
-} from '@mantine/emotion';
-
+  ColorSchemeScript,
+  DEFAULT_THEME,
+  MantineProvider,
+  createTheme,
+  mantineHtmlProps,
+  mergeMantineTheme,
+} from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
+import { fontFamily, breakpoints, colors } from '@/config/theme';
+import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion';
 
 const theme = mergeMantineTheme(
   DEFAULT_THEME,
@@ -27,18 +30,25 @@ const theme = mergeMantineTheme(
     fontFamily,
     breakpoints,
     colors,
-  }),
+  })
 );
 
 export default function LoginLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="bg-background">
-        <MantineProvider theme={theme} stylesTransform={emotionTransform}>
+    <html lang='en' {...mantineHtmlProps}>
+      <head>
+        <ColorSchemeScript />
+      </head>
+      <body className='bg-background'>
+        <MantineProvider
+          theme={theme}
+          stylesTransform={emotionTransform}
+          defaultColorScheme={'light'}
+        >
           <MantineEmotionProvider>
             <Notifications />
             {children}
@@ -46,5 +56,5 @@ export default function LoginLayout({
         </MantineProvider>
       </body>
     </html>
-  )
+  );
 }

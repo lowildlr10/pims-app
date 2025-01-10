@@ -2,7 +2,12 @@ import { OutgoingMessage } from 'http';
 
 const isServer = typeof window === 'undefined';
 
-export const setCookie = (key: string, value: string, age = 86400, path = '/'): void => {
+export const setCookie = (
+  key: string,
+  value: string,
+  age = 86400,
+  path = '/'
+): void => {
   document.cookie = `${key}=${value};max-age=${age};path=${path}`;
 };
 
@@ -10,7 +15,7 @@ export const expireCookie = (key: string, res?: OutgoingMessage): void => {
   const date = new Date();
   date.setDate(date.getDate() - 1);
   date.setHours(date.getHours() - 8);
-  
+
   const cookie = `${key}=;expires=${date.toUTCString()};path=/`;
 
   if (isServer) {
