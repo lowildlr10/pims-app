@@ -51,6 +51,19 @@ type DynamicSelectProps = {
   onChange?: (value: string) => void;
 };
 
+type DynamicMultiselectProps = {
+  endpoint: string;
+  endpointParams?: any;
+  column?: string;
+  label?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  value?: string[];
+  limit?: number;
+  readOnly?: boolean;
+  required?: boolean;
+  onChange?: (value: string[]) => void;
+};
+
 type DynamicAutocompleteProps = {
   endpoint: string;
   endpointParams?: any;
@@ -214,6 +227,12 @@ type ModalSectionContentProps = {
 
 type ModalRoleContentProps = {
   data: RoleType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalUserContentProps = {
+  data: UserType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };

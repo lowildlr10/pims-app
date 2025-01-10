@@ -203,7 +203,7 @@ const DataTableClient = ({
       case 'account-user':
         setCreateModalTitle('Create User');
         setCreateEndpoint('/accounts/users');
-        setCreateModalFullscreen(true);
+        setCreateModalFullscreen(false);
         break;
       default:
         break;
@@ -238,7 +238,7 @@ const DataTableClient = ({
       case 'account-user':
         setUpdateEndpoint(`/accounts/users/${id}`);
         setUpdateModalTitle('Update User');
-        setUpdateModalFullscreen(true);
+        setUpdateModalFullscreen(false);
         break;
       default:
         break;

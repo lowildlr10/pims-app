@@ -14,6 +14,7 @@ import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
 import RoleContentClient from './CreateUpdateContent/RoleContent';
 import { IconCancel, IconPencilPlus } from '@tabler/icons-react';
+import UserContentClient from './CreateUpdateContent/UserContent';
 
 const CreateModalClient = ({
   title,
@@ -35,8 +36,6 @@ const CreateModalClient = ({
       setLoading(false);
       return;
     }
-
-    console.log(payload);
 
     API.post(endpoint, payload)
       .then((res) => {
@@ -90,10 +89,10 @@ const CreateModalClient = ({
       <ScrollArea
         h={{
           md: '100%',
-          lg: fullscreen ? 'calc(100vh - 7.8em)' : 'calc(100vh - 18.5em)',
+          lg: fullscreen ? 'calc(100vh - 7.8em)' : 'calc(100vh - 18em)',
         }}
         sx={{ borderRadius: 5 }}
-        mb={'sm'}
+        mb={'lg'}
       >
         {content === 'account-department' && (
           <DepartmentContentClient
@@ -113,6 +112,14 @@ const CreateModalClient = ({
 
         {content === 'account-role' && (
           <RoleContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'account-user' && (
+          <UserContentClient
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
