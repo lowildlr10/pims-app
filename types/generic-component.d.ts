@@ -179,6 +179,7 @@ type ModuleType =
   | 'lib-paper-size'
   | 'lib-signatory'
   | 'lib-supplier'
+  | 'lib-uacs-classification'
   | 'lib-uacs-code'
   | 'lib-unit-issue'
   | 'super'

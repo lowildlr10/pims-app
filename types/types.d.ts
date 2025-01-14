@@ -78,3 +78,128 @@ type SectionType = {
   created_at?: string;
   updated_at?: string;
 };
+
+type LocationType = {
+  id?: string;
+  location_name?: string;
+};
+
+type FundingSourceType = {
+  id?: string;
+  location_id?: string;
+  total_cost?: number;
+  active?: boolean;
+  location?: LocationType;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type ItemClassificationType = {
+  id?: string;
+  classification_name?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type MfoPapType = {
+  id?: string;
+  code?: string;
+  description?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type PaperSizeType = {
+  id?: string;
+  paper_type?: string;
+  unit?: 'mm' | 'cm' | 'in';
+  width?: number;
+  height?: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type ProcurementModeType = {
+  id?: string;
+  mode_name?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type DocumentType =
+  | 'pr'
+  | 'rfq'
+  | 'aoq'
+  | 'po'
+  | 'iar'
+  | 'ors'
+  | 'dv'
+  | 'ris'
+  | 'are'
+  | 'ris';
+
+type SignatoryDetailType = {
+  id?: string;
+  signatory_id?: string;
+  document?: DocumentType;
+  signatory_type?: string;
+  position?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type SignatoryType = {
+  id?: string;
+  user_id?: string;
+  active?: boolean;
+  signatory_details?: SignatoryDetailType[];
+  user?: UserType;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type SupplierType = {
+  id?: string;
+  supplier_name?: string;
+  address?: string;
+  tin_no?: string;
+  phone?: string;
+  telephone?: string;
+  vat_no?: string;
+  contact_person?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type UacsCodeClassificationType = {
+  id?: string;
+  classification_name?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type UacsCodeType = {
+  id?: string;
+  classification_id?: string;
+  account_title?: string;
+  code?: string;
+  description?: string;
+  uacs_classification?: UacsCodeClassificationType;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type UnitIssueType = {
+  id?: string;
+  unit_name?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
