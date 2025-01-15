@@ -21,6 +21,9 @@ import MfoPapContentClient from './CreateUpdateContent/MfoPapContent';
 import ProcurementModeContentClient from './CreateUpdateContent/ProcurementModeContent';
 import PaperSizeContentClient from './CreateUpdateContent/PaperSizeContent';
 import SupplierContentClient from './CreateUpdateContent/SupplierContent';
+import UacsCodeClassificationContentClient from './CreateUpdateContent/UacsCodeClassificationContent';
+import UacsCodeContentClient from './CreateUpdateContent/UacsCodeContent';
+import UnitIssueContentClient from './CreateUpdateContent/UnitIssueContent';
 
 const CreateModalClient = ({
   title,
@@ -174,6 +177,30 @@ const CreateModalClient = ({
 
         {content === 'lib-supplier' && (
           <SupplierContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-uacs-classification' && (
+          <UacsCodeClassificationContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-uacs-code' && (
+          <UacsCodeContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-unit-issue' && (
+          <UnitIssueContentClient
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}

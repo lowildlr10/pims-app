@@ -239,7 +239,7 @@ const DataTableClient = ({
         break;
       case 'lib-uacs-classification':
         setCreateModalTitle('Create UACS Code Classification');
-        setCreateEndpoint('/libraries/uacs-classifications');
+        setCreateEndpoint('/libraries/uacs-code-classifications');
         break;
       case 'lib-uacs-code':
         setCreateModalTitle('Create UACS Code');
@@ -314,7 +314,7 @@ const DataTableClient = ({
         break;
       case 'lib-uacs-classification':
         setUpdateModalTitle('Update UACS Code Classification');
-        setUpdateEndpoint(`/libraries/uacs-classifications/${id}`);
+        setUpdateEndpoint(`/libraries/uacs-code-classifications/${id}`);
         break;
       case 'lib-uacs-code':
         setUpdateModalTitle('Update UACS Code');
