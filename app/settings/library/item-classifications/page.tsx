@@ -1,6 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
+import ItemClassificationsClient from '@/components/Libraries/ItemClassifications';
 import RolesClient from '@/components/Roles';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -23,8 +24,7 @@ const ItemClassificationPage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'Library - Item Classifications'}>
-        {/* <RolesClient permissions={permissions} /> */}
-        <></>
+        <ItemClassificationsClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

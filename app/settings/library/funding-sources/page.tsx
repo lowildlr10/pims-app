@@ -1,7 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
+import FundingSourcesClient from '@/components/Libraries/FundingSources';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import RolesClient from '@/components/Roles';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -23,8 +23,7 @@ const FundingSourcePage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'Library - Funding Sources/Projects'}>
-        {/* <RolesClient permissions={permissions} /> */}
-        <></>
+        <FundingSourcesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

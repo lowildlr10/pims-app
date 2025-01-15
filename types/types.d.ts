@@ -87,6 +87,7 @@ type LocationType = {
 type FundingSourceType = {
   id?: string;
   location_id?: string;
+  title?: string;
   total_cost?: number;
   active?: boolean;
   location?: LocationType;
