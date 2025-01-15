@@ -31,7 +31,7 @@ const defaultTableData: TableDataType = {
     },
     {
       id: 'signatory_type_formatted',
-      label: 'Type',
+      label: 'Display',
       width: '40%',
     },
     {
@@ -89,32 +89,35 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
 
   useEffect(() => {
     const _data = data?.data?.map((body: SignatoryType) => {
-    const { user, details, ..._data } = body;
-    return {
-      ..._data,
-      subBody: details?.map((subBody: SignatoryDetailType) => {
-        return {
-          ...subBody,
-          document_formatted: String(subBody?.document).toUpperCase(),
-          signatory_type_formatted: Helper.formatStringHasUnderscores(String(subBody?.signatory_type))
-        };
-      }) || [],
-      fullname: (
-        <Group>
-          <Text size={'sm'}>{body.user?.fullname}</Text>
-          {!body.active && (
-            <Badge
-              variant={'light'}
-              leftSection={<IconExclamationCircleFilled size={14} />}
-              color={'var(--mantine-color-red-8)'}
-            >
-              Inactive
-            </Badge>
-          )}
-        </Group>
-      ),
-    };
-  });
+      const { user, details, ..._data } = body;
+      return {
+        ..._data,
+        subBody:
+          details?.map((subBody: SignatoryDetailType) => {
+            return {
+              ...subBody,
+              document_formatted: String(subBody?.document).toUpperCase(),
+              signatory_type_formatted: Helper.formatStringHasUnderscores(
+                String(subBody?.signatory_type)
+              ),
+            };
+          }) || [],
+        fullname: (
+          <Group>
+            <Text size={'sm'}>{body.user?.fullname}</Text>
+            {!body.active && (
+              <Badge
+                variant={'light'}
+                leftSection={<IconExclamationCircleFilled size={14} />}
+                color={'var(--mantine-color-red-8)'}
+              >
+                Inactive
+              </Badge>
+            )}
+          </Group>
+        ),
+      };
+    });
 
     setTableData((prevState) => ({
       ...prevState,

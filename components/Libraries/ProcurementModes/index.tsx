@@ -15,7 +15,7 @@ const defaultTableData: TableDataType = {
       label: 'Mode',
       width: '100%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -81,7 +81,7 @@ const ProcurementModesClient = ({ permissions }: LibraryProps) => {
               </Badge>
             )}
           </Group>
-        )
+        ),
       };
     });
 

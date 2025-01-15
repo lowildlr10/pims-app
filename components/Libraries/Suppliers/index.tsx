@@ -40,7 +40,7 @@ const defaultTableData: TableDataType = {
       label: 'Contact Person',
       width: '19%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -106,7 +106,7 @@ const SuppliersClient = ({ permissions }: LibraryProps) => {
               </Badge>
             )}
           </Group>
-        )
+        ),
       };
     });
 

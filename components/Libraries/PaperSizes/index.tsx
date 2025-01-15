@@ -31,7 +31,7 @@ const defaultTableData: TableDataType = {
       label: 'Width',
       width: '25%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -83,7 +83,7 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
   useEffect(() => {
     const _data = data?.data?.map((body: PaperSizeType) => {
       return {
-        ...body
+        ...body,
       };
     });
 

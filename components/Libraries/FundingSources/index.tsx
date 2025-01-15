@@ -27,7 +27,7 @@ const defaultTableData: TableDataType = {
       label: 'Total Cost',
       width: '10%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -94,7 +94,7 @@ const FundingSourcesClient = ({ permissions }: LibraryProps) => {
             )}
           </Group>
         ),
-        location_name: body.location?.location_name
+        location_name: body.location?.location_name,
       };
     });
 

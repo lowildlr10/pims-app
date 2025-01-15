@@ -21,7 +21,7 @@ const defaultTableData: TableDataType = {
       label: 'Description',
       width: '75%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -87,7 +87,7 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
               </Badge>
             )}
           </Group>
-        )
+        ),
       };
     });
 

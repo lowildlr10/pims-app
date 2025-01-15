@@ -15,6 +15,12 @@ import { getErrors } from '@/libs/Errors';
 import RoleContentClient from './CreateUpdateContent/RoleContent';
 import { IconCancel, IconPencil } from '@tabler/icons-react';
 import UserContentClient from './CreateUpdateContent/UserContent';
+import FundingSourceContentClient from './CreateUpdateContent/FundingSourceContent';
+import ItemClassificationContentClient from './CreateUpdateContent/ItemClassificationContent';
+import MfoPapContentClient from './CreateUpdateContent/MfoPapContent';
+import ProcurementModeContentClient from './CreateUpdateContent/ProcurementModeContent';
+import PaperSizeContentClient from './CreateUpdateContent/PaperSizeContent';
+import SupplierContentClient from './CreateUpdateContent/SupplierContent';
 
 const UpdateModalClient = ({
   title,
@@ -120,6 +126,54 @@ const UpdateModalClient = ({
 
         {content === 'account-user' && (
           <UserContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-fund-source' && (
+          <FundingSourceContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-item-class' && (
+          <ItemClassificationContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-mfo-pap' && (
+          <MfoPapContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-mode-proc' && (
+          <ProcurementModeContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-paper-size' && (
+          <PaperSizeContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-supplier' && (
+          <SupplierContentClient
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}

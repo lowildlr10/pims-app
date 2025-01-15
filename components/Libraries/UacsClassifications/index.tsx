@@ -15,7 +15,7 @@ const defaultTableData: TableDataType = {
       label: 'Classification',
       width: '100%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -81,7 +81,7 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
               </Badge>
             )}
           </Group>
-        )
+        ),
       };
     });
 

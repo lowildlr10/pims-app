@@ -209,6 +209,46 @@ const DataTableClient = ({
         setCreateEndpoint('/accounts/users');
         setCreateModalFullscreen(false);
         break;
+      case 'lib-fund-source':
+        setCreateModalTitle('Create Funding Source/Project');
+        setCreateEndpoint('/libraries/funding-sources');
+        break;
+      case 'lib-item-class':
+        setCreateModalTitle('Create Item Classification');
+        setCreateEndpoint('/libraries/item-classifications');
+        break;
+      case 'lib-mfo-pap':
+        setCreateModalTitle('Create MFO/PAP');
+        setCreateEndpoint('/libraries/mfo-paps');
+        break;
+      case 'lib-mode-proc':
+        setCreateModalTitle('Create Mode Procurement');
+        setCreateEndpoint('/libraries/procurement-modes');
+        break;
+      case 'lib-paper-size':
+        setCreateModalTitle('Create Paper Size');
+        setCreateEndpoint('/libraries/paper-sizes');
+        break;
+      case 'lib-signatory':
+        setCreateModalTitle('Create Signatory');
+        setCreateEndpoint('/libraries/signatories');
+        break;
+      case 'lib-supplier':
+        setCreateModalTitle('Create Supplier');
+        setCreateEndpoint('/libraries/suppliers');
+        break;
+      case 'lib-uacs-classification':
+        setCreateModalTitle('Create UACS Code Classification');
+        setCreateEndpoint('/libraries/uacs-classifications');
+        break;
+      case 'lib-uacs-code':
+        setCreateModalTitle('Create UACS Code');
+        setCreateEndpoint('/libraries/uacs-codes');
+        break;
+      case 'lib-unit-issue':
+        setCreateModalTitle('Create Unit of Issue');
+        setCreateEndpoint('/libraries/unit-issues');
+        break;
       default:
         break;
     }
@@ -243,6 +283,46 @@ const DataTableClient = ({
         setUpdateEndpoint(`/accounts/users/${id}`);
         setUpdateModalTitle('Update User');
         setUpdateModalFullscreen(false);
+        break;
+      case 'lib-fund-source':
+        setUpdateModalTitle('Update Funding Source/Project');
+        setUpdateEndpoint(`/libraries/funding-sources/${id}`);
+        break;
+      case 'lib-item-class':
+        setUpdateModalTitle('Update Item Classification');
+        setUpdateEndpoint(`/libraries/item-classifications/${id}`);
+        break;
+      case 'lib-mfo-pap':
+        setUpdateModalTitle('Update MFO/PAP');
+        setUpdateEndpoint(`/libraries/mfo-paps/${id}`);
+        break;
+      case 'lib-mode-proc':
+        setUpdateModalTitle('Update Mode Procurement');
+        setUpdateEndpoint(`/libraries/procurement-modes/${id}`);
+        break;
+      case 'lib-paper-size':
+        setUpdateModalTitle('Update Paper Size');
+        setUpdateEndpoint(`/libraries/paper-sizes/${id}`);
+        break;
+      case 'lib-signatory':
+        setUpdateModalTitle('Update Signatory');
+        setUpdateEndpoint(`/libraries/signatories/${id}`);
+        break;
+      case 'lib-supplier':
+        setUpdateModalTitle('Update Supplier');
+        setUpdateEndpoint(`/libraries/suppliers/${id}`);
+        break;
+      case 'lib-uacs-classification':
+        setUpdateModalTitle('Update UACS Code Classification');
+        setUpdateEndpoint(`/libraries/uacs-classifications/${id}`);
+        break;
+      case 'lib-uacs-code':
+        setUpdateModalTitle('Update UACS Code');
+        setUpdateEndpoint(`/libraries/uacs-codes/${id}`);
+        break;
+      case 'lib-unit-issue':
+        setUpdateModalTitle('Update Unit of Issue');
+        setUpdateEndpoint(`/libraries/unit-issues/${id}`);
         break;
       default:
         break;
@@ -445,7 +525,11 @@ const DataTableClient = ({
                               {body?.subBody?.map((subBody: any) => (
                                 <Table.Tr
                                   key={subBody.id}
-                                  sx={{ cursor: enableUpdateSubItem ? 'pointer' : 'default' }}
+                                  sx={{
+                                    cursor: enableUpdateSubItem
+                                      ? 'pointer'
+                                      : 'default',
+                                  }}
                                 >
                                   {data.subHead?.map(
                                     (subHead) =>
@@ -454,7 +538,8 @@ const DataTableClient = ({
                                           key={subBody[subHead.id]}
                                           // fw={500}
                                           onClick={() =>
-                                            enableUpdateSubItem && handleOpenUpdateModal(
+                                            enableUpdateSubItem &&
+                                            handleOpenUpdateModal(
                                               subBody.id,
                                               subModule ?? null
                                             )
@@ -469,32 +554,38 @@ const DataTableClient = ({
                                 </Table.Tr>
                               ))}
 
-                              {(enableCreateSubItem && getAllowedPermissions(subModule, 'create')?.some(
-                                (permission) => permissions.includes(permission)
-                              )) && (
-                                <Table.Tr>
-                                  <Table.Td
-                                    bg={'white'}
-                                    colSpan={data.subHead?.length}
-                                  >
-                                    <Button
-                                      size={'xs'}
-                                      color={'var(--mantine-color-secondary-9)'}
-                                      variant='outline'
-                                      leftSection={<IconPlus size={12} />}
-                                      onClick={() =>
-                                        handleOpenCreateModal(
-                                          body.id,
-                                          subModule ?? null
-                                        )
-                                      }
-                                      fullWidth
+                              {enableCreateSubItem &&
+                                getAllowedPermissions(
+                                  subModule,
+                                  'create'
+                                )?.some((permission) =>
+                                  permissions.includes(permission)
+                                ) && (
+                                  <Table.Tr>
+                                    <Table.Td
+                                      bg={'white'}
+                                      colSpan={data.subHead?.length}
                                     >
-                                      Add
-                                    </Button>
-                                  </Table.Td>
-                                </Table.Tr>
-                              )}
+                                      <Button
+                                        size={'xs'}
+                                        color={
+                                          'var(--mantine-color-secondary-9)'
+                                        }
+                                        variant='outline'
+                                        leftSection={<IconPlus size={12} />}
+                                        onClick={() =>
+                                          handleOpenCreateModal(
+                                            body.id,
+                                            subModule ?? null
+                                          )
+                                        }
+                                        fullWidth
+                                      >
+                                        Add
+                                      </Button>
+                                    </Table.Td>
+                                  </Table.Tr>
+                                )}
                             </Table.Tbody>
                           </Table>
                         </Collapse>
@@ -503,14 +594,17 @@ const DataTableClient = ({
                   )}
                 </React.Fragment>
               ))}
-            
-            {!loading && Array.from({ length: (perPage - data.body?.length) + 1 }).map((_, i) => (
-              <Table.Tr key={i}>
-                <Table.Td colSpan={data.head?.length} py={'lg'}>
-                  <Stack h={9}></Stack>
-                </Table.Td>
-              </Table.Tr>
-            ))}
+
+            {!loading &&
+              Array.from({ length: perPage - data.body?.length }).map(
+                (_, i) => (
+                  <Table.Tr key={i}>
+                    <Table.Td colSpan={data.head?.length} py={'lg'}>
+                      <Stack h={9}></Stack>
+                    </Table.Td>
+                  </Table.Tr>
+                )
+              )}
           </Table.Tbody>
         </Table>
       </ScrollArea>

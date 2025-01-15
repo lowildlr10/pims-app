@@ -241,6 +241,66 @@ type ModalUserContentProps = {
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
+type ModalFundingSourceContentProps = {
+  data: FundingSourceType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalItemClassificationContentProps = {
+  data: ItemClassificationType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalMfoPapContentProps = {
+  data: MfoPapType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalPaperSizeContentProps = {
+  data: PaperSizeType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalProcurementModeContentProps = {
+  data: ProcurementModeType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalSignatoryContentProps = {
+  data: SignatoryType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalSupplierContentProps = {
+  data: SupplierType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalUacsCodeClassificationContentProps = {
+  data: UacsCodeClassificationType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalUacsCodeContentProps = {
+  data: UacsCodeType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalUnitIssueContentProps = {
+  data: UnitIssueType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
 type CollapseType = {
   [id: string]: boolean;
 };

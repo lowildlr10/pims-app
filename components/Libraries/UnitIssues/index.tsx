@@ -15,7 +15,7 @@ const defaultTableData: TableDataType = {
       label: 'Unit',
       width: '100%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -81,7 +81,7 @@ const UnitIssuesClient = ({ permissions }: LibraryProps) => {
               </Badge>
             )}
           </Group>
-        )
+        ),
       };
     });
 

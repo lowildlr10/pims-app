@@ -33,7 +33,7 @@ const defaultTableData: TableDataType = {
       label: 'Description',
       width: '40%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -100,7 +100,7 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
             )}
           </Group>
         ),
-        classification_name: body.classification?.classification_name
+        classification_name: body.classification?.classification_name,
       };
     });
 
