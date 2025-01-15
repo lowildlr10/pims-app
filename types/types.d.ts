@@ -130,7 +130,20 @@ type ProcurementModeType = {
   updated_at?: string;
 };
 
-type DocumentType =
+type SignatoryDetailTypeType =
+  | 'pr_cash_availability'
+  | 'pr_approved_by'
+  | 'rfq_approval'
+  | 'rfq_canvassers'
+  | 'po_authorized_official'
+  | 'iar_inspection'
+  | 'iar_acceptance'
+  | 'ris_approved_by'
+  | 'ris_issued_by'
+  | 'ics_received_from'
+  | 'are_received_from';
+
+type SignatoryDocumentType =
   | 'pr'
   | 'rfq'
   | 'aoq'
@@ -140,12 +153,12 @@ type DocumentType =
   | 'dv'
   | 'ris'
   | 'are'
-  | 'ris';
+  | 'ics';
 
 type SignatoryDetailType = {
   id?: string;
   signatory_id?: string;
-  document?: DocumentType;
+  document?: SignatoryDocumentType;
   signatory_type?: string;
   position?: string;
   created_at?: string;

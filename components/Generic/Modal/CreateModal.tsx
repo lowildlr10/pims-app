@@ -24,6 +24,7 @@ import SupplierContentClient from './CreateUpdateContent/SupplierContent';
 import UacsCodeClassificationContentClient from './CreateUpdateContent/UacsCodeClassificationContent';
 import UacsCodeContentClient from './CreateUpdateContent/UacsCodeContent';
 import UnitIssueContentClient from './CreateUpdateContent/UnitIssueContent';
+import SignatoryContentClient from './CreateUpdateContent/SignatoryContent';
 
 const CreateModalClient = ({
   title,
@@ -177,6 +178,14 @@ const CreateModalClient = ({
 
         {content === 'lib-supplier' && (
           <SupplierContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-signatory' && (
+          <SignatoryContentClient
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}

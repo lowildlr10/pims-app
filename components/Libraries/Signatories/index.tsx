@@ -92,6 +92,7 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
       const { user, details, ..._data } = body;
       return {
         ..._data,
+        details,
         subBody:
           details?.map((subBody: SignatoryDetailType) => {
             return {

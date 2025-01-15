@@ -320,6 +320,19 @@ type PermissionsFieldType = {
   scopes: ScopeFieldType[];
 };
 
+type SignatorySubDetailsFieldType = {
+  checked: boolean;
+  label: string;
+  signatory_type: SignatoryDetailTypeType;
+  position: string;
+};
+
+type SignatoryDetailsFieldType = {
+  document: SignatoryDocumentType;
+  label: string;
+  details: SignatorySubDetailsFieldType[];
+};
+
 type RoleIndeterminateType = {
   module: ModuleType;
   indeterminate: boolean;
