@@ -100,6 +100,8 @@ type DataTableProps = {
   sortDirection?: string;
 
   search?: string;
+  enableCreateSubItem?: boolean;
+  enableUpdateSubItem?: boolean;
   showSearch?: boolean;
   showCreate?: boolean;
 
@@ -178,6 +180,7 @@ type ModuleType =
   | 'lib-mode-proc'
   | 'lib-paper-size'
   | 'lib-signatory'
+  | 'lib-signatory-detail'
   | 'lib-supplier'
   | 'lib-uacs-classification'
   | 'lib-uacs-code'

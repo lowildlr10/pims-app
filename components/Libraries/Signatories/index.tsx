@@ -4,59 +4,59 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
+import DataTableClient from '../../Generic/DataTable';
 import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
+import Helper from '@/utils/Helpers';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'department_name_formatted',
-      label: 'Department',
-      width: '70%',
+      id: 'fullname',
+      label: 'Full Name',
+      width: '95%',
       sortable: true,
     },
     {
-      id: 'headfullname',
-      label: 'Department Head',
-      width: '25%',
-      sortable: true,
-    },
-    {
-      id: 'show-sections',
+      id: 'show-deatils',
       label: '',
       width: '5%',
     },
   ],
   subHead: [
     {
-      id: 'section_name_formatted',
-      label: 'Section',
-      width: '70%',
+      id: 'document_formatted',
+      label: 'Document',
+      width: '20%',
     },
     {
-      id: 'headfullname',
-      label: 'Section Head',
-      width: '30%',
+      id: 'signatory_type_formatted',
+      label: 'Type',
+      width: '40%',
+    },
+    {
+      id: 'position',
+      label: 'Position/Designation',
+      width: '40%',
     },
   ],
   body: [],
 };
 
-const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
+const SignatoriesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('department_name');
+  const [columnSort, setColumnSort] = useState('fullname');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<DepartmentResponse>(
+  const { data, isLoading, mutate } = useSWR<SignatoriesResponse>(
     [
-      `/accounts/departments`,
+      `/libraries/signatories`,
       search,
       page,
       perPage,
@@ -88,46 +88,33 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: DepartmentType) => {
-      const { sections, ..._data } = body;
-      return {
-        ..._data,
-        subBody:
-          sections?.map((subBody: any) => {
-            return {
-              ...subBody,
-              section_name_formatted: (
-                <Group>
-                  <Text size={'sm'}>{subBody.section_name}</Text>
-                  {!subBody.active && (
-                    <Badge
-                      variant={'light'}
-                      leftSection={<IconExclamationCircleFilled size={14} />}
-                      color={'var(--mantine-color-red-8)'}
-                    >
-                      Inactive
-                    </Badge>
-                  )}
-                </Group>
-              ),
-            };
-          }) || [],
-        department_name_formatted: (
-          <Group>
-            <Text size={'sm'}>{body.department_name}</Text>
-            {!body.active && (
-              <Badge
-                variant={'light'}
-                leftSection={<IconExclamationCircleFilled size={14} />}
-                color={'var(--mantine-color-red-8)'}
-              >
-                Inactive
-              </Badge>
-            )}
-          </Group>
-        ),
-      };
-    });
+    const _data = data?.data?.map((body: SignatoryType) => {
+    const { user, details, ..._data } = body;
+    return {
+      ..._data,
+      subBody: details?.map((subBody: SignatoryDetailType) => {
+        return {
+          ...subBody,
+          document_formatted: String(subBody?.document).toUpperCase(),
+          signatory_type_formatted: Helper.formatStringHasUnderscores(String(subBody?.signatory_type))
+        };
+      }) || [],
+      fullname: (
+        <Group>
+          <Text size={'sm'}>{body.user?.fullname}</Text>
+          {!body.active && (
+            <Badge
+              variant={'light'}
+              leftSection={<IconExclamationCircleFilled size={14} />}
+              color={'var(--mantine-color-red-8)'}
+            >
+              Inactive
+            </Badge>
+          )}
+        </Group>
+      ),
+    };
+  });
 
     setTableData((prevState) => ({
       ...prevState,
@@ -137,8 +124,8 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
 
   return (
     <DataTableClient
-      module={'account-department'}
-      subModule={'account-section'}
+      module={'lib-signatory'}
+      subModule={'lib-signatory-detail'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -161,10 +148,8 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
       }}
       showSearch
       showCreate
-      enableCreateSubItem
-      enableUpdateSubItem
     />
   );
 };
 
-export default DepartmentSectionClient;
+export default SignatoriesClient;

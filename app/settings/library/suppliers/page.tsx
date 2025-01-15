@@ -1,7 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import RolesClient from '@/components/Roles';
+import SuppliersClient from '@/components/Libraries/Suppliers';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -23,8 +23,7 @@ const SupplierPage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'Library - Suppliers'}>
-        {/* <RolesClient permissions={permissions} /> */}
-        <></>
+        <SuppliersClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

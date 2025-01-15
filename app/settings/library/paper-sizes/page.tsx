@@ -1,7 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import RolesClient from '@/components/Roles';
+import PaperSizesClient from '@/components/Libraries/PaperSizes';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -23,8 +23,7 @@ const PaperSizePage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'Library - Print Paper Sizes'}>
-        {/* <RolesClient permissions={permissions} /> */}
-        <></>
+        <PaperSizesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

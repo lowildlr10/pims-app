@@ -30,6 +30,8 @@ const DataTableClient = ({
   columnSort,
   sortDirection,
   search,
+  enableCreateSubItem,
+  enableUpdateSubItem,
   showSearch,
   showCreate,
   data,
@@ -111,10 +113,8 @@ const DataTableClient = ({
         setSubButtonLabel('Sections');
         break;
 
-      case 'account-role':
-        break;
-
-      case 'account-user':
+      case 'lib-signatory':
+        setSubButtonLabel('Details');
         break;
 
       default:
@@ -129,6 +129,10 @@ const DataTableClient = ({
       case 'account-section':
         setCreateModalTitle('Add Section');
         setCreateEndpoint('/account/sections');
+        break;
+      case 'lib-signatory-detail':
+        setCreateModalTitle('Add Details');
+        setCreateEndpoint('#');
         break;
 
       default:
@@ -378,7 +382,7 @@ const DataTableClient = ({
                           <Table.Td
                             valign={'top'}
                             key={`${body.id}-${body[head.id]}-${i}`}
-                            fw={500}
+                            // fw={500}
                             onClick={() =>
                               handleOpenUpdateModal(body.id, module ?? null)
                             }
@@ -440,17 +444,17 @@ const DataTableClient = ({
                             <Table.Tbody>
                               {body?.subBody?.map((subBody: any) => (
                                 <Table.Tr
-                                  key={subBody.section_name}
-                                  sx={{ cursor: 'pointer' }}
+                                  key={subBody.id}
+                                  sx={{ cursor: enableUpdateSubItem ? 'pointer' : 'default' }}
                                 >
                                   {data.subHead?.map(
                                     (subHead) =>
                                       subBody[subHead.id] && (
                                         <Table.Td
                                           key={subBody[subHead.id]}
-                                          fw={500}
+                                          // fw={500}
                                           onClick={() =>
-                                            handleOpenUpdateModal(
+                                            enableUpdateSubItem && handleOpenUpdateModal(
                                               subBody.id,
                                               subModule ?? null
                                             )
@@ -465,13 +469,13 @@ const DataTableClient = ({
                                 </Table.Tr>
                               ))}
 
-                              {getAllowedPermissions(subModule, 'create')?.some(
+                              {(enableCreateSubItem && getAllowedPermissions(subModule, 'create')?.some(
                                 (permission) => permissions.includes(permission)
-                              ) && (
+                              )) && (
                                 <Table.Tr>
                                   <Table.Td
                                     bg={'white'}
-                                    colSpan={data.head?.length}
+                                    colSpan={data.subHead?.length}
                                   >
                                     <Button
                                       size={'xs'}
@@ -499,6 +503,14 @@ const DataTableClient = ({
                   )}
                 </React.Fragment>
               ))}
+            
+            {!loading && Array.from({ length: (perPage - data.body?.length) + 1 }).map((_, i) => (
+              <Table.Tr key={i}>
+                <Table.Td colSpan={data.head?.length} py={'lg'}>
+                  <Stack h={9}></Stack>
+                </Table.Td>
+              </Table.Tr>
+            ))}
           </Table.Tbody>
         </Table>
       </ScrollArea>

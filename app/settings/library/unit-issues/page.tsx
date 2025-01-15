@@ -1,7 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import RolesClient from '@/components/Roles';
+import UnitIssuesClient from '@/components/Libraries/UnitIssues';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -23,8 +23,7 @@ const UnitIssuePage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'Library - Unit of Issues'}>
-        {/* <RolesClient permissions={permissions} /> */}
-        <></>
+        <UnitIssuesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

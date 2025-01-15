@@ -4,59 +4,61 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
+import DataTableClient from '../../Generic/DataTable';
 import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'department_name_formatted',
-      label: 'Department',
-      width: '70%',
+      id: 'supplier_name_formatted',
+      label: 'Supplier',
+      width: '20%',
       sortable: true,
     },
     {
-      id: 'headfullname',
-      label: 'Department Head',
-      width: '25%',
+      id: 'address',
+      label: 'Address',
+      width: '35%',
       sortable: true,
     },
     {
-      id: 'show-sections',
-      label: '',
-      width: '5%',
-    },
-  ],
-  subHead: [
-    {
-      id: 'section_name_formatted',
-      label: 'Section',
-      width: '70%',
+      id: 'phone',
+      label: 'Phone',
+      width: '13%',
+      sortable: true,
     },
     {
-      id: 'headfullname',
-      label: 'Section Head',
-      width: '30%',
+      id: 'telephone',
+      label: 'Telephone',
+      width: '13%',
+      sortable: true,
     },
+
+    {
+      id: 'contact_person',
+      label: 'Contact Person',
+      width: '19%',
+      sortable: true,
+    }
   ],
   body: [],
 };
 
-const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
+const SuppliersClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('department_name');
+  const [columnSort, setColumnSort] = useState('supplier_name');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<DepartmentResponse>(
+  const { data, isLoading, mutate } = useSWR<SuppliersResponse>(
     [
-      `/accounts/departments`,
+      `/libraries/suppliers`,
       search,
       page,
       perPage,
@@ -88,33 +90,12 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: DepartmentType) => {
-      const { sections, ..._data } = body;
+    const _data = data?.data?.map((body: SupplierType) => {
       return {
-        ..._data,
-        subBody:
-          sections?.map((subBody: any) => {
-            return {
-              ...subBody,
-              section_name_formatted: (
-                <Group>
-                  <Text size={'sm'}>{subBody.section_name}</Text>
-                  {!subBody.active && (
-                    <Badge
-                      variant={'light'}
-                      leftSection={<IconExclamationCircleFilled size={14} />}
-                      color={'var(--mantine-color-red-8)'}
-                    >
-                      Inactive
-                    </Badge>
-                  )}
-                </Group>
-              ),
-            };
-          }) || [],
-        department_name_formatted: (
+        ...body,
+        supplier_name_formatted: (
           <Group>
-            <Text size={'sm'}>{body.department_name}</Text>
+            <Text size={'sm'}>{body.supplier_name}</Text>
             {!body.active && (
               <Badge
                 variant={'light'}
@@ -125,7 +106,7 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
               </Badge>
             )}
           </Group>
-        ),
+        )
       };
     });
 
@@ -137,8 +118,7 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
 
   return (
     <DataTableClient
-      module={'account-department'}
-      subModule={'account-section'}
+      module={'lib-supplier'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -161,10 +141,8 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
       }}
       showSearch
       showCreate
-      enableCreateSubItem
-      enableUpdateSubItem
     />
   );
 };
 
-export default DepartmentSectionClient;
+export default SuppliersClient;

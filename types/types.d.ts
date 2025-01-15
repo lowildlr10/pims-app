@@ -148,7 +148,6 @@ type SignatoryDetailType = {
   document?: DocumentType;
   signatory_type?: string;
   position?: string;
-  active?: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -157,7 +156,7 @@ type SignatoryType = {
   id?: string;
   user_id?: string;
   active?: boolean;
-  signatory_details?: SignatoryDetailType[];
+  details?: SignatoryDetailType[];
   user?: UserType;
   created_at?: string;
   updated_at?: string;
@@ -191,7 +190,7 @@ type UacsCodeType = {
   account_title?: string;
   code?: string;
   description?: string;
-  uacs_classification?: UacsCodeClassificationType;
+  classification?: UacsCodeClassificationType;
   active?: boolean;
   created_at?: string;
   updated_at?: string;
