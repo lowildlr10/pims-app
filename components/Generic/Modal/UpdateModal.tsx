@@ -183,7 +183,7 @@ const UpdateModalClient = ({
           />
         )}
 
-        {content === 'lib-uacs-classification' && (
+        {content === 'lib-uacs-class' && (
           <UacsCodeClassificationContentClient
             data={data}
             handleCreateUpdate={handleUpdate}

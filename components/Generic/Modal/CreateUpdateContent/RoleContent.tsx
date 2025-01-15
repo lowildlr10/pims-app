@@ -498,6 +498,30 @@ const RoleContentClient = ({
       ],
     },
     {
+      label: 'UACS Code Classification Library',
+      description: 'Scope for UACS Code Classification Library module',
+      module: 'lib-uacs-class',
+      checked: false,
+      indeterminate: false,
+      scopes: [
+        {
+          label: 'View',
+          value: 'view',
+          checked: false,
+        },
+        {
+          label: 'Create',
+          value: 'create',
+          checked: false,
+        },
+        {
+          label: 'Update',
+          value: 'update',
+          checked: false,
+        },
+      ],
+    },
+    {
       label: 'UACS Code Library',
       description: 'Scope for UACS Code Library module',
       module: 'lib-uacs-code',

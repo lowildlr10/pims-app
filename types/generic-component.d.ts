@@ -182,7 +182,7 @@ type ModuleType =
   | 'lib-signatory'
   | 'lib-signatory-detail'
   | 'lib-supplier'
-  | 'lib-uacs-classification'
+  | 'lib-uacs-class'
   | 'lib-uacs-code'
   | 'lib-unit-issue'
   | 'super'

@@ -237,7 +237,7 @@ const DataTableClient = ({
         setCreateModalTitle('Create Supplier');
         setCreateEndpoint('/libraries/suppliers');
         break;
-      case 'lib-uacs-classification':
+      case 'lib-uacs-class':
         setCreateModalTitle('Create UACS Code Classification');
         setCreateEndpoint('/libraries/uacs-code-classifications');
         break;
@@ -312,7 +312,7 @@ const DataTableClient = ({
         setUpdateModalTitle('Update Supplier');
         setUpdateEndpoint(`/libraries/suppliers/${id}`);
         break;
-      case 'lib-uacs-classification':
+      case 'lib-uacs-class':
         setUpdateModalTitle('Update UACS Code Classification');
         setUpdateEndpoint(`/libraries/uacs-code-classifications/${id}`);
         break;
