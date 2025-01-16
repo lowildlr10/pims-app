@@ -1,16 +1,16 @@
 import { getPermissions, getUser } from '@/actions/user';
-import DepartmentSectionClient from '@/components/DepartmentSection';
+import DivisionSectionClient from '@/components/DivisionSection';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'Procurement System - Departments',
-  description: 'Procurement System - Departments',
+  title: 'Procurement System - Divisions',
+  description: 'Procurement System - Divisions',
 };
 
-const DepartmentPage = async () => {
+const DivisionPage = async () => {
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
 
@@ -22,11 +22,11 @@ const DepartmentPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'User Management - Departments and Sections'}>
-        <DepartmentSectionClient permissions={permissions} />
+      <MainContainerClient title={'User Management - Divisions and Sections'}>
+        <DivisionSectionClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default DepartmentPage;
+export default DivisionPage;

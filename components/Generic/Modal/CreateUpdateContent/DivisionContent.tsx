@@ -3,17 +3,17 @@ import React, { useEffect } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 
-const DepartmentContentClient = ({
+const DivisionContentClient = ({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalDepartmentContentProps) => {
+}: ModalDivisionContentProps) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
-      department_name: data?.department_name ?? '',
+      division_name: data?.division_name ?? '',
       active: data?.active ?? false,
-      department_head_id: data?.department_head_id,
+      division_head_id: data?.division_head_id,
     },
   });
 
@@ -27,13 +27,13 @@ const DepartmentContentClient = ({
     >
       <Stack>
         <TextInput
-          label='Department Name'
-          placeholder='Department name'
-          value={form.values.department_name}
+          label='Division Name'
+          placeholder='Division name'
+          value={form.values.division_name}
           onChange={(event) =>
-            form.setFieldValue('department_name', event.currentTarget.value)
+            form.setFieldValue('division_name', event.currentTarget.value)
           }
-          error={form.errors.department_name && ''}
+          error={form.errors.division_name && ''}
           size={'sm'}
           required
         />
@@ -41,10 +41,10 @@ const DepartmentContentClient = ({
           endpoint={'/accounts/users'}
           endpointParams={{ paginated: false, show_all: true }}
           column={'fullname'}
-          label='Department Head'
-          value={form.values.department_head_id}
+          label='Division Head'
+          value={form.values.division_head_id}
           size={'sm'}
-          onChange={(value) => form.setFieldValue('department_head_id', value)}
+          onChange={(value) => form.setFieldValue('division_head_id', value)}
         />
         <Switch
           label={'Status'}
@@ -66,4 +66,4 @@ const DepartmentContentClient = ({
   );
 };
 
-export default DepartmentContentClient;
+export default DivisionContentClient;

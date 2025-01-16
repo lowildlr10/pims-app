@@ -159,7 +159,7 @@ type SearchModalProps = {
 };
 
 type ModuleType =
-  | 'account-department'
+  | 'account-division'
   | 'account-section'
   | 'account-role'
   | 'account-user'
@@ -217,8 +217,8 @@ type UpdateModalProps = {
   updateTable?: (id: string | null, payload: any, isSubBody?: boolean) => void;
 };
 
-type ModalDepartmentContentProps = {
-  data: DepartmentType;
+type ModalDivisionContentProps = {
+  data: DivisionType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };

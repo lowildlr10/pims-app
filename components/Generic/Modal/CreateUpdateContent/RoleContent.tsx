@@ -256,9 +256,9 @@ const RoleContentClient = ({
 
     // Account management
     {
-      label: 'Department Library',
-      description: 'Scope for Department Library module',
-      module: 'account-department',
+      label: 'Division Library',
+      description: 'Scope for Division Library module',
+      module: 'account-division',
       checked: false,
       indeterminate: false,
       scopes: [

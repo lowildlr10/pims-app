@@ -305,11 +305,11 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     allowedPermissions: [
       'super:*',
       'head:*',
-      'account-department:*',
+      'account-division:*',
       'account-section:*',
       'account-role:*',
       'account-user:*',
-      'account-department:view',
+      'account-division:view',
       'account-section:view',
       'account-role:view',
       'account-user:view',
@@ -318,14 +318,14 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: [
       {
-        label: 'Departments and Sections',
+        label: 'Division and Sections',
         allowedPermissions: [
           'super:*',
           'head:*',
-          'account-department:*',
-          'account-department:view',
+          'account-division:*',
+          'account-division:view',
         ],
-        link: '/settings/user-management/departments',
+        link: '/settings/user-management/divisions',
       },
       {
         label: 'Roles',

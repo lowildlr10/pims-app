@@ -8,7 +8,7 @@ import {
 } from '@mantine/core';
 import React, { useState } from 'react';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
-import DepartmentContentClient from './CreateUpdateContent/DepartmentContent';
+import DepartmentContentClient from './CreateUpdateContent/DivisionContent';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
@@ -104,7 +104,7 @@ const CreateModalClient = ({
         sx={{ borderRadius: 5 }}
         mb={'lg'}
       >
-        {content === 'account-department' && (
+        {content === 'account-division' && (
           <DepartmentContentClient
             data={data}
             handleCreateUpdate={handleCreate}

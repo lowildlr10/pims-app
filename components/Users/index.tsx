@@ -23,8 +23,8 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'department_section',
-      label: 'Department - Section',
+      id: 'division_section',
+      label: 'Division - Section',
       width: '20%',
       sortable: true,
     },
@@ -114,9 +114,9 @@ const UsersClient = ({ permissions }: UsersProps) => {
             )) ?? '-'}
           </>
         ),
-        department_section: (
+        division_section: (
           <Stack gap={0}>
-            <Text size={'sm'}>{body.department?.department_name}</Text>
+            <Text size={'sm'}>{body.division?.division_name}</Text>
             <Text c={'dimmed'} size={'sm'}>
               {body.section?.section_name}
             </Text>

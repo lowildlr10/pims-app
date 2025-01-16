@@ -11,14 +11,14 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'department_name_formatted',
-      label: 'Department',
+      id: 'division_name_formatted',
+      label: 'Division',
       width: '70%',
       sortable: true,
     },
     {
       id: 'headfullname',
-      label: 'Department Head',
+      label: 'Division Head',
       width: '25%',
       sortable: true,
     },
@@ -43,20 +43,20 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
+const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('department_name');
+  const [columnSort, setColumnSort] = useState('division_name');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<DepartmentResponse>(
+  const { data, isLoading, mutate } = useSWR<DivisionResponse>(
     [
-      `/accounts/departments`,
+      `/accounts/divisions`,
       search,
       page,
       perPage,
@@ -88,7 +88,7 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: DepartmentType) => {
+    const _data = data?.data?.map((body: DivisionType) => {
       const { sections, ..._data } = body;
       return {
         ..._data,
@@ -112,9 +112,9 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
               ),
             };
           }) || [],
-        department_name_formatted: (
+        division_name_formatted: (
           <Group>
-            <Text size={'sm'}>{body.department_name}</Text>
+            <Text size={'sm'}>{body.division_name}</Text>
             {!body.active && (
               <Badge
                 variant={'light'}
@@ -137,7 +137,7 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
 
   return (
     <DataTableClient
-      module={'account-department'}
+      module={'account-division'}
       subModule={'account-section'}
       permissions={permissions}
       columnSort={columnSort}
@@ -167,4 +167,4 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
   );
 };
 
-export default DepartmentSectionClient;
+export default DivisionSectionClient;

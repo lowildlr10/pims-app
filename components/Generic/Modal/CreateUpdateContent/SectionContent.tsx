@@ -11,7 +11,7 @@ const SectionContentClient = ({
   const form = useForm({
     mode: 'controlled',
     initialValues: {
-      department_id: data?.department_id,
+      division_id: data?.division_id,
       section_name: data?.section_name ?? '',
       active: data?.active ?? false,
       section_head_id: data?.section_head_id,
@@ -28,17 +28,17 @@ const SectionContentClient = ({
     >
       <Stack>
         <DynamicSelect
-          endpoint={'/accounts/departments'}
+          endpoint={'/accounts/divisions'}
           endpointParams={{
             paginated: false,
             show_all: true,
             show_inactive: true,
           }}
-          column={'department_name'}
-          label='Department'
-          value={form.values.department_id}
+          column={'division_name'}
+          label='Division'
+          value={form.values.division_id}
           size={'sm'}
-          onChange={(value) => form.setFieldValue('department_id', value)}
+          onChange={(value) => form.setFieldValue('division_id', value)}
           required
         />
         <TextInput
@@ -49,7 +49,7 @@ const SectionContentClient = ({
           onChange={(event) =>
             form.setFieldValue('section_name', event.currentTarget.value)
           }
-          error={form.errors.department_name && ''}
+          error={form.errors.division_name && ''}
           required
         />
         <DynamicSelect

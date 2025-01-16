@@ -109,7 +109,7 @@ const DataTableClient = ({
     if (!module) return;
 
     switch (module) {
-      case 'account-department':
+      case 'account-division':
         setSubButtonLabel('Sections');
         break;
 
@@ -158,7 +158,7 @@ const DataTableClient = ({
       prev.map((row: any) => {
         if (id) {
           if (isSubBody) {
-            return row.id === payload.department_id
+            return row.id === payload.division_id
               ? {
                   ...row,
                   subBody: row.subBody.map((subRow: any) =>
@@ -172,7 +172,7 @@ const DataTableClient = ({
         } else {
           const newRow = { id: new Date().toISOString(), ...payload };
           if (isSubBody) {
-            return row.id === payload.department_id
+            return row.id === payload.division_id
               ? { ...row, subBody: [...row.subBody, newRow] }
               : row;
           }
@@ -191,12 +191,12 @@ const DataTableClient = ({
     setCurrentCreateModule(module ?? undefined);
 
     switch (module) {
-      case 'account-department':
-        setCreateModalTitle('Create Department');
-        setCreateEndpoint('/accounts/departments');
+      case 'account-division':
+        setCreateModalTitle('Create Division');
+        setCreateEndpoint('/accounts/divisions');
         break;
       case 'account-section':
-        setFormData({ department_id: parentId });
+        setFormData({ division_id: parentId });
         setCreateModalTitle('Add Section');
         setCreateEndpoint('/accounts/sections');
         break;
@@ -261,9 +261,9 @@ const DataTableClient = ({
     setCurrentUpdateModule(module ?? undefined);
 
     switch (module) {
-      case 'account-department':
-        setUpdateEndpoint(`/accounts/departments/${id}`);
-        setUpdateModalTitle('Update Department');
+      case 'account-division':
+        setUpdateEndpoint(`/accounts/divisions/${id}`);
+        setUpdateModalTitle('Update Division');
         break;
       case 'account-section':
         const parentBody = tableBody?.find((body: any) =>

@@ -15,7 +15,7 @@ type UserType = {
   middlename?: string;
   lastname?: string;
   sex?: 'male' | 'female';
-  department_id?: string;
+  division_id?: string;
   section_id?: string;
   position_id?: string;
   designation_id?: string;
@@ -27,9 +27,9 @@ type UserType = {
   allow_signature?: boolean;
   signature?: string;
   restricted?: boolean;
-  department?: {
+  division?: {
     id?: string;
-    department_name?: string;
+    division_name?: string;
   };
   section?: {
     id?: string;
@@ -48,11 +48,11 @@ type UserType = {
   updated_at?: string;
 };
 
-type DepartmentType = {
+type DivisionType = {
   id?: string;
-  department_name?: string;
+  division_name?: string;
   active?: boolean;
-  department_head_id?: string;
+  division_head_id?: string;
   head?: {
     id?: string;
     firstname?: string;
@@ -65,7 +65,7 @@ type DepartmentType = {
 
 type SectionType = {
   id?: string;
-  department_id?: string;
+  division_id?: string;
   section_name?: string;
   active?: boolean;
   section_head_id?: string;
@@ -74,7 +74,7 @@ type SectionType = {
     firstname?: string;
     lastname?: string;
   };
-  department?: DepartmentType;
+  division?: DivisionType;
   created_at?: string;
   updated_at?: string;
 };
