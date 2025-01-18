@@ -1,4 +1,5 @@
 import { getPermissions, getUser } from '@/actions/user';
+import CompanyProfileClient from '@/components/CompanyProfile';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
 import UserProfileClient from '@/components/UserProfile';
@@ -6,11 +7,11 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'Procurement System - Profile',
-  description: 'Procurement System - Profile',
+  title: 'Procurement System - Company Profile',
+  description: 'Procurement System - Company Profile',
 };
 
-const ProfilePage = async () => {
+const CompanyProfilePage = async () => {
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
 
@@ -22,11 +23,11 @@ const ProfilePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'User Profile'}>
-        <UserProfileClient user={user} />
+      <MainContainerClient title={'Company Profile'}>
+        <CompanyProfileClient />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default ProfilePage;
+export default CompanyProfilePage;

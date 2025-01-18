@@ -463,13 +463,10 @@ const DataTableClient = ({
                             valign={'top'}
                             key={`${body.id}-${body[head.id]}-${i}`}
                             // fw={500}
-                            onClick={() => 
-                              getAllowedPermissions(
-                                module,
-                                'update'
-                              )?.some((permission) =>
-                                permissions.includes(permission)
-                              ) && 
+                            onClick={() =>
+                              getAllowedPermissions(module, 'update')?.some(
+                                (permission) => permissions.includes(permission)
+                              ) &&
                               handleOpenUpdateModal(body.id, module ?? null)
                             }
                           >
@@ -544,12 +541,13 @@ const DataTableClient = ({
                                           key={subBody[subHead.id]}
                                           // fw={500}
                                           onClick={() =>
-                                            (enableUpdateSubItem && getAllowedPermissions(
+                                            enableUpdateSubItem &&
+                                            getAllowedPermissions(
                                               subModule,
                                               'update'
                                             )?.some((permission) =>
                                               permissions.includes(permission)
-                                            )) &&
+                                            ) &&
                                             handleOpenUpdateModal(
                                               subBody.id,
                                               subModule ?? null
