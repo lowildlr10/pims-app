@@ -4,59 +4,52 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
-import { Badge, Group, Stack, Text } from '@mantine/core';
-import { IconExclamationCircleFilled } from '@tabler/icons-react';
+import DataTableClient from '../../Generic/DataTable';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'fullname_formatted',
-      label: 'Full Name',
-      width: '22%',
+      id: 'paper_type',
+      label: 'Paper Type',
+      width: '25%',
       sortable: true,
     },
     {
-      id: 'employee_id',
-      label: 'Employee ID',
-      width: '10%',
+      id: 'unit',
+      label: 'Unit',
+      width: '25%',
       sortable: true,
     },
     {
-      id: 'division_section',
-      label: 'Division - Section',
-      width: '20%',
+      id: 'width',
+      label: 'Width',
+      width: '25%',
       sortable: true,
     },
     {
-      id: 'position_designation',
-      label: 'Position - Designation',
-      width: '20%',
+      id: 'height',
+      label: 'Width',
+      width: '25%',
       sortable: true,
-    },
-    {
-      id: 'user_roles',
-      label: 'Roles',
-      width: '28%',
     },
   ],
   body: [],
 };
 
-const UsersClient = ({ permissions }: UsersProps) => {
+const PaperSizesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('firstname');
+  const [columnSort, setColumnSort] = useState('paper_type');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<UsersResponse>(
+  const { data, isLoading, mutate } = useSWR<PaperSizesResponse>(
     [
-      `/accounts/users`,
+      `/libraries/paper-sizes`,
       search,
       page,
       perPage,
@@ -88,48 +81,9 @@ const UsersClient = ({ permissions }: UsersProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: UserType) => {
+    const _data = data?.data?.map((body: PaperSizeType) => {
       return {
         ...body,
-        fullname_formatted: (
-          <Group>
-            <Text size={'sm'}>{body.fullname}</Text>
-            {body.restricted && (
-              <Badge
-                variant={'light'}
-                leftSection={<IconExclamationCircleFilled size={14} />}
-                color={'var(--mantine-color-red-8)'}
-              >
-                Inactive
-              </Badge>
-            )}
-          </Group>
-        ),
-        user_roles: (
-          <>
-            {body.roles?.map((role, i) => (
-              <Badge mr={4} color={'var(--mantine-color-primary-9)'} key={i}>
-                {role.role_name}
-              </Badge>
-            )) ?? '-'}
-          </>
-        ),
-        division_section: (
-          <Stack gap={0}>
-            <Text size={'sm'}>{body.division?.division_name}</Text>
-            <Text c={'dimmed'} size={'sm'}>
-              {body.section?.section_name}
-            </Text>
-          </Stack>
-        ),
-        position_designation: (
-          <Stack gap={0}>
-            <Text size={'sm'}>{body.position?.position_name}</Text>
-            <Text c={'dimmed'} size={'sm'}>
-              {body.designation?.designation_name}
-            </Text>
-          </Stack>
-        ),
       };
     });
 
@@ -141,7 +95,7 @@ const UsersClient = ({ permissions }: UsersProps) => {
 
   return (
     <DataTableClient
-      module={'account-user'}
+      module={'lib-paper-size'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -168,4 +122,4 @@ const UsersClient = ({ permissions }: UsersProps) => {
   );
 };
 
-export default UsersClient;
+export default PaperSizesClient;

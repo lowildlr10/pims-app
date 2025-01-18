@@ -118,7 +118,7 @@ const UserContentClient = ({
             show_all: true,
             show_inactive: true,
           }}
-          column={'department_section'}
+          column={'division_section'}
           label='Section'
           value={form.values.section_id}
           size={'sm'}

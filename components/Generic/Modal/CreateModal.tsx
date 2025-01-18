@@ -8,13 +8,23 @@ import {
 } from '@mantine/core';
 import React, { useState } from 'react';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
-import DepartmentContentClient from './CreateUpdateContent/DepartmentContent';
+import DivisionContentClient from './CreateUpdateContent/DivisionContent';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
 import RoleContentClient from './CreateUpdateContent/RoleContent';
 import { IconCancel, IconPencilPlus } from '@tabler/icons-react';
 import UserContentClient from './CreateUpdateContent/UserContent';
+import FundingSourceContentClient from './CreateUpdateContent/FundingSourceContent';
+import ItemClassificationContentClient from './CreateUpdateContent/ItemClassificationContent';
+import MfoPapContentClient from './CreateUpdateContent/MfoPapContent';
+import ProcurementModeContentClient from './CreateUpdateContent/ProcurementModeContent';
+import PaperSizeContentClient from './CreateUpdateContent/PaperSizeContent';
+import SupplierContentClient from './CreateUpdateContent/SupplierContent';
+import UacsCodeClassificationContentClient from './CreateUpdateContent/UacsCodeClassificationContent';
+import UacsCodeContentClient from './CreateUpdateContent/UacsCodeContent';
+import UnitIssueContentClient from './CreateUpdateContent/UnitIssueContent';
+import SignatoryContentClient from './CreateUpdateContent/SignatoryContent';
 
 const CreateModalClient = ({
   title,
@@ -94,8 +104,8 @@ const CreateModalClient = ({
         sx={{ borderRadius: 5 }}
         mb={'lg'}
       >
-        {content === 'account-department' && (
-          <DepartmentContentClient
+        {content === 'account-division' && (
+          <DivisionContentClient
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -120,6 +130,86 @@ const CreateModalClient = ({
 
         {content === 'account-user' && (
           <UserContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-fund-source' && (
+          <FundingSourceContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-item-class' && (
+          <ItemClassificationContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-mfo-pap' && (
+          <MfoPapContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-mode-proc' && (
+          <ProcurementModeContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-paper-size' && (
+          <PaperSizeContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-supplier' && (
+          <SupplierContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-signatory' && (
+          <SignatoryContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-uacs-class' && (
+          <UacsCodeClassificationContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-uacs-code' && (
+          <UacsCodeContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-unit-issue' && (
+          <UnitIssueContentClient
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}

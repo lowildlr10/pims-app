@@ -1,7 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import RolesClient from '@/components/Roles';
+import UacsCodesClient from '@/components/Libraries/UacsCodes';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -23,8 +23,7 @@ const UacsObjectCodePage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'Library - UACS Object Code'}>
-        {/* <RolesClient permissions={permissions} /> */}
-        <></>
+        <UacsCodesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

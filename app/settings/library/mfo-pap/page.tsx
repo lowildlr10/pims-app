@@ -1,7 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import RolesClient from '@/components/Roles';
+import MfoPapsClient from '@/components/Libraries/MfoPaps';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -23,8 +23,7 @@ const MfoPapPage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'Library - MFO/PAP'}>
-        {/* <RolesClient permissions={permissions} /> */}
-        <></>
+        <MfoPapsClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

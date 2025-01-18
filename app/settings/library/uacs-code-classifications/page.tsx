@@ -1,16 +1,16 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import ProcurementModesClient from '@/components/Libraries/ProcurementModes';
+import UacsClassificationsClient from '@/components/Libraries/UacsClassifications';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'Procurement System - Modes of Procurement',
-  description: 'Procurement System - Modes of Procurement',
+  title: 'Procurement System - UACS Object Code Classifications',
+  description: 'Procurement System - UACS Object Code Classifications',
 };
 
-const ModesProcurementPage = async () => {
+const UacsCodeClassificationsPage = async () => {
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
 
@@ -22,11 +22,11 @@ const ModesProcurementPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Modes of Procurement'}>
-        <ProcurementModesClient permissions={permissions} />
+      <MainContainerClient title={'Library - UACS Object Code Classifications'}>
+        <UacsClassificationsClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default ModesProcurementPage;
+export default UacsCodeClassificationsPage;

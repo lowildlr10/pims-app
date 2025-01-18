@@ -4,59 +4,59 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
-import { Badge, Group, Stack, Text } from '@mantine/core';
+import DataTableClient from '../../Generic/DataTable';
+import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
+import Helper from '@/utils/Helpers';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'fullname_formatted',
+      id: 'fullname',
       label: 'Full Name',
-      width: '22%',
+      width: '95%',
       sortable: true,
     },
     {
-      id: 'employee_id',
-      label: 'Employee ID',
-      width: '10%',
-      sortable: true,
+      id: 'show-deatils',
+      label: '',
+      width: '5%',
     },
+  ],
+  subHead: [
     {
-      id: 'division_section',
-      label: 'Division - Section',
+      id: 'document_formatted',
+      label: 'Document',
       width: '20%',
-      sortable: true,
     },
     {
-      id: 'position_designation',
-      label: 'Position - Designation',
-      width: '20%',
-      sortable: true,
+      id: 'signatory_type_formatted',
+      label: 'Display',
+      width: '40%',
     },
     {
-      id: 'user_roles',
-      label: 'Roles',
-      width: '28%',
+      id: 'position',
+      label: 'Position/Designation',
+      width: '40%',
     },
   ],
   body: [],
 };
 
-const UsersClient = ({ permissions }: UsersProps) => {
+const SignatoriesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('firstname');
+  const [columnSort, setColumnSort] = useState('fullname');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<UsersResponse>(
+  const { data, isLoading, mutate } = useSWR<SignatoriesResponse>(
     [
-      `/accounts/users`,
+      `/libraries/signatories`,
       search,
       page,
       perPage,
@@ -88,13 +88,25 @@ const UsersClient = ({ permissions }: UsersProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: UserType) => {
+    const _data = data?.data?.map((body: SignatoryType) => {
+      const { user, details, ..._data } = body;
       return {
-        ...body,
-        fullname_formatted: (
+        ..._data,
+        details,
+        subBody:
+          details?.map((subBody: SignatoryDetailType) => {
+            return {
+              ...subBody,
+              document_formatted: String(subBody?.document).toUpperCase(),
+              signatory_type_formatted: Helper.formatStringHasUnderscores(
+                String(subBody?.signatory_type)
+              ),
+            };
+          }) || [],
+        fullname: (
           <Group>
-            <Text size={'sm'}>{body.fullname}</Text>
-            {body.restricted && (
+            <Text size={'sm'}>{body.user?.fullname}</Text>
+            {!body.active && (
               <Badge
                 variant={'light'}
                 leftSection={<IconExclamationCircleFilled size={14} />}
@@ -104,31 +116,6 @@ const UsersClient = ({ permissions }: UsersProps) => {
               </Badge>
             )}
           </Group>
-        ),
-        user_roles: (
-          <>
-            {body.roles?.map((role, i) => (
-              <Badge mr={4} color={'var(--mantine-color-primary-9)'} key={i}>
-                {role.role_name}
-              </Badge>
-            )) ?? '-'}
-          </>
-        ),
-        division_section: (
-          <Stack gap={0}>
-            <Text size={'sm'}>{body.division?.division_name}</Text>
-            <Text c={'dimmed'} size={'sm'}>
-              {body.section?.section_name}
-            </Text>
-          </Stack>
-        ),
-        position_designation: (
-          <Stack gap={0}>
-            <Text size={'sm'}>{body.position?.position_name}</Text>
-            <Text c={'dimmed'} size={'sm'}>
-              {body.designation?.designation_name}
-            </Text>
-          </Stack>
         ),
       };
     });
@@ -141,7 +128,8 @@ const UsersClient = ({ permissions }: UsersProps) => {
 
   return (
     <DataTableClient
-      module={'account-user'}
+      module={'lib-signatory'}
+      subModule={'lib-signatory-detail'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -168,4 +156,4 @@ const UsersClient = ({ permissions }: UsersProps) => {
   );
 };
 
-export default UsersClient;
+export default SignatoriesClient;

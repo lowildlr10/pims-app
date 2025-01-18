@@ -100,6 +100,8 @@ type DataTableProps = {
   sortDirection?: string;
 
   search?: string;
+  enableCreateSubItem?: boolean;
+  enableUpdateSubItem?: boolean;
   showSearch?: boolean;
   showCreate?: boolean;
 
@@ -157,7 +159,7 @@ type SearchModalProps = {
 };
 
 type ModuleType =
-  | 'account-department'
+  | 'account-division'
   | 'account-section'
   | 'account-role'
   | 'account-user'
@@ -178,7 +180,9 @@ type ModuleType =
   | 'lib-mode-proc'
   | 'lib-paper-size'
   | 'lib-signatory'
+  | 'lib-signatory-detail'
   | 'lib-supplier'
+  | 'lib-uacs-class'
   | 'lib-uacs-code'
   | 'lib-unit-issue'
   | 'super'
@@ -213,8 +217,8 @@ type UpdateModalProps = {
   updateTable?: (id: string | null, payload: any, isSubBody?: boolean) => void;
 };
 
-type ModalDepartmentContentProps = {
-  data: DepartmentType;
+type ModalDivisionContentProps = {
+  data: DivisionType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
@@ -237,6 +241,66 @@ type ModalUserContentProps = {
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
+type ModalFundingSourceContentProps = {
+  data: FundingSourceType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalItemClassificationContentProps = {
+  data: ItemClassificationType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalMfoPapContentProps = {
+  data: MfoPapType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalPaperSizeContentProps = {
+  data: PaperSizeType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalProcurementModeContentProps = {
+  data: ProcurementModeType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalSignatoryContentProps = {
+  data: SignatoryType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalSupplierContentProps = {
+  data: SupplierType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalUacsCodeClassificationContentProps = {
+  data: UacsCodeClassificationType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalUacsCodeContentProps = {
+  data: UacsCodeType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalUnitIssueContentProps = {
+  data: UnitIssueType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
 type CollapseType = {
   [id: string]: boolean;
 };
@@ -254,6 +318,19 @@ type PermissionsFieldType = {
   checked: boolean;
   indeterminate: boolean;
   scopes: ScopeFieldType[];
+};
+
+type SignatorySubDetailsFieldType = {
+  checked: boolean;
+  label: string;
+  signatory_type: SignatoryDetailTypeType;
+  position: string;
+};
+
+type SignatoryDetailsFieldType = {
+  document: SignatoryDocumentType;
+  label: string;
+  details: SignatorySubDetailsFieldType[];
 };
 
 type RoleIndeterminateType = {

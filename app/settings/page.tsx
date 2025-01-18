@@ -10,7 +10,7 @@ export const metadata = {
   description: 'Procurement System - Profile',
 };
 
-const page = async () => {
+const ProfilePage = async () => {
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
 
@@ -29,4 +29,4 @@ const page = async () => {
   );
 };
 
-export default page;
+export default ProfilePage;

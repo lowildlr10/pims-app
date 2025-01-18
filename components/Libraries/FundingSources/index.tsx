@@ -4,59 +4,48 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
-import { Badge, Group, Stack, Text } from '@mantine/core';
+import DataTableClient from '../../Generic/DataTable';
+import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'fullname_formatted',
-      label: 'Full Name',
-      width: '22%',
+      id: 'title_formatted',
+      label: 'Title',
+      width: '25%',
       sortable: true,
     },
     {
-      id: 'employee_id',
-      label: 'Employee ID',
+      id: 'location_name',
+      label: 'Location',
+      width: '65%',
+      sortable: true,
+    },
+    {
+      id: 'total_cost_formatted',
+      label: 'Total Cost',
       width: '10%',
       sortable: true,
-    },
-    {
-      id: 'division_section',
-      label: 'Division - Section',
-      width: '20%',
-      sortable: true,
-    },
-    {
-      id: 'position_designation',
-      label: 'Position - Designation',
-      width: '20%',
-      sortable: true,
-    },
-    {
-      id: 'user_roles',
-      label: 'Roles',
-      width: '28%',
     },
   ],
   body: [],
 };
 
-const UsersClient = ({ permissions }: UsersProps) => {
+const FundingSourcesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('firstname');
+  const [columnSort, setColumnSort] = useState('title');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<UsersResponse>(
+  const { data, isLoading, mutate } = useSWR<FundingSourcesResponse>(
     [
-      `/accounts/users`,
+      `/libraries/funding-sources`,
       search,
       page,
       perPage,
@@ -88,13 +77,13 @@ const UsersClient = ({ permissions }: UsersProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: UserType) => {
+    const _data = data?.data?.map((body: FundingSourceType) => {
       return {
         ...body,
-        fullname_formatted: (
+        title_formatted: (
           <Group>
-            <Text size={'sm'}>{body.fullname}</Text>
-            {body.restricted && (
+            <Text size={'sm'}>{body.title}</Text>
+            {!body.active && (
               <Badge
                 variant={'light'}
                 leftSection={<IconExclamationCircleFilled size={14} />}
@@ -105,31 +94,7 @@ const UsersClient = ({ permissions }: UsersProps) => {
             )}
           </Group>
         ),
-        user_roles: (
-          <>
-            {body.roles?.map((role, i) => (
-              <Badge mr={4} color={'var(--mantine-color-primary-9)'} key={i}>
-                {role.role_name}
-              </Badge>
-            )) ?? '-'}
-          </>
-        ),
-        division_section: (
-          <Stack gap={0}>
-            <Text size={'sm'}>{body.division?.division_name}</Text>
-            <Text c={'dimmed'} size={'sm'}>
-              {body.section?.section_name}
-            </Text>
-          </Stack>
-        ),
-        position_designation: (
-          <Stack gap={0}>
-            <Text size={'sm'}>{body.position?.position_name}</Text>
-            <Text c={'dimmed'} size={'sm'}>
-              {body.designation?.designation_name}
-            </Text>
-          </Stack>
-        ),
+        location_name: body.location?.location_name,
       };
     });
 
@@ -141,7 +106,7 @@ const UsersClient = ({ permissions }: UsersProps) => {
 
   return (
     <DataTableClient
-      module={'account-user'}
+      module={'lib-fund-source'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -168,4 +133,4 @@ const UsersClient = ({ permissions }: UsersProps) => {
   );
 };
 
-export default UsersClient;
+export default FundingSourcesClient;

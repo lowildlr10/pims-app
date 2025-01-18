@@ -4,59 +4,42 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
-import { Badge, Group, Stack, Text } from '@mantine/core';
+import DataTableClient from '../../Generic/DataTable';
+import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'fullname_formatted',
-      label: 'Full Name',
-      width: '22%',
+      id: 'code_formatted',
+      label: 'Code',
+      width: '25%',
       sortable: true,
     },
     {
-      id: 'employee_id',
-      label: 'Employee ID',
-      width: '10%',
+      id: 'description',
+      label: 'Description',
+      width: '75%',
       sortable: true,
-    },
-    {
-      id: 'division_section',
-      label: 'Division - Section',
-      width: '20%',
-      sortable: true,
-    },
-    {
-      id: 'position_designation',
-      label: 'Position - Designation',
-      width: '20%',
-      sortable: true,
-    },
-    {
-      id: 'user_roles',
-      label: 'Roles',
-      width: '28%',
     },
   ],
   body: [],
 };
 
-const UsersClient = ({ permissions }: UsersProps) => {
+const MfoPapsClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('firstname');
+  const [columnSort, setColumnSort] = useState('code');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<UsersResponse>(
+  const { data, isLoading, mutate } = useSWR<MfoPapsResponse>(
     [
-      `/accounts/users`,
+      `/libraries/mfo-paps`,
       search,
       page,
       perPage,
@@ -88,13 +71,13 @@ const UsersClient = ({ permissions }: UsersProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: UserType) => {
+    const _data = data?.data?.map((body: MfoPapType) => {
       return {
         ...body,
-        fullname_formatted: (
+        code_formatted: (
           <Group>
-            <Text size={'sm'}>{body.fullname}</Text>
-            {body.restricted && (
+            <Text size={'sm'}>{body.code}</Text>
+            {!body.active && (
               <Badge
                 variant={'light'}
                 leftSection={<IconExclamationCircleFilled size={14} />}
@@ -104,31 +87,6 @@ const UsersClient = ({ permissions }: UsersProps) => {
               </Badge>
             )}
           </Group>
-        ),
-        user_roles: (
-          <>
-            {body.roles?.map((role, i) => (
-              <Badge mr={4} color={'var(--mantine-color-primary-9)'} key={i}>
-                {role.role_name}
-              </Badge>
-            )) ?? '-'}
-          </>
-        ),
-        division_section: (
-          <Stack gap={0}>
-            <Text size={'sm'}>{body.division?.division_name}</Text>
-            <Text c={'dimmed'} size={'sm'}>
-              {body.section?.section_name}
-            </Text>
-          </Stack>
-        ),
-        position_designation: (
-          <Stack gap={0}>
-            <Text size={'sm'}>{body.position?.position_name}</Text>
-            <Text c={'dimmed'} size={'sm'}>
-              {body.designation?.designation_name}
-            </Text>
-          </Stack>
         ),
       };
     });
@@ -141,7 +99,7 @@ const UsersClient = ({ permissions }: UsersProps) => {
 
   return (
     <DataTableClient
-      module={'account-user'}
+      module={'lib-mfo-pap'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -168,4 +126,4 @@ const UsersClient = ({ permissions }: UsersProps) => {
   );
 };
 
-export default UsersClient;
+export default MfoPapsClient;

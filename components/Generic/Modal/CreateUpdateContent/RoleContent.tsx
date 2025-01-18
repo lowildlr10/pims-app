@@ -256,9 +256,9 @@ const RoleContentClient = ({
 
     // Account management
     {
-      label: 'Department Library',
-      description: 'Scope for Department Library module',
-      module: 'account-department',
+      label: 'Division Library',
+      description: 'Scope for Division Library module',
+      module: 'account-division',
       checked: false,
       indeterminate: false,
       scopes: [
@@ -477,6 +477,30 @@ const RoleContentClient = ({
       label: 'Supplier/Company Library',
       description: 'Scope for Supplier/Company Library module',
       module: 'lib-supplier',
+      checked: false,
+      indeterminate: false,
+      scopes: [
+        {
+          label: 'View',
+          value: 'view',
+          checked: false,
+        },
+        {
+          label: 'Create',
+          value: 'create',
+          checked: false,
+        },
+        {
+          label: 'Update',
+          value: 'update',
+          checked: false,
+        },
+      ],
+    },
+    {
+      label: 'UACS Code Classification Library',
+      description: 'Scope for UACS Code Classification Library module',
+      module: 'lib-uacs-class',
       checked: false,
       indeterminate: false,
       scopes: [

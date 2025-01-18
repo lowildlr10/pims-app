@@ -20,7 +20,7 @@ type SignatureFormProps = {
   user: UserType;
 };
 
-type DepartmentSectionProps = {
+type DivisionSectionProps = {
   permissions: string[];
 };
 
@@ -29,6 +29,10 @@ type RolesProps = {
 };
 
 type UsersProps = {
+  permissions: string[];
+};
+
+type LibraryProps = {
   permissions: string[];
 };
 
@@ -42,8 +46,8 @@ type GeneralResponse = [
   paginated: boolean,
 ];
 
-type DepartmentResponse = {
-  data: DepartmentType[];
+type DivisionResponse = {
+  data: DivisionType[];
   from: number;
   to: number;
   total: number;
@@ -64,6 +68,106 @@ type RolesResponse = {
 
 type UsersResponse = {
   data: UserType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type FundingSourcesResponse = {
+  data: FundingSourceType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type ItemClassificationsResponse = {
+  data: ItemClassificationType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type MfoPapsResponse = {
+  data: MfoPapType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type ProcurementModesResponse = {
+  data: ProcurementModeType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type PaperSizesResponse = {
+  data: PaperSizeType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type SignatoriesResponse = {
+  data: SignatoryType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type SuppliersResponse = {
+  data: SupplierType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type UacsClassificationsResponse = {
+  data: UacsCodeClassificationType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type UacsCodesResponse = {
+  data: UacsCodeType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type UnitIssuesResponse = {
+  data: UnitIssueType[];
   from: number;
   to: number;
   total: number;

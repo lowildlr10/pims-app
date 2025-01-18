@@ -3,18 +3,17 @@ import React, { useEffect } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 
-const SectionContentClient = ({
+const DivisionContentClient = ({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalSectionContentProps) => {
+}: ModalDivisionContentProps) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
-      division_id: data?.division_id,
-      section_name: data?.section_name ?? '',
+      division_name: data?.division_name ?? '',
       active: data?.active ?? false,
-      section_head_id: data?.section_head_id,
+      division_head_id: data?.division_head_id,
     },
   });
 
@@ -27,39 +26,25 @@ const SectionContentClient = ({
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
-        <DynamicSelect
-          endpoint={'/accounts/divisions'}
-          endpointParams={{
-            paginated: false,
-            show_all: true,
-            show_inactive: true,
-          }}
-          column={'division_name'}
-          label='Division'
-          value={form.values.division_id}
-          size={'sm'}
-          onChange={(value) => form.setFieldValue('division_id', value)}
-          required
-        />
         <TextInput
-          label='Section Name'
-          placeholder='Section name'
-          size={'sm'}
-          value={form.values.section_name}
+          label='Division Name'
+          placeholder='Division name'
+          value={form.values.division_name}
           onChange={(event) =>
-            form.setFieldValue('section_name', event.currentTarget.value)
+            form.setFieldValue('division_name', event.currentTarget.value)
           }
           error={form.errors.division_name && ''}
+          size={'sm'}
           required
         />
         <DynamicSelect
           endpoint={'/accounts/users'}
           endpointParams={{ paginated: false, show_all: true }}
           column={'fullname'}
-          label='Section Head'
+          label='Division Head'
+          value={form.values.division_head_id}
           size={'sm'}
-          value={form.values.section_head_id}
-          onChange={(value) => form.setFieldValue('section_head_id', value)}
+          onChange={(value) => form.setFieldValue('division_head_id', value)}
         />
         <Switch
           label={'Status'}
@@ -70,8 +55,8 @@ const SectionContentClient = ({
           checked={form.values.active}
           labelPosition={'left'}
           fw={500}
-          size={'sm'}
           sx={{ cursor: 'pointer' }}
+          size={'sm'}
           onChange={(event) =>
             form.setFieldValue('active', event.currentTarget.checked)
           }
@@ -81,4 +66,4 @@ const SectionContentClient = ({
   );
 };
 
-export default SectionContentClient;
+export default DivisionContentClient;

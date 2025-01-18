@@ -1,7 +1,7 @@
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import RolesClient from '@/components/Roles';
+import SignatoriesClient from '@/components/Libraries/Signatories';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -23,8 +23,7 @@ const SignatoryPage = async () => {
       type={'settings'}
     >
       <MainContainerClient title={'Library - Signatories'}>
-        {/* <RolesClient permissions={permissions} /> */}
-        <></>
+        <SignatoriesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

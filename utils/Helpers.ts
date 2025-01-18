@@ -17,4 +17,10 @@ export default class Helper {
       return false;
     }
   };
+
+  static formatStringHasUnderscores(str: string) {
+    let result = str.replace(/_/g, ' ');
+    result = result.replace(/\b\w/g, (char) => char.toUpperCase());
+    return result;
+  }
 }
