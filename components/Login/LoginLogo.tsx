@@ -14,7 +14,7 @@ const LoginLogoClient = ({ logoUrl, companyName }: LoginLogoProps) => {
         fit='contain'
         alt={companyName}
       />
-      <Title order={3}>{companyName}</Title>
+      <Title order={3}>{companyName.toUpperCase()}</Title>
     </Stack>
   );
 };
