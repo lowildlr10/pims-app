@@ -15,6 +15,7 @@ import {
   Text,
   TextInput,
   TextInputProps,
+  Tooltip,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconCancel, IconPencil, IconPencilCog } from '@tabler/icons-react';
@@ -315,14 +316,24 @@ const CompanyProfileClient = ({
               align={'end'}
             >
               {!enableUpdate ? (
-                <ActionIcon
-                  color={'var(--mantine-color-primary-9)'}
-                  radius={'100%'}
-                  size={80}
-                  onClick={() => setEnableUpdate(!enableUpdate)}
+                <Tooltip
+                  arrowPosition={'center'}
+                  arrowOffset={10}
+                  arrowSize={4}
+                  label={'Toggle Update'}
+                  withArrow
+                  opened
+                  position={'top-end'}
                 >
-                  <IconPencilCog size={40} stroke={1.5} />
-                </ActionIcon>
+                  <ActionIcon
+                    color={'var(--mantine-color-primary-9)'}
+                    radius={'100%'}
+                    size={80}
+                    onClick={() => setEnableUpdate(!enableUpdate)}
+                  >
+                    <IconPencilCog size={40} stroke={1.5} />
+                  </ActionIcon>
+                </Tooltip>
               ) : (
                 <Group justify={'space-between'}>
                   <Button

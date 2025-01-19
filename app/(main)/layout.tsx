@@ -31,23 +31,23 @@ export default async function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const company: CompanyType = await getCompany();
+  // const company: CompanyType = await getCompany();
 
-  const theme = mergeMantineTheme(
-    DEFAULT_THEME,
-    createTheme({
-      fontFamily,
-      breakpoints,
-      colors: {
-        ...colors,
-        primary: company.theme_colors?.primary ?? colors.primary ?? undefined,
-        secondary:
-          company.theme_colors?.secondary ?? colors.secondary ?? undefined,
-        tertiary:
-          company.theme_colors?.tertiary ?? colors.tertiary ?? undefined,
-      },
-    })
-  );
+  // const theme = mergeMantineTheme(
+  //   DEFAULT_THEME,
+  //   createTheme({
+  //     fontFamily,
+  //     breakpoints,
+  //     colors: {
+  //       ...colors,
+  //       primary: company.theme_colors?.primary ?? colors.primary ?? undefined,
+  //       secondary:
+  //         company.theme_colors?.secondary ?? colors.secondary ?? undefined,
+  //       tertiary:
+  //         company.theme_colors?.tertiary ?? colors.tertiary ?? undefined,
+  //     },
+  //   })
+  // );
 
   return (
     <html lang='en' {...mantineHtmlProps}>

@@ -39,11 +39,11 @@ export default async function LoginLayout({
       breakpoints,
       colors: {
         ...colors,
-        primary: company.theme_colors?.primary ?? colors.primary ?? undefined,
+        primary: company?.theme_colors?.primary ?? colors.primary ?? undefined,
         secondary:
-          company.theme_colors?.secondary ?? colors.secondary ?? undefined,
+          company?.theme_colors?.secondary ?? colors.secondary ?? undefined,
         tertiary:
-          company.theme_colors?.tertiary ?? colors.tertiary ?? undefined,
+          company?.theme_colors?.tertiary ?? colors.tertiary ?? undefined,
       },
     })
   );

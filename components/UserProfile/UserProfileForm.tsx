@@ -9,6 +9,7 @@ import {
   PasswordInput,
   Stack,
   TextInput,
+  Tooltip,
 } from '@mantine/core';
 import { IMaskInput } from 'react-imask';
 import { useForm } from '@mantine/form';
@@ -21,7 +22,7 @@ import { notify } from '@/libs/Notification';
 import DynamicAutocomplete from '../Generic/DynamicAutocomplete';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
-const UserProfileFormClient = ({ user, permissions }: UserProfileFormProps) => {
+const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
   const [loading, setLoading] = useState(false);
   const [enableUpdate, setEnableUpdate] = useState(false);
   const form = useForm({
@@ -254,14 +255,24 @@ const UserProfileFormClient = ({ user, permissions }: UserProfileFormProps) => {
             align={'end'}
           >
             {!enableUpdate ? (
-              <ActionIcon
-                color={'var(--mantine-color-primary-9)'}
-                radius={'100%'}
-                size={80}
-                onClick={() => setEnableUpdate(!enableUpdate)}
+              <Tooltip
+                arrowPosition={'center'}
+                arrowOffset={10}
+                arrowSize={4}
+                label={'Toggle Update'}
+                withArrow
+                opened
+                position={'top-end'}
               >
-                <IconPencilCog size={40} stroke={1.5} />
-              </ActionIcon>
+                <ActionIcon
+                  color={'var(--mantine-color-primary-9)'}
+                  radius={'100%'}
+                  size={80}
+                  onClick={() => setEnableUpdate(!enableUpdate)}
+                >
+                  <IconPencilCog size={40} stroke={1.5} />
+                </ActionIcon>
+              </Tooltip>
             ) : (
               <Group justify={'space-between'}>
                 <Button
