@@ -23,21 +23,31 @@ import {
 import { Notifications } from '@mantine/notifications';
 import { fontFamily, breakpoints, colors } from '@/config/theme';
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion';
+import { getCompany } from '@/actions/company';
 
-const theme = mergeMantineTheme(
-  DEFAULT_THEME,
-  createTheme({
-    fontFamily,
-    breakpoints,
-    colors,
-  })
-);
-
-export default function LoginLayout({
+export default async function LoginLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const company: CompanyType = await getCompany();
+
+  const theme = mergeMantineTheme(
+    DEFAULT_THEME,
+    createTheme({
+      fontFamily,
+      breakpoints,
+      colors: {
+        ...colors,
+        primary: company.theme_colors?.primary ?? colors.primary ?? undefined,
+        secondary:
+          company.theme_colors?.secondary ?? colors.secondary ?? undefined,
+        tertiary:
+          company.theme_colors?.tertiary ?? colors.tertiary ?? undefined,
+      },
+    })
+  );
+
   return (
     <html lang='en' {...mantineHtmlProps}>
       <head>

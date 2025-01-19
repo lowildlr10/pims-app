@@ -1,3 +1,4 @@
+import { getCompany } from '@/actions/company';
 import { getPermissions, getUser } from '@/actions/user';
 import DashboardClient from '@/components/Dashboard';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
@@ -11,13 +12,19 @@ export const metadata = {
 };
 
 const DashboardPage = async () => {
+  const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
 
   if (!user) redirect('/login');
 
   return (
-    <LayoutSidebarClient user={user} permissions={permissions} type={'main'}>
+    <LayoutSidebarClient
+      company={company}
+      user={user}
+      permissions={permissions}
+      type={'main'}
+    >
       <MainContainerClient
         secondaryTtile={'Welcome Back,'}
         title={user.fullname ?? ''}

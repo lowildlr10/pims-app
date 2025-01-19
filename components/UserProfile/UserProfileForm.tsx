@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ActionIcon,
   Button,
   Group,
   InputBase,
@@ -18,8 +19,9 @@ import { Select } from '@mantine/core';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import DynamicAutocomplete from '../Generic/DynamicAutocomplete';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
-const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
+const UserProfileFormClient = ({ user, permissions }: UserProfileFormProps) => {
   const [loading, setLoading] = useState(false);
   const [enableUpdate, setEnableUpdate] = useState(false);
   const form = useForm({
@@ -231,7 +233,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
             required={enableUpdate}
           />
           <PasswordInput
-            mb={enableUpdate ? 140 : 80}
+            mb={enableUpdate ? 140 : 120}
             size={'md'}
             label='Password'
             description={'Fill out to change password'}
@@ -249,17 +251,17 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
             right={0}
             w={{ base: '100%', lg: 'auto' }}
             px={20}
+            align={'end'}
           >
             {!enableUpdate ? (
-              <Button
+              <ActionIcon
                 color={'var(--mantine-color-primary-9)'}
-                size={'md'}
-                leftSection={<IconPencilCog size={18} />}
-                variant='outline'
+                radius={'100%'}
+                size={80}
                 onClick={() => setEnableUpdate(!enableUpdate)}
               >
-                Toggle Update
-              </Button>
+                <IconPencilCog size={40} stroke={1.5} />
+              </ActionIcon>
             ) : (
               <Group justify={'space-between'}>
                 <Button

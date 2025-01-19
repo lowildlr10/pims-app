@@ -1,5 +1,13 @@
+type SingleImageUploadProps = {
+  postUrl: string;
+  params?: any;
+  image: string;
+  type?: 'avatar' | 'logo' | 'signature' | 'default';
+};
+
 type LayoutSidebarProps = {
-  user: any;
+  company: CompanyType;
+  user: UserType;
   type?: 'main' | 'settings';
   permissions?: string[];
   children: React.ReactNode;

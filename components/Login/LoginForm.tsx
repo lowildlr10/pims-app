@@ -142,7 +142,7 @@ const LoginFormClient = () => {
           <Button
             size='md'
             type='submit'
-            color={'#426F8F'}
+            color={'var(--mantine-color-primary-9)'}
             loading={loading}
             loaderProps={{ type: 'dots' }}
             autoContrast

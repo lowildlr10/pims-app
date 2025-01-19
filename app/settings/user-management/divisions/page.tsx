@@ -1,3 +1,4 @@
+import { getCompany } from '@/actions/company';
 import { getPermissions, getUser } from '@/actions/user';
 import DivisionSectionClient from '@/components/DivisionSection';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
@@ -11,6 +12,7 @@ export const metadata = {
 };
 
 const DivisionPage = async () => {
+  const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
 
@@ -18,6 +20,7 @@ const DivisionPage = async () => {
 
   return (
     <LayoutSidebarClient
+      company={company}
       user={user}
       permissions={permissions}
       type={'settings'}

@@ -2,25 +2,39 @@
 
 import { colors } from '@/config/theme';
 import {
+  Box,
+  Button,
   ColorPicker,
   ColorPickerProps,
   Divider,
+  Flex,
   Group,
-  InputBaseProps,
-  InputProps,
+  LoadingOverlay,
+  ScrollArea,
   Stack,
   Text,
   TextInput,
   TextInputProps,
-  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { IconCancel, IconPencil, IconPencilCog } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
+import SingleImageUploadClient from '../Generic/SingleImageUpload';
+import API from '@/libs/API';
+import { notify } from '@/libs/Notification';
+import { getErrors } from '@/libs/Errors';
+import { ActionIcon } from '@mantine/core';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
-interface CustomColorPickerClientProps {
+type CustomColorPickerClientProps = {
   colorPickerProps: ColorPickerProps;
   textInputProps: TextInputProps;
-}
+};
+
+type CompanyProfileProps = {
+  company: CompanyType;
+  permissions: string[];
+};
 
 const CustomColorPickerClient = ({
   colorPickerProps,
@@ -34,17 +48,41 @@ const CustomColorPickerClient = ({
   );
 };
 
-const CompanyProfileClient = () => {
-  const [primary, setPrimary] = useState<string>();
-  const [secondary, setSecondary] = useState<string>();
-  const [tertiary, setTertiary] = useState<string>();
+const CompanyProfileClient = ({
+  company,
+  permissions,
+}: CompanyProfileProps) => {
+  const [loading, setLoading] = useState(false);
+  const [enableUpdate, setEnableUpdate] = useState(false);
+
+  const [primary, setPrimary] = useState<string>(
+    company.theme_colors?.primary[9] ?? colors.primary[9]
+  );
+  const [secondary, setSecondary] = useState<string>(
+    company.theme_colors?.secondary[9] ?? colors.secondary[9]
+  );
+  const [tertiary, setTertiary] = useState<string>(
+    company.theme_colors?.tertiary[9] ?? colors.tertiary[9]
+  );
 
   const form = useForm({
     mode: 'controlled',
     initialValues: {
-      theme_colors: '',
+      company_name: company.company_name ?? '',
+      theme_colors: JSON.stringify(company.theme_colors) ?? '',
     },
   });
+
+  useEffect(() => {
+    if (company.theme_colors?.primary)
+      setPrimary(company.theme_colors?.primary[9]);
+
+    if (company.theme_colors?.secondary)
+      setSecondary(company.theme_colors?.secondary[9]);
+
+    if (company.theme_colors?.tertiary)
+      setTertiary(company.theme_colors?.tertiary[9]);
+  }, [company]);
 
   useEffect(() => {
     form.setFieldValue(
@@ -58,8 +96,9 @@ const CompanyProfileClient = () => {
   }, [primary, secondary, tertiary]);
 
   useEffect(() => {
-    console.log(form.values);
-  }, [form.values]);
+    form.reset();
+    handleResetColorInputs();
+  }, [enableUpdate]);
 
   const generateColorPalettes = (hex: string) => {
     const hexToRgb = (hex: string) => {
@@ -85,73 +124,238 @@ const CompanyProfileClient = () => {
     });
   };
 
+  const handleResetColorInputs = () => {
+    const themeColors = JSON.parse(form.values.theme_colors);
+    setPrimary(company.theme_colors?.primary[9] ?? themeColors.primary[9]);
+    setSecondary(
+      company.theme_colors?.secondary[9] ?? themeColors.secondary[9]
+    );
+    setTertiary(company.theme_colors?.tertiary[9] ?? themeColors.tertiary[9]);
+  };
+
+  const handleUpdateProfile = () => {
+    setLoading(true);
+
+    API.put('/companies', {
+      ...form.values,
+    })
+      .then((res) => {
+        notify({
+          title: 'Success!',
+          message: res?.data?.message,
+          color: 'green',
+        });
+
+        form.resetDirty();
+        setLoading(false);
+        setEnableUpdate(false);
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
+            color: 'red',
+          });
+        });
+
+        setLoading(false);
+      });
+  };
+
   return (
-    <Stack>
-      <Text fw={500} size={'lg'}>
-        System Theme Colors
-      </Text>
-      <Group justify={'space-between'} w={'100%'}>
-        <CustomColorPickerClient
-          colorPickerProps={{
-            size: 'sm',
-            format: 'hex',
-            swatchesPerRow: 5,
-            swatches: generateColorPalettes(primary ?? colors.primary[9]),
-            onChange: (value: string) => setPrimary(value),
-            value: (primary ?? colors.primary[9]).toUpperCase(),
-            fullWidth: true,
-          }}
-          textInputProps={{
-            label: 'Primary Color',
-            placeholder: 'Enter color value',
-            value: (primary ?? colors.primary[9]).toUpperCase(),
-            onChange: (event) => setPrimary(event.target.value),
-            size: 'sm',
-            required: true,
-          }}
+    <ScrollArea
+      h={{ md: '100%', lg: 'calc(100vh - 15.5em)' }}
+      px={{ base: 'md', lg: 'xl' }}
+      scrollbars={'y'}
+    >
+      <form onSubmit={form.onSubmit(() => handleUpdateProfile())}>
+        <LoadingOverlay
+          visible={loading}
+          zIndex={1000}
+          overlayProps={{ radius: 'sm', blur: 2 }}
         />
+        <Stack mb={'12em'} gap={'8em'}>
+          <Stack>
+            <Text fw={500} size={'xl'}>
+              Company Details
+            </Text>
 
-        <CustomColorPickerClient
-          colorPickerProps={{
-            size: 'sm',
-            format: 'hex',
-            swatchesPerRow: 5,
-            swatches: generateColorPalettes(secondary ?? colors.secondary[9]),
-            onChange: (value: string) => setSecondary(value),
-            value: (secondary ?? colors.secondary[9]).toUpperCase(),
-            fullWidth: true,
-          }}
-          textInputProps={{
-            label: 'Secondary Color',
-            placeholder: 'Enter color value',
-            value: (secondary ?? colors.secondary[9]).toUpperCase(),
-            onChange: (event) => setSecondary(event.target.value),
-            size: 'sm',
-            required: true,
-          }}
-        />
+            <Divider />
 
-        <CustomColorPickerClient
-          colorPickerProps={{
-            size: 'sm',
-            format: 'hex',
-            swatchesPerRow: 5,
-            swatches: generateColorPalettes(tertiary ?? colors.tertiary[9]),
-            onChange: (value: string) => setTertiary(value),
-            value: (tertiary ?? colors.tertiary[9]).toUpperCase(),
-            fullWidth: true,
-          }}
-          textInputProps={{
-            label: 'tertiary Color',
-            placeholder: 'Enter color value',
-            value: (tertiary ?? colors.tertiary[9]).toUpperCase(),
-            onChange: (event) => setTertiary(event.target.value),
-            size: 'sm',
-            required: true,
-          }}
-        />
-      </Group>
-    </Stack>
+            <Flex
+              direction={{
+                base: 'column',
+                lg: 'row',
+              }}
+              gap={'xl'}
+            >
+              <Stack align={'center'} p={'md'} w={{ base: '100%', lg: '25%' }}>
+                <Box mb={10}>
+                  <SingleImageUploadClient
+                    image={company.company_logo ?? ''}
+                    postUrl={`/media/${company.id}`}
+                    params={{ update_type: 'company-logo' }}
+                    type={'logo'}
+                  />
+                </Box>
+              </Stack>
+
+              <Stack justify={'center'}>
+                <TextInput
+                  label='Company Name'
+                  placeholder='Company Name'
+                  value={form.values.company_name}
+                  onChange={(event) =>
+                    form.setFieldValue(
+                      'company_name',
+                      event.currentTarget.value
+                    )
+                  }
+                  error={form.errors.company_name && ''}
+                  size={'md'}
+                  readOnly={!enableUpdate}
+                  required={enableUpdate}
+                />
+              </Stack>
+            </Flex>
+          </Stack>
+
+          <Stack>
+            <Text fw={500} size={'xl'}>
+              System Theme Colors
+            </Text>
+
+            <Divider />
+
+            <Flex
+              direction={{
+                base: 'column',
+                lg: 'row',
+              }}
+              justify={'space-between'}
+              gap={'xl'}
+            >
+              <CustomColorPickerClient
+                colorPickerProps={{
+                  size: 'sm',
+                  format: 'hex',
+                  swatchesPerRow: 5,
+                  swatches: generateColorPalettes(primary),
+                  onChange: (value: string) => setPrimary(value),
+                  value: (primary ?? colors.primary[9]).toUpperCase(),
+                  fullWidth: true,
+                }}
+                textInputProps={{
+                  label: 'Primary Color',
+                  placeholder: 'Enter color value',
+                  value: (primary ?? colors.primary[9]).toUpperCase(),
+                  onChange: (event) => setPrimary(event.target.value),
+                  size: 'sm',
+                  required: enableUpdate,
+                  readOnly: !enableUpdate,
+                }}
+              />
+
+              <CustomColorPickerClient
+                colorPickerProps={{
+                  size: 'sm',
+                  format: 'hex',
+                  swatchesPerRow: 5,
+                  swatches: generateColorPalettes(secondary),
+                  onChange: (value: string) => setSecondary(value),
+                  value: (secondary ?? colors.secondary[9]).toUpperCase(),
+                  fullWidth: true,
+                }}
+                textInputProps={{
+                  label: 'Secondary Color',
+                  placeholder: 'Enter color value',
+                  value: (secondary ?? colors.secondary[9]).toUpperCase(),
+                  onChange: (event) => setSecondary(event.target.value),
+                  size: 'sm',
+                  required: enableUpdate,
+                  readOnly: !enableUpdate,
+                }}
+              />
+
+              <CustomColorPickerClient
+                colorPickerProps={{
+                  size: 'sm',
+                  format: 'hex',
+                  swatchesPerRow: 5,
+                  swatches: generateColorPalettes(tertiary),
+                  onChange: (value: string) => setTertiary(value),
+                  value: (tertiary ?? colors.tertiary[9]).toUpperCase(),
+                  fullWidth: true,
+                }}
+                textInputProps={{
+                  label: 'tertiary Color',
+                  placeholder: 'Enter color value',
+                  value: (tertiary ?? colors.tertiary[9]).toUpperCase(),
+                  onChange: (event) => setTertiary(event.target.value),
+                  size: 'sm',
+                  required: enableUpdate,
+                  readOnly: !enableUpdate,
+                }}
+              />
+            </Flex>
+          </Stack>
+
+          {getAllowedPermissions('company', 'update')?.some((permission) =>
+            permissions.includes(permission)
+          ) && (
+            <Stack
+              pos={'absolute'}
+              bottom={5}
+              right={0}
+              w={{ base: '100%', lg: 'auto' }}
+              px={20}
+              align={'end'}
+            >
+              {!enableUpdate ? (
+                <ActionIcon
+                  color={'var(--mantine-color-primary-9)'}
+                  radius={'100%'}
+                  size={80}
+                  onClick={() => setEnableUpdate(!enableUpdate)}
+                >
+                  <IconPencilCog size={40} stroke={1.5} />
+                </ActionIcon>
+              ) : (
+                <Group justify={'space-between'}>
+                  <Button
+                    type={'submit'}
+                    size={'md'}
+                    leftSection={<IconPencil size={18} />}
+                    variant='filled'
+                    color={'var(--mantine-color-primary-9)'}
+                    loading={loading}
+                    loaderProps={{ type: 'dots' }}
+                    autoContrast
+                    fullWidth
+                  >
+                    Update
+                  </Button>
+                  <Button
+                    size={'md'}
+                    leftSection={<IconCancel size={18} />}
+                    variant='outline'
+                    bg={'white'}
+                    color={'var(--mantine-color-gray-8)'}
+                    fullWidth
+                    onClick={() => setEnableUpdate(!enableUpdate)}
+                  >
+                    Cancel
+                  </Button>
+                </Group>
+              )}
+            </Stack>
+          )}
+        </Stack>
+      </form>
+    </ScrollArea>
   );
 };
 

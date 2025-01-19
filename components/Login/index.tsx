@@ -5,7 +5,7 @@ import { Divider, Flex, Stack, Text, Title } from '@mantine/core';
 import LoginFormClient from './LoginForm';
 import LoginLogoClient from './LoginLogo';
 
-const LoginClient = () => {
+const LoginClient = ({ company }: LoginProps) => {
   return (
     <Flex direction={'row'} mih={'100vh'} w={'100%'}>
       <Stack
@@ -17,8 +17,8 @@ const LoginClient = () => {
         align={'center'}
       >
         <LoginLogoClient
-          companyName='LGU - ATOK'
-          logoUrl='/images/atok-logo.png'
+          companyName={company?.company_name ?? ''}
+          logoUrl={company?.company_logo ?? ''}
         />
 
         <Divider

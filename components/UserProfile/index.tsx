@@ -6,7 +6,7 @@ import { IconSignature, IconUserCog } from '@tabler/icons-react';
 import UserProfileFormClient from './UserProfileForm';
 import SignatureFormClient from './SignatureForm';
 import { Tabs } from '@mantine/core';
-import AvatarFormClient from './AvatarForm';
+import SingleImageUploadClient from '../Generic/SingleImageUpload';
 
 const UserProfileClient = ({ user }: UserProfileProps) => {
   const [activeTab, setActiveTab] = useState<string | null>('information');
@@ -25,12 +25,18 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
         w={{ base: '100%', lg: '25%' }}
       >
         <Box mb={10}>
-          <AvatarFormClient user={user} />
+          <SingleImageUploadClient
+            image={user.avatar ?? ''}
+            postUrl={`/media/${user.id}`}
+            params={{ update_type: 'user-avatar' }}
+            type={'avatar'}
+          />
         </Box>
 
         <Divider size={'sm'} w={'100%'} my={20} />
 
         <Tabs
+          color={'var(--mantine-color-primary-9)'}
           orientation={'vertical'}
           value={activeTab}
           onChange={setActiveTab}

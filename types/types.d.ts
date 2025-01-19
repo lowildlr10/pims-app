@@ -1,3 +1,16 @@
+type ThemeColorType = {
+  primary: MantineColorsTuple;
+  secondary: MantineColorsTuple;
+  tertiary: MantineColorsTuple;
+};
+
+type CompanyType = {
+  id?: string;
+  company_name?: string;
+  company_logo?: string;
+  theme_colors?: ThemeColorType;
+};
+
 type RoleType = {
   id?: string;
   role_name?: string;

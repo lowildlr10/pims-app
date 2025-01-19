@@ -4,6 +4,7 @@ import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { getCompany } from '@/actions/company';
 
 export const metadata = {
   title: 'Procurement System - Funding Sources/Projects',
@@ -11,6 +12,7 @@ export const metadata = {
 };
 
 const FundingSourcePage = async () => {
+  const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
 
@@ -18,6 +20,7 @@ const FundingSourcePage = async () => {
 
   return (
     <LayoutSidebarClient
+      company={company}
       user={user}
       permissions={permissions}
       type={'settings'}

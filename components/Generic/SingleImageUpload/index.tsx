@@ -2,18 +2,29 @@ import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import Helper from '@/utils/Helpers';
-import { Avatar, Button, FileButton, LoadingOverlay } from '@mantine/core';
-import { Group } from '@mantine/core';
+import {
+  Avatar,
+  Button,
+  FileButton,
+  Group,
+  Image,
+  LoadingOverlay,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect, useState } from 'react';
 
-const AvatarFormClient = ({ user }: AvatarFormProps) => {
+const SingleImageUploadClient = ({
+  image,
+  postUrl,
+  params,
+  type = 'default',
+}: SingleImageUploadProps) => {
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const form = useForm({
     mode: 'controlled',
     initialValues: {
-      avatar: user.avatar ?? '',
+      image: image ?? '',
     },
   });
 
@@ -23,19 +34,19 @@ const AvatarFormClient = ({ user }: AvatarFormProps) => {
   }, [file]);
 
   useEffect(() => {
-    if (!form.values.avatar || !file) return;
+    if (!form.values.image || !file) return;
     handleUpdateAvatar();
-  }, [form.values.avatar]);
+  }, [form.values.image]);
 
   const handleProcessAvatar = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64String = event.target?.result as string;
-      form.setFieldValue('avatar', base64String);
+      form.setFieldValue('image', base64String);
     };
 
     if (file === null) {
-      form.setFieldValue('avatar', '');
+      form.setFieldValue('image', '');
       return;
     }
 
@@ -53,9 +64,9 @@ const AvatarFormClient = ({ user }: AvatarFormProps) => {
   const handleUpdateAvatar = () => {
     setLoading(true);
 
-    API.put(`/accounts/users/${user.id}`, {
+    API.put(postUrl, {
       ...form.values,
-      update_type: 'avatar',
+      ...params,
     })
       .then((res) => {
         notify({
@@ -83,12 +94,20 @@ const AvatarFormClient = ({ user }: AvatarFormProps) => {
 
   return (
     <Group justify='center'>
-      <FileButton onChange={setFile} accept='image/png,image/jpeg'>
+      <FileButton
+        onChange={setFile}
+        accept={type === 'signature' ? 'image/png' : 'image/png,image/jpeg'}
+      >
         {(props) => (
           <Button
             h={220}
             bgr={'100%'}
-            variant={'transparent'}
+            variant={
+              type === 'avatar' || type === 'logo' ? 'transparent' : 'light'
+            }
+            color={
+              type === 'signature' || type === 'default' ? 'gray' : undefined
+            }
             {...props}
             fullWidth
             autoContrast
@@ -98,17 +117,39 @@ const AvatarFormClient = ({ user }: AvatarFormProps) => {
               zIndex={1000}
               overlayProps={{ radius: 'sm', blur: 2 }}
             />
-            {form.values.avatar ? (
-              <Avatar
-                size={220}
-                src={
-                  Helper.isValidUrl(form.values.avatar)
-                    ? `${form.values.avatar}?${new Date().getTime()}`
-                    : form.values.avatar
-                }
-              />
+
+            {type === 'avatar' || type === 'logo' ? (
+              <>
+                {form.values.image ? (
+                  <Avatar
+                    size={220}
+                    src={
+                      Helper.isValidUrl(form.values.image)
+                        ? `${form.values.image}?${new Date().getTime()}`
+                        : form.values.image
+                    }
+                  />
+                ) : (
+                  <Avatar size={220} />
+                )}
+              </>
             ) : (
-              <Avatar size={220} />
+              <Image
+                loading={'lazy'}
+                radius={'sm'}
+                height={220}
+                width={'100%'}
+                p={'md'}
+                src={
+                  Helper.isValidUrl(form.values.image)
+                    ? `${form.values.image}?${new Date().getTime()}`
+                    : form.values.image
+                }
+                fallbackSrc={
+                  type === 'signature' ? '/images/signature-fallback.png' : ''
+                }
+                alt={type === 'signature' ? 'Signature' : 'Image'}
+              />
             )}
           </Button>
         )}
@@ -117,4 +158,4 @@ const AvatarFormClient = ({ user }: AvatarFormProps) => {
   );
 };
 
-export default AvatarFormClient;
+export default SingleImageUploadClient;

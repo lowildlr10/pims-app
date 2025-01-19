@@ -353,6 +353,7 @@ const defaultSettingsMenus: LinksGroupProps[] = [
 ];
 
 export function LayoutSidebarClient({
+  company,
   user,
   type,
   permissions,
@@ -362,7 +363,7 @@ export function LayoutSidebarClient({
   const links = menus.map((item) => (
     <LinksGroupClient {...item} key={item.label} permissions={permissions} />
   ));
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -387,7 +388,7 @@ export function LayoutSidebarClient({
       header={{ height: 60 }}
       navbar={{
         width: 300,
-        breakpoint: 'sm',
+        breakpoint: 'md',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
       mih={'100vh'}
@@ -400,14 +401,14 @@ export function LayoutSidebarClient({
           <Burger
             opened={mobileOpened}
             onClick={toggleMobile}
-            hiddenFrom='sm'
+            hiddenFrom='md'
             size='sm'
             color={'white'}
           />
           <Burger
             opened={desktopOpened}
             onClick={toggleDesktop}
-            visibleFrom='sm'
+            visibleFrom='md'
             size='sm'
             color={'white'}
           />
@@ -415,8 +416,8 @@ export function LayoutSidebarClient({
             <Image
               width={30}
               height={30}
-              src={'/images/atok-logo.png'}
-              alt={'LGU-Atok'}
+              src={company?.company_logo ?? ''}
+              alt={company?.company_name ?? ''}
             />
             <Text size={'lg'} fw={400}>
               Procurement System
@@ -434,7 +435,7 @@ export function LayoutSidebarClient({
         </div>
 
         <UserModalClient
-          title={user.fullname}
+          title={user.fullname ?? 'User'}
           open={opened}
           handleClose={close}
         />
@@ -442,8 +443,8 @@ export function LayoutSidebarClient({
       <AppShell.Main bg={'var(--mantine-color-gray-1)'}>
         {children}
         <ProgressBar
-          height={'4px'}
-          color={'var(--mantine-color-secondary-0)'}
+          height={'2.5px'}
+          color={'var(--mantine-color-secondary-3)'}
           options={{ showSpinner: false }}
           shallowRouting
         />

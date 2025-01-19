@@ -500,7 +500,7 @@ const DataTableClient = ({
                   {hasSubBody && (
                     <Table.Tr>
                       <Table.Td
-                        bg={'var(--mantine-color-tertiary-0)'}
+                        bg={'var(--mantine-color-secondary-0)'}
                         colSpan={data.head?.length}
                         p={collapseStates[body.id ?? ''] ? undefined : 0}
                       >
