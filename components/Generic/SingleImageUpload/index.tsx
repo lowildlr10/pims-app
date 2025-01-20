@@ -9,6 +9,7 @@ import {
   Group,
   Image,
   LoadingOverlay,
+  Tooltip,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect, useState } from 'react';
@@ -17,6 +18,7 @@ const SingleImageUploadClient = ({
   image,
   postUrl,
   params,
+  height = 220,
   type = 'default',
 }: SingleImageUploadProps) => {
   const [loading, setLoading] = useState(false);
@@ -30,15 +32,15 @@ const SingleImageUploadClient = ({
 
   useEffect(() => {
     if (!file) return;
-    handleProcessAvatar();
+    handleProcessImage();
   }, [file]);
 
   useEffect(() => {
     if (!form.values.image || !file) return;
-    handleUpdateAvatar();
+    handleUpdateImage();
   }, [form.values.image]);
 
-  const handleProcessAvatar = () => {
+  const handleProcessImage = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64String = event.target?.result as string;
@@ -61,7 +63,7 @@ const SingleImageUploadClient = ({
     return;
   };
 
-  const handleUpdateAvatar = () => {
+  const handleUpdateImage = () => {
     setLoading(true);
 
     API.put(postUrl, {
@@ -93,68 +95,83 @@ const SingleImageUploadClient = ({
   };
 
   return (
-    <Group justify='center'>
-      <FileButton
-        onChange={setFile}
-        accept={type === 'signature' ? 'image/png' : 'image/png,image/jpeg'}
-      >
-        {(props) => (
-          <Button
-            h={220}
-            bgr={'100%'}
-            variant={
-              type === 'avatar' || type === 'logo' ? 'transparent' : 'light'
-            }
-            color={
-              type === 'signature' || type === 'default' ? 'gray' : undefined
-            }
-            {...props}
-            fullWidth
-            autoContrast
-          >
-            <LoadingOverlay
-              visible={loading}
-              zIndex={1000}
-              overlayProps={{ radius: 'sm', blur: 2 }}
-            />
-
-            {type === 'avatar' || type === 'logo' ? (
-              <>
-                {form.values.image ? (
-                  <Avatar
-                    size={220}
-                    src={
-                      Helper.isValidUrl(form.values.image)
-                        ? `${form.values.image}?${new Date().getTime()}`
-                        : form.values.image
-                    }
-                  />
-                ) : (
-                  <Avatar size={220} />
-                )}
-              </>
-            ) : (
-              <Image
-                loading={'lazy'}
-                radius={'sm'}
-                height={220}
-                width={'100%'}
-                p={'md'}
-                src={
-                  Helper.isValidUrl(form.values.image)
-                    ? `${form.values.image}?${new Date().getTime()}`
-                    : form.values.image
-                }
-                fallbackSrc={
-                  type === 'signature' ? '/images/signature-fallback.png' : ''
-                }
-                alt={type === 'signature' ? 'Signature' : 'Image'}
+    <Tooltip
+      arrowPosition={'center'}
+      arrowOffset={10}
+      arrowSize={4}
+      label={'Click to upload image here'}
+      withArrow
+      position={'top-end'}
+    >
+      <Group justify='center'>
+        <FileButton
+          onChange={setFile}
+          accept={type === 'signature' ? 'image/png' : 'image/png,image/jpeg'}
+        >
+          {(props) => (
+            <Button
+              h={
+                height
+                  ? typeof height === 'string'
+                    ? parseInt(height + 5)
+                    : height + 5
+                  : 225
+              }
+              bgr={'100%'}
+              variant={
+                type === 'avatar' || type === 'logo' ? 'transparent' : 'light'
+              }
+              color={
+                type === 'signature' || type === 'default' ? 'gray' : undefined
+              }
+              {...props}
+              fullWidth
+              autoContrast
+            >
+              <LoadingOverlay
+                visible={loading}
+                zIndex={1000}
+                overlayProps={{ radius: 'sm', blur: 2 }}
               />
-            )}
-          </Button>
-        )}
-      </FileButton>
-    </Group>
+
+              {type === 'avatar' || type === 'logo' ? (
+                <>
+                  {form.values.image ? (
+                    <Avatar
+                      size={height}
+                      src={
+                        Helper.isValidUrl(form.values.image)
+                          ? `${form.values.image}?${new Date().getTime()}`
+                          : form.values.image
+                      }
+                    />
+                  ) : (
+                    <Avatar size={220} />
+                  )}
+                </>
+              ) : (
+                <Image
+                  loading={'lazy'}
+                  radius={'sm'}
+                  height={height ?? 220}
+                  width={'100%'}
+                  p={'md'}
+                  src={
+                    Helper.isValidUrl(form.values.image)
+                      ? `${form.values.image}?${new Date().getTime()}`
+                      : form.values.image
+                  }
+                  fallbackSrc={
+                    type === 'signature' ? '/images/signature-fallback.png' : ''
+                  }
+                  alt={type === 'signature' ? 'Signature' : 'Image'}
+                />
+              )}
+            </Button>
+          )}
+        </FileButton>
+      </Group>
+    </Tooltip>
   );
 };
 

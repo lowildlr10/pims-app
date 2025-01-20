@@ -416,8 +416,8 @@ export function LayoutSidebarClient({
             <Image
               width={30}
               height={30}
-              src={company?.company_logo ?? ''}
-              alt={company?.company_name ?? ''}
+              src={company?.company_logo ?? '/images/logo-fallback.png'}
+              alt={company?.company_name ?? 'Company'}
             />
             <Text size={'lg'} fw={400}>
               Procurement System

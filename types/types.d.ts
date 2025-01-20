@@ -7,7 +7,9 @@ type ThemeColorType = {
 type CompanyType = {
   id?: string;
   company_name?: string;
+  favicon?: string;
   company_logo?: string;
+  login_background?: string;
   theme_colors?: ThemeColorType;
 };
 

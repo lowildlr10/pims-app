@@ -253,6 +253,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
             w={{ base: '100%', lg: 'auto' }}
             px={20}
             align={'end'}
+            sx={{ zIndex: 100 }}
           >
             {!enableUpdate ? (
               <Tooltip
@@ -261,7 +262,6 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
                 arrowSize={4}
                 label={'Toggle Update'}
                 withArrow
-                opened
                 position={'top-end'}
               >
                 <ActionIcon

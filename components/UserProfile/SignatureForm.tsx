@@ -3,7 +3,7 @@ import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import { Button, LoadingOverlay, Paper, Stack, Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconUpload } from '@tabler/icons-react';
+import { IconPencil, IconUpload } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
 
@@ -87,7 +87,7 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
             size={'md'}
             type={'submit'}
             color={'var(--mantine-color-primary-9)'}
-            leftSection={<IconUpload size={24} />}
+            leftSection={<IconPencil size={18} />}
             fullWidth
           >
             Save

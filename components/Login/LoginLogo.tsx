@@ -7,11 +7,13 @@ const LoginLogoClient = ({ logoUrl, companyName }: LoginLogoProps) => {
   return (
     <Stack justify={'center'} align={'center'} h={300}>
       <Image
-        src={logoUrl}
-        radius='md'
-        h={200}
-        w='auto'
-        fit='contain'
+        src={logoUrl ?? undefined}
+        radius={'md'}
+        h={300}
+        w={'auto'}
+        fit={'contain'}
+        draggable={false}
+        my={4}
         alt={companyName}
       />
       <Title order={3}>{companyName.toUpperCase()}</Title>

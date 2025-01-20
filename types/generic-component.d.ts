@@ -2,6 +2,7 @@ type SingleImageUploadProps = {
   postUrl: string;
   params?: any;
   image: string;
+  height?: string | number;
   type?: 'avatar' | 'logo' | 'signature' | 'default';
 };
 

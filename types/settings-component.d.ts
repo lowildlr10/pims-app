@@ -8,6 +8,11 @@ type UserProfileFormProps = {
   user: UserType;
 };
 
+type CompanyProfileProps = {
+  company: CompanyType;
+  permissions: string[];
+};
+
 type SignatureFormProps = {
   user: UserType;
 };

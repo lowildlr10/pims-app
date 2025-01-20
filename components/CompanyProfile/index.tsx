@@ -4,8 +4,6 @@ import { colors } from '@/config/theme';
 import {
   Box,
   Button,
-  ColorPicker,
-  ColorPickerProps,
   Divider,
   Flex,
   Group,
@@ -14,11 +12,15 @@ import {
   Stack,
   Text,
   TextInput,
-  TextInputProps,
   Tooltip,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconCancel, IconPencil, IconPencilCog } from '@tabler/icons-react';
+import {
+  IconCancel,
+  IconColorPicker,
+  IconPencil,
+  IconPencilCog,
+} from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
 import API from '@/libs/API';
@@ -26,28 +28,7 @@ import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
 import { ActionIcon } from '@mantine/core';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
-
-type CustomColorPickerClientProps = {
-  colorPickerProps: ColorPickerProps;
-  textInputProps: TextInputProps;
-};
-
-type CompanyProfileProps = {
-  company: CompanyType;
-  permissions: string[];
-};
-
-const CustomColorPickerClient = ({
-  colorPickerProps,
-  textInputProps,
-}: CustomColorPickerClientProps) => {
-  return (
-    <Stack flex={1}>
-      <TextInput {...textInputProps} />
-      <ColorPicker {...colorPickerProps} />
-    </Stack>
-  );
-};
+import CustomColorPickerClient from '../Generic/CustomColorPicker';
 
 const CompanyProfileClient = ({
   company,
@@ -196,7 +177,9 @@ const CompanyProfileClient = ({
               <Stack align={'center'} p={'md'} w={{ base: '100%', lg: '25%' }}>
                 <Box mb={10}>
                   <SingleImageUploadClient
-                    image={company.company_logo ?? ''}
+                    image={
+                      company.company_logo ?? '/images/logo-black-fallback.png'
+                    }
                     postUrl={`/media/${company.id}`}
                     params={{ update_type: 'company-logo' }}
                     type={'logo'}
@@ -226,6 +209,24 @@ const CompanyProfileClient = ({
 
           <Stack>
             <Text fw={500} size={'xl'}>
+              Login Background Image
+            </Text>
+
+            <Divider />
+
+            <SingleImageUploadClient
+              image={
+                company?.login_background ?? '/images/background-fallback.png'
+              }
+              postUrl={`/media/${company.id}`}
+              params={{ update_type: 'company-login-background' }}
+              height={300}
+              type={'default'}
+            />
+          </Stack>
+
+          <Stack>
+            <Text fw={500} size={'xl'}>
               System Theme Colors
             </Text>
 
@@ -240,66 +241,45 @@ const CompanyProfileClient = ({
               gap={'xl'}
             >
               <CustomColorPickerClient
-                colorPickerProps={{
-                  size: 'sm',
-                  format: 'hex',
-                  swatchesPerRow: 5,
-                  swatches: generateColorPalettes(primary),
-                  onChange: (value: string) => setPrimary(value),
-                  value: (primary ?? colors.primary[9]).toUpperCase(),
-                  fullWidth: true,
-                }}
-                textInputProps={{
-                  label: 'Primary Color',
-                  placeholder: 'Enter color value',
-                  value: (primary ?? colors.primary[9]).toUpperCase(),
-                  onChange: (event) => setPrimary(event.target.value),
-                  size: 'sm',
-                  required: enableUpdate,
-                  readOnly: !enableUpdate,
-                }}
+                label={'Primary Color'}
+                placeholder={'Enter color value'}
+                value={(primary ?? colors.primary[9]).toUpperCase()}
+                onChange={setPrimary}
+                size={'sm'}
+                format={'hex'}
+                rightSection={<IconColorPicker size={18} stroke={1.5} />}
+                swatches={generateColorPalettes(primary)}
+                swatchesPerRow={5}
+                required={enableUpdate}
+                readOnly={!enableUpdate}
               />
 
               <CustomColorPickerClient
-                colorPickerProps={{
-                  size: 'sm',
-                  format: 'hex',
-                  swatchesPerRow: 5,
-                  swatches: generateColorPalettes(secondary),
-                  onChange: (value: string) => setSecondary(value),
-                  value: (secondary ?? colors.secondary[9]).toUpperCase(),
-                  fullWidth: true,
-                }}
-                textInputProps={{
-                  label: 'Secondary Color',
-                  placeholder: 'Enter color value',
-                  value: (secondary ?? colors.secondary[9]).toUpperCase(),
-                  onChange: (event) => setSecondary(event.target.value),
-                  size: 'sm',
-                  required: enableUpdate,
-                  readOnly: !enableUpdate,
-                }}
+                label={'Secondary Color'}
+                placeholder={'Enter color value'}
+                value={(secondary ?? colors.secondary[9]).toUpperCase()}
+                onChange={setSecondary}
+                size={'sm'}
+                format={'hex'}
+                rightSection={<IconColorPicker size={18} stroke={1.5} />}
+                swatches={generateColorPalettes(secondary)}
+                swatchesPerRow={5}
+                required={enableUpdate}
+                readOnly={!enableUpdate}
               />
 
               <CustomColorPickerClient
-                colorPickerProps={{
-                  size: 'sm',
-                  format: 'hex',
-                  swatchesPerRow: 5,
-                  swatches: generateColorPalettes(tertiary),
-                  onChange: (value: string) => setTertiary(value),
-                  value: (tertiary ?? colors.tertiary[9]).toUpperCase(),
-                  fullWidth: true,
-                }}
-                textInputProps={{
-                  label: 'tertiary Color',
-                  placeholder: 'Enter color value',
-                  value: (tertiary ?? colors.tertiary[9]).toUpperCase(),
-                  onChange: (event) => setTertiary(event.target.value),
-                  size: 'sm',
-                  required: enableUpdate,
-                  readOnly: !enableUpdate,
-                }}
+                label={'Tertiary Color'}
+                placeholder={'Enter color value'}
+                value={(tertiary ?? colors.tertiary[9]).toUpperCase()}
+                onChange={setTertiary}
+                size={'sm'}
+                format={'hex'}
+                rightSection={<IconColorPicker size={18} stroke={1.5} />}
+                swatches={generateColorPalettes(tertiary)}
+                swatchesPerRow={5}
+                required={enableUpdate}
+                readOnly={!enableUpdate}
               />
             </Flex>
           </Stack>
@@ -314,6 +294,7 @@ const CompanyProfileClient = ({
               w={{ base: '100%', lg: 'auto' }}
               px={20}
               align={'end'}
+              sx={{ zIndex: 100 }}
             >
               {!enableUpdate ? (
                 <Tooltip
@@ -322,7 +303,6 @@ const CompanyProfileClient = ({
                   arrowSize={4}
                   label={'Toggle Update'}
                   withArrow
-                  opened
                   position={'top-end'}
                 >
                   <ActionIcon
