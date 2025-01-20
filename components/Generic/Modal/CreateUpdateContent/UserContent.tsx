@@ -1,10 +1,12 @@
 'use client';
 
 import {
+  Box,
   InputBase,
   PasswordInput,
   Select,
   Stack,
+  Text,
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -14,6 +16,7 @@ import { IMaskInput } from 'react-imask';
 import { Switch } from '@mantine/core';
 import DynamicSelect from '../../DynamicSelect';
 import DynamicMultiselect from '../../DynamicMultiselect';
+import SingleImageUploadClient from '../../SingleImageUpload';
 
 const UserContentClient = ({
   data,
@@ -56,6 +59,18 @@ const UserContentClient = ({
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
+        {data?.id && (
+          <Box mb={10}>
+            <SingleImageUploadClient
+              image={data.avatar ?? ''}
+              postUrl={`/media/${data.id}`}
+              params={{ update_type: 'user-avatar' }}
+              height={150}
+              type={'avatar'}
+            />
+          </Box>
+        )}
+
         <TextInput
           size={'sm'}
           label='Employee ID'
@@ -204,6 +219,21 @@ const UserContentClient = ({
           onChange={(value) => form.setFieldValue('roles', value)}
           required
         />
+
+        {data?.id && (
+          <Stack>
+            <Text size={'sm'} fw={500}>
+              Signature
+            </Text>
+            <SingleImageUploadClient
+              image={data?.signature ?? ''}
+              postUrl={`/media/${data?.id}`}
+              params={{ update_type: 'user-signature' }}
+              height={150}
+              type={'signature'}
+            />
+          </Stack>
+        )}
 
         <Switch
           label={'Restricted'}

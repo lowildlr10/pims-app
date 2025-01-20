@@ -146,7 +146,7 @@ const SingleImageUploadClient = ({
                       }
                     />
                   ) : (
-                    <Avatar size={220} />
+                    <Avatar size={height} />
                   )}
                 </>
               ) : (

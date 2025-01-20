@@ -79,7 +79,6 @@ const CompanyProfileClient = ({
 
   useEffect(() => {
     form.reset();
-    handleResetColorInputs();
   }, [enableUpdate]);
 
   const generateColorPalettes = (hex: string) => {
