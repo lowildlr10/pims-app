@@ -71,7 +71,13 @@ const LoginFormClient = () => {
   };
 
   return (
-    <Paper radius='md' p='xl' withBorder w={'430px'} bd={'none'}>
+    <Paper
+      radius='md'
+      p='xl'
+      withBorder
+      w={{ base: 'auto', lg: '430px' }}
+      bd={'none'}
+    >
       <Stack>
         <Title order={2} ta={'center'}>
           Hello!
