@@ -28,6 +28,7 @@ import { useEffect, useState } from 'react';
 import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { Text } from '@mantine/core';
+import NotificationMenuButtonClient from '../NotificationMenuButton';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -347,6 +348,16 @@ const defaultSettingsMenus: LinksGroupProps[] = [
         ],
         link: '/settings/user-management/users',
       },
+      {
+        label: 'User Logs',
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'account-user:*',
+          'account-user:view',
+        ],
+        link: '/settings/user-management/user-logs',
+      },
     ],
   },
   { label: 'Exit', icon: IconArrowBack, link: '/' },
@@ -397,31 +408,37 @@ export function LayoutSidebarClient({
       transitionTimingFunction='ease'
     >
       <AppShell.Header bg={'var(--mantine-color-primary-9)'} c={'white'}>
-        <Group h='100%' px='md'>
-          <Burger
-            opened={mobileOpened}
-            onClick={toggleMobile}
-            hiddenFrom='md'
-            size='sm'
-            color={'white'}
-          />
-          <Burger
-            opened={desktopOpened}
-            onClick={toggleDesktop}
-            visibleFrom='md'
-            size='sm'
-            color={'white'}
-          />
+        <Group h='100%' px='md' justify={'space-between'}>
           <Group>
-            <Image
-              width={30}
-              height={30}
-              src={company?.company_logo ?? '/images/logo-fallback.png'}
-              alt={company?.company_name ?? 'Company'}
+            <Burger
+              opened={mobileOpened}
+              onClick={toggleMobile}
+              hiddenFrom='md'
+              size='sm'
+              color={'white'}
             />
-            <Text size={'lg'} fw={400}>
-              Procurement System
-            </Text>
+            <Burger
+              opened={desktopOpened}
+              onClick={toggleDesktop}
+              visibleFrom='md'
+              size='sm'
+              color={'white'}
+            />
+            <Group>
+              <Image
+                width={30}
+                height={30}
+                src={company?.company_logo ?? '/images/logo-fallback.png'}
+                alt={company?.company_name ?? 'Company'}
+              />
+              <Text size={'lg'} fw={400}>
+                Procurement System
+              </Text>
+            </Group>
+          </Group>
+
+          <Group>
+            <NotificationMenuButtonClient />
           </Group>
         </Group>
       </AppShell.Header>

@@ -182,7 +182,6 @@ const UserContentClient = ({
             form.setFieldValue('phone', event.currentTarget.value)
           }
           error={form.errors.phone && ''}
-          required
         />
         <TextInput
           size={'sm'}

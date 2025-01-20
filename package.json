@@ -46,6 +46,7 @@
     "react-dom": "^18",
     "react-imask": "^7.6.1",
     "recharts": "^2.13.3",
+    "sharp": "^0.33.5",
     "swr": "^2.2.5",
     "use-debounce": "^10.0.4"
   },
