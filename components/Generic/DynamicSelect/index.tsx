@@ -16,7 +16,7 @@ const DynamicSelect = ({
   readOnly,
   required,
 }: DynamicSelectProps) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState<{ label: string; value: string }[]>([]);
   const [inputValue, setInputValue] = useState<string | undefined>(value);
 

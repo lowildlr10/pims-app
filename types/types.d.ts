@@ -7,6 +7,13 @@ type ThemeColorType = {
 type CompanyType = {
   id?: string;
   company_name?: string;
+  address?: string;
+  municipality?: string;
+  province?: string;
+  region?: string;
+  company_type?: string;
+  company_head_id?: string;
+  head?: UserType;
   favicon?: string;
   company_logo?: string;
   login_background?: string;

@@ -11,6 +11,7 @@ import {
   ScrollArea,
   Stack,
   Text,
+  Textarea,
   TextInput,
   Tooltip,
 } from '@mantine/core';
@@ -29,6 +30,7 @@ import { getErrors } from '@/libs/Errors';
 import { ActionIcon } from '@mantine/core';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import CustomColorPickerClient from '../Generic/CustomColorPicker';
+import DynamicSelect from '../Generic/DynamicSelect';
 
 const CompanyProfileClient = ({
   company,
@@ -51,6 +53,12 @@ const CompanyProfileClient = ({
     mode: 'controlled',
     initialValues: {
       company_name: company.company_name ?? '',
+      address: company.address ?? '',
+      region: company.region ?? '',
+      province: company.province ?? '',
+      municipality: company.municipality ?? '',
+      company_type: company.company_type ?? '',
+      company_head_id: company.company_head_id ?? '',
       theme_colors: JSON.stringify(company.theme_colors) ?? '',
     },
   });
@@ -171,6 +179,7 @@ const CompanyProfileClient = ({
                 base: 'column',
                 lg: 'row',
               }}
+              justify={{ base: 'center', lg: 'space-between' }}
               gap={'xl'}
             >
               <Stack align={'center'} p={'md'} w={{ base: '100%', lg: '25%' }}>
@@ -186,22 +195,118 @@ const CompanyProfileClient = ({
                 </Box>
               </Stack>
 
-              <Stack justify={'center'}>
-                <TextInput
-                  label='Company Name'
-                  placeholder='Company Name'
-                  value={form.values.company_name}
-                  onChange={(event) =>
-                    form.setFieldValue(
-                      'company_name',
-                      event.currentTarget.value
-                    )
-                  }
-                  error={form.errors.company_name && ''}
-                  size={'md'}
-                  readOnly={!enableUpdate}
-                  required={enableUpdate}
-                />
+              <Stack justify={'center'} w={{ base: '100%', lg: '75%' }}>
+                <Flex 
+                  direction={{ base: 'column', lg: 'row' }}
+                  justify={{ base: 'center', lg: 'space-between' }}
+                  w={'100%'}
+                  gap={{ base: 'md', lg: 'xl' }}
+                >
+                  <Stack flex={1}>
+                    <TextInput
+                      label='Company Name'
+                      placeholder='Company Name'
+                      value={form.values.company_name}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          'company_name',
+                          event.currentTarget.value
+                        )
+                      }
+                      error={form.errors.company_name && ''}
+                      size={'md'}
+                      readOnly={!enableUpdate}
+                      required={enableUpdate}
+                    />
+
+                    <TextInput
+                      label='Company Type'
+                      placeholder='Company Type'
+                      value={form.values.company_type}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          'company_type',
+                          event.currentTarget.value
+                        )
+                      }
+                      error={form.errors.company_type && ''}
+                      size={'md'}
+                      readOnly={!enableUpdate}
+                    />
+
+                    <DynamicSelect
+                      endpoint={'/accounts/users'}
+                      endpointParams={{ paginated: false, show_all: true }}
+                      column={'fullname'}
+                      label='Company Head'
+                      size={'md'}
+                      value={form.values.company_head_id}
+                      onChange={(value) => form.setFieldValue('company_head_id', value)}
+                    />
+
+                    <Textarea
+                      label='Address'
+                      placeholder='Address'
+                      value={form.values.address}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          'address',
+                          event.currentTarget.value
+                        )
+                      }
+                      error={form.errors.address && ''}
+                      size={'md'}
+                      readOnly={!enableUpdate}
+                    />
+                  </Stack>
+
+                  <Stack flex={1}>
+                    <TextInput
+                      label='Municipality/City'
+                      placeholder='Municipality/City'
+                      value={form.values.municipality}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          'municipality',
+                          event.currentTarget.value
+                        )
+                      }
+                      error={form.errors.municipality && ''}
+                      size={'md'}
+                      readOnly={!enableUpdate}
+                    />
+
+                    <TextInput
+                      label='Province'
+                      placeholder='Province'
+                      value={form.values.province}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          'province',
+                          event.currentTarget.value
+                        )
+                      }
+                      error={form.errors.province && ''}
+                      size={'md'}
+                      readOnly={!enableUpdate}
+                    />
+
+                    <TextInput
+                      label='Region'
+                      placeholder='Region'
+                      value={form.values.region}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          'region',
+                          event.currentTarget.value
+                        )
+                      }
+                      error={form.errors.region && ''}
+                      size={'md'}
+                      readOnly={!enableUpdate}
+                    />
+                  </Stack>
+                </Flex>
               </Stack>
             </Flex>
           </Stack>
