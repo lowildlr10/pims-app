@@ -4,6 +4,41 @@ type ThemeColorType = {
   tertiary: MantineColorsTuple;
 };
 
+type ModuleType =
+  | 'account-division'
+  | 'account-section'
+  | 'account-role'
+  | 'account-user'
+  | 'company'
+  | 'pr'
+  | 'rfq'
+  | 'aoq'
+  | 'po'
+  | 'iar'
+  | 'ors'
+  | 'dv'
+  | 'inventory'
+  | 'payment'
+  | 'lib-fund-source'
+  | 'lib-inv-class'
+  | 'lib-item-class'
+  | 'lib-mfo-pap'
+  | 'lib-mode-proc'
+  | 'lib-paper-size'
+  | 'lib-signatory'
+  | 'lib-signatory-detail'
+  | 'lib-supplier'
+  | 'lib-uacs-class'
+  | 'lib-uacs-code'
+  | 'lib-unit-issue'
+  | 'super'
+  | 'head'
+  | 'supply'
+  | 'budget'
+  | 'accounting'
+  | 'cashier'
+  | 'user';
+
 type CompanyType = {
   id?: string;
   company_name?: string;

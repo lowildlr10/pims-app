@@ -43,17 +43,6 @@ const UacsCodeContentClient = ({
           required
         />
         <TextInput
-          label='Account Title'
-          placeholder='Account Title'
-          value={form.values.account_title}
-          onChange={(event) =>
-            form.setFieldValue('account_title', event.currentTarget.value)
-          }
-          error={form.errors.account_title && ''}
-          size={'sm'}
-          required
-        />
-        <TextInput
           label='Code'
           placeholder='Code'
           value={form.values.code}
@@ -61,6 +50,17 @@ const UacsCodeContentClient = ({
             form.setFieldValue('code', event.currentTarget.value)
           }
           error={form.errors.code && ''}
+          size={'sm'}
+          required
+        />
+        <TextInput
+          label='Account Title'
+          placeholder='Account Title'
+          value={form.values.account_title}
+          onChange={(event) =>
+            form.setFieldValue('account_title', event.currentTarget.value)
+          }
+          error={form.errors.account_title && ''}
           size={'sm'}
           required
         />
@@ -73,7 +73,6 @@ const UacsCodeContentClient = ({
           }
           error={form.errors.description && ''}
           size={'sm'}
-          required
         />
         <Switch
           label={'Status'}
