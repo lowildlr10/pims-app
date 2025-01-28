@@ -176,21 +176,25 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     allowedPermissions: [
       'super:*',
       'head:*',
+      'lib-bid-committee:*',
       'lib-fund-source:*',
       'lib-item-class:*',
       'lib-mfo-pap:*',
       'lib-mode-proc:*',
       'lib-paper-size:*',
+      'lib-responsibility-center:*',
       'lib-signatory:*',
       'lib-supplier:*',
       'lib-uacs-class:*',
       'lib-uacs-code:*',
       'lib-unit-issue:*',
+      'lib-bid-committee:view',
       'lib-fund-source:view',
       'lib-item-class:view',
       'lib-mfo-pap:view',
       'lib-mode-proc:view',
       'lib-paper-size:view',
+      'lib-responsibility-center:view',
       'lib-signatory:view',
       'lib-supplier:view',
       'lib-uacs-class:view',
@@ -199,6 +203,16 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     ],
     initiallyOpened: false,
     links: [
+      {
+        label: 'Bids and Awards Committees',
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'lib-bid-committee:*',
+          'lib-bid-committee:view',
+        ],
+        link: '/settings/library/bids-awards-committees',
+      },
       {
         label: 'Funding Soruces/Projects',
         allowedPermissions: [
@@ -248,6 +262,16 @@ const defaultSettingsMenus: LinksGroupProps[] = [
           'lib-paper-size:view',
         ],
         link: '/settings/library/paper-sizes',
+      },
+      {
+        label: 'Responsibility Centers',
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'lib-responsibility-center:*',
+          'lib-responsibility-center:view',
+        ],
+        link: '/settings/library/responsibility-centers',
       },
       {
         label: 'Signatories',

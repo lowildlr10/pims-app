@@ -77,6 +77,16 @@ type UsersResponse = {
   current_page: number;
 };
 
+type BidsAwardsCommitteeResponse = {
+  data: BidsAwardsCommitteeType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
 type FundingSourcesResponse = {
   data: FundingSourceType[];
   from: number;
@@ -119,6 +129,16 @@ type ProcurementModesResponse = {
 
 type PaperSizesResponse = {
   data: PaperSizeType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type ResposibilityCenterResponse = {
+  data: ResposibilityCenterType[];
   from: number;
   to: number;
   total: number;

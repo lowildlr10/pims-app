@@ -4,41 +4,42 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
+import DataTableClient from '../../Generic/DataTable';
 import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'role_name_formatted',
-      label: 'Role',
+      id: 'code_formatted',
+      label: 'Code',
       width: '25%',
       sortable: true,
     },
     {
-      id: 'permissions_formatted',
-      label: 'Permissions',
+      id: 'description',
+      label: 'Description',
       width: '75%',
-    },
+      sortable: true,
+    }
   ],
   body: [],
 };
 
-const RolesClient = ({ permissions }: RolesProps) => {
+const ResposibilityCentersClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('role_name');
+  const [columnSort, setColumnSort] = useState('code');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<RolesResponse>(
+  const { data, isLoading, mutate } = useSWR<ResposibilityCenterResponse>(
     [
-      `/accounts/roles`,
+      `/libraries/responsibility-centers`,
       search,
       page,
       perPage,
@@ -70,12 +71,12 @@ const RolesClient = ({ permissions }: RolesProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: RoleType) => {
+    const _data = data?.data?.map((body: ResposibilityCenterType) => {
       return {
         ...body,
-        role_name_formatted: (
+        code_formatted: (
           <Group>
-            <Text size={'sm'}>{body.role_name}</Text>
+            <Text size={'sm'}>{body.code}</Text>
             {!body.active && (
               <Badge
                 variant={'light'}
@@ -86,22 +87,7 @@ const RolesClient = ({ permissions }: RolesProps) => {
               </Badge>
             )}
           </Group>
-        ),
-        permissions_formatted: (
-          <>
-            {body.permissions?.map((permission, i) => (
-              <Badge
-                mr={4}
-                variant={'light'}
-                color={'var(--mantine-color-primary-9)'}
-                key={i}
-                sx={{ cursor: 'pointer' }}
-              >
-                {permission}
-              </Badge>
-            )) ?? '-'}
-          </>
-        ),
+        )
       };
     });
 
@@ -113,7 +99,7 @@ const RolesClient = ({ permissions }: RolesProps) => {
 
   return (
     <DataTableClient
-      module={'account-role'}
+      module={'lib-responsibility-center'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -140,4 +126,4 @@ const RolesClient = ({ permissions }: RolesProps) => {
   );
 };
 
-export default RolesClient;
+export default ResposibilityCentersClient;

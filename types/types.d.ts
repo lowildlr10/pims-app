@@ -19,12 +19,14 @@ type ModuleType =
   | 'dv'
   | 'inventory'
   | 'payment'
+  | 'lib-bid-committee'
   | 'lib-fund-source'
   | 'lib-inv-class'
   | 'lib-item-class'
   | 'lib-mfo-pap'
   | 'lib-mode-proc'
   | 'lib-paper-size'
+  | 'lib-responsibility-center'
   | 'lib-signatory'
   | 'lib-signatory-detail'
   | 'lib-supplier'
@@ -141,6 +143,14 @@ type LocationType = {
   location_name?: string;
 };
 
+type BidsAwardsCommitteeType = {
+  id?: string;
+  committee_name?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
 type FundingSourceType = {
   id?: string;
   location_id?: string;
@@ -182,6 +192,15 @@ type PaperSizeType = {
 type ProcurementModeType = {
   id?: string;
   mode_name?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type ResposibilityCenterType = {
+  id?: string;
+  code?: string;
+  description?: string;
   active?: boolean;
   created_at?: string;
   updated_at?: string;
