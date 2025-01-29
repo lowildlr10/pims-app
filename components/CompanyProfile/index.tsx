@@ -196,7 +196,7 @@ const CompanyProfileClient = ({
               </Stack>
 
               <Stack justify={'center'} w={{ base: '100%', lg: '75%' }}>
-                <Flex 
+                <Flex
                   direction={{ base: 'column', lg: 'row' }}
                   justify={{ base: 'center', lg: 'space-between' }}
                   w={'100%'}
@@ -241,7 +241,9 @@ const CompanyProfileClient = ({
                       label='Company Head'
                       size={'md'}
                       value={form.values.company_head_id}
-                      onChange={(value) => form.setFieldValue('company_head_id', value)}
+                      onChange={(value) =>
+                        form.setFieldValue('company_head_id', value)
+                      }
                     />
 
                     <Textarea
@@ -249,10 +251,7 @@ const CompanyProfileClient = ({
                       placeholder='Address'
                       value={form.values.address}
                       onChange={(event) =>
-                        form.setFieldValue(
-                          'address',
-                          event.currentTarget.value
-                        )
+                        form.setFieldValue('address', event.currentTarget.value)
                       }
                       error={form.errors.address && ''}
                       size={'md'}
@@ -296,10 +295,7 @@ const CompanyProfileClient = ({
                       placeholder='Region'
                       value={form.values.region}
                       onChange={(event) =>
-                        form.setFieldValue(
-                          'region',
-                          event.currentTarget.value
-                        )
+                        form.setFieldValue('region', event.currentTarget.value)
                       }
                       error={form.errors.region && ''}
                       size={'md'}

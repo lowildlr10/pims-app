@@ -15,7 +15,7 @@ const defaultTableData: TableDataType = {
       label: 'Committee Name',
       width: '100%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -81,7 +81,7 @@ const BidsAwardsCommitteesClient = ({ permissions }: LibraryProps) => {
               </Badge>
             )}
           </Group>
-        )
+        ),
       };
     });
 

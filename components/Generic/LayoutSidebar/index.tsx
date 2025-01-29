@@ -17,6 +17,7 @@ import {
   IconCash,
   IconGauge,
   IconLibrary,
+  IconLogs,
   IconSettings2,
   IconShoppingCart,
   IconSitemap,
@@ -372,17 +373,13 @@ const defaultSettingsMenus: LinksGroupProps[] = [
         ],
         link: '/settings/user-management/users',
       },
-      {
-        label: 'User Logs',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'account-user:*',
-          'account-user:view',
-        ],
-        link: '/settings/user-management/user-logs',
-      },
     ],
+  },
+  {
+    label: 'System Logs',
+    allowedPermissions: ['super:*', 'system-log:*', 'system-log:view'],
+    icon: IconLogs,
+    link: '/settings/system-log',
   },
   { label: 'Exit', icon: IconArrowBack, link: '/' },
 ];

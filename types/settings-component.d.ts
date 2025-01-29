@@ -77,6 +77,16 @@ type UsersResponse = {
   current_page: number;
 };
 
+type SystemLogResponse = {
+  data: SystemLogType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
 type BidsAwardsCommitteeResponse = {
   data: BidsAwardsCommitteeType[];
   from: number;

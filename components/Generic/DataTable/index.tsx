@@ -32,8 +32,10 @@ const DataTableClient = ({
   search,
   enableCreateSubItem,
   enableUpdateSubItem,
+  itemsClickable = true,
   showSearch,
   showCreate,
+  showDetailsFirst,
   data,
   perPage,
   loading,
@@ -209,6 +211,10 @@ const DataTableClient = ({
         setCreateEndpoint('/accounts/users');
         setCreateModalFullscreen(false);
         break;
+      case 'lib-bid-committee':
+        setCreateModalTitle('Create Bids and Awards Committee');
+        setCreateEndpoint('/libraries/bids-awards-committees');
+        break;
       case 'lib-fund-source':
         setCreateModalTitle('Create Funding Source/Project');
         setCreateEndpoint('/libraries/funding-sources');
@@ -228,6 +234,10 @@ const DataTableClient = ({
       case 'lib-paper-size':
         setCreateModalTitle('Create Paper Size');
         setCreateEndpoint('/libraries/paper-sizes');
+        break;
+      case 'lib-responsibility-center':
+        setCreateModalTitle('Create Responsibility Center');
+        setCreateEndpoint('/libraries/responsibility-centers');
         break;
       case 'lib-signatory':
         setCreateModalTitle('Create Signatory');
@@ -284,6 +294,10 @@ const DataTableClient = ({
         setUpdateModalTitle('Update User');
         setUpdateModalFullscreen(false);
         break;
+      case 'lib-bid-committee':
+        setUpdateModalTitle('Update Bids and Awards Committee');
+        setUpdateEndpoint(`/libraries/bids-awards-committee/${id}`);
+        break;
       case 'lib-fund-source':
         setUpdateModalTitle('Update Funding Source/Project');
         setUpdateEndpoint(`/libraries/funding-sources/${id}`);
@@ -303,6 +317,10 @@ const DataTableClient = ({
       case 'lib-paper-size':
         setUpdateModalTitle('Update Paper Size');
         setUpdateEndpoint(`/libraries/paper-sizes/${id}`);
+        break;
+      case 'lib-responsibility-center':
+        setUpdateModalTitle('Update Responsibility Center');
+        setUpdateEndpoint(`/libraries/responsibility-centers/${id}`);
         break;
       case 'lib-signatory':
         setUpdateModalTitle('Update Signatory');
@@ -455,7 +473,9 @@ const DataTableClient = ({
             {!loading &&
               tableBody?.map((body: any) => (
                 <React.Fragment key={body.id}>
-                  <Table.Tr sx={{ cursor: 'pointer' }}>
+                  <Table.Tr
+                    sx={{ cursor: itemsClickable ? 'pointer' : 'default' }}
+                  >
                     {data.head?.map(
                       (head, i) =>
                         typeof body[head.id] !== 'undefined' && (
@@ -464,6 +484,7 @@ const DataTableClient = ({
                             key={`${body.id}-${body[head.id]}-${i}`}
                             // fw={500}
                             onClick={() =>
+                              itemsClickable &&
                               getAllowedPermissions(module, 'update')?.some(
                                 (permission) => permissions.includes(permission)
                               ) &&
@@ -488,6 +509,7 @@ const DataTableClient = ({
                               <IconArrowDown size={12} />
                             )
                           }
+                          sx={{ cursor: 'pointer' }}
                           onClick={() => handleToggleCollapse(body.id)}
                         >
                           {collapseStates[body.id ?? ''] ? 'Hide' : 'Show'}{' '}
@@ -529,9 +551,10 @@ const DataTableClient = ({
                                 <Table.Tr
                                   key={subBody.id}
                                   sx={{
-                                    cursor: enableUpdateSubItem
-                                      ? 'pointer'
-                                      : 'default',
+                                    cursor:
+                                      itemsClickable && enableUpdateSubItem
+                                        ? 'pointer'
+                                        : 'default',
                                   }}
                                 >
                                   {data.subHead?.map(
@@ -541,6 +564,7 @@ const DataTableClient = ({
                                           key={subBody[subHead.id]}
                                           // fw={500}
                                           onClick={() =>
+                                            itemsClickable &&
                                             enableUpdateSubItem &&
                                             getAllowedPermissions(
                                               subModule,

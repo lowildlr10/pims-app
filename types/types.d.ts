@@ -10,6 +10,7 @@ type ModuleType =
   | 'account-role'
   | 'account-user'
   | 'company'
+  | 'system-log'
   | 'pr'
   | 'rfq'
   | 'aoq'
@@ -136,6 +137,19 @@ type SectionType = {
   division?: DivisionType;
   created_at?: string;
   updated_at?: string;
+};
+
+type SystemLogType = {
+  id?: string;
+  user_id?: string;
+  log_id?: string;
+  log_module?: string;
+  log_type?: string;
+  message?: string;
+  details?: string;
+  data?: object;
+  user?: UserType;
+  logged_at?: string;
 };
 
 type LocationType = {

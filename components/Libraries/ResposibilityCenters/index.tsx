@@ -21,7 +21,7 @@ const defaultTableData: TableDataType = {
       label: 'Description',
       width: '75%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -87,7 +87,7 @@ const ResposibilityCentersClient = ({ permissions }: LibraryProps) => {
               </Badge>
             )}
           </Group>
-        )
+        ),
       };
     });
 

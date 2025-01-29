@@ -4,41 +4,59 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
-import { Badge, Group, Text } from '@mantine/core';
+import DataTableClient from '../../Generic/DataTable';
+import { Badge, Group, Stack, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'role_name_formatted',
-      label: 'Role',
-      width: '25%',
+      id: 'fullname_formatted',
+      label: 'Full Name',
+      width: '22%',
       sortable: true,
     },
     {
-      id: 'permissions_formatted',
-      label: 'Permissions',
-      width: '75%',
+      id: 'employee_id',
+      label: 'Employee ID',
+      width: '10%',
+      sortable: true,
+    },
+    {
+      id: 'division_section',
+      label: 'Division - Section',
+      width: '20%',
+      sortable: true,
+    },
+    {
+      id: 'position_designation',
+      label: 'Position - Designation',
+      width: '20%',
+      sortable: true,
+    },
+    {
+      id: 'user_roles',
+      label: 'Roles',
+      width: '28%',
     },
   ],
   body: [],
 };
 
-const RolesClient = ({ permissions }: RolesProps) => {
+const UsersClient = ({ permissions }: UsersProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('role_name');
+  const [columnSort, setColumnSort] = useState('firstname');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<RolesResponse>(
+  const { data, isLoading, mutate } = useSWR<UsersResponse>(
     [
-      `/accounts/roles`,
+      `/accounts/users`,
       search,
       page,
       perPage,
@@ -70,13 +88,13 @@ const RolesClient = ({ permissions }: RolesProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: RoleType) => {
+    const _data = data?.data?.map((body: UserType) => {
       return {
         ...body,
-        role_name_formatted: (
+        fullname_formatted: (
           <Group>
-            <Text size={'sm'}>{body.role_name}</Text>
-            {!body.active && (
+            <Text size={'sm'}>{body.fullname}</Text>
+            {body.restricted && (
               <Badge
                 variant={'light'}
                 leftSection={<IconExclamationCircleFilled size={14} />}
@@ -87,20 +105,30 @@ const RolesClient = ({ permissions }: RolesProps) => {
             )}
           </Group>
         ),
-        permissions_formatted: (
+        user_roles: (
           <>
-            {body.permissions?.map((permission, i) => (
-              <Badge
-                mr={4}
-                variant={'light'}
-                color={'var(--mantine-color-primary-9)'}
-                key={i}
-                sx={{ cursor: 'pointer' }}
-              >
-                {permission}
+            {body.roles?.map((role, i) => (
+              <Badge mr={4} color={'var(--mantine-color-primary-9)'} key={i}>
+                {role.role_name}
               </Badge>
             )) ?? '-'}
           </>
+        ),
+        division_section: (
+          <Stack gap={0}>
+            <Text size={'sm'}>{body.division?.division_name}</Text>
+            <Text c={'dimmed'} size={'sm'}>
+              {body.section?.section_name}
+            </Text>
+          </Stack>
+        ),
+        position_designation: (
+          <Stack gap={0}>
+            <Text size={'sm'}>{body.position?.position_name}</Text>
+            <Text c={'dimmed'} size={'sm'}>
+              {body.designation?.designation_name}
+            </Text>
+          </Stack>
         ),
       };
     });
@@ -113,7 +141,7 @@ const RolesClient = ({ permissions }: RolesProps) => {
 
   return (
     <DataTableClient
-      module={'account-role'}
+      module={'account-user'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -140,4 +168,4 @@ const RolesClient = ({ permissions }: RolesProps) => {
   );
 };
 
-export default RolesClient;
+export default UsersClient;

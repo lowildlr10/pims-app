@@ -1,20 +1,20 @@
 import { getCompany } from '@/actions/company';
 import { getPermissions, getUser } from '@/actions/user';
-import DivisionSectionClient from '@/components/UserManagement/DivisionSection';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
+import SystemLogsClient from '@/components/SystemLog';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'Procurement System - Divisions',
-  description: 'Procurement System - Divisions',
+  title: 'Procurement System - System Logs',
+  description: 'Procurement System - System Logs',
 };
 
-const DivisionPage = async () => {
-  const company: CompanyType = await getCompany();
+const SystemLogPage = async () => {
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
+  const company: CompanyType = await getCompany();
 
   if (!user) redirect('/login');
 
@@ -25,11 +25,11 @@ const DivisionPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'User Management - Divisions and Sections'}>
-        <DivisionSectionClient permissions={permissions} />
+      <MainContainerClient title={'System Logs'}>
+        <SystemLogsClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default DivisionPage;
+export default SystemLogPage;

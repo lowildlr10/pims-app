@@ -111,8 +111,10 @@ type DataTableProps = {
   search?: string;
   enableCreateSubItem?: boolean;
   enableUpdateSubItem?: boolean;
+  itemsClickable?: boolean;
   showSearch?: boolean;
   showCreate?: boolean;
+  showDetailsFirst?: boolean;
 
   data: TableDataType;
   perPage: number;

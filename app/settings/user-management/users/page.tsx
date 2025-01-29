@@ -2,7 +2,7 @@ import { getCompany } from '@/actions/company';
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import UserssClient from '@/components/Users';
+import UserssClient from '@/components/UserManagement/Users';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
