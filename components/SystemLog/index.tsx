@@ -88,7 +88,7 @@ const DataDisplay = ({
       }}
       opened={opened}
       onClose={close}
-      size={'md'}
+      size={'lg'}
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
@@ -183,7 +183,7 @@ const SystemLogsClient = ({ permissions }: LibraryProps) => {
               variant={'outline'}
               color={'var(--mantine-color-secondary-7)'}
               onClick={() => {
-                setJsonData(JSON.stringify(body?.data));
+                setJsonData(JSON.stringify(body?.data, null, 2));
                 open();
               }}
             >
