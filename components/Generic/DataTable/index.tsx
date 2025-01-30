@@ -296,7 +296,7 @@ const DataTableClient = ({
         break;
       case 'lib-bid-committee':
         setUpdateModalTitle('Update Bids and Awards Committee');
-        setUpdateEndpoint(`/libraries/bids-awards-committee/${id}`);
+        setUpdateEndpoint(`/libraries/bids-awards-committees/${id}`);
         break;
       case 'lib-fund-source':
         setUpdateModalTitle('Update Funding Source/Project');

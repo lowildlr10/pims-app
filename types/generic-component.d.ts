@@ -217,6 +217,12 @@ type ModalUserContentProps = {
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
+type ModalBidsAwardsCommitteeContentProps = {
+  data: BidsAwardsCommitteeType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
 type ModalFundingSourceContentProps = {
   data: FundingSourceType;
   handleCreateUpdate?: () => void;
@@ -243,6 +249,12 @@ type ModalPaperSizeContentProps = {
 
 type ModalProcurementModeContentProps = {
   data: ProcurementModeType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
+type ModalResposibilityCenterContentProps = {
+  data: ResposibilityCenterType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };

@@ -25,6 +25,8 @@ import UacsCodeClassificationContentClient from './CreateUpdateContent/UacsCodeC
 import UacsCodeContentClient from './CreateUpdateContent/UacsCodeContent';
 import UnitIssueContentClient from './CreateUpdateContent/UnitIssueContent';
 import SignatoryContentClient from './CreateUpdateContent/SignatoryContent';
+import BidsAwardsCommitteeContentClient from './CreateUpdateContent/BidsAwardsCommitteeContent';
+import ResponsibilityCenterContentClient from './CreateUpdateContent/ResponsibilityCenterContent';
 
 const UpdateModalClient = ({
   title,
@@ -136,6 +138,14 @@ const UpdateModalClient = ({
           />
         )}
 
+        {content === 'lib-bid-committee' && (
+          <BidsAwardsCommitteeContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+
         {content === 'lib-fund-source' && (
           <FundingSourceContentClient
             data={data}
@@ -170,6 +180,14 @@ const UpdateModalClient = ({
 
         {content === 'lib-paper-size' && (
           <PaperSizeContentClient
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'lib-responsibility-center' && (
+          <ResponsibilityCenterContentClient
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}

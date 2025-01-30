@@ -226,7 +226,6 @@ const SystemLogsClient = ({ permissions }: LibraryProps) => {
           setSortDirection(_sortDirection ?? 'desc');
         }}
         showSearch
-        showCreate
         itemsClickable={false}
       />
 
