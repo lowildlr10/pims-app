@@ -12,6 +12,7 @@ type ModuleType =
   | 'company'
   | 'system-log'
   | 'pr'
+  | 'pr-item'
   | 'rfq'
   | 'aoq'
   | 'po'
@@ -303,6 +304,64 @@ type UnitIssueType = {
   id?: string;
   unit_name?: string;
   active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type PurchaseRequestItemType = {
+  id?: string;
+  purchase_request_id?: string;
+  item_sequence?: number;
+  quantity?: number;
+  unit_issue_id?: string;
+  unit_issue?: UnitIssueType;
+  description?: string;
+  stock_no?: number;
+  estimated_unit_cost?: number;
+  estimated_cost?: number;
+  estimated_unit_cost_formatted?: string;
+  estimated_cost_formatted?: string;
+};
+
+type PurchaseRequestStatus =
+  | 'draft'
+  | 'pending'
+  | 'approved_cash_available'
+  | 'approved'
+  | 'disapproved'
+  | 'cancelled'
+  | 'for_canvassing'
+  | 'for_abstract'
+  | 'for_po'
+  | 'completed';
+
+type PurchaseRequestType = {
+  id?: string;
+  section_id?: string;
+  section?: SectionType;
+  pr_no?: string;
+  pr_date?: string;
+  sai_no?: string;
+  sai_date?: string;
+  alobs_no?: string;
+  alobs_date?: string;
+  funding_source_id?: string;
+  funding_source?: FundingSourceType;
+  requested_by_id?: string;
+  requestor?: UserType;
+  sig_cash_availability_id?: string;
+  signatory_cash_availability?: SignatoryType;
+  sig_approved_by_id?: string;
+  signatory_approved_by?: SignatoryType;
+  status?: PurchaseRequestStatus;
+  items?: PurchaseRequestItemType[];
+  total_estimated_cost?: number;
+  total_estimated_cost_formatted?: string;
+  submitted_at?: string;
+  approved_cash_available_at?: string;
+  approved_at?: string;
+  disapproved_at?: string;
+  cancelled_at?: string;
   created_at?: string;
   updated_at?: string;
 };

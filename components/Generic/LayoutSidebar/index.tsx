@@ -104,34 +104,24 @@ const defaultMainMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: [
       {
-        label: 'Requisition and Issue Slip',
+        label: 'Supplies',
         allowedPermissions: [
           'super:*',
           'head:*',
           'inventory:*',
           'inventory:view',
         ],
-        link: '/inventory/ris',
+        link: '/inventory/supplies',
       },
       {
-        label: 'Inventory Custodian Slip',
+        label: 'Issuances',
         allowedPermissions: [
           'super:*',
           'head:*',
           'inventory:*',
           'inventory:view',
         ],
-        link: '/inventory/ics',
-      },
-      {
-        label: 'Aknowledgement Receipt of Equipment',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'inventory:*',
-          'inventory:view',
-        ],
-        link: '/inventory/are',
+        link: '/inventory/issuances',
       },
     ],
   },

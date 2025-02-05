@@ -115,6 +115,7 @@ type DataTableProps = {
   showSearch?: boolean;
   showCreate?: boolean;
   showDetailsFirst?: boolean;
+  autoCollapseFirstSubItems?: boolean;
 
   data: TableDataType;
   perPage: number;
@@ -330,3 +331,24 @@ type RoleCheckedType = {
   module: ModuleType;
   checked: boolean;
 };
+
+type PurchaseRequestItemsFieldType = {
+  item_key: number;
+  quantity?: number;
+  unit_issue_id?: string;
+  description?: string;
+  stock_no?: number;
+  estimated_unit_cost?: number;
+  estimated_cost?: number;
+};
+
+type PurchaseRequestItemHeader = {
+  id: string;
+  label: string;
+  width?: number | string;
+}
+
+type PurchaseRequestItemTableProps = {
+  items?: PurchaseRequestItemType[];
+  onChange?: (value: string) => void;
+}

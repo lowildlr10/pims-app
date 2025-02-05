@@ -37,6 +37,10 @@ type LibraryProps = {
   permissions: string[];
 };
 
+type MainProps = {
+  permissions: string[];
+};
+
 type GeneralResponse = [
   url: string,
   search: string,

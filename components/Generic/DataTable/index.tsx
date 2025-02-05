@@ -36,6 +36,7 @@ const DataTableClient = ({
   showSearch,
   showCreate,
   showDetailsFirst,
+  autoCollapseFirstSubItems = true,
   data,
   perPage,
   loading,
@@ -83,9 +84,10 @@ const DataTableClient = ({
       if (body?.subBody?.length > 0) setHasSubBody(true);
     });
 
-    setCollapseStates({
-      [data?.body[0]?.id as string]: true,
-    });
+    if (autoCollapseFirstSubItems)
+      setCollapseStates({
+        [data?.body[0]?.id as string]: true,
+      });
 
     setTableBody(data.body);
   }, [data]);
@@ -117,6 +119,10 @@ const DataTableClient = ({
 
       case 'lib-signatory':
         setSubButtonLabel('Details');
+        break;
+
+      case 'pr':
+        setSubButtonLabel('Items');
         break;
 
       default:
@@ -258,6 +264,11 @@ const DataTableClient = ({
       case 'lib-unit-issue':
         setCreateModalTitle('Create Unit of Issue');
         setCreateEndpoint('/libraries/unit-issues');
+        break;
+      case 'pr':
+        setCreateModalTitle('Create Purchase Request');
+        setCreateEndpoint('/purchase-requests');
+        setCreateModalFullscreen(true);
         break;
       default:
         break;
@@ -539,7 +550,11 @@ const DataTableClient = ({
                                 c={'white'}
                               >
                                 {data.subHead?.map((subHead) => (
-                                  <Table.Th key={subHead.id} w={subHead.width}>
+                                  <Table.Th
+                                    key={subHead.id}
+                                    w={subHead.width}
+                                    fw={500}
+                                  >
                                     {subHead.label}
                                   </Table.Th>
                                 ))}

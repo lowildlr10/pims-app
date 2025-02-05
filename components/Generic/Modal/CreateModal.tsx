@@ -27,6 +27,7 @@ import UnitIssueContentClient from './CreateUpdateContent/UnitIssueContent';
 import SignatoryContentClient from './CreateUpdateContent/SignatoryContent';
 import BidsAwardsCommitteeContentClient from './CreateUpdateContent/BidsAwardsCommitteeContent';
 import ResponsibilityCenterContentClient from './CreateUpdateContent/ResponsibilityCenterContent';
+import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
 
 const CreateModalClient = ({
   title,
@@ -101,7 +102,7 @@ const CreateModalClient = ({
       <ScrollArea
         h={{
           md: '100%',
-          lg: fullscreen ? 'calc(100vh - 7.8em)' : 'calc(100vh - 18em)',
+          lg: fullscreen ? 'calc(100vh - 8.5em)' : 'calc(100vh - 18em)',
         }}
         sx={{ borderRadius: 5 }}
         mb={'lg'}
@@ -228,6 +229,14 @@ const CreateModalClient = ({
 
         {content === 'lib-unit-issue' && (
           <UnitIssueContentClient
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {content === 'pr' && (
+          <PurchaseRequestContentClient
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
