@@ -2,11 +2,10 @@ import { Stack, Switch, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 
-const BidsAwardsCommitteeContentClient = forwardRef<HTMLFormElement, ModalBidsAwardsCommitteeContentProps>(({
-  data,
-  handleCreateUpdate,
-  setPayload,
-}, ref) => {
+const BidsAwardsCommitteeContentClient = forwardRef<
+  HTMLFormElement,
+  ModalBidsAwardsCommitteeContentProps
+>(({ data, handleCreateUpdate, setPayload }, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -56,6 +55,7 @@ const BidsAwardsCommitteeContentClient = forwardRef<HTMLFormElement, ModalBidsAw
   );
 });
 
-BidsAwardsCommitteeContentClient.displayName = 'BidsAwardsCommitteeContentClient';
+BidsAwardsCommitteeContentClient.displayName =
+  'BidsAwardsCommitteeContentClient';
 
 export default BidsAwardsCommitteeContentClient;

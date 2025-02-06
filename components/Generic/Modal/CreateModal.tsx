@@ -255,19 +255,21 @@ const CreateModalClient = ({
         )}
       </Stack>
 
-      <Stack 
-        w={'100%'} 
-        bg={'white'} 
-        pos={'fixed'} 
-        bottom={0} 
-        right={0} 
-        align={'end'} 
+      <Stack
+        w={'100%'}
+        bg={'white'}
+        pos={'fixed'}
+        bottom={0}
+        right={0}
+        align={'end'}
         p={15}
         sx={{ zIndex: 100 }}
       >
         <Group>
           <Button
-            onClick={() => formRef?.current ? formRef?.current.requestSubmit() : undefined}
+            onClick={() =>
+              formRef?.current ? formRef?.current.requestSubmit() : undefined
+            }
             type={'button'}
             color={'var(--mantine-color-primary-9)'}
             size={'sm'}

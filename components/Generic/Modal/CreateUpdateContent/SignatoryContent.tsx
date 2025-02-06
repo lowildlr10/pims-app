@@ -5,11 +5,10 @@ import { useListState } from '@mantine/hooks';
 import DynamicSelect from '../../DynamicSelect';
 import DynamicAutocomplete from '../../DynamicAutocomplete';
 
-const SignatoryContentClient = forwardRef<HTMLFormElement, ModalSignatoryContentProps>(({
-  data,
-  handleCreateUpdate,
-  setPayload,
-}, ref) => {
+const SignatoryContentClient = forwardRef<
+  HTMLFormElement,
+  ModalSignatoryContentProps
+>(({ data, handleCreateUpdate, setPayload }, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {

@@ -1,4 +1,13 @@
-import { ActionIcon, Group, NumberInput, Stack, Table, Text, Textarea, TextInput } from '@mantine/core';
+import {
+  ActionIcon,
+  Group,
+  NumberInput,
+  Stack,
+  Table,
+  Text,
+  Textarea,
+  TextInput,
+} from '@mantine/core';
 import React, { forwardRef, ReactNode, useEffect, useState } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
@@ -16,45 +25,48 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
     id: 'quantity',
     label: 'QTY',
     width: '12%',
-    required: true
+    required: true,
   },
   {
     id: 'unit_issue',
     label: 'Unit of Issue',
     width: '11%',
-    required: true
+    required: true,
   },
   {
     id: 'description',
     label: 'Description',
     width: '33%',
-    required: true
+    required: true,
   },
   {
     id: 'stock_no',
     label: 'Stock No',
-    width: '11%'
+    width: '11%',
   },
   {
     id: 'estimated_unit_cost',
     label: 'Estimated Unit Cost',
     width: '16%',
-    required: true
+    required: true,
   },
   {
     id: 'estimated_cost',
     label: 'Estimated Cost',
     width: '16%',
-    required: true
+    required: true,
   },
   {
     id: 'delete',
     label: '',
-    width: '2%'
-  }
+    width: '2%',
+  },
 ];
 
-const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
+const ItemTableClient = ({
+  items,
+  onChange,
+}: PurchaseRequestItemTableProps) => {
   const [itemFields, handlers] = useListState<PurchaseRequestItemsFieldType>([
     {
       item_key: 1,
@@ -63,8 +75,8 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
       description: undefined,
       stock_no: 1,
       estimated_unit_cost: undefined,
-      estimated_cost: undefined
-    }
+      estimated_cost: undefined,
+    },
   ]);
 
   useEffect(() => {
@@ -78,7 +90,7 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
         description: item.description,
         stock_no: item.stock_no,
         estimated_unit_cost: item.estimated_unit_cost,
-        estimated_cost: item.estimated_cost
+        estimated_cost: item.estimated_cost,
       }))
     );
   }, [items]);
@@ -89,7 +101,11 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
     onChange(JSON.stringify(itemFields));
   }, [itemFields]);
 
-  const renderDynamicTdContent = (id: string, item: PurchaseRequestItemsFieldType, index?: number): ReactNode => {
+  const renderDynamicTdContent = (
+    id: string,
+    item: PurchaseRequestItemsFieldType,
+    index?: number
+  ): ReactNode => {
     switch (id) {
       case 'quantity':
         return (
@@ -100,17 +116,22 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
               value={item?.quantity}
               size={'sm'}
               onChange={(value) =>
-                index !== undefined && handlers.setItem(index, {
+                index !== undefined &&
+                handlers.setItem(index, {
                   ...item,
                   quantity: value as number,
-                  estimated_cost: parseFloat(((value as number) * (item.estimated_unit_cost ?? 0)).toFixed(2))
+                  estimated_cost: parseFloat(
+                    (
+                      (value as number) * (item.estimated_unit_cost ?? 0)
+                    ).toFixed(2)
+                  ),
                 })
               }
               required
             />
           </Table.Td>
         );
-      
+
       case 'unit_issue':
         return (
           <Table.Td>
@@ -122,10 +143,11 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
               column={'unit_name'}
               value={item?.unit_issue_id}
               size={'sm'}
-              onChange={(value) => 
-                index !== undefined && handlers.setItem(index, {
+              onChange={(value) =>
+                index !== undefined &&
+                handlers.setItem(index, {
                   ...item,
-                  unit_issue_id: value
+                  unit_issue_id: value,
                 })
               }
               required
@@ -140,14 +162,16 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
               variant={'unstyled'}
               placeholder={
                 item?.description?.trim() === '' || !item?.description?.trim()
-                  ? 'Description' : item?.description?.trim()
+                  ? 'Description'
+                  : item?.description?.trim()
               }
               value={item?.description}
               size={'sm'}
               onChange={(event) =>
-                index !== undefined && handlers.setItem(index, {
+                index !== undefined &&
+                handlers.setItem(index, {
                   ...item,
-                  description: event.currentTarget.value 
+                  description: event.currentTarget.value,
                 })
               }
               autosize
@@ -165,9 +189,10 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
               value={item?.stock_no}
               size={'sm'}
               onChange={(value) =>
-                index !== undefined && handlers.setItem(index, {
+                index !== undefined &&
+                handlers.setItem(index, {
                   ...item,
-                  stock_no: value as number
+                  stock_no: value as number,
                 })
               }
               required
@@ -180,14 +205,21 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
           <Table.Td>
             <NumberInput
               variant={'unstyled'}
-              placeholder={item?.estimated_unit_cost ? String(item?.estimated_unit_cost) : 'Estimated Unit Cost'}
+              placeholder={
+                item?.estimated_unit_cost
+                  ? String(item?.estimated_unit_cost)
+                  : 'Estimated Unit Cost'
+              }
               value={item?.estimated_unit_cost}
               size={'sm'}
               onChange={(value) =>
-                index !== undefined && handlers.setItem(index, {
+                index !== undefined &&
+                handlers.setItem(index, {
                   ...item,
                   estimated_unit_cost: value as number,
-                  estimated_cost: parseFloat(((value as number) * (item.quantity ?? 0)).toFixed(2))
+                  estimated_cost: parseFloat(
+                    ((value as number) * (item.quantity ?? 0)).toFixed(2)
+                  ),
                 })
               }
               required
@@ -200,20 +232,25 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
           <Table.Td>
             <NumberInput
               variant={'unstyled'}
-              placeholder={item?.estimated_cost ? String(item?.estimated_cost) : 'Estimated Cost'}
+              placeholder={
+                item?.estimated_cost
+                  ? String(item?.estimated_cost)
+                  : 'Estimated Cost'
+              }
               value={item?.estimated_cost}
               size={'sm'}
               onChange={(value) =>
-                index !== undefined && handlers.setItem(index, {
+                index !== undefined &&
+                handlers.setItem(index, {
                   ...item,
-                  estimated_cost: value as number
+                  estimated_cost: value as number,
                 })
               }
               required
             />
           </Table.Td>
         );
-    
+
       default:
         return <></>;
     }
@@ -230,15 +267,17 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
     >
       <Table.Thead>
         <Table.Tr>
-          {itemHeaders.map(header => (
-            <Table.Th 
-              key={header.id}
-              w={header?.width ?? undefined}
-            >
+          {itemHeaders.map((header) => (
+            <Table.Th key={header.id} w={header?.width ?? undefined}>
               <Group gap={1} align={'flex-start'}>
-                {header.label} {header?.required && (
+                {header.label}{' '}
+                {header?.required && (
                   <Stack>
-                    <IconAsterisk size={7} color={'var(--mantine-color-red-8)'} stroke={2} />
+                    <IconAsterisk
+                      size={7}
+                      color={'var(--mantine-color-red-8)'}
+                      stroke={2}
+                    />
                   </Stack>
                 )}
               </Group>
@@ -248,13 +287,19 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
       </Table.Thead>
       <Table.Tbody>
         {itemFields.map((item, index) => (
-          <Table.Tr key={`item-${index}-${item.item_key}`} sx={{ verticalAlign: 'top' }}>
-            {itemHeaders.map(header => header.id !== 'delete' &&  (
-              <React.Fragment key={`field-${index}-${header.id}`}>
-                {renderDynamicTdContent(header.id, item, index)}
-              </React.Fragment>
-            ))}
-            
+          <Table.Tr
+            key={`item-${index}-${item.item_key}`}
+            sx={{ verticalAlign: 'top' }}
+          >
+            {itemHeaders.map(
+              (header) =>
+                header.id !== 'delete' && (
+                  <React.Fragment key={`field-${index}-${header.id}`}>
+                    {renderDynamicTdContent(header.id, item, index)}
+                  </React.Fragment>
+                )
+            )}
+
             <Table.Td>
               <ActionIcon
                 color={'var(--mantine-color-red-7)'}
@@ -275,32 +320,37 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
       <Table.Tfoot>
         <Table.Tr>
           <Table.Td colSpan={7}>
-            <Button 
+            <Button
               color={'var(--mantine-color-secondary-9)'}
               leftSection={<IconPlus size={18} stroke={2} />}
-              onClick={() => handlers.append({
-                item_key: (itemFields[itemFields.length - 1]?.item_key ?? 1) + 1,
-                quantity: undefined,
-                unit_issue_id: undefined,
-                description: undefined,
-                stock_no: (itemFields[itemFields.length - 1]?.stock_no ?? 1) + 1,
-                estimated_unit_cost: undefined,
-                estimated_cost: undefined
-              })}
+              onClick={() =>
+                handlers.append({
+                  item_key:
+                    (itemFields[itemFields.length - 1]?.item_key ?? 1) + 1,
+                  quantity: undefined,
+                  unit_issue_id: undefined,
+                  description: undefined,
+                  stock_no:
+                    (itemFields[itemFields.length - 1]?.stock_no ?? 1) + 1,
+                  estimated_unit_cost: undefined,
+                  estimated_cost: undefined,
+                })
+              }
               fullWidth
-            >Add Item</Button>
+            >
+              Add Item
+            </Button>
           </Table.Td>
         </Table.Tr>
       </Table.Tfoot>
     </Table>
   );
-}
+};
 
-const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRequestContentProps>(({
-  data,
-  setPayload,
-  handleCreateUpdate
-}, ref) => {
+const PurchaseRequestContentClient = forwardRef<
+  HTMLFormElement,
+  ModalPurchaseRequestContentProps
+>(({ data, setPayload, handleCreateUpdate }, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -315,7 +365,7 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
       requested_by_id: data?.requested_by_id ?? '',
       sig_cash_availability_id: data?.sig_cash_availability_id ?? '',
       sig_approved_by_id: data?.sig_approved_by_id ?? '',
-      items: data?.items ? JSON.stringify(data?.items) : ''
+      items: data?.items ? JSON.stringify(data?.items) : '',
     },
   });
   const [department, setDepartment] = useState('');
@@ -348,22 +398,19 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
       ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
-      <Stack 
+      <Stack
         bd={'1px solid var(--mantine-color-gray-8)'}
-        justify={'center'} 
+        justify={'center'}
         gap={0}
       >
-        <Group 
-          w={'100%'} 
+        <Group
+          w={'100%'}
           justify={'center'}
           align={'flex-start'}
           gap={0}
           bd={'1px solid var(--mantine-color-gray-8)'}
         >
-          <Stack
-            p={'md'} 
-            flex={0.35}
-          >
+          <Stack p={'md'} flex={0.35}>
             <Group>
               <Text>Department:</Text>
               <TextInput
@@ -372,13 +419,17 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
                 size={'sm'}
                 flex={1}
                 readOnly
-              /> 
+              />
             </Group>
             <Group>
               <Group gap={1} align={'flex-start'}>
                 <Text>Section:</Text>
                 <Stack>
-                  <IconAsterisk size={7} color={'var(--mantine-color-red-8)'} stroke={2} />
+                  <IconAsterisk
+                    size={7}
+                    color={'var(--mantine-color-red-8)'}
+                    stroke={2}
+                  />
                 </Stack>
               </Group>
               <Stack justify={'center'} flex={1}>
@@ -388,17 +439,15 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
                   column={'section_name'}
                   value={form.values.section_id}
                   size={'sm'}
-                  onChange={(value) => 
-                    form.setFieldValue('section_id', value)
-                  }
+                  onChange={(value) => form.setFieldValue('section_id', value)}
                   required
                 />
               </Stack>
             </Group>
           </Stack>
 
-          <Stack 
-            p={'md'} 
+          <Stack
+            p={'md'}
             flex={0.65}
             sx={{ borderLeft: '1px solid var(--mantine-color-gray-8)' }}
           >
@@ -414,14 +463,25 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
               <Group gap={1} align={'flex-start'}>
                 <Text>Date:</Text>
                 <Stack>
-                  <IconAsterisk size={7} color={'var(--mantine-color-red-8)'} stroke={2} />
+                  <IconAsterisk
+                    size={7}
+                    color={'var(--mantine-color-red-8)'}
+                    stroke={2}
+                  />
                 </Stack>
               </Group>
               <DateInput
                 valueFormat={'YYYY-MM-DD'}
-                value={form.values.pr_date ? new Date(form.values?.pr_date) : undefined}
-                onChange={(value) => 
-                  form.setFieldValue('pr_date', value ? dayjs(value).format('YYYY-MM-DD') : '')
+                value={
+                  form.values.pr_date
+                    ? new Date(form.values?.pr_date)
+                    : undefined
+                }
+                onChange={(value) =>
+                  form.setFieldValue(
+                    'pr_date',
+                    value ? dayjs(value).format('YYYY-MM-DD') : ''
+                  )
                 }
                 placeholder={'PR Date'}
                 error={form.errors.pr_date && ''}
@@ -445,9 +505,16 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
               <Text>Date:</Text>
               <DateInput
                 valueFormat={'YYYY-MM-DD'}
-                value={form.values.sai_date ? new Date(form.values?.sai_date) : undefined}
-                onChange={(value) => 
-                  form.setFieldValue('sai_date', value ? dayjs(value).format('YYYY-MM-DD') : '')
+                value={
+                  form.values.sai_date
+                    ? new Date(form.values?.sai_date)
+                    : undefined
+                }
+                onChange={(value) =>
+                  form.setFieldValue(
+                    'sai_date',
+                    value ? dayjs(value).format('YYYY-MM-DD') : ''
+                  )
                 }
                 placeholder={'SAI Date'}
                 error={form.errors.sai_date && ''}
@@ -470,9 +537,16 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
               <Text>Date:</Text>
               <DateInput
                 valueFormat={'YYYY-MM-DD'}
-                value={form.values.alobs_date ? new Date(form.values?.alobs_date) : undefined}
-                onChange={(value) => 
-                  form.setFieldValue('alobs_date', value ? dayjs(value).format('YYYY-MM-DD') : '')
+                value={
+                  form.values.alobs_date
+                    ? new Date(form.values?.alobs_date)
+                    : undefined
+                }
+                onChange={(value) =>
+                  form.setFieldValue(
+                    'alobs_date',
+                    value ? dayjs(value).format('YYYY-MM-DD') : ''
+                  )
                 }
                 placeholder={'ALOBS Date'}
                 error={form.errors.alobs_date && ''}
@@ -484,13 +558,13 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
         </Group>
 
         <Stack>
-          <ItemTableClient 
+          <ItemTableClient
             items={data?.items ?? []}
-            onChange={(value) => form.setFieldValue('items', value)} 
+            onChange={(value) => form.setFieldValue('items', value)}
           />
         </Stack>
 
-        <Group 
+        <Group
           align={'flex-start'}
           bd={'1px solid var(--mantine-color-gray-8)'}
           p={'md'}
@@ -517,13 +591,11 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
             column={'title'}
             value={form.values.funding_source_id}
             size={'sm'}
-            onChange={(value) => 
-              form.setFieldValue('funding_source_id', value)
-            }
+            onChange={(value) => form.setFieldValue('funding_source_id', value)}
           />
         </Group>
 
-        <Group 
+        <Group
           align={'flex-start'}
           bd={'1px solid var(--mantine-color-gray-8)'}
           p={'md'}
@@ -536,26 +608,24 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
             column={'fullname'}
             value={form.values.requested_by_id}
             size={'sm'}
-            onChange={(value) => 
-              form.setFieldValue('requested_by_id', value)
-            }
+            onChange={(value) => form.setFieldValue('requested_by_id', value)}
             required
           />
 
           <DynamicSelect
             label={'Cash Availability'}
             endpoint={'/libraries/signatories'}
-            endpointParams={{ 
-              paginated: false, 
+            endpointParams={{
+              paginated: false,
               show_all: true,
               document: 'pr',
-              signatory_type: 'cash_availability'
+              signatory_type: 'cash_availability',
             }}
             valueColumn={'signatory_id'}
             column={'fullname_designation'}
             value={form.values.sig_cash_availability_id}
             size={'sm'}
-            onChange={(value) => 
+            onChange={(value) =>
               form.setFieldValue('sig_cash_availability_id', value)
             }
           />
@@ -563,17 +633,17 @@ const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRe
           <DynamicSelect
             label={'Approved By'}
             endpoint={'/libraries/signatories'}
-            endpointParams={{ 
-              paginated: false, 
+            endpointParams={{
+              paginated: false,
               show_all: true,
               document: 'pr',
-              signatory_type: 'approved_by'
+              signatory_type: 'approved_by',
             }}
             valueColumn={'signatory_id'}
             column={'fullname_designation'}
             value={form.values.sig_approved_by_id}
             size={'sm'}
-            onChange={(value) => 
+            onChange={(value) =>
               form.setFieldValue('sig_approved_by_id', value)
             }
           />

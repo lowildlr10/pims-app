@@ -2,11 +2,10 @@ import { Stack, Switch, Textarea, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 
-const SupplierContentClient = forwardRef<HTMLFormElement, ModalSupplierContentProps>(({
-  data,
-  handleCreateUpdate,
-  setPayload,
-}, ref) => {
+const SupplierContentClient = forwardRef<
+  HTMLFormElement,
+  ModalSupplierContentProps
+>(({ data, handleCreateUpdate, setPayload }, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {

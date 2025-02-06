@@ -2,11 +2,10 @@ import { Stack, Switch, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 
-const UacsCodeClassificationContentClient = forwardRef<HTMLFormElement, ModalUacsCodeClassificationContentProps>(({
-  data,
-  handleCreateUpdate,
-  setPayload,
-}, ref) => {
+const UacsCodeClassificationContentClient = forwardRef<
+  HTMLFormElement,
+  ModalUacsCodeClassificationContentProps
+>(({ data, handleCreateUpdate, setPayload }, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -56,6 +55,7 @@ const UacsCodeClassificationContentClient = forwardRef<HTMLFormElement, ModalUac
   );
 });
 
-UacsCodeClassificationContentClient.displayName = 'UacsCodeClassificationContentClient';
+UacsCodeClassificationContentClient.displayName =
+  'UacsCodeClassificationContentClient';
 
 export default UacsCodeClassificationContentClient;

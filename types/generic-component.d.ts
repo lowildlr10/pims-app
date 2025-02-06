@@ -350,9 +350,9 @@ type PurchaseRequestItemHeader = {
   label: string;
   width?: number | string;
   required?: boolean;
-}
+};
 
 type PurchaseRequestItemTableProps = {
   items?: PurchaseRequestItemType[];
   onChange?: (value: string) => void;
-}
+};

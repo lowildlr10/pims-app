@@ -3,11 +3,10 @@ import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 import DynamicAutocomplete from '../../DynamicAutocomplete';
 
-const FundingSourceContentClient = forwardRef<HTMLFormElement, ModalFundingSourceContentProps>(({
-  data,
-  handleCreateUpdate,
-  setPayload,
-}, ref) => {
+const FundingSourceContentClient = forwardRef<
+  HTMLFormElement,
+  ModalFundingSourceContentProps
+>(({ data, handleCreateUpdate, setPayload }, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {

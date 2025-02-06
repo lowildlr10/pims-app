@@ -3,11 +3,10 @@ import React, { forwardRef, useEffect } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 
-const SectionContentClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(({
-  data,
-  handleCreateUpdate,
-  setPayload,
-}, ref) => {
+const SectionContentClient = forwardRef<
+  HTMLFormElement,
+  ModalSectionContentProps
+>(({ data, handleCreateUpdate, setPayload }, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
