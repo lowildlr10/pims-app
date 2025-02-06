@@ -573,10 +573,10 @@ const DataTableClient = ({
                                   }}
                                 >
                                   {data.subHead?.map(
-                                    (subHead) =>
+                                    (subHead, subHeadIndex) =>
                                       subBody[subHead.id] && (
                                         <Table.Td
-                                          key={subBody[subHead.id]}
+                                          key={`${subBody.id}-${subHeadIndex}`}
                                           // fw={500}
                                           onClick={() =>
                                             itemsClickable &&

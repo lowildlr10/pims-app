@@ -99,14 +99,7 @@ const UpdateModalClient = ({
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
 
-      <ScrollArea
-        h={{
-          md: '100%',
-          lg: fullscreen ? 'calc(100vh - 7.8em)' : 'calc(100vh - 18em)',
-        }}
-        sx={{ borderRadius: 5 }}
-        mb={'lg'}
-      >
+      <Stack mb={50}>
         {content === 'account-division' && (
           <DivisionContentClient
             ref={formRef}
@@ -250,9 +243,18 @@ const UpdateModalClient = ({
             setPayload={setPayload}
           />
         )}
-      </ScrollArea>
+      </Stack>
 
-      <Stack align={'end'}>
+      <Stack 
+        w={'100%'} 
+        bg={'white'} 
+        pos={'fixed'} 
+        bottom={0} 
+        right={0} 
+        align={'end'} 
+        p={15}
+        sx={{ zIndex: 100 }}
+      >
         <Group>
           <Button
             onClick={() => formRef?.current ? formRef?.current.requestSubmit() : undefined}
