@@ -222,17 +222,17 @@ type ResposibilityCenterType = {
 };
 
 type SignatoryDetailTypeType =
-  | 'pr_cash_availability'
-  | 'pr_approved_by'
-  | 'rfq_approval'
-  | 'rfq_canvassers'
-  | 'po_authorized_official'
-  | 'iar_inspection'
-  | 'iar_acceptance'
-  | 'ris_approved_by'
-  | 'ris_issued_by'
-  | 'ics_received_from'
-  | 'are_received_from';
+  | 'cash_availability'
+  | 'approved_by'
+  | 'approval'
+  | 'canvassers'
+  | 'authorized_official'
+  | 'inspection'
+  | 'acceptance'
+  | 'approved_by'
+  | 'issued_by'
+  | 'received_from'
+  | 'received_from';
 
 type SignatoryDocumentType =
   | 'pr'
@@ -347,6 +347,7 @@ type PurchaseRequestType = {
   alobs_date?: string;
   funding_source_id?: string;
   funding_source?: FundingSourceType;
+  purpose?: string;
   requested_by_id?: string;
   requestor?: UserType;
   sig_cash_availability_id?: string;

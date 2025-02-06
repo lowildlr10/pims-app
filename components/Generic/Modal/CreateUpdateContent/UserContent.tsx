@@ -10,7 +10,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import DynamicAutocomplete from '../../DynamicAutocomplete';
 import { IMaskInput } from 'react-imask';
 import { Switch } from '@mantine/core';
@@ -18,11 +18,11 @@ import DynamicSelect from '../../DynamicSelect';
 import DynamicMultiselect from '../../DynamicMultiselect';
 import SingleImageUploadClient from '../../SingleImageUpload';
 
-const UserContentClient = ({
+const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalUserContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -252,6 +252,8 @@ const UserContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+UserContentClient.displayName = 'UserContentClient';
 
 export default UserContentClient;

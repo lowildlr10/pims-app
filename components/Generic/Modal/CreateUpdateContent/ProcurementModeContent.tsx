@@ -1,12 +1,12 @@
 import { Stack, Switch, TextInput } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 
-const ProcurementModeContentClient = ({
+const ProcurementModeContentClient = forwardRef<HTMLFormElement, ModalProcurementModeContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalProcurementModeContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -21,6 +21,7 @@ const ProcurementModeContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
@@ -53,6 +54,8 @@ const ProcurementModeContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+ProcurementModeContentClient.displayName = 'ProcurementModeContentClient';
 
 export default ProcurementModeContentClient;

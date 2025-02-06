@@ -1,13 +1,13 @@
 import { Stack, Switch, Textarea, TextInput } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 import DynamicSelect from '../../DynamicSelect';
 
-const UacsCodeContentClient = ({
+const UacsCodeContentClient = forwardRef<HTMLFormElement, ModalUacsCodeContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalUacsCodeContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -25,6 +25,7 @@ const UacsCodeContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
@@ -92,6 +93,8 @@ const UacsCodeContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+UacsCodeContentClient.displayName = 'UacsCodeContentClient';
 
 export default UacsCodeContentClient;

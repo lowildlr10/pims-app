@@ -1,13 +1,13 @@
 import { NumberInput, Stack, Switch, TextInput } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 import DynamicAutocomplete from '../../DynamicAutocomplete';
 
-const FundingSourceContentClient = ({
+const FundingSourceContentClient = forwardRef<HTMLFormElement, ModalFundingSourceContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalFundingSourceContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -24,6 +24,7 @@ const FundingSourceContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
@@ -78,6 +79,8 @@ const FundingSourceContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+FundingSourceContentClient.displayName = 'FundingSourceContentClient';
 
 export default FundingSourceContentClient;

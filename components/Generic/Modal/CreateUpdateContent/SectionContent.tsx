@@ -1,13 +1,13 @@
 import { Stack, Switch, TextInput } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 
-const SectionContentClient = ({
+const SectionContentClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalSectionContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -24,6 +24,7 @@ const SectionContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
@@ -79,6 +80,8 @@ const SectionContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+SectionContentClient.displayName = 'SectionContentClient';
 
 export default SectionContentClient;

@@ -1,13 +1,13 @@
 import { Stack, Switch, TextInput } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 
-const DivisionContentClient = ({
+const DivisionContentClient = forwardRef<HTMLFormElement, ModalDivisionContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalDivisionContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -23,6 +23,7 @@ const DivisionContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
@@ -64,6 +65,8 @@ const DivisionContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+DivisionContentClient.displayName = 'DivisionContentClient';
 
 export default DivisionContentClient;

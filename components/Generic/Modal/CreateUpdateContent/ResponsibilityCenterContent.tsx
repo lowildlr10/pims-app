@@ -1,12 +1,12 @@
 import { Stack, Switch, Textarea, TextInput } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 
-const ResponsibilityCenterContentClient = ({
+const ResponsibilityCenterContentClient = forwardRef<HTMLFormElement, ModalResposibilityCenterContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalResposibilityCenterContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -22,6 +22,7 @@ const ResponsibilityCenterContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
@@ -64,6 +65,8 @@ const ResponsibilityCenterContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+ResponsibilityCenterContentClient.displayName = 'ResponsibilityCenterContentClient';
 
 export default ResponsibilityCenterContentClient;

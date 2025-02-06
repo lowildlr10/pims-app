@@ -1,12 +1,12 @@
 import { Stack, Switch, Textarea, TextInput } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 
-const SupplierContentClient = ({
+const SupplierContentClient = forwardRef<HTMLFormElement, ModalSupplierContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalSupplierContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -119,6 +119,8 @@ const SupplierContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+SupplierContentClient.displayName = 'SupplierContentClient';
 
 export default SupplierContentClient;

@@ -1,28 +1,34 @@
-import { ActionIcon, Group, NumberInput, Stack, Switch, Table, Text, Textarea, TextInput } from '@mantine/core';
-import React, { ReactNode, useEffect } from 'react';
+import { ActionIcon, Group, NumberInput, Stack, Table, Text, Textarea, TextInput } from '@mantine/core';
+import React, { forwardRef, ReactNode, useEffect, useState } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
 import { Button } from '@mantine/core';
-import { IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconAsterisk, IconPlus, IconTrash } from '@tabler/icons-react';
 import { DateInput } from '@mantine/dates';
 import dayjs from 'dayjs';
+import API from '@/libs/API';
+import { getErrors } from '@/libs/Errors';
+import { notify } from '@/libs/Notification';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
   {
     id: 'quantity',
     label: 'QTY',
-    width: '12%'
+    width: '12%',
+    required: true
   },
   {
     id: 'unit_issue',
     label: 'Unit of Issue',
-    width: '11%'
+    width: '11%',
+    required: true
   },
   {
     id: 'description',
     label: 'Description',
-    width: '33%'
+    width: '33%',
+    required: true
   },
   {
     id: 'stock_no',
@@ -32,12 +38,14 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
   {
     id: 'estimated_unit_cost',
     label: 'Estimated Unit Cost',
-    width: '16%'
+    width: '16%',
+    required: true
   },
   {
     id: 'estimated_cost',
     label: 'Estimated Cost',
-    width: '16%'
+    width: '16%',
+    required: true
   },
   {
     id: 'delete',
@@ -87,6 +95,7 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
         return (
           <Table.Td>
             <NumberInput
+              variant={'unstyled'}
               placeholder={item?.quantity ? String(item?.quantity) : 'Quantity'}
               value={item?.quantity}
               size={'sm'}
@@ -106,8 +115,10 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
         return (
           <Table.Td>
             <DynamicSelect
+              variant={'unstyled'}
+              placeholder={'Unit of Issue'}
               endpoint={'/libraries/unit-issues'}
-              endpointParams={{ paginated: false }}
+              endpointParams={{ paginated: false, show_all: true }}
               column={'unit_name'}
               value={item?.unit_issue_id}
               size={'sm'}
@@ -117,6 +128,7 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
                   unit_issue_id: value
                 })
               }
+              required
             />
           </Table.Td>
         );
@@ -125,7 +137,11 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
         return (
           <Table.Td>
             <Textarea
-              placeholder={item?.description ?? 'Description'}
+              variant={'unstyled'}
+              placeholder={
+                item?.description?.trim() === '' || !item?.description?.trim()
+                  ? 'Description' : item?.description?.trim()
+              }
               value={item?.description}
               size={'sm'}
               onChange={(event) =>
@@ -144,6 +160,7 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
         return (
           <Table.Td>
             <NumberInput
+              variant={'unstyled'}
               placeholder={item?.stock_no ? String(item?.stock_no) : 'Stock No'}
               value={item?.stock_no}
               size={'sm'}
@@ -162,6 +179,7 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
         return (
           <Table.Td>
             <NumberInput
+              variant={'unstyled'}
               placeholder={item?.estimated_unit_cost ? String(item?.estimated_unit_cost) : 'Estimated Unit Cost'}
               value={item?.estimated_unit_cost}
               size={'sm'}
@@ -181,6 +199,7 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
         return (
           <Table.Td>
             <NumberInput
+              variant={'unstyled'}
               placeholder={item?.estimated_cost ? String(item?.estimated_cost) : 'Estimated Cost'}
               value={item?.estimated_cost}
               size={'sm'}
@@ -202,9 +221,12 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
 
   return (
     <Table
+      withColumnBorders
+      withRowBorders
       verticalSpacing={'sm'}
       withTableBorder
       m={0}
+      borderColor={'var(--mantine-color-gray-8)'}
     >
       <Table.Thead>
         <Table.Tr>
@@ -212,7 +234,15 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
             <Table.Th 
               key={header.id}
               w={header?.width ?? undefined}
-            >{header.label}</Table.Th>
+            >
+              <Group gap={1} align={'flex-start'}>
+                {header.label} {header?.required && (
+                  <Stack>
+                    <IconAsterisk size={7} color={'var(--mantine-color-red-8)'} stroke={2} />
+                  </Stack>
+                )}
+              </Group>
+            </Table.Th>
           ))}
         </Table.Tr>
       </Table.Thead>
@@ -236,7 +266,7 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
                   handlers.remove(index);
                 }}
               >
-                <IconTrash size={18} stroke={1.5} />
+                <IconTrash size={18} stroke={2} />
               </ActionIcon>
             </Table.Td>
           </Table.Tr>
@@ -246,9 +276,8 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
         <Table.Tr>
           <Table.Td colSpan={7}>
             <Button 
-              color={'var(--mantine-color-primary-9)'}
-              variant={'outline'}
-              leftSection={<IconPlus size={18} stroke={1.5} />}
+              color={'var(--mantine-color-secondary-9)'}
+              leftSection={<IconPlus size={18} stroke={2} />}
               onClick={() => handlers.append({
                 item_key: (itemFields[itemFields.length - 1]?.item_key ?? 1) + 1,
                 quantity: undefined,
@@ -267,20 +296,20 @@ const ItemTableClient = ({items, onChange}: PurchaseRequestItemTableProps) => {
   );
 }
 
-const PurchaseRequestContentClient = ({
+const PurchaseRequestContentClient = forwardRef<HTMLFormElement, ModalPurchaseRequestContentProps>(({
   data,
-  handleCreateUpdate,
   setPayload,
-}: ModalPurchaseRequestContentProps) => {
+  handleCreateUpdate
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
       section_id: data?.section_id ?? '',
       pr_date: data?.pr_date ?? dayjs().format('YYYY-MM-DD'),
       sai_no: data?.sai_no ?? '',
-      sai_date: data?.sai_date,
+      sai_date: data?.sai_date ?? '',
       alobs_no: data?.alobs_no ?? '',
-      alobs_date: data?.alobs_date,
+      alobs_date: data?.alobs_date ?? '',
       funding_source_id: data?.funding_source_id ?? '',
       purpose: data?.purpose ?? '',
       requested_by_id: data?.requested_by_id ?? '',
@@ -289,6 +318,26 @@ const PurchaseRequestContentClient = ({
       items: data?.items ? JSON.stringify(data?.items) : ''
     },
   });
+  const [department, setDepartment] = useState('');
+
+  useEffect(() => {
+    API.get('/companies')
+      .then((res) => {
+        const company: CompanyType = res?.data?.company;
+        setDepartment(company?.company_name ?? '');
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
+            color: 'red',
+          });
+        });
+      });
+  }, []);
 
   useEffect(() => {
     setPayload(form.values);
@@ -296,15 +345,20 @@ const PurchaseRequestContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
-      <Stack justify={'center'}>
+      <Stack 
+        bd={'1px solid var(--mantine-color-gray-8)'}
+        justify={'center'} 
+        gap={0}
+      >
         <Group 
           w={'100%'} 
           justify={'center'}
           align={'flex-start'}
           gap={0}
-          bd={'1px solid var(--mantine-color-gray-5)'}
+          bd={'1px solid var(--mantine-color-gray-8)'}
         >
           <Stack
             p={'md'} 
@@ -314,14 +368,19 @@ const PurchaseRequestContentClient = ({
               <Text>Department:</Text>
               <TextInput
                 placeholder='Department'
-                value={'LGU-Atok'}
+                value={department}
                 size={'sm'}
                 flex={1}
                 readOnly
               /> 
             </Group>
             <Group>
-              <Text>Section:</Text>
+              <Group gap={1} align={'flex-start'}>
+                <Text>Section:</Text>
+                <Stack>
+                  <IconAsterisk size={7} color={'var(--mantine-color-red-8)'} stroke={2} />
+                </Stack>
+              </Group>
               <Stack justify={'center'} flex={1}>
                 <DynamicSelect
                   endpoint={'/accounts/sections'}
@@ -341,7 +400,7 @@ const PurchaseRequestContentClient = ({
           <Stack 
             p={'md'} 
             flex={0.65}
-            sx={{ borderLeft: '1px solid var(--mantine-color-gray-5)' }}
+            sx={{ borderLeft: '1px solid var(--mantine-color-gray-8)' }}
           >
             <Group>
               <Text>PR No.</Text>
@@ -352,7 +411,12 @@ const PurchaseRequestContentClient = ({
                 flex={1}
                 readOnly
               />
-              <Text>Date:</Text>
+              <Group gap={1} align={'flex-start'}>
+                <Text>Date:</Text>
+                <Stack>
+                  <IconAsterisk size={7} color={'var(--mantine-color-red-8)'} stroke={2} />
+                </Stack>
+              </Group>
               <DateInput
                 valueFormat={'YYYY-MM-DD'}
                 value={form.values.pr_date ? new Date(form.values?.pr_date) : undefined}
@@ -377,7 +441,6 @@ const PurchaseRequestContentClient = ({
                 error={form.errors.sai_no && ''}
                 size={'sm'}
                 flex={1}
-                required
               />
               <Text>Date:</Text>
               <DateInput
@@ -390,7 +453,6 @@ const PurchaseRequestContentClient = ({
                 error={form.errors.sai_date && ''}
                 flex={1}
                 clearable
-                required
               />
             </Group>
             <Group>
@@ -404,7 +466,6 @@ const PurchaseRequestContentClient = ({
                 error={form.errors.alobs_no && ''}
                 size={'sm'}
                 flex={1}
-                required
               />
               <Text>Date:</Text>
               <DateInput
@@ -417,7 +478,6 @@ const PurchaseRequestContentClient = ({
                 error={form.errors.alobs_date && ''}
                 flex={1}
                 clearable
-                required
               />
             </Group>
           </Stack>
@@ -432,7 +492,7 @@ const PurchaseRequestContentClient = ({
 
         <Group 
           align={'flex-start'}
-          bd={'1px solid var(--mantine-color-gray-5)'}
+          bd={'1px solid var(--mantine-color-gray-8)'}
           p={'md'}
           grow
         >
@@ -465,14 +525,14 @@ const PurchaseRequestContentClient = ({
 
         <Group 
           align={'flex-start'}
-          bd={'1px solid var(--mantine-color-gray-5)'}
+          bd={'1px solid var(--mantine-color-gray-8)'}
           p={'md'}
           grow
         >
           <DynamicSelect
             label={'Requested By'}
             endpoint={'/accounts/users'}
-            endpointParams={{ paginated: false }}
+            endpointParams={{ paginated: false, show_all: true }}
             column={'fullname'}
             value={form.values.requested_by_id}
             size={'sm'}
@@ -484,31 +544,45 @@ const PurchaseRequestContentClient = ({
 
           <DynamicSelect
             label={'Cash Availability'}
-            endpoint={'/accounts/users'}
-            endpointParams={{ paginated: false }}
-            column={'fullname'}
-            value={form.values.requested_by_id}
+            endpoint={'/libraries/signatories'}
+            endpointParams={{ 
+              paginated: false, 
+              show_all: true,
+              document: 'pr',
+              signatory_type: 'cash_availability'
+            }}
+            valueColumn={'signatory_id'}
+            column={'fullname_designation'}
+            value={form.values.sig_cash_availability_id}
             size={'sm'}
             onChange={(value) => 
-              form.setFieldValue('requested_by_id', value)
+              form.setFieldValue('sig_cash_availability_id', value)
             }
           />
 
           <DynamicSelect
             label={'Approved By'}
-            endpoint={'/accounts/users'}
-            endpointParams={{ paginated: false }}
-            column={'fullname'}
-            value={form.values.requested_by_id}
+            endpoint={'/libraries/signatories'}
+            endpointParams={{ 
+              paginated: false, 
+              show_all: true,
+              document: 'pr',
+              signatory_type: 'approved_by'
+            }}
+            valueColumn={'signatory_id'}
+            column={'fullname_designation'}
+            value={form.values.sig_approved_by_id}
             size={'sm'}
             onChange={(value) => 
-              form.setFieldValue('requested_by_id', value)
+              form.setFieldValue('sig_approved_by_id', value)
             }
           />
         </Group>
       </Stack>
     </form>
   );
-};
+});
+
+PurchaseRequestContentClient.displayName = 'PurchaseRequestContentClient';
 
 export default PurchaseRequestContentClient;

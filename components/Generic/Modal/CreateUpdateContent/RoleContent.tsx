@@ -7,15 +7,15 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
 
-const RoleContentClient = ({
+const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalRoleContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -783,6 +783,7 @@ const RoleContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
@@ -861,6 +862,8 @@ const RoleContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+RoleContentClient.displayName = 'RoleContentClient';
 
 export default RoleContentClient;

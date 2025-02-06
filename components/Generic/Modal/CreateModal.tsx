@@ -6,7 +6,7 @@ import {
   ScrollArea,
   Stack,
 } from '@mantine/core';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
 import DivisionContentClient from './CreateUpdateContent/DivisionContent';
 import API from '@/libs/API';
@@ -41,6 +41,7 @@ const CreateModalClient = ({
 }: CreateModalProps) => {
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleCreate = () => {
     setLoading(true);
@@ -109,6 +110,7 @@ const CreateModalClient = ({
       >
         {content === 'account-division' && (
           <DivisionContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -117,6 +119,7 @@ const CreateModalClient = ({
 
         {content === 'account-section' && (
           <SectionContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -125,6 +128,7 @@ const CreateModalClient = ({
 
         {content === 'account-role' && (
           <RoleContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -133,6 +137,7 @@ const CreateModalClient = ({
 
         {content === 'account-user' && (
           <UserContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -141,6 +146,7 @@ const CreateModalClient = ({
 
         {content === 'lib-bid-committee' && (
           <BidsAwardsCommitteeContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -149,6 +155,7 @@ const CreateModalClient = ({
 
         {content === 'lib-fund-source' && (
           <FundingSourceContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -157,6 +164,7 @@ const CreateModalClient = ({
 
         {content === 'lib-item-class' && (
           <ItemClassificationContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -165,6 +173,7 @@ const CreateModalClient = ({
 
         {content === 'lib-mfo-pap' && (
           <MfoPapContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -173,6 +182,7 @@ const CreateModalClient = ({
 
         {content === 'lib-mode-proc' && (
           <ProcurementModeContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -181,6 +191,7 @@ const CreateModalClient = ({
 
         {content === 'lib-paper-size' && (
           <PaperSizeContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -189,6 +200,7 @@ const CreateModalClient = ({
 
         {content === 'lib-responsibility-center' && (
           <ResponsibilityCenterContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -197,6 +209,7 @@ const CreateModalClient = ({
 
         {content === 'lib-supplier' && (
           <SupplierContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -205,6 +218,7 @@ const CreateModalClient = ({
 
         {content === 'lib-signatory' && (
           <SignatoryContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -213,6 +227,7 @@ const CreateModalClient = ({
 
         {content === 'lib-uacs-class' && (
           <UacsCodeClassificationContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -221,6 +236,7 @@ const CreateModalClient = ({
 
         {content === 'lib-uacs-code' && (
           <UacsCodeContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -229,6 +245,7 @@ const CreateModalClient = ({
 
         {content === 'lib-unit-issue' && (
           <UnitIssueContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -237,6 +254,7 @@ const CreateModalClient = ({
 
         {content === 'pr' && (
           <PurchaseRequestContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
@@ -247,8 +265,8 @@ const CreateModalClient = ({
       <Stack align={'end'}>
         <Group>
           <Button
-            onClick={handleCreate}
-            type={'submit'}
+            onClick={() => formRef?.current ? formRef?.current.requestSubmit() : undefined}
+            type={'button'}
             color={'var(--mantine-color-primary-9)'}
             size={'sm'}
             leftSection={<IconPencilPlus size={18} />}

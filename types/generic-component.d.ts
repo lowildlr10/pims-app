@@ -50,11 +50,14 @@ type MainContainerProps = {
 type DynamicSelectProps = {
   endpoint: string;
   endpointParams?: any;
+  valueColumn?: string;
   column?: string;
   label?: string;
+  placeholder?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   value?: string;
   limit?: number;
+  variant?: 'unstyled' | 'filled' | 'default';
   readOnly?: boolean;
   required?: boolean;
   onChange?: (value: string) => void;
@@ -346,6 +349,7 @@ type PurchaseRequestItemHeader = {
   id: string;
   label: string;
   width?: number | string;
+  required?: boolean;
 }
 
 type PurchaseRequestItemTableProps = {

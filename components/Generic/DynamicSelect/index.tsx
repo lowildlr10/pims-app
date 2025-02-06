@@ -7,11 +7,14 @@ import { notify } from '@/libs/Notification';
 const DynamicSelect = ({
   endpoint,
   endpointParams = {},
-  column,
+  column = 'column',
+  valueColumn = 'id',
   size,
   label,
+  placeholder,
   limit,
   value,
+  variant,
   onChange,
   readOnly,
   required,
@@ -41,8 +44,8 @@ const DynamicSelect = ({
         setData(
           res?.data?.length > 0
             ? res.data.map((item: any) => ({
-                value: item.id,
-                label: item[column ?? 'column'],
+                value: item[valueColumn],
+                label: item[column],
               }))
             : [{ label: 'No data.', value: '' }]
         );
@@ -67,7 +70,7 @@ const DynamicSelect = ({
     <Select
       size={size}
       label={label}
-      placeholder={label}
+      placeholder={label ?? placeholder}
       limit={limit ?? undefined}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       data={data}
@@ -77,6 +80,7 @@ const DynamicSelect = ({
       leftSection={
         loading && <Loader color={'var(--mantine-color-primary-9)'} size='xs' />
       }
+      variant={variant ?? 'default'}
       searchable
       clearable
       maxDropdownHeight={limit ? undefined : 200}

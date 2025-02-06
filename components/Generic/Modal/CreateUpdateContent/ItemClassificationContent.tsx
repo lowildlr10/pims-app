@@ -1,12 +1,12 @@
 import { Stack, Switch, TextInput } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 
-const ItemClassificationContentClient = ({
+const ItemClassificationContentClient = forwardRef<HTMLFormElement, ModalItemClassificationContentProps>(({
   data,
   handleCreateUpdate,
   setPayload,
-}: ModalItemClassificationContentProps) => {
+}, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -21,6 +21,7 @@ const ItemClassificationContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
@@ -53,6 +54,8 @@ const ItemClassificationContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+ItemClassificationContentClient.displayName = 'ItemClassificationContentClient';
 
 export default ItemClassificationContentClient;

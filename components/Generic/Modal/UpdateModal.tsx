@@ -6,7 +6,7 @@ import {
   ScrollArea,
   Stack,
 } from '@mantine/core';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import DivisionContentClient from './CreateUpdateContent/DivisionContent';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
 import API from '@/libs/API';
@@ -40,6 +40,7 @@ const UpdateModalClient = ({
 }: CreateModalProps) => {
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleUpdate = () => {
     setLoading(true);
@@ -108,6 +109,7 @@ const UpdateModalClient = ({
       >
         {content === 'account-division' && (
           <DivisionContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -116,6 +118,7 @@ const UpdateModalClient = ({
 
         {content === 'account-section' && (
           <SectionContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -124,6 +127,7 @@ const UpdateModalClient = ({
 
         {content === 'account-role' && (
           <RoleContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -132,6 +136,7 @@ const UpdateModalClient = ({
 
         {content === 'account-user' && (
           <UserContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -140,6 +145,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-bid-committee' && (
           <BidsAwardsCommitteeContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -148,6 +154,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-fund-source' && (
           <FundingSourceContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -156,6 +163,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-item-class' && (
           <ItemClassificationContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -164,6 +172,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-mfo-pap' && (
           <MfoPapContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -172,6 +181,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-mode-proc' && (
           <ProcurementModeContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -180,6 +190,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-paper-size' && (
           <PaperSizeContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -188,6 +199,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-responsibility-center' && (
           <ResponsibilityCenterContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -196,6 +208,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-supplier' && (
           <SupplierContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -204,6 +217,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-signatory' && (
           <SignatoryContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -212,6 +226,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-uacs-class' && (
           <UacsCodeClassificationContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -220,6 +235,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-uacs-code' && (
           <UacsCodeContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -228,6 +244,7 @@ const UpdateModalClient = ({
 
         {content === 'lib-unit-issue' && (
           <UnitIssueContentClient
+            ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
             setPayload={setPayload}
@@ -238,8 +255,8 @@ const UpdateModalClient = ({
       <Stack align={'end'}>
         <Group>
           <Button
-            onClick={handleUpdate}
-            type={'submit'}
+            onClick={() => formRef?.current ? formRef?.current.requestSubmit() : undefined}
+            type={'button'}
             color={'var(--mantine-color-primary-9)'}
             size={'sm'}
             leftSection={<IconPencil size={18} />}
