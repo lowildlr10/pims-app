@@ -4,59 +4,59 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
-import { Badge, Group, Text } from '@mantine/core';
+import DataTableClient from '../../Generic/DataTable';
+import { Badge, Group, Stack, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'division_name_formatted',
-      label: 'Division',
-      width: '70%',
+      id: 'fullname_formatted',
+      label: 'Full Name',
+      width: '22%',
       sortable: true,
     },
     {
-      id: 'headfullname',
-      label: 'Division Head',
-      width: '25%',
+      id: 'employee_id',
+      label: 'Employee ID',
+      width: '10%',
       sortable: true,
     },
     {
-      id: 'show-sections',
-      label: '',
-      width: '5%',
-    },
-  ],
-  subHead: [
-    {
-      id: 'section_name_formatted',
-      label: 'Section',
-      width: '70%',
+      id: 'division_section',
+      label: 'Division - Section',
+      width: '20%',
+      sortable: true,
     },
     {
-      id: 'headfullname',
-      label: 'Section Head',
-      width: '30%',
+      id: 'position_designation',
+      label: 'Position - Designation',
+      width: '20%',
+      sortable: true,
+    },
+    {
+      id: 'user_roles',
+      label: 'Roles',
+      width: '28%',
     },
   ],
   body: [],
 };
 
-const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
+const UsersClient = ({ permissions }: UsersProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('division_name');
-  const [sortDirection, setSortDirection] = useState('desc');
+  const [columnSort, setColumnSort] = useState('firstname');
+  const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<DivisionResponse>(
+  const { data, isLoading, mutate } = useSWR<UsersResponse>(
     [
-      `/accounts/divisions`,
+      `/accounts/users`,
       search,
       page,
       perPage,
@@ -88,34 +88,13 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: DivisionType) => {
-      const { sections, ..._data } = body;
+    const _data = data?.data?.map((body: UserType) => {
       return {
-        ..._data,
-        subBody:
-          sections?.map((subBody: any) => {
-            return {
-              ...subBody,
-              section_name_formatted: (
-                <Group>
-                  <Text size={'sm'}>{subBody.section_name}</Text>
-                  {!subBody.active && (
-                    <Badge
-                      variant={'light'}
-                      leftSection={<IconExclamationCircleFilled size={14} />}
-                      color={'var(--mantine-color-red-8)'}
-                    >
-                      Inactive
-                    </Badge>
-                  )}
-                </Group>
-              ),
-            };
-          }) || [],
-        division_name_formatted: (
+        ...body,
+        fullname_formatted: (
           <Group>
-            <Text size={'sm'}>{body.division_name}</Text>
-            {!body.active && (
+            <Text size={'sm'}>{body.fullname}</Text>
+            {body.restricted && (
               <Badge
                 variant={'light'}
                 leftSection={<IconExclamationCircleFilled size={14} />}
@@ -125,6 +104,31 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
               </Badge>
             )}
           </Group>
+        ),
+        user_roles: (
+          <>
+            {body.roles?.map((role, i) => (
+              <Badge mr={4} color={'var(--mantine-color-primary-9)'} key={i}>
+                {role.role_name}
+              </Badge>
+            )) ?? '-'}
+          </>
+        ),
+        division_section: (
+          <Stack gap={0}>
+            <Text size={'sm'}>{body.division?.division_name}</Text>
+            <Text c={'dimmed'} size={'sm'}>
+              {body.section?.section_name}
+            </Text>
+          </Stack>
+        ),
+        position_designation: (
+          <Stack gap={0}>
+            <Text size={'sm'}>{body.position?.position_name}</Text>
+            <Text c={'dimmed'} size={'sm'}>
+              {body.designation?.designation_name}
+            </Text>
+          </Stack>
         ),
       };
     });
@@ -137,8 +141,7 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
 
   return (
     <DataTableClient
-      module={'account-division'}
-      subModule={'account-section'}
+      mainModule={'account-user'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -161,10 +164,8 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       }}
       showSearch
       showCreate
-      enableCreateSubItem
-      enableUpdateSubItem
     />
   );
 };
 
-export default DivisionSectionClient;
+export default UsersClient;

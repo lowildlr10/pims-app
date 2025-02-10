@@ -41,7 +41,7 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [columnSort, setColumnSort] = useState('paper_type');
-  const [sortDirection, setSortDirection] = useState('desc');
+  const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
@@ -95,7 +95,7 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-paper-size'}
+      mainModule={'lib-paper-size'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

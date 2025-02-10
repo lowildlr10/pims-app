@@ -25,7 +25,7 @@ const ItemClassificationsClient = ({ permissions }: LibraryProps) => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [columnSort, setColumnSort] = useState('classification_name');
-  const [sortDirection, setSortDirection] = useState('desc');
+  const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
@@ -93,7 +93,7 @@ const ItemClassificationsClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-item-class'}
+      mainModule={'lib-item-class'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

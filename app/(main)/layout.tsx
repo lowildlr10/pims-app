@@ -11,30 +11,18 @@ import '@fontsource/poppins/900.css';
 import '@mantine/core/styles/global.css';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import '@mantine/dates/styles.css';
 
 import {
   ColorSchemeScript,
-  DEFAULT_THEME,
   MantineProvider,
-  createTheme,
   mantineHtmlProps,
-  mergeMantineTheme,
 } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
-import { fontFamily, breakpoints, colors } from '@/config/theme';
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion';
 
-const theme = mergeMantineTheme(
-  DEFAULT_THEME,
-  createTheme({
-    fontFamily,
-    breakpoints,
-    colors,
-  })
-);
-
-export default function MainLayout({
+export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -46,7 +34,6 @@ export default function MainLayout({
       </head>
       <body className='bg-background'>
         <MantineProvider
-          theme={theme}
           stylesTransform={emotionTransform}
           defaultColorScheme={'light'}
         >

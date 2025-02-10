@@ -43,6 +43,7 @@ const UserModalClient = ({ title, open, handleClose }: UserModalProps) => {
           loaderProps={{ type: 'dots' }}
           color={'var(--mantine-color-red-9)'}
           leftSection={<IconLogout2 size={18} />}
+          variant={'outline'}
           onClick={logout}
           autoContrast
         >

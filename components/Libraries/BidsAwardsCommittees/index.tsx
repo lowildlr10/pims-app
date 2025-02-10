@@ -4,40 +4,36 @@ import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import DataTableClient from '../Generic/DataTable';
-import { Badge } from '@mantine/core';
+import DataTableClient from '../../Generic/DataTable';
+import { Badge, Group, Text } from '@mantine/core';
+import { IconExclamationCircleFilled } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'role_name',
-      label: 'Role',
-      width: '25%',
+      id: 'committee_name_formatted',
+      label: 'Committee Name',
+      width: '100%',
       sortable: true,
-    },
-    {
-      id: 'permissions_formatted',
-      label: 'Permissions',
-      width: '75%',
     },
   ],
   body: [],
 };
 
-const RolesClient = ({ permissions }: RolesProps) => {
+const BidsAwardsCommitteesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('role_name');
-  const [sortDirection, setSortDirection] = useState('desc');
+  const [columnSort, setColumnSort] = useState('committee_name');
+  const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<RolesResponse>(
+  const { data, isLoading, mutate } = useSWR<BidsAwardsCommitteeResponse>(
     [
-      `/accounts/roles`,
+      `/libraries/bids-awards-committees`,
       search,
       page,
       perPage,
@@ -69,23 +65,22 @@ const RolesClient = ({ permissions }: RolesProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: RoleType) => {
+    const _data = data?.data?.map((body: BidsAwardsCommitteeType) => {
       return {
         ...body,
-        permissions_formatted: (
-          <>
-            {body.permissions?.map((permission, i) => (
+        committee_name_formatted: (
+          <Group>
+            <Text size={'sm'}>{body.committee_name}</Text>
+            {!body.active && (
               <Badge
-                mr={4}
                 variant={'light'}
-                color={'var(--mantine-color-primary-9)'}
-                key={i}
-                sx={{ cursor: 'pointer' }}
+                leftSection={<IconExclamationCircleFilled size={14} />}
+                color={'var(--mantine-color-red-8)'}
               >
-                {permission}
+                Inactive
               </Badge>
-            )) ?? '-'}
-          </>
+            )}
+          </Group>
         ),
       };
     });
@@ -98,7 +93,7 @@ const RolesClient = ({ permissions }: RolesProps) => {
 
   return (
     <DataTableClient
-      module={'account-role'}
+      mainModule={'lib-bid-committee'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -125,4 +120,4 @@ const RolesClient = ({ permissions }: RolesProps) => {
   );
 };
 
-export default RolesClient;
+export default BidsAwardsCommitteesClient;

@@ -1,15 +1,14 @@
 import { Divider, Paper, Stack, Switch, Text } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
 import DynamicSelect from '../../DynamicSelect';
 import DynamicAutocomplete from '../../DynamicAutocomplete';
 
-const SignatoryContentClient = ({
-  data,
-  handleCreateUpdate,
-  setPayload,
-}: ModalSignatoryContentProps) => {
+const SignatoryContentClient = forwardRef<
+  HTMLFormElement,
+  ModalSignatoryContentProps
+>(({ data, handleCreateUpdate, setPayload }, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -26,13 +25,13 @@ const SignatoryContentClient = ({
         {
           checked: false,
           label: 'Cash Availability',
-          signatory_type: 'pr_cash_availability',
+          signatory_type: 'cash_availability',
           position: '',
         },
         {
           checked: false,
           label: 'Approved By',
-          signatory_type: 'pr_approved_by',
+          signatory_type: 'approved_by',
           position: '',
         },
       ],
@@ -44,13 +43,13 @@ const SignatoryContentClient = ({
         {
           checked: false,
           label: 'Approval',
-          signatory_type: 'rfq_approval',
+          signatory_type: 'approval',
           position: '',
         },
         {
           checked: false,
           label: 'Canvassers',
-          signatory_type: 'rfq_canvassers',
+          signatory_type: 'canvassers',
           position: '',
         },
       ],
@@ -62,7 +61,7 @@ const SignatoryContentClient = ({
         {
           checked: false,
           label: 'Authorized Official',
-          signatory_type: 'po_authorized_official',
+          signatory_type: 'authorized_official',
           position: '',
         },
       ],
@@ -74,13 +73,13 @@ const SignatoryContentClient = ({
         {
           checked: false,
           label: 'Inspection',
-          signatory_type: 'iar_inspection',
+          signatory_type: 'inspection',
           position: '',
         },
         {
           checked: false,
           label: 'Acceptance',
-          signatory_type: 'iar_acceptance',
+          signatory_type: 'acceptance',
           position: '',
         },
       ],
@@ -92,13 +91,13 @@ const SignatoryContentClient = ({
         {
           checked: false,
           label: 'Approved By',
-          signatory_type: 'ris_approved_by',
+          signatory_type: 'approved_by',
           position: '',
         },
         {
           checked: false,
           label: 'Issued By',
-          signatory_type: 'ris_issued_by',
+          signatory_type: 'issued_by',
           position: '',
         },
       ],
@@ -110,7 +109,7 @@ const SignatoryContentClient = ({
         {
           checked: false,
           label: 'Received From',
-          signatory_type: 'ics_received_from',
+          signatory_type: 'received_from',
           position: '',
         },
       ],
@@ -122,7 +121,7 @@ const SignatoryContentClient = ({
         {
           checked: false,
           label: 'Received From',
-          signatory_type: 'are_received_from',
+          signatory_type: 'received_from',
           position: '',
         },
       ],
@@ -296,6 +295,8 @@ const SignatoryContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+SignatoryContentClient.displayName = 'SignatoryContentClient';
 
 export default SignatoryContentClient;

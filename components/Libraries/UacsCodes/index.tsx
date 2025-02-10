@@ -43,7 +43,7 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [columnSort, setColumnSort] = useState('code');
-  const [sortDirection, setSortDirection] = useState('desc');
+  const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
@@ -112,7 +112,7 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-uacs-code'}
+      mainModule={'lib-uacs-code'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

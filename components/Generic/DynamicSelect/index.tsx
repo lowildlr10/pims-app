@@ -5,18 +5,23 @@ import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 
 const DynamicSelect = ({
+  name,
   endpoint,
   endpointParams = {},
-  column,
+  column = 'column',
+  valueColumn = 'id',
   size,
   label,
+  placeholder,
   limit,
   value,
+  defaultValue,
+  variant,
   onChange,
   readOnly,
   required,
 }: DynamicSelectProps) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState<{ label: string; value: string }[]>([]);
   const [inputValue, setInputValue] = useState<string | undefined>(value);
 
@@ -41,8 +46,8 @@ const DynamicSelect = ({
         setData(
           res?.data?.length > 0
             ? res.data.map((item: any) => ({
-                value: item.id,
-                label: item[column ?? 'column'],
+                value: item[valueColumn],
+                label: item[column],
               }))
             : [{ label: 'No data.', value: '' }]
         );
@@ -65,18 +70,22 @@ const DynamicSelect = ({
 
   return (
     <Select
+      name={name}
       size={size}
       label={label}
-      placeholder={label}
+      placeholder={placeholder ?? label}
       limit={limit ?? undefined}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       data={data}
+      defaultValue={defaultValue}
       value={inputValue}
       onChange={(_value, option) => setInputValue(option?.value ?? null)}
       nothingFoundMessage={'Nothing found...'}
       leftSection={
         loading && <Loader color={'var(--mantine-color-primary-9)'} size='xs' />
       }
+      variant={variant ?? 'default'}
+      onClick={!readOnly ? handleFetchData : undefined}
       searchable
       clearable
       maxDropdownHeight={limit ? undefined : 200}

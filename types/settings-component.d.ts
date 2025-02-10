@@ -8,11 +8,12 @@ type UserProfileFormProps = {
   user: UserType;
 };
 
-type SignatureFormProps = {
-  user: UserType;
+type CompanyProfileProps = {
+  company: CompanyType;
+  permissions: string[];
 };
 
-type AvatarFormProps = {
+type SignatureFormProps = {
   user: UserType;
 };
 
@@ -33,6 +34,10 @@ type UsersProps = {
 };
 
 type LibraryProps = {
+  permissions: string[];
+};
+
+type MainProps = {
   permissions: string[];
 };
 
@@ -68,6 +73,26 @@ type RolesResponse = {
 
 type UsersResponse = {
   data: UserType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type SystemLogResponse = {
+  data: SystemLogType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type BidsAwardsCommitteeResponse = {
+  data: BidsAwardsCommitteeType[];
   from: number;
   to: number;
   total: number;
@@ -118,6 +143,16 @@ type ProcurementModesResponse = {
 
 type PaperSizesResponse = {
   data: PaperSizeType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type ResposibilityCenterResponse = {
+  data: ResposibilityCenterType[];
   from: number;
   to: number;
   total: number;

@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ActionIcon,
   Button,
   Group,
   InputBase,
@@ -8,6 +9,7 @@ import {
   PasswordInput,
   Stack,
   TextInput,
+  Tooltip,
 } from '@mantine/core';
 import { IMaskInput } from 'react-imask';
 import { useForm } from '@mantine/form';
@@ -18,6 +20,7 @@ import { Select } from '@mantine/core';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import DynamicAutocomplete from '../Generic/DynamicAutocomplete';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
   const [loading, setLoading] = useState(false);
@@ -231,7 +234,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
             required={enableUpdate}
           />
           <PasswordInput
-            mb={enableUpdate ? 140 : 80}
+            mb={enableUpdate ? 140 : 120}
             size={'md'}
             label='Password'
             description={'Fill out to change password'}
@@ -249,17 +252,27 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
             right={0}
             w={{ base: '100%', lg: 'auto' }}
             px={20}
+            align={'end'}
+            sx={{ zIndex: 100 }}
           >
             {!enableUpdate ? (
-              <Button
-                color={'var(--mantine-color-primary-9)'}
-                size={'md'}
-                leftSection={<IconPencilCog size={18} />}
-                variant='outline'
-                onClick={() => setEnableUpdate(!enableUpdate)}
+              <Tooltip
+                arrowPosition={'center'}
+                arrowOffset={10}
+                arrowSize={4}
+                label={'Toggle Update'}
+                withArrow
+                position={'top-end'}
               >
-                Toggle Update
-              </Button>
+                <ActionIcon
+                  color={'var(--mantine-color-primary-9)'}
+                  radius={'100%'}
+                  size={80}
+                  onClick={() => setEnableUpdate(!enableUpdate)}
+                >
+                  <IconPencilCog size={40} stroke={1.5} />
+                </ActionIcon>
+              </Tooltip>
             ) : (
               <Group justify={'space-between'}>
                 <Button

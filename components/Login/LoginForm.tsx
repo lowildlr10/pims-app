@@ -71,7 +71,13 @@ const LoginFormClient = () => {
   };
 
   return (
-    <Paper radius='md' p='xl' withBorder w={'430px'} bd={'none'}>
+    <Paper
+      radius='md'
+      p='xl'
+      withBorder
+      w={{ base: 'auto', lg: '430px' }}
+      bd={'none'}
+    >
       <Stack>
         <Title order={2} ta={'center'}>
           Hello!
@@ -142,7 +148,7 @@ const LoginFormClient = () => {
           <Button
             size='md'
             type='submit'
-            color={'#426F8F'}
+            color={'var(--mantine-color-primary-9)'}
             loading={loading}
             loaderProps={{ type: 'dots' }}
             autoContrast

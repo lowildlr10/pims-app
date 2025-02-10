@@ -1,12 +1,11 @@
 import { Stack, Switch, TextInput } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 
-const MfoPapContentClient = ({
-  data,
-  handleCreateUpdate,
-  setPayload,
-}: ModalMfoPapContentProps) => {
+const MfoPapContentClient = forwardRef<
+  HTMLFormElement,
+  ModalMfoPapContentProps
+>(({ data, handleCreateUpdate, setPayload }, ref) => {
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -22,6 +21,7 @@ const MfoPapContentClient = ({
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
@@ -64,6 +64,8 @@ const MfoPapContentClient = ({
       </Stack>
     </form>
   );
-};
+});
+
+MfoPapContentClient.displayName = 'MfoPapContentClient';
 
 export default MfoPapContentClient;

@@ -6,7 +6,7 @@ import {
   Group,
   Image,
   Loader,
-  ScrollArea,
+  ScrollArea
 } from '@mantine/core';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { useDisclosure } from '@mantine/hooks';
@@ -17,6 +17,7 @@ import {
   IconCash,
   IconGauge,
   IconLibrary,
+  IconLogs,
   IconSettings2,
   IconShoppingCart,
   IconSitemap,
@@ -28,6 +29,7 @@ import { useEffect, useState } from 'react';
 import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { Text } from '@mantine/core';
+import NotificationMenuButtonClient from '../NotificationMenuButton';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -102,34 +104,24 @@ const defaultMainMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: [
       {
-        label: 'Requisition and Issue Slip',
+        label: 'Supplies',
         allowedPermissions: [
           'super:*',
           'head:*',
           'inventory:*',
           'inventory:view',
         ],
-        link: '/inventory/ris',
+        link: '/inventory/supplies',
       },
       {
-        label: 'Inventory Custodian Slip',
+        label: 'Issuances',
         allowedPermissions: [
           'super:*',
           'head:*',
           'inventory:*',
           'inventory:view',
         ],
-        link: '/inventory/ics',
-      },
-      {
-        label: 'Aknowledgement Receipt of Equipment',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'inventory:*',
-          'inventory:view',
-        ],
-        link: '/inventory/are',
+        link: '/inventory/issuances',
       },
     ],
   },
@@ -175,21 +167,25 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     allowedPermissions: [
       'super:*',
       'head:*',
+      'lib-bid-committee:*',
       'lib-fund-source:*',
       'lib-item-class:*',
       'lib-mfo-pap:*',
       'lib-mode-proc:*',
       'lib-paper-size:*',
+      'lib-responsibility-center:*',
       'lib-signatory:*',
       'lib-supplier:*',
       'lib-uacs-class:*',
       'lib-uacs-code:*',
       'lib-unit-issue:*',
+      'lib-bid-committee:view',
       'lib-fund-source:view',
       'lib-item-class:view',
       'lib-mfo-pap:view',
       'lib-mode-proc:view',
       'lib-paper-size:view',
+      'lib-responsibility-center:view',
       'lib-signatory:view',
       'lib-supplier:view',
       'lib-uacs-class:view',
@@ -198,6 +194,16 @@ const defaultSettingsMenus: LinksGroupProps[] = [
     ],
     initiallyOpened: false,
     links: [
+      {
+        label: 'Bids and Awards Committees',
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'lib-bid-committee:*',
+          'lib-bid-committee:view',
+        ],
+        link: '/settings/library/bids-awards-committees',
+      },
       {
         label: 'Funding Soruces/Projects',
         allowedPermissions: [
@@ -247,6 +253,16 @@ const defaultSettingsMenus: LinksGroupProps[] = [
           'lib-paper-size:view',
         ],
         link: '/settings/library/paper-sizes',
+      },
+      {
+        label: 'Responsibility Centers',
+        allowedPermissions: [
+          'super:*',
+          'head:*',
+          'lib-responsibility-center:*',
+          'lib-responsibility-center:view',
+        ],
+        link: '/settings/library/responsibility-centers',
       },
       {
         label: 'Signatories',
@@ -349,10 +365,17 @@ const defaultSettingsMenus: LinksGroupProps[] = [
       },
     ],
   },
+  {
+    label: 'System Logs',
+    allowedPermissions: ['super:*', 'system-log:*', 'system-log:view'],
+    icon: IconLogs,
+    link: '/settings/system-log',
+  },
   { label: 'Exit', icon: IconArrowBack, link: '/' },
 ];
 
 export function LayoutSidebarClient({
+  company,
   user,
   type,
   permissions,
@@ -362,7 +385,7 @@ export function LayoutSidebarClient({
   const links = menus.map((item) => (
     <LinksGroupClient {...item} key={item.label} permissions={permissions} />
   ));
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -387,65 +410,80 @@ export function LayoutSidebarClient({
       header={{ height: 60 }}
       navbar={{
         width: 300,
-        breakpoint: 'sm',
+        breakpoint: 'md',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
-      mih={'100vh'}
+      mih={{ base: 'auto', lg: '100vh' }}
       padding='md'
       transitionDuration={300}
       transitionTimingFunction='ease'
     >
       <AppShell.Header bg={'var(--mantine-color-primary-9)'} c={'white'}>
-        <Group h='100%' px='md'>
-          <Burger
-            opened={mobileOpened}
-            onClick={toggleMobile}
-            hiddenFrom='sm'
-            size='sm'
-            color={'white'}
-          />
-          <Burger
-            opened={desktopOpened}
-            onClick={toggleDesktop}
-            visibleFrom='sm'
-            size='sm'
-            color={'white'}
-          />
+        <Group h='100%' px='md' justify={'space-between'}>
           <Group>
-            <Image
-              width={30}
-              height={30}
-              src={'/images/atok-logo.png'}
-              alt={'LGU-Atok'}
+            <Burger 
+              color={'white'}
+              opened={mobileOpened} 
+              onClick={toggleMobile} 
+              hiddenFrom={'md'} 
+              size={'sm'} 
             />
-            <Text size={'lg'} fw={400}>
-              Procurement System
-            </Text>
+            <Burger 
+              color={'white'}
+              opened={desktopOpened} 
+              onClick={toggleDesktop} 
+              visibleFrom={'md'} 
+              size={'sm'} 
+            />
+            <Group>
+              <Image
+                width={30}
+                height={30}
+                src={company?.company_logo ?? '/images/logo-fallback.png'}
+                alt={company?.company_name ?? 'Company'}
+              />
+              <Text size={'lg'} fw={400}>
+                Procurement System
+              </Text>
+            </Group>
+          </Group>
+
+          <Group>
+            <NotificationMenuButtonClient />
           </Group>
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p='md'>
-        <ScrollArea className={classes.links}>
+      <AppShell.Navbar 
+        p='md' 
+        sx={(theme, u) => ({
+          [u.smallerThan('lg')] : {
+            transform: 
+              `${mobileOpened 
+                ? 'translateX(calc(var(--app-shell-navbar-width) * 0))' 
+                : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
+              } !important`
+          }
+        })}>
+        <AppShell.Section className={classes.links} grow my="md" component={ScrollArea}>
           <div className={classes.linksInner}>{links}</div>
-        </ScrollArea>
+        </AppShell.Section>
 
-        <div className={classes.footer}>
+        <AppShell.Section className={classes.footer}>
           <UserButtonClient user={user} handleOpen={open} />
-        </div>
-
-        <UserModalClient
-          title={user.fullname}
-          open={opened}
-          handleClose={close}
-        />
+        </AppShell.Section>
       </AppShell.Navbar>
       <AppShell.Main bg={'var(--mantine-color-gray-1)'}>
         {children}
         <ProgressBar
-          height={'4px'}
-          color={'var(--mantine-color-secondary-0)'}
+          height={'2.5px'}
+          color={'var(--mantine-color-secondary-3)'}
           options={{ showSpinner: false }}
           shallowRouting
+        />
+        <UserModalClient
+          title={user.fullname ?? 'User'}
+          open={opened}
+          handleClose={close}
         />
       </AppShell.Main>
     </AppShell>

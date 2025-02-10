@@ -1,14 +1,16 @@
 'use client';
 
 import { Box, Divider, Flex, ScrollArea, Stack } from '@mantine/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconSignature, IconUserCog } from '@tabler/icons-react';
 import UserProfileFormClient from './UserProfileForm';
 import SignatureFormClient from './SignatureForm';
 import { Tabs } from '@mantine/core';
-import AvatarFormClient from './AvatarForm';
+import SingleImageUploadClient from '../Generic/SingleImageUpload';
+import { useViewportSize } from '@mantine/hooks';
 
 const UserProfileClient = ({ user }: UserProfileProps) => {
+  const { height, width } = useViewportSize();
   const [activeTab, setActiveTab] = useState<string | null>('information');
 
   return (
@@ -25,23 +27,34 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
         w={{ base: '100%', lg: '25%' }}
       >
         <Box mb={10}>
-          <AvatarFormClient user={user} />
+          <SingleImageUploadClient
+            image={user.avatar ?? ''}
+            postUrl={`/media/${user.id}`}
+            params={{ update_type: 'user-avatar' }}
+            type={'avatar'}
+          />
         </Box>
 
         <Divider size={'sm'} w={'100%'} my={20} />
 
         <Tabs
-          orientation={'vertical'}
+          color={'var(--mantine-color-primary-9)'}
+          orientation={width === 0 || width > 1199 ? 'vertical' : 'horizontal'}
+          w={'100%'}
           value={activeTab}
           onChange={setActiveTab}
-          sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
         >
-          <Tabs.List>
+          <Tabs.List w={width === 0 || width > 1199 ? '100%' : 'auto'} fw={500}>
             <Tabs.Tab
               py={10}
               fz={'md'}
               value='information'
-              leftSection={<IconUserCog size='1rem' stroke={1.5} />}
+              bg={
+                activeTab === 'information'
+                  ? 'var(--mantine-color-secondary-1)'
+                  : undefined
+              }
+              leftSection={<IconUserCog size={18} stroke={1.5} />}
             >
               User Information
             </Tabs.Tab>
@@ -49,7 +62,12 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
               py={10}
               fz={'md'}
               value='signature'
-              leftSection={<IconSignature size='1rem' stroke={1.5} />}
+              bg={
+                activeTab === 'signature'
+                  ? 'var(--mantine-color-secondary-1)'
+                  : undefined
+              }
+              leftSection={<IconSignature size={18} stroke={1.5} />}
             >
               Signature
             </Tabs.Tab>
@@ -65,7 +83,7 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
         <Tabs value={activeTab} onChange={setActiveTab} w={'100%'}>
           <Tabs.Panel value={'information'}>
             <ScrollArea
-              h={{ md: '100%', lg: 'calc(100vh - 18em)' }}
+              h={{ md: '100%', lg: 'calc(100vh - 16.5em)' }}
               px={{ base: 'md', lg: 'xl' }}
             >
               <UserProfileFormClient user={user} />
