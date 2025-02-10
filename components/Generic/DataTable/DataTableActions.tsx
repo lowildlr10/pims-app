@@ -10,7 +10,7 @@ import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 const DataTableActionsClient = ({
   permissions,
   search,
-  module,
+  mainModule,
   showSearch,
   showCreate,
   setSearch,
@@ -22,10 +22,10 @@ const DataTableActionsClient = ({
   ] = useDisclosure(false);
 
   return (
-    <Paper p={'sm'}>
+    <Paper p={'sm'} shadow={'sm'}>
       <Group justify={'space-between'}>
         {showCreate &&
-        getAllowedPermissions(module, 'create')?.some((permission) =>
+        getAllowedPermissions(mainModule, 'create')?.some((permission) =>
           permissions.includes(permission)
         ) ? (
           <Button
@@ -35,7 +35,7 @@ const DataTableActionsClient = ({
             leftSection={<IconPencilPlus size={14} />}
             onClick={() =>
               handleOpenCreateModal &&
-              handleOpenCreateModal(null, module ?? null)
+              handleOpenCreateModal(null, mainModule ?? null)
             }
           >
             Create

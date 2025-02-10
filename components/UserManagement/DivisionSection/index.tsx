@@ -92,7 +92,7 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       const { sections, ..._data } = body;
       return {
         ..._data,
-        subBody:
+        sub_body:
           sections?.map((subBody: any) => {
             return {
               ...subBody,
@@ -137,7 +137,7 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
 
   return (
     <DataTableClient
-      module={'account-division'}
+      mainModule={'account-division'}
       subModule={'account-section'}
       permissions={permissions}
       columnSort={columnSort}

@@ -113,7 +113,7 @@ const RolesClient = ({ permissions }: RolesProps) => {
 
   return (
     <DataTableClient
-      module={'account-role'}
+      mainModule={'account-role'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

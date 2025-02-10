@@ -5,6 +5,7 @@ import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 
 const DynamicSelect = ({
+  name,
   endpoint,
   endpointParams = {},
   column = 'column',
@@ -14,6 +15,7 @@ const DynamicSelect = ({
   placeholder,
   limit,
   value,
+  defaultValue,
   variant,
   onChange,
   readOnly,
@@ -68,12 +70,14 @@ const DynamicSelect = ({
 
   return (
     <Select
+      name={name}
       size={size}
       label={label}
-      placeholder={label ?? placeholder}
+      placeholder={placeholder ?? label}
       limit={limit ?? undefined}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       data={data}
+      defaultValue={defaultValue}
       value={inputValue}
       onChange={(_value, option) => setInputValue(option?.value ?? null)}
       nothingFoundMessage={'Nothing found...'}
@@ -81,6 +85,7 @@ const DynamicSelect = ({
         loading && <Loader color={'var(--mantine-color-primary-9)'} size='xs' />
       }
       variant={variant ?? 'default'}
+      onClick={!readOnly ? handleFetchData : undefined}
       searchable
       clearable
       maxDropdownHeight={limit ? undefined : 200}

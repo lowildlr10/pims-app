@@ -93,7 +93,7 @@ const ItemClassificationsClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-item-class'}
+      mainModule={'lib-item-class'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

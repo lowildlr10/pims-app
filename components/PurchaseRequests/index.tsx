@@ -5,7 +5,8 @@ import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
-import Status from './Status';
+import dayjs from 'dayjs';
+import StatusClient from './Status';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -16,13 +17,13 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'pr_date',
+      id: 'pr_date_formatted',
       label: 'PR Date',
       width: '12%',
       sortable: true,
     },
     {
-      id: 'source',
+      id: 'funding_source_title',
       label: 'Funding Source',
       width: '18%',
       sortable: true,
@@ -132,14 +133,22 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
 
   useEffect(() => {
     const _data = data?.data?.map((body: PurchaseRequestType) => {
-      const { funding_source, requestor, items, ..._data } = body;
+      const { 
+        section,
+        funding_source, 
+        requestor, 
+        signatory_cash_availability, 
+        signatory_approved_by,
+        items, 
+        ..._data 
+      } = body;
 
       return {
         ..._data,
-        source: funding_source?.title ?? '-',
-        requestor_fullname: requestor?.fullname ?? '-',
-        status_formatted: <Status status={body.status} />,
-        subBody:
+        pr_date_formatted: dayjs(body.pr_date).format('DD/MM/YYYY'),
+        status_formatted: <StatusClient status={body.status} />,
+        items,
+        sub_body:
           items?.map((subBody: PurchaseRequestItemType) => {
             return {
               ...subBody,
@@ -159,7 +168,7 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
 
   return (
     <DataTableClient
-      module={'pr'}
+      mainModule={'pr'}
       subModule={'pr-item'}
       permissions={permissions}
       columnSort={columnSort}
@@ -183,6 +192,7 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
       }}
       showSearch
       showCreate
+      showDetailsFirst
       autoCollapseFirstSubItems={false}
     />
   );

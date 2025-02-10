@@ -6,7 +6,7 @@ import {
   ScrollArea,
   Stack,
 } from '@mantine/core';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import SectionContentClient from './CreateUpdateContent/SectionContent';
 import DivisionContentClient from './CreateUpdateContent/DivisionContent';
 import API from '@/libs/API';
@@ -43,15 +43,24 @@ const CreateModalClient = ({
   const [payload, setPayload] = useState<object>();
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleCreate = () => {
+  const handleCreate = (uncontrolledPayload?: object) => {
+    let isControlled = true;
+
     setLoading(true);
 
-    if (!payload) {
+    if (!uncontrolledPayload) {
+      setLoading(false);
+      return;
+    } else {
+      isControlled = false;
+    }
+
+    if (!payload && isControlled) {
       setLoading(false);
       return;
     }
 
-    API.post(endpoint, payload)
+    API.post(endpoint, uncontrolledPayload ?? payload)
       .then((res) => {
         notify({
           title: 'Success!',
@@ -250,7 +259,6 @@ const CreateModalClient = ({
             ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
-            setPayload={setPayload}
           />
         )}
       </Stack>
@@ -274,6 +282,8 @@ const CreateModalClient = ({
             color={'var(--mantine-color-primary-9)'}
             size={'sm'}
             leftSection={<IconPencilPlus size={18} />}
+            loading={loading}
+            loaderProps={{ type: 'dots' }}
           >
             Create
           </Button>

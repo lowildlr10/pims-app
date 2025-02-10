@@ -17,11 +17,31 @@ type PurchaseRequestsResponse = {
 };
 
 type PurchaseRequestStatusProps = {
+  size?: string;
   status?: PurchaseRequestStatus;
+};
+
+type PurchaseRequestActionProps = {
+  permissions?: string[];
+  id: string;
+  status: PurchaseRequestStatus;
+  submittedAt?: string;
+  approvedCashAvailableAt?: string;
+  approvedAt?: string;
+  disapprovedAt?: string;
+  cancelledAt?: string;
+  handleOpenActionModal?: (
+    actionType: ActionType, 
+    title: string, 
+    message: string, 
+    color: string, 
+    buttonLabel: string, 
+    endpoint: string
+  ) => void
 };
 
 type ModalPurchaseRequestContentProps = {
   data: PurchaseRequestType;
-  handleCreateUpdate?: () => void;
-  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };

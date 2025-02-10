@@ -48,6 +48,7 @@ type MainContainerProps = {
 };
 
 type DynamicSelectProps = {
+  name?: string;
   endpoint: string;
   endpointParams?: any;
   valueColumn?: string;
@@ -56,6 +57,7 @@ type DynamicSelectProps = {
   placeholder?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   value?: string;
+  defaultValue?: string;
   limit?: number;
   variant?: 'unstyled' | 'filled' | 'default';
   readOnly?: boolean;
@@ -103,7 +105,7 @@ type TableDataType = {
 };
 
 type DataTableProps = {
-  module?: ModuleType;
+  mainModule?: ModuleType;
   subModule?: ModuleType;
 
   permissions: string[];
@@ -154,7 +156,7 @@ type DataTablePaginationProps = {
 };
 
 type DataTableActionsProps = {
-  module?: ModuleType;
+  mainModule?: ModuleType;
   permissions: string[];
   search?: string;
   showSearch?: boolean;
@@ -162,7 +164,7 @@ type DataTableActionsProps = {
   setSearch?: (value: string) => void;
   handleOpenCreateModal?: (
     parentId: string | null,
-    module: ModuleType | null
+    module_type: ModuleType | null
   ) => void;
 };
 
@@ -173,6 +175,59 @@ type SearchModalProps = {
   setSearch?: (value: string) => void;
 };
 
+type DetailActionProps = {
+  permissions?: string[];
+  data?: any;
+  content?: ModuleType;
+  hasStatus?: boolean;
+  status?: string;
+  stack?: ModalStackReturnType;
+  updateTable?: (id: string | null, payload: any) => void;
+}
+
+type DetailModalProps = {
+  permissions?: string[];
+  title: string;
+  content?: ModuleType;
+  // endpoint: string;
+  data: any;
+  opened: boolean;
+  fullscreen?: boolean;
+  stack?: ModalStackReturnType;
+  close: () => void;
+  updateTable?: (id: string | null, payload: any) => void;
+};
+
+type ActionModalProps = {
+  title: string;
+  message: string;
+  color?: string;
+  actionType?: ActionType;
+  buttonLabel: string;
+  endpoint: string;
+  opened: boolean;
+  close: () => void;
+  stack?: ModalStackReturnType;
+  updateTable?: (id: string | null, payload: any) => void;
+};
+
+type PrintModalProps = {
+  title: string;
+  endpoint: string;
+  opened: boolean;
+  stack?: ModalStackReturnType;
+  close: () => void;
+};
+
+type LogModalProps = {
+  id: string;
+  title: string;
+  endpoint: string;
+  opened: boolean;
+  stack?: ModalStackReturnType;
+  close: () => void;
+};
+
 type CreateModalProps = {
   title: string;
   content?: ModuleType;
@@ -180,7 +235,7 @@ type CreateModalProps = {
   data: any;
   opened: boolean;
   fullscreen?: boolean;
-  content?: ModuleType;
+  stack?: ModalStackReturnType;
   close: () => void;
   updateTable?: (id: string | null, payload: any) => void;
 };
@@ -192,7 +247,7 @@ type UpdateModalProps = {
   data: any;
   opened: boolean;
   fullscreen?: boolean;
-  content?: ModuleType;
+  stack?: ModalStackReturnType;
   close: () => void;
   updateTable?: (id: string | null, payload: any, isSubBody?: boolean) => void;
 };
@@ -306,7 +361,7 @@ type ScopeFieldType = {
 type PermissionsFieldType = {
   label: string;
   description?: string;
-  module: ModuleType;
+  module_type: ModuleType;
   checked: boolean;
   indeterminate: boolean;
   scopes: ScopeFieldType[];
@@ -326,12 +381,12 @@ type SignatoryDetailsFieldType = {
 };
 
 type RoleIndeterminateType = {
-  module: ModuleType;
+  moduleType: ModuleType;
   indeterminate: boolean;
 };
 
 type RoleCheckedType = {
-  module: ModuleType;
+  moduleType: ModuleType;
   checked: boolean;
 };
 
@@ -339,6 +394,7 @@ type PurchaseRequestItemsFieldType = {
   item_key: number;
   quantity?: number;
   unit_issue_id?: string;
+  unit_issue?: string;
   description?: string;
   stock_no?: number;
   estimated_unit_cost?: number;
@@ -354,5 +410,6 @@ type PurchaseRequestItemHeader = {
 
 type PurchaseRequestItemTableProps = {
   items?: PurchaseRequestItemType[];
+  readOnly?: boolean;
   onChange?: (value: string) => void;
 };

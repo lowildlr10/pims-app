@@ -106,7 +106,7 @@ const FundingSourcesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-fund-source'}
+      mainModule={'lib-fund-source'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

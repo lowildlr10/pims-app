@@ -93,7 +93,7 @@ const UnitIssuesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-unit-issue'}
+      mainModule={'lib-unit-issue'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

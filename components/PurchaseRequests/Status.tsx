@@ -8,17 +8,17 @@ import {
   IconFileIsr,
   IconFileSearch,
   IconThumbDownFilled,
-  IconThumbUp,
+  IconThumbUpFilled,
 } from '@tabler/icons-react';
 import React from 'react';
 
-const Status = ({ status }: PurchaseRequestStatusProps) => {
+const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
   switch (status) {
     case 'draft':
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
-            size={'md'}
+            size={size}
             color={'var(--mantine-color-gray-9)'}
             variant={'light'}
             leftSection={<IconFileIsr size={18} stroke={1.5} />}
@@ -32,7 +32,7 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
-            size={'md'}
+            size={size}
             color={'var(--mantine-color-gray-7)'}
             variant={'light'}
             leftSection={
@@ -48,12 +48,12 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
       return (
         <Tooltip label={'Cash Available'}>
           <Badge
-            size={'md'}
+            size={size}
             color={'var(--mantine-color-green-7)'}
             variant={'light'}
             leftSection={<IconDiscountCheckFilled size={18} stroke={1.5} />}
           >
-            {'Signed - Cash Available'}
+            Signed - Cash Available
           </Badge>
         </Tooltip>
       );
@@ -62,10 +62,10 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
-            size={'md'}
+            size={size}
             color={'var(--mantine-color-green-9)'}
             variant={'light'}
-            leftSection={<IconThumbUp size={18} stroke={1.5} />}
+            leftSection={<IconThumbUpFilled size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>
@@ -76,7 +76,7 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
-            size={'md'}
+            size={size}
             color={'var(--mantine-color-red-9)'}
             variant={'light'}
             leftSection={<IconThumbDownFilled size={18} stroke={1.5} />}
@@ -90,8 +90,8 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
-            size={'md'}
-            color={'var(--mantine-color-gray-9)'}
+            size={size}
+            color={'var(--mantine-color-red-7)'}
             variant={'light'}
             leftSection={<IconCancel size={18} stroke={1.5} />}
           >
@@ -104,7 +104,7 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
-            size={'md'}
+            size={size}
             color={'var(--mantine-color-blue-7)'}
             variant={'light'}
             leftSection={<IconFileSearch size={18} stroke={1.5} />}
@@ -118,7 +118,7 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
-            size={'md'}
+            size={size}
             color={'var(--mantine-color-blue-7)'}
             variant={'light'}
             leftSection={<IconFileDollar size={18} stroke={1.5} />}
@@ -132,7 +132,7 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
       return (
         <Tooltip label={'For PO/JO'}>
           <Badge
-            size={'md'}
+            size={size}
             color={'var(--mantine-color-lime-9)'}
             variant={'light'}
             leftSection={<IconAwardFilled size={18} stroke={1.5} />}
@@ -146,7 +146,7 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status ?? '-')}>
           <Badge
-            size={'md'}
+            size={size}
             color={'var(--mantine-color-gray-9)'}
             variant={'light'}
           >
@@ -157,4 +157,4 @@ const Status = ({ status }: PurchaseRequestStatusProps) => {
   }
 };
 
-export default Status;
+export default StatusClient;

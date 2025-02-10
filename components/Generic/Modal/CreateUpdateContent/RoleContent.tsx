@@ -26,7 +26,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Purchase Request',
         description: 'Scope for Purchase Request module',
-        module: 'pr',
+        module_type: 'pr',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -76,7 +76,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Request for Quotation',
         description: 'Scope for Request for Quotation module',
-        module: 'rfq',
+        module_type: 'rfq',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -120,7 +120,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Abstract of Quotation',
         description: 'Scope for Abstract of Quotation module',
-        module: 'aoq',
+        module_type: 'aoq',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -139,7 +139,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Purchase Order',
         description: 'Scope for Purchase Order module',
-        module: 'po',
+        module_type: 'po',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -158,7 +158,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Inspection & Acceptance Report',
         description: 'Scope for Inspection & Acceptance Report module',
-        module: 'iar',
+        module_type: 'iar',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -177,7 +177,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Obligation Request & Status',
         description: 'Scope for Obligation Request & Status module',
-        module: 'ors',
+        module_type: 'ors',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -196,7 +196,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Disbursement Voucher',
         description: 'Scope for Disbursement Voucher module',
-        module: 'dv',
+        module_type: 'dv',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -215,7 +215,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Inventory',
         description: 'Scope for Inventory module',
-        module: 'inventory',
+        module_type: 'inventory',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -234,7 +234,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Payment',
         description: 'Scope for Payment module',
-        module: 'payment',
+        module_type: 'payment',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -255,7 +255,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Division Library',
         description: 'Scope for Division Library module',
-        module: 'account-division',
+        module_type: 'account-division',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -279,7 +279,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Section Library',
         description: 'Scope for Section Library module',
-        module: 'account-section',
+        module_type: 'account-section',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -303,7 +303,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'User Management',
         description: 'Scope for User Library module',
-        module: 'account-user',
+        module_type: 'account-user',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -329,7 +329,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Funding Source Library',
         description: 'Scope for Funding Source Library module',
-        module: 'lib-fund-source',
+        module_type: 'lib-fund-source',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -353,7 +353,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Item Classification Library',
         description: 'Scope for Item Classification Library module',
-        module: 'lib-item-class',
+        module_type: 'lib-item-class',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -377,7 +377,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'MFO/PAP Library',
         description: 'Scope for MFO/PAP Library module',
-        module: 'lib-mfo-pap',
+        module_type: 'lib-mfo-pap',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -401,7 +401,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Mode of Procurement Library',
         description: 'Scope for Mode of Procurement Library module',
-        module: 'lib-mode-proc',
+        module_type: 'lib-mode-proc',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -425,7 +425,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Print Paper Size Library',
         description: 'Scope for Print Paper Size Library module',
-        module: 'lib-paper-size',
+        module_type: 'lib-paper-size',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -449,7 +449,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Signatory Library',
         description: 'Scope for Signatory Library module',
-        module: 'lib-signatory',
+        module_type: 'lib-signatory',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -473,7 +473,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Supplier/Company Library',
         description: 'Scope for Supplier/Company Library module',
-        module: 'lib-supplier',
+        module_type: 'lib-supplier',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -497,7 +497,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'UACS Code Classification Library',
         description: 'Scope for UACS Code Classification Library module',
-        module: 'lib-uacs-class',
+        module_type: 'lib-uacs-class',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -521,7 +521,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'UACS Code Library',
         description: 'Scope for UACS Code Library module',
-        module: 'lib-uacs-code',
+        module_type: 'lib-uacs-code',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -545,7 +545,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Unit of Issue Library',
         description: 'Scope for Unit of Issue Library module',
-        module: 'lib-unit-issue',
+        module_type: 'lib-unit-issue',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -571,7 +571,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Administrator',
         description: 'Scope for Administrator role',
-        module: 'super',
+        module_type: 'super',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -585,7 +585,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Agency Head',
         description: 'Scope for Agency Head role',
-        module: 'head',
+        module_type: 'head',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -599,7 +599,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Supply Officer',
         description: 'Scope for Supply Officer role',
-        module: 'supply',
+        module_type: 'supply',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -613,7 +613,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Budget Officer',
         description: 'Scope for Budget Officer role',
-        module: 'budget',
+        module_type: 'budget',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -627,7 +627,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Accounting',
         description: 'Scope for Accounting role',
-        module: 'accounting',
+        module_type: 'accounting',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -641,7 +641,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'Cashier',
         description: 'Scope for Cashier role',
-        module: 'cashier',
+        module_type: 'cashier',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -655,7 +655,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       {
         label: 'End User',
         description: 'Scope for End User role',
-        module: 'user',
+        module_type: 'user',
         checked: false,
         indeterminate: false,
         scopes: [
@@ -676,7 +676,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
 
           handlers.setState((current) =>
             current.map((value) => {
-              const isMatchingModule = value.module === permissionModule;
+              const isMatchingModule = value.module_type === permissionModule;
               const isAllScopesSelected =
                 isMatchingModule && permissionScopes.includes('*');
               const isIndeterminate =
@@ -733,8 +733,8 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
             .map((scope) => scope.value)
             .join(',');
 
-          if (checked) return `${permission.module}:*`;
-          return scopes ? `${permission.module}:${scopes}` : null;
+          if (checked) return `${permission.module_type}:*`;
+          return scopes ? `${permission.module_type}:${scopes}` : null;
         })
         .filter(Boolean);
 
@@ -764,7 +764,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
                 scopes: value.scopes.map((scope) => ({
                   ...scope,
                   checked:
-                    value.module === permissionModule &&
+                    value.module_type === permissionModule &&
                     `${permissionModule}.${scope.value}` === e.target.name
                       ? !scope.checked
                       : scope.checked,
@@ -822,26 +822,26 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
               <Divider />
 
               {permissionFields.map((permission) => (
-                <React.Fragment key={permission.module}>
+                <React.Fragment key={permission.module_type}>
                   <Stack gap={1}>
                     <Checkbox
                       label={permission.label}
                       description={permission.description}
                       checked={permission.checked}
                       indeterminate={permission.indeterminate}
-                      name={`${permission.module}`}
+                      name={`${permission.module_type}`}
                       color={'var(--mantine-color-primary-9)'}
                       onChange={(e) => {
                         handlers.setState((current) =>
                           current.map((value) => ({
                             ...value,
                             checked:
-                              e.target.name === value.module
+                              e.target.name === value.module_type
                                 ? e.target.checked
                                 : value.checked,
                             indeterminate: false,
                             scopes:
-                              value.module === permission.module
+                              value.module_type === permission.module_type
                                 ? value.scopes.map((scope) => ({
                                     ...scope,
                                     checked: !permission.checked,
@@ -851,7 +851,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
                         );
                       }}
                     />
-                    {dynamicScopes(permission.scopes, permission.module)}
+                    {dynamicScopes(permission.scopes, permission.module_type)}
                   </Stack>
                   <Divider />
                 </React.Fragment>

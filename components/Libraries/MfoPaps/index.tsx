@@ -99,7 +99,7 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-mfo-pap'}
+      mainModule={'lib-mfo-pap'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

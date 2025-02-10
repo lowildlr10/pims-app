@@ -93,7 +93,7 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-uacs-class'}
+      mainModule={'lib-uacs-class'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

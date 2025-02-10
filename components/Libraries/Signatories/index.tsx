@@ -93,7 +93,7 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
       return {
         ..._data,
         details,
-        subBody:
+        sub_body:
           details?.map((subBody: SignatoryDetailType) => {
             return {
               ...subBody,
@@ -128,7 +128,7 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-signatory'}
+      mainModule={'lib-signatory'}
       subModule={'lib-signatory-detail'}
       permissions={permissions}
       columnSort={columnSort}

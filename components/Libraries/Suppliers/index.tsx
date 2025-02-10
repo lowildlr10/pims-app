@@ -118,7 +118,7 @@ const SuppliersClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-supplier'}
+      mainModule={'lib-supplier'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

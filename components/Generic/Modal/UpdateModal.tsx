@@ -27,6 +27,7 @@ import UnitIssueContentClient from './CreateUpdateContent/UnitIssueContent';
 import SignatoryContentClient from './CreateUpdateContent/SignatoryContent';
 import BidsAwardsCommitteeContentClient from './CreateUpdateContent/BidsAwardsCommitteeContent';
 import ResponsibilityCenterContentClient from './CreateUpdateContent/ResponsibilityCenterContent';
+import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
 
 const UpdateModalClient = ({
   title,
@@ -37,20 +38,30 @@ const UpdateModalClient = ({
   content,
   close,
   updateTable,
+  stack
 }: CreateModalProps) => {
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleUpdate = () => {
+  const handleUpdate = (uncontrolledPayload?: object) => {
+    let isControlled = true;
+
     setLoading(true);
 
-    if (!payload) {
+    if (!uncontrolledPayload) {
+      setLoading(false);
+      return;
+    } else {
+      isControlled = false;
+    }
+
+    if (!payload && isControlled) {
       setLoading(false);
       return;
     }
 
-    API.put(endpoint, payload)
+    API.put(endpoint, uncontrolledPayload ?? payload)
       .then((res) => {
         notify({
           title: 'Success!',
@@ -62,7 +73,12 @@ const UpdateModalClient = ({
 
         setPayload({});
         setLoading(false);
-        close();
+
+        if (stack) {
+          stack.closeAll();
+        } else {
+          close();
+        }
       })
       .catch((err) => {
         const errors = getErrors(err);
@@ -243,6 +259,14 @@ const UpdateModalClient = ({
             setPayload={setPayload}
           />
         )}
+
+        {content === 'pr' && (
+          <PurchaseRequestContentClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleUpdate}
+          />
+        )}
       </Stack>
 
       <Stack
@@ -264,6 +288,8 @@ const UpdateModalClient = ({
             color={'var(--mantine-color-primary-9)'}
             size={'sm'}
             leftSection={<IconPencil size={18} />}
+            loading={loading}
+            loaderProps={{ type: 'dots' }}
           >
             Update
           </Button>

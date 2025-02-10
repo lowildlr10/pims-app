@@ -43,6 +43,13 @@ type ModuleType =
   | 'cashier'
   | 'user';
 
+type ActionType =
+  | 'submit_approval'
+  | 'approve_cash_available'
+  | 'approve'
+  | 'disapprove'
+  | 'cancel';
+
 type CompanyType = {
   id?: string;
   company_name?: string;
@@ -258,6 +265,7 @@ type SignatoryDetailType = {
 
 type SignatoryType = {
   id?: string;
+  fullname?: string;
   user_id?: string;
   active?: boolean;
   details?: SignatoryDetailType[];
@@ -358,6 +366,11 @@ type PurchaseRequestType = {
   items?: PurchaseRequestItemType[];
   total_estimated_cost?: number;
   total_estimated_cost_formatted?: string;
+  section_name?: string;
+  funding_source_title?: string;
+  requestor_fullname?: string;
+  cash_availability_fullname?: string;
+  approver_fullname?: string;
   submitted_at?: string;
   approved_cash_available_at?: string;
   approved_at?: string;

@@ -141,7 +141,7 @@ const UsersClient = ({ permissions }: UsersProps) => {
 
   return (
     <DataTableClient
-      module={'account-user'}
+      mainModule={'account-user'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

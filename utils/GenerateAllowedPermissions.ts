@@ -1,7 +1,7 @@
-export const getAllowedPermissions = (module?: ModuleType, action?: string) => {
-  if (!module || !action) {
+export const getAllowedPermissions = (moduleType?: ModuleType, action?: string) => {
+  if (!moduleType || !action) {
     return ['super:*'];
   }
 
-  return ['super:*', `${module}:*`, `${module}:${action}`];
+  return ['super:*', `${moduleType}:*`, `${moduleType}:${action}`];
 };

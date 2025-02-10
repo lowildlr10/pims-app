@@ -6,7 +6,7 @@ import {
   Group,
   Image,
   Loader,
-  ScrollArea,
+  ScrollArea
 } from '@mantine/core';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { useDisclosure } from '@mantine/hooks';
@@ -413,7 +413,7 @@ export function LayoutSidebarClient({
         breakpoint: 'md',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
-      mih={'100vh'}
+      mih={{ base: 'auto', lg: '100vh' }}
       padding='md'
       transitionDuration={300}
       transitionTimingFunction='ease'
@@ -421,19 +421,19 @@ export function LayoutSidebarClient({
       <AppShell.Header bg={'var(--mantine-color-primary-9)'} c={'white'}>
         <Group h='100%' px='md' justify={'space-between'}>
           <Group>
-            <Burger
-              opened={mobileOpened}
-              onClick={toggleMobile}
-              hiddenFrom='md'
-              size='sm'
+            <Burger 
               color={'white'}
+              opened={mobileOpened} 
+              onClick={toggleMobile} 
+              hiddenFrom={'md'} 
+              size={'sm'} 
             />
-            <Burger
-              opened={desktopOpened}
-              onClick={toggleDesktop}
-              visibleFrom='md'
-              size='sm'
+            <Burger 
               color={'white'}
+              opened={desktopOpened} 
+              onClick={toggleDesktop} 
+              visibleFrom={'md'} 
+              size={'sm'} 
             />
             <Group>
               <Image
@@ -453,20 +453,24 @@ export function LayoutSidebarClient({
           </Group>
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p='md'>
-        <ScrollArea className={classes.links}>
+      <AppShell.Navbar 
+        p='md' 
+        sx={(theme, u) => ({
+          [u.smallerThan('lg')] : {
+            transform: 
+              `${mobileOpened 
+                ? 'translateX(calc(var(--app-shell-navbar-width) * 0))' 
+                : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
+              } !important`
+          }
+        })}>
+        <AppShell.Section className={classes.links} grow my="md" component={ScrollArea}>
           <div className={classes.linksInner}>{links}</div>
-        </ScrollArea>
+        </AppShell.Section>
 
-        <div className={classes.footer}>
+        <AppShell.Section className={classes.footer}>
           <UserButtonClient user={user} handleOpen={open} />
-        </div>
-
-        <UserModalClient
-          title={user.fullname ?? 'User'}
-          open={opened}
-          handleClose={close}
-        />
+        </AppShell.Section>
       </AppShell.Navbar>
       <AppShell.Main bg={'var(--mantine-color-gray-1)'}>
         {children}
@@ -475,6 +479,11 @@ export function LayoutSidebarClient({
           color={'var(--mantine-color-secondary-3)'}
           options={{ showSpinner: false }}
           shallowRouting
+        />
+        <UserModalClient
+          title={user.fullname ?? 'User'}
+          open={opened}
+          handleClose={close}
         />
       </AppShell.Main>
     </AppShell>

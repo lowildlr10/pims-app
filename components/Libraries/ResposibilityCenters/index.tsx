@@ -99,7 +99,7 @@ const ResposibilityCentersClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-responsibility-center'}
+      mainModule={'lib-responsibility-center'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

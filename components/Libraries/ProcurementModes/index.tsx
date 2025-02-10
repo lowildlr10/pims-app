@@ -93,7 +93,7 @@ const ProcurementModesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-mode-proc'}
+      mainModule={'lib-mode-proc'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

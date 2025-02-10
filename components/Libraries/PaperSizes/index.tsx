@@ -95,7 +95,7 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-paper-size'}
+      mainModule={'lib-paper-size'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

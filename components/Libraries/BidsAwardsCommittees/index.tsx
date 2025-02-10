@@ -93,7 +93,7 @@ const BidsAwardsCommitteesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-bid-committee'}
+      mainModule={'lib-bid-committee'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}

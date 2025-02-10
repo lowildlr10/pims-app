@@ -112,7 +112,7 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      module={'lib-uacs-code'}
+      mainModule={'lib-uacs-code'}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
