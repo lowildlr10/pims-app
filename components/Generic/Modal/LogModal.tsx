@@ -61,7 +61,7 @@ const LogModalClient = ({
 
   const { mutate } = useSWRConfig();
   const { data, isLoading } = useSWR<SystemLogResponse>(
-    [endpoint, logId, page, perPage, paginated],
+    [endpoint ?? null, logId, page, perPage, paginated],
     ([url, logId, page, perPage, paginated]: GeneralResponse) =>
       API.get(url, {
         page,
@@ -71,7 +71,7 @@ const LogModalClient = ({
       }),
     {
       refreshInterval: API_REFRESH_INTERVAL,
-      keepPreviousData: true,
+      keepPreviousData: false,
       revalidateOnFocus: true,
     }
   );

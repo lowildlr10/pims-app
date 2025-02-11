@@ -53,6 +53,7 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
 
     return (
       <form
+        ref={ref}
         onSubmit={form.onSubmit(
           () => handleCreateUpdate && handleCreateUpdate()
         )}

@@ -46,6 +46,11 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
             checked: false,
           },
           {
+            label: 'Approve for Cash Availability',
+            value: 'approve_cash_available',
+            checked: false,
+          },
+          {
             label: 'Approve',
             value: 'approve',
             checked: false,
@@ -562,6 +567,20 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
           {
             label: 'Update',
             value: 'update',
+            checked: false,
+          },
+        ],
+      },
+      {
+        label: 'System Logs',
+        description: 'Scope for System Logs module',
+        module_type: 'system-log',
+        checked: false,
+        indeterminate: false,
+        scopes: [
+          {
+            label: 'View',
+            value: 'view',
             checked: false,
           },
         ],

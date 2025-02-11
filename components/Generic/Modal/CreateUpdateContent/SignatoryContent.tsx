@@ -182,6 +182,7 @@ const SignatoryContentClient = forwardRef<
 
   return (
     <form
+      ref={ref}
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>

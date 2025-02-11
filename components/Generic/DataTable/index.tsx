@@ -773,6 +773,7 @@ const DataTableClient = ({
       {showDetailsFirst && (
         <Modal.Stack>
           <DetailModalClient
+            permissions={permissions}
             title={detailModalTitle}
             data={stack.register('detail-modal').opened ? formData : undefined}
             content={currentDetailModule}
