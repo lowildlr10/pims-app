@@ -1,9 +1,22 @@
-import API from '@/libs/API'
-import { getErrors } from '@/libs/Errors'
-import { notify } from '@/libs/Notification'
-import { Button, Group, Loader, LoadingOverlay, Modal, Stack, Text } from '@mantine/core'
-import { IconCancel, IconDiscountCheckFilled, IconThumbDownFilled, IconThumbUpFilled } from '@tabler/icons-react'
-import React, { useState } from 'react'
+import API from '@/libs/API';
+import { getErrors } from '@/libs/Errors';
+import { notify } from '@/libs/Notification';
+import {
+  Button,
+  Group,
+  Loader,
+  LoadingOverlay,
+  Modal,
+  Stack,
+  Text,
+} from '@mantine/core';
+import {
+  IconCancel,
+  IconDiscountCheckFilled,
+  IconThumbDownFilled,
+  IconThumbUpFilled,
+} from '@tabler/icons-react';
+import React, { useState } from 'react';
 
 const ActionModalClient = ({
   title,
@@ -15,7 +28,7 @@ const ActionModalClient = ({
   opened,
   close,
   stack,
-  updateTable
+  updateTable,
 }: ActionModalProps) => {
   const [loading, setLoading] = useState(false);
 
@@ -54,57 +67,47 @@ const ActionModalClient = ({
 
         setLoading(false);
       });
-  }
+  };
 
   const dynamicButtonIcon = (actionType?: ActionType) => {
     switch (actionType) {
       case 'submit_approval':
-        return (
-          <Loader 
-            size={18} 
-            color={'var(--mantine-color-gray-3)'} 
-          />
-        );
+        return <Loader size={18} color={'var(--mantine-color-gray-3)'} />;
 
       case 'approve_cash_available':
-        return (
-          <IconDiscountCheckFilled 
-            size={18} 
-            stroke={1.5} 
-          />
-        );
+        return <IconDiscountCheckFilled size={18} stroke={1.5} />;
 
       case 'approve':
         return (
-          <IconThumbUpFilled 
+          <IconThumbUpFilled
             color={'var(--mantine-color-green-3)'}
-            size={18} 
-            stroke={1.5} 
+            size={18}
+            stroke={1.5}
           />
         );
 
       case 'disapprove':
         return (
-          <IconThumbDownFilled 
+          <IconThumbDownFilled
             color={'var(--mantine-color-red-3)'}
-            size={18} 
-            stroke={1.5} 
+            size={18}
+            stroke={1.5}
           />
         );
 
       case 'cancel':
         return (
-          <IconCancel 
+          <IconCancel
             color={'var(--mantine-color-red-3)'}
-            size={18} 
-            stroke={1.5} 
+            size={18}
+            stroke={1.5}
           />
         );
-    
+
       default:
         return <></>;
     }
-  }
+  };
 
   return (
     <Modal
@@ -162,7 +165,7 @@ const ActionModalClient = ({
         </Group>
       </Stack>
     </Modal>
-  )
-}
+  );
+};
 
-export default ActionModalClient
+export default ActionModalClient;

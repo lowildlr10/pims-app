@@ -183,7 +183,7 @@ type DetailActionProps = {
   status?: string;
   stack?: ModalStackReturnType;
   updateTable?: (id: string | null, payload: any) => void;
-}
+};
 
 type DetailModalProps = {
   permissions?: string[];
@@ -217,6 +217,13 @@ type PrintModalProps = {
   opened: boolean;
   stack?: ModalStackReturnType;
   close: () => void;
+};
+
+type LogCardProps = {
+  fullname?: string;
+  message: string;
+  logType: 'log' | 'error';
+  loggedAt: string;
 };
 
 type LogModalProps = {

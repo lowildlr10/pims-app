@@ -1,9 +1,4 @@
-import {
-  Button,
-  Group,
-  Modal,
-  Stack,
-} from '@mantine/core';
+import { Button, Group, Modal, Stack } from '@mantine/core';
 import React from 'react';
 import { IconDownload, IconX } from '@tabler/icons-react';
 
@@ -11,9 +6,8 @@ const PrintModalClient = ({
   title,
   endpoint,
   opened,
-  close
+  close,
 }: PrintModalProps) => {
-
   return (
     <Modal
       overlayProps={{
@@ -28,15 +22,17 @@ const PrintModalClient = ({
       centered
     >
       <Stack mb={50}>
-        <iframe
-          src={endpoint}
-          height='100%'
-          width='100%'
-          style={{
-            height: 'calc(100vh - 8.2em)',
-            border: '1px solid var(--mantine-color-tertiary-9)'
-          }}
-        ></iframe>
+        {opened && (
+          <iframe
+            src={endpoint}
+            height='100%'
+            width='100%'
+            style={{
+              height: 'calc(100vh - 8.2em)',
+              border: '1px solid var(--mantine-color-tertiary-9)',
+            }}
+          ></iframe>
+        )}
       </Stack>
 
       <Stack

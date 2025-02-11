@@ -6,7 +6,7 @@ import {
   Table,
   Text,
   Textarea,
-  TextInput
+  TextInput,
 } from '@mantine/core';
 import React, { forwardRef, ReactNode, useEffect, useState } from 'react';
 import DynamicSelect from '../../DynamicSelect';
@@ -120,10 +120,11 @@ const ItemTableClient = ({
               defaultValue={item?.quantity}
               value={item?.quantity}
               size={'md'}
-              onChange={(value) => 
-                index !== undefined && handlers.setItem(index, {
+              onChange={(value) =>
+                index !== undefined &&
+                handlers.setItem(index, {
                   ...item,
-                  quantity: value as number ?? 0,
+                  quantity: (value as number) ?? 0,
                   estimated_cost: parseFloat(
                     (
                       (value as number) * (item.estimated_unit_cost ?? 0)
@@ -149,10 +150,11 @@ const ItemTableClient = ({
                 endpointParams={{ paginated: false, show_all: true }}
                 column={'unit_name'}
                 value={item?.unit_issue_id}
-                onChange={(value) => 
-                  index !== undefined && handlers.setItem(index, {
+                onChange={(value) =>
+                  index !== undefined &&
+                  handlers.setItem(index, {
                     ...item,
-                    unit_issue_id: value
+                    unit_issue_id: value,
                   })
                 }
                 size={'md'}
@@ -185,10 +187,11 @@ const ItemTableClient = ({
               }
               value={item?.description}
               size={'md'}
-              onChange={(e) => 
-                index !== undefined && handlers.setItem(index, {
+              onChange={(e) =>
+                index !== undefined &&
+                handlers.setItem(index, {
                   ...item,
-                  description: e.currentTarget.value
+                  description: e.currentTarget.value,
                 })
               }
               autosize
@@ -207,10 +210,11 @@ const ItemTableClient = ({
               placeholder={item?.stock_no ? String(item?.stock_no) : 'Stock No'}
               value={item?.stock_no}
               size={'md'}
-              onChange={(value) => 
-                index !== undefined && handlers.setItem(index, {
+              onChange={(value) =>
+                index !== undefined &&
+                handlers.setItem(index, {
                   ...item,
-                  stock_no: value as number ?? 0
+                  stock_no: (value as number) ?? 0,
                 })
               }
               required={!readOnly}
@@ -233,13 +237,14 @@ const ItemTableClient = ({
               value={item?.estimated_unit_cost}
               size={'md'}
               onChange={(value) => {
-                if (index !== undefined) handlers.setItem(index, {
-                  ...item,
-                  estimated_unit_cost: value as number ?? 0,
-                  estimated_cost: parseFloat(
-                    ((value as number) * (item.quantity ?? 0)).toFixed(2)
-                  ),
-                });
+                if (index !== undefined)
+                  handlers.setItem(index, {
+                    ...item,
+                    estimated_unit_cost: (value as number) ?? 0,
+                    estimated_cost: parseFloat(
+                      ((value as number) * (item.quantity ?? 0)).toFixed(2)
+                    ),
+                  });
               }}
               required={!readOnly}
               readOnly={readOnly}
@@ -289,7 +294,7 @@ const ItemTableClient = ({
               <Table.Th key={header.id} w={header?.width ?? undefined}>
                 <Group gap={1} align={'flex-start'}>
                   {header.label}{' '}
-                  {(header?.required && !readOnly) && (
+                  {header?.required && !readOnly && (
                     <Stack>
                       <IconAsterisk
                         size={7}
@@ -393,6 +398,7 @@ const PurchaseRequestContentClient = forwardRef<
       items: data?.items ? JSON.stringify(data?.items) : '',
     },
   });
+  const [prStatus] = useState(data?.status ?? '');
   const [location, setLocation] = useState('Loading...');
   const [companyType, setCompanyType] = useState('Loading...');
   const [department, setDepartment] = useState('Loading...');
@@ -401,7 +407,9 @@ const PurchaseRequestContentClient = forwardRef<
     API.get('/companies')
       .then((res) => {
         const company: CompanyType = res?.data?.company;
-        setLocation(`${company?.municipality}, ${company?.province}`.toUpperCase());
+        setLocation(
+          `${company?.municipality}, ${company?.province}`.toUpperCase()
+        );
         setCompanyType(company?.company_type ?? '');
         setDepartment(company?.company_name ?? '');
       })
@@ -421,21 +429,41 @@ const PurchaseRequestContentClient = forwardRef<
   return (
     <form
       ref={ref}
-      onSubmit={form.onSubmit((values) => handleCreateUpdate && handleCreateUpdate({
-        ...values,
-        pr_date: values.pr_date ? dayjs(values.pr_date).format('YYYY-MM-DD') : '',
-        sai_date: values.sai_date ? dayjs(values.sai_date).format('YYYY-MM-DD') : '',
-        alobs_date: values.alobs_date ? dayjs(values.alobs_date).format('YYYY-MM-DD') : ''
-      }))}
+      onSubmit={form.onSubmit((values) => {
+        if (!['', 'draft', 'disapproved'].includes(prStatus)) {
+          notify({
+            title: 'Update Failed',
+            message:
+              'Purchase Request cannot be updated as it is either already being processed or has been cancelled.',
+            color: 'var(--mantine-color-red-7)',
+          });
+          return;
+        }
+
+        if (handleCreateUpdate) {
+          handleCreateUpdate({
+            ...values,
+            pr_date: values.pr_date
+              ? dayjs(values.pr_date).format('YYYY-MM-DD')
+              : '',
+            sai_date: values.sai_date
+              ? dayjs(values.sai_date).format('YYYY-MM-DD')
+              : '',
+            alobs_date: values.alobs_date
+              ? dayjs(values.alobs_date).format('YYYY-MM-DD')
+              : '',
+          });
+        }
+      })}
     >
       <Stack
         bd={'1px solid var(--mantine-color-gray-8)'}
         justify={'center'}
         gap={0}
       >
-        <Stack 
+        <Stack
           bd={'1px solid var(--mantine-color-gray-8)'}
-          justify={'center'} 
+          justify={'center'}
           align={'center'}
           pt={'lg'}
           pb={'sm'}
@@ -476,13 +504,13 @@ const PurchaseRequestContentClient = forwardRef<
                 <Text>Section:</Text>
                 {!readOnly && (
                   <Stack>
-                  <IconAsterisk
-                    size={7}
-                    color={'var(--mantine-color-red-8)'}
-                    stroke={2}
-                  />
-                </Stack>
-              )}
+                    <IconAsterisk
+                      size={7}
+                      color={'var(--mantine-color-red-8)'}
+                      stroke={2}
+                    />
+                  </Stack>
+                )}
               </Group>
               <Stack justify={'center'} flex={1}>
                 {!readOnly ? (
@@ -531,7 +559,7 @@ const PurchaseRequestContentClient = forwardRef<
               <Group gap={1} align={'flex-start'}>
                 <Text>Date:</Text>
                 {!readOnly && (
-                    <Stack>
+                  <Stack>
                     <IconAsterisk
                       size={7}
                       color={'var(--mantine-color-red-8)'}
@@ -662,7 +690,9 @@ const PurchaseRequestContentClient = forwardRef<
               {...form.getInputProps('funding_source_id')}
               variant={'unstyled'}
               label={'Funding Source / Project'}
-              placeholder={!readOnly ? 'Select a funding source or project...' : 'None'}
+              placeholder={
+                !readOnly ? 'Select a funding source or project...' : 'None'
+              }
               endpoint={'/libraries/funding-sources'}
               endpointParams={{ paginated: false }}
               column={'title'}
@@ -683,11 +713,7 @@ const PurchaseRequestContentClient = forwardRef<
           )}
         </Group>
 
-        <Group
-          align={'flex-start'}
-          gap={0}
-          grow
-        >
+        <Group align={'flex-start'} gap={0} grow>
           <Stack bd={'1px solid var(--mantine-color-gray-8)'} p={'md'}>
             {!readOnly ? (
               <DynamicSelect

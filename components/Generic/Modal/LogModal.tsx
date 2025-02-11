@@ -1,45 +1,68 @@
 import {
+  Badge,
   Button,
-  Divider,
+  Card,
   Group,
   Modal,
-  Paper,
+  Pagination,
   ScrollArea,
   Stack,
   Text,
 } from '@mantine/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconX } from '@tabler/icons-react';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import API from '@/libs/API';
 import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import { LoadingOverlay } from '@mantine/core';
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
+
+const LogCard = ({ fullname, message, logType, loggedAt }: LogCardProps) => {
+  return (
+    <Card shadow='sm' padding='lg' radius='md' withBorder>
+      <Group justify='space-between' mt='md' mb='xs'>
+        <Text fw={500}>{fullname ?? '-'}</Text>
+        <Badge
+          color={
+            logType === 'error'
+              ? 'var(--mantine-color-red-7)'
+              : 'var(--mantine-color-primary-9)'
+          }
+        >
+          {logType}
+        </Badge>
+      </Group>
+
+      <Text size='sm'>{message}</Text>
+
+      <Text size='sm' c='dimmed' pt={'sm'}>
+        {loggedAt}
+      </Text>
+    </Card>
+  );
+};
 
 const LogModalClient = ({
   id,
   title,
   endpoint,
   opened,
-  close
+  close,
 }: LogModalProps) => {
-  const [logId, setSetLogId] = useState(id ?? '');
+  const [logId] = useState(id ?? '');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(50);
+  const [perPage] = useState(10);
   const [paginated] = useState(true);
-  // const [tableData, setTableData] = useState<TableDataType>(
-  //   defaultTableData ?? {}
-  // );
 
-  const { data, isLoading, mutate } = useSWR<SystemLogResponse>(
+  const { mutate } = useSWRConfig();
+  const { data, isLoading } = useSWR<SystemLogResponse>(
     [endpoint, logId, page, perPage, paginated],
-    ([
-      url,
-      logId,
-      page,
-      perPage,
-      paginated,
-    ]: GeneralResponse) =>
+    ([url, logId, page, perPage, paginated]: GeneralResponse) =>
       API.get(url, {
         page,
         log_id: logId,
@@ -49,8 +72,15 @@ const LogModalClient = ({
     {
       refreshInterval: API_REFRESH_INTERVAL,
       keepPreviousData: true,
+      revalidateOnFocus: true,
     }
   );
+
+  useEffect(() => {
+    if (!opened || !endpoint) return;
+
+    mutate(endpoint);
+  }, [opened, endpoint]);
 
   return (
     <Modal
@@ -61,7 +91,7 @@ const LogModalClient = ({
       opened={opened}
       onClose={close}
       title={title ?? 'Document Logs'}
-      size={'md'}
+      size={'lg'}
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
@@ -71,36 +101,39 @@ const LogModalClient = ({
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
 
-      <Stack mb={50} p={'sm'}>
-        {data?.data.map(log => (
-          <Paper key={log?.id} p={'sm'} py={'md'} shadow={'sm'}>
-            <Stack gap={'sm'} c={log.log_type === 'error' ? 'var(--mantine-color-red-7)' : 'var(--mantine-color-gray-7)'}>
-              <Group grow>
-                <Text>Logged At:</Text>
-                <Text>
-                  {dayjs(log?.logged_at).format('MM/DD/YYYY HH:mm')}
-                </Text>
-              </Group>
-              <Divider />
-              <Group grow>
-                <Text>User:</Text>
-                <Text>
-                  {log?.user?.fullname}
-                </Text>
-              </Group>
-              <Divider />
-              <Group grow>
-                <Text>
-                  Message:
-                </Text>
-                <Text>
-                  {log?.message}
-                </Text>
-              </Group>
-            </Stack>
-          </Paper>
-        ))}
-      </Stack>
+      {opened && (
+        <Stack mb={60} p={'sm'}>
+          {data &&
+            data?.data.map((log) => (
+              <LogCard
+                key={log.id}
+                fullname={log.user?.fullname ?? '-'}
+                message={log.message ?? '-'}
+                logType={log.log_type ?? 'log'}
+                loggedAt={
+                  log.logged_at
+                    ? dayjs
+                        .duration(
+                          dayjs(log.logged_at).diff(dayjs()),
+                          'milliseconds'
+                        )
+                        .humanize(true)
+                    : '-'
+                }
+              />
+            ))}
+
+          <Stack w={'100%'} my={'sm'} justify={'center'} align={'center'}>
+            <Pagination
+              size={'sm'}
+              color={'var(--mantine-color-primary-9)'}
+              total={data?.last_page ?? 0}
+              value={page}
+              onChange={setPage}
+            />
+          </Stack>
+        </Stack>
+      )}
 
       <Stack
         w={'100%'}
