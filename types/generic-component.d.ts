@@ -49,6 +49,7 @@ type MainContainerProps = {
 
 type DynamicSelectProps = {
   name?: string;
+  defaultData?: { value: string; label: string }[];
   endpoint: string;
   endpointParams?: any;
   valueColumn?: string;
@@ -62,6 +63,9 @@ type DynamicSelectProps = {
   variant?: 'unstyled' | 'filled' | 'default';
   readOnly?: boolean;
   required?: boolean;
+  enableOnClickRefresh?: boolean;
+  disableFetch?: boolean;
+  isLoading?: boolean;
   onChange?: (value: string) => void;
 };
 
@@ -417,6 +421,8 @@ type PurchaseRequestItemHeader = {
 
 type PurchaseRequestItemTableProps = {
   items?: PurchaseRequestItemType[];
+  value?: string;
+  defaultValue?: string;
   readOnly?: boolean;
   onChange?: (value: string) => void;
 };
