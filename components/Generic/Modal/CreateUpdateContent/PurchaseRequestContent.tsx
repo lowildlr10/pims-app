@@ -120,7 +120,6 @@ const ItemTableClient = ({
 
   useEffect(() => {
     handleFetchUnitIssueData();
-    console.log(items);
   }, []);
 
   useEffect(() => {
