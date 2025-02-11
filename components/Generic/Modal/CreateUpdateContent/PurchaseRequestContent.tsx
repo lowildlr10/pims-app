@@ -80,17 +80,28 @@ const ItemTableClient = ({
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
-      items: items
-        ? items?.map((item, index) => ({
-            item_key: index + 1,
-            quantity: item.quantity,
-            unit_issue_id: item.unit_issue_id,
-            description: item.description,
-            stock_no: item.stock_no,
-            estimated_unit_cost: item.estimated_unit_cost,
-            estimated_cost: item.estimated_cost,
-          }))
-        : [],
+      items:
+        items && typeof items !== undefined && items.length > 0
+          ? items?.map((item, index) => ({
+              item_key: index + 1,
+              quantity: item.quantity,
+              unit_issue_id: item.unit_issue_id,
+              description: item.description,
+              stock_no: item.stock_no,
+              estimated_unit_cost: item.estimated_unit_cost,
+              estimated_cost: item.estimated_cost,
+            }))
+          : [
+              {
+                item_key: 1,
+                quantity: undefined,
+                unit_issue_id: undefined,
+                description: undefined,
+                stock_no: 1,
+                estimated_unit_cost: undefined,
+                estimated_cost: undefined,
+              },
+            ],
     },
   });
   const [_value, handleChange] = useUncontrolled({
@@ -109,6 +120,7 @@ const ItemTableClient = ({
 
   useEffect(() => {
     handleFetchUnitIssueData();
+    console.log(items);
   }, []);
 
   useEffect(() => {
