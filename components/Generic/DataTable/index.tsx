@@ -100,7 +100,12 @@ const DataTableClient = ({
 
   const [subButtonLabel, setSubButtonLabel] = useState('');
 
-  const stack = useModalsStack(['detail-modal', 'print-modal' , 'update-modal', 'log-modal']);
+  const stack = useModalsStack([
+    'detail-modal',
+    'print-modal',
+    'update-modal',
+    'log-modal',
+  ]);
 
   useEffect(() => {
     data.body?.forEach((body: any) => {
@@ -549,20 +554,34 @@ const DataTableClient = ({
                             key={`${body.id}-${body[head.id]}-${i}`}
                             // fw={500}
                             onClick={() => {
-                              if (itemsClickable 
-                                && getAllowedPermissions(mainModule, 'update')?.some(
-                                  (permission) => permissions.includes(permission)
-                                )
-                                && !showDetailsFirst) {
-                                handleOpenUpdateModal(body.id, mainModule ?? null)
+                              if (
+                                itemsClickable &&
+                                getAllowedPermissions(
+                                  mainModule,
+                                  'update'
+                                )?.some((permission) =>
+                                  permissions.includes(permission)
+                                ) &&
+                                !showDetailsFirst
+                              ) {
+                                handleOpenUpdateModal(
+                                  body.id,
+                                  mainModule ?? null
+                                );
                               }
 
-                              if (itemsClickable 
-                                && getAllowedPermissions(mainModule, 'view')?.some(
-                                  (permission) => permissions.includes(permission)
-                                )
-                                && showDetailsFirst) {
-                                handleOpenDetailModal(body.id, mainModule ?? null)
+                              if (
+                                itemsClickable &&
+                                getAllowedPermissions(mainModule, 'view')?.some(
+                                  (permission) =>
+                                    permissions.includes(permission)
+                                ) &&
+                                showDetailsFirst
+                              ) {
+                                handleOpenDetailModal(
+                                  body.id,
+                                  mainModule ?? null
+                                );
                               }
                             }}
                           >
@@ -721,54 +740,55 @@ const DataTableClient = ({
         </Table>
       </ScrollArea>
 
-      {formData && (
-        <>
-          <CreateModalClient
-            title={createModalTitle}
-            endpoint={createEndpoint}
-            data={formData}
-            content={currentCreateModule}
-            fullscreen={createModalFullscreen}
-            opened={createModalOpened}
-            close={() => {
-              setFormData({});
-              closeCreateModal();
-            }}
-            updateTable={handleUpdateTable}
-          />
-          <UpdateModalClient
-            title={updateModalTitle}
-            endpoint={updateEndpoint}
-            data={formData}
-            content={currentUpdateModule}
-            fullscreen={updateModalFullscreen}
-            opened={updateModalOpened}
-            close={() => {
-              setFormData({});
-              closeUpdateModal();
-            }}
-            updateTable={handleUpdateTable}
-          />
-        </>
+      <CreateModalClient
+        title={createModalTitle}
+        endpoint={createEndpoint}
+        data={formData}
+        content={currentCreateModule}
+        fullscreen={createModalFullscreen}
+        opened={createModalOpened}
+        close={() => {
+          setFormData(undefined);
+          closeCreateModal();
+        }}
+        updateTable={handleUpdateTable}
+      />
+
+      {!showDetailsFirst && (
+        <UpdateModalClient
+          title={updateModalTitle}
+          endpoint={updateModalOpened ? updateEndpoint : ''}
+          data={updateModalOpened ? formData : undefined}
+          content={currentUpdateModule}
+          fullscreen={updateModalFullscreen}
+          opened={updateModalOpened}
+          close={() => {
+            setFormData(undefined);
+            closeUpdateModal();
+          }}
+          updateTable={handleUpdateTable}
+        />
       )}
 
-      {(showDetailsFirst && formData) && (
+      {showDetailsFirst && (
         <Modal.Stack>
           <DetailModalClient
+            permissions={permissions}
             title={detailModalTitle}
-            data={formData}
+            data={stack.register('detail-modal').opened ? formData : undefined}
             content={currentDetailModule}
             opened={stack.register('detail-modal').opened}
             stack={stack}
             close={() => {
-              setFormData({});
+              setFormData(undefined);
               stack.closeAll();
+              setLogEndpoint('');
             }}
             updateTable={handleUpdateTable}
           />
-          <PrintModalClient 
+          <PrintModalClient
             title={printModalTitle}
-            endpoint={printEndpoint}
+            endpoint={stack.register('print-modal').opened ? printEndpoint : ''}
             opened={stack.register('print-modal').opened}
             stack={stack}
             close={() => {
@@ -776,21 +796,27 @@ const DataTableClient = ({
               stack.open('detail-modal');
             }}
           />
-          <LogModalClient 
-            id={currentId}
-            title={logModalTitle}
-            endpoint={logEndpoint}
-            opened={stack.register('log-modal').opened}
-            stack={stack}
-            close={() => {
-              stack.register('log-modal').onClose();
-              stack.open('detail-modal');
-            }}
-          />
+
+          {logEndpoint && (
+            <LogModalClient
+              id={currentId}
+              title={logModalTitle}
+              endpoint={logEndpoint}
+              opened={stack.register('log-modal').opened}
+              stack={stack}
+              close={() => {
+                stack.register('log-modal').onClose();
+                stack.open('detail-modal');
+              }}
+            />
+          )}
+
           <UpdateModalClient
             title={updateModalTitle}
-            endpoint={updateEndpoint}
-            data={formData}
+            endpoint={
+              stack.register('update-modal').opened ? updateEndpoint : ''
+            }
+            data={stack.register('update-modal').opened ? formData : undefined}
             content={currentUpdateModule}
             fullscreen={updateModalFullscreen}
             opened={stack.register('update-modal').opened}

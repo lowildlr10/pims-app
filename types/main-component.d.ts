@@ -31,13 +31,13 @@ type PurchaseRequestActionProps = {
   disapprovedAt?: string;
   cancelledAt?: string;
   handleOpenActionModal?: (
-    actionType: ActionType, 
-    title: string, 
-    message: string, 
-    color: string, 
-    buttonLabel: string, 
+    actionType: ActionType,
+    title: string,
+    message: string,
+    color: string,
+    buttonLabel: string,
     endpoint: string
-  ) => void
+  ) => void;
 };
 
 type ModalPurchaseRequestContentProps = {

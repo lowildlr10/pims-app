@@ -49,13 +49,17 @@ const CreateModalClient = ({
     setLoading(true);
 
     if (!uncontrolledPayload) {
-      setLoading(false);
-      return;
+      isControlled = true;
     } else {
       isControlled = false;
     }
 
     if (!payload && isControlled) {
+      setLoading(false);
+      return;
+    }
+
+    if (!uncontrolledPayload && !isControlled) {
       setLoading(false);
       return;
     }
@@ -110,7 +114,7 @@ const CreateModalClient = ({
       />
 
       <Stack mb={50}>
-        {content === 'account-division' && (
+        {opened && content === 'account-division' && (
           <DivisionContentClient
             ref={formRef}
             data={data}
@@ -119,7 +123,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'account-section' && (
+        {opened && content === 'account-section' && (
           <SectionContentClient
             ref={formRef}
             data={data}
@@ -128,7 +132,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'account-role' && (
+        {opened && content === 'account-role' && (
           <RoleContentClient
             ref={formRef}
             data={data}
@@ -137,7 +141,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'account-user' && (
+        {opened && content === 'account-user' && (
           <UserContentClient
             ref={formRef}
             data={data}
@@ -146,7 +150,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-bid-committee' && (
+        {opened && content === 'lib-bid-committee' && (
           <BidsAwardsCommitteeContentClient
             ref={formRef}
             data={data}
@@ -155,7 +159,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-fund-source' && (
+        {opened && content === 'lib-fund-source' && (
           <FundingSourceContentClient
             ref={formRef}
             data={data}
@@ -164,7 +168,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-item-class' && (
+        {opened && content === 'lib-item-class' && (
           <ItemClassificationContentClient
             ref={formRef}
             data={data}
@@ -173,7 +177,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-mfo-pap' && (
+        {opened && content === 'lib-mfo-pap' && (
           <MfoPapContentClient
             ref={formRef}
             data={data}
@@ -182,7 +186,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-mode-proc' && (
+        {opened && content === 'lib-mode-proc' && (
           <ProcurementModeContentClient
             ref={formRef}
             data={data}
@@ -191,7 +195,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-paper-size' && (
+        {opened && content === 'lib-paper-size' && (
           <PaperSizeContentClient
             ref={formRef}
             data={data}
@@ -200,7 +204,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-responsibility-center' && (
+        {opened && content === 'lib-responsibility-center' && (
           <ResponsibilityCenterContentClient
             ref={formRef}
             data={data}
@@ -209,7 +213,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-supplier' && (
+        {opened && content === 'lib-supplier' && (
           <SupplierContentClient
             ref={formRef}
             data={data}
@@ -218,7 +222,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-signatory' && (
+        {opened && content === 'lib-signatory' && (
           <SignatoryContentClient
             ref={formRef}
             data={data}
@@ -227,7 +231,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-uacs-class' && (
+        {opened && content === 'lib-uacs-class' && (
           <UacsCodeClassificationContentClient
             ref={formRef}
             data={data}
@@ -236,7 +240,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-uacs-code' && (
+        {opened && content === 'lib-uacs-code' && (
           <UacsCodeContentClient
             ref={formRef}
             data={data}
@@ -245,7 +249,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'lib-unit-issue' && (
+        {opened && content === 'lib-unit-issue' && (
           <UnitIssueContentClient
             ref={formRef}
             data={data}
@@ -254,7 +258,7 @@ const CreateModalClient = ({
           />
         )}
 
-        {content === 'pr' && (
+        {opened && content === 'pr' && (
           <PurchaseRequestContentClient
             ref={formRef}
             data={data}

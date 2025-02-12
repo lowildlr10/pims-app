@@ -49,6 +49,7 @@ type MainContainerProps = {
 
 type DynamicSelectProps = {
   name?: string;
+  defaultData?: { value: string; label: string }[];
   endpoint: string;
   endpointParams?: any;
   valueColumn?: string;
@@ -62,6 +63,9 @@ type DynamicSelectProps = {
   variant?: 'unstyled' | 'filled' | 'default';
   readOnly?: boolean;
   required?: boolean;
+  enableOnClickRefresh?: boolean;
+  disableFetch?: boolean;
+  isLoading?: boolean;
   onChange?: (value: string) => void;
 };
 
@@ -183,7 +187,7 @@ type DetailActionProps = {
   status?: string;
   stack?: ModalStackReturnType;
   updateTable?: (id: string | null, payload: any) => void;
-}
+};
 
 type DetailModalProps = {
   permissions?: string[];
@@ -217,6 +221,13 @@ type PrintModalProps = {
   opened: boolean;
   stack?: ModalStackReturnType;
   close: () => void;
+};
+
+type LogCardProps = {
+  fullname?: string;
+  message: string;
+  logType: 'log' | 'error';
+  loggedAt: string;
 };
 
 type LogModalProps = {
@@ -410,6 +421,8 @@ type PurchaseRequestItemHeader = {
 
 type PurchaseRequestItemTableProps = {
   items?: PurchaseRequestItemType[];
+  value?: string;
+  defaultValue?: string;
   readOnly?: boolean;
   onChange?: (value: string) => void;
 };

@@ -6,12 +6,18 @@ import {
   Table,
   Text,
   Textarea,
-  TextInput
+  TextInput,
 } from '@mantine/core';
-import React, { forwardRef, ReactNode, useEffect, useState } from 'react';
+import React, {
+  forwardRef,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
-import { useListState } from '@mantine/hooks';
+import { useListState, useUncontrolled } from '@mantine/hooks';
 import { Button } from '@mantine/core';
 import { IconAsterisk, IconPlus, IconTrash } from '@tabler/icons-react';
 import { DateInput } from '@mantine/dates';
@@ -66,71 +72,116 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
 
 const ItemTableClient = ({
   items,
+  value,
+  defaultValue,
   readOnly,
   onChange,
 }: PurchaseRequestItemTableProps) => {
-  const [itemFields, handlers] = useListState<PurchaseRequestItemsFieldType>([
-    {
-      item_key: 1,
-      quantity: undefined,
-      unit_issue_id: undefined,
-      description: undefined,
-      stock_no: 1,
-      estimated_unit_cost: undefined,
-      estimated_cost: undefined,
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      items:
+        items && typeof items !== undefined && items.length > 0
+          ? items?.map((item, index) => ({
+              item_key: index + 1,
+              quantity: item.quantity,
+              unit_issue_id: item.unit_issue_id,
+              description: item.description,
+              stock_no: item.stock_no,
+              estimated_unit_cost: item.estimated_unit_cost,
+              estimated_cost: item.estimated_cost,
+            }))
+          : [
+              {
+                item_key: 1,
+                quantity: undefined,
+                unit_issue_id: undefined,
+                description: undefined,
+                stock_no: 1,
+                estimated_unit_cost: undefined,
+                estimated_cost: undefined,
+              },
+            ],
     },
-  ]);
+  });
+  const [_value, handleChange] = useUncontrolled({
+    value,
+    defaultValue,
+    onChange,
+  });
+  const [unitIssues, setUnitIssues] = useState<string[]>([]);
+  const [loadingUnitIssues, setLoadingUnitIssues] = useState(false);
+  const [unitIssueData, setUnitIssueData] = useState<
+    {
+      value: string;
+      label: string;
+    }[]
+  >();
+
+  useEffect(() => {
+    handleFetchUnitIssueData();
+  }, []);
 
   useEffect(() => {
     if (!items || items.length === 0) return;
 
-    handlers.setState(
-      items.map((item, index) => ({
-        item_key: index + 1,
-        quantity: item.quantity,
-        unit_issue_id: item.unit_issue_id,
-        unit_issue: item.unit_issue?.unit_name,
-        description: item.description,
-        stock_no: item.stock_no,
-        estimated_unit_cost: item.estimated_unit_cost,
-        estimated_cost: item.estimated_cost,
-      }))
-    );
+    setUnitIssues(items.map((item) => item.unit_issue?.unit_name ?? '-'));
   }, [items]);
 
   useEffect(() => {
-    if (!onChange) return;
+    handleChange(JSON.stringify(form.getValues().items));
+  }, [form.getValues().items]);
 
-    onChange(JSON.stringify(itemFields));
-  }, [itemFields]);
+  const handleFetchUnitIssueData = () => {
+    setLoadingUnitIssues(true);
+
+    API.get('/libraries/unit-issues', {
+      paginated: false,
+      show_all: true,
+      sort_direction: 'asc',
+    })
+      .then((res) => {
+        setUnitIssueData(
+          res?.data?.length > 0
+            ? res.data.map((item: any) => ({
+                value: item['id'],
+                label: item['unit_name'],
+              }))
+            : [{ label: 'No data.', value: '' }]
+        );
+        setLoadingUnitIssues(false);
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
+            color: 'red',
+          });
+        });
+
+        setLoadingUnitIssues(false);
+      });
+  };
 
   const renderDynamicTdContent = (
     id: string,
     item: PurchaseRequestItemsFieldType,
-    index?: number
+    index: number
   ): ReactNode => {
     switch (id) {
       case 'quantity':
         return (
           <Table.Td>
             <NumberInput
-              name={'quantity'}
+              key={form.key(`items.${index}.quantity`)}
+              {...form.getInputProps(`items.${index}.quantity`)}
               variant={'unstyled'}
               placeholder={item?.quantity ? String(item?.quantity) : 'Quantity'}
               defaultValue={item?.quantity}
-              value={item?.quantity}
               size={'md'}
-              onChange={(value) => 
-                index !== undefined && handlers.setItem(index, {
-                  ...item,
-                  quantity: value as number ?? 0,
-                  estimated_cost: parseFloat(
-                    (
-                      (value as number) * (item.estimated_unit_cost ?? 0)
-                    ).toFixed(2)
-                  ),
-                })
-              }
               required={!readOnly}
               readOnly={readOnly}
             />
@@ -142,28 +193,26 @@ const ItemTableClient = ({
           <Table.Td>
             {!readOnly ? (
               <DynamicSelect
-                name={'unit_issue_id'}
+                key={form.key(`items.${index}.unit_issue_id`)}
+                {...form.getInputProps(`items.${index}.unit_issue_id`)}
                 variant={'unstyled'}
                 placeholder={'Unit of Issue'}
                 endpoint={'/libraries/unit-issues'}
                 endpointParams={{ paginated: false, show_all: true }}
                 column={'unit_name'}
+                defaultData={unitIssueData}
                 value={item?.unit_issue_id}
-                onChange={(value) => 
-                  index !== undefined && handlers.setItem(index, {
-                    ...item,
-                    unit_issue_id: value
-                  })
-                }
                 size={'md'}
                 required={!readOnly}
                 readOnly={readOnly}
+                disableFetch
+                isLoading={loadingUnitIssues}
               />
             ) : (
               <TextInput
                 variant={'unstyled'}
                 placeholder={'None'}
-                value={item?.unit_issue ?? '-'}
+                value={unitIssues[index]}
                 size={'md'}
                 flex={1}
                 readOnly
@@ -176,21 +225,16 @@ const ItemTableClient = ({
         return (
           <Table.Td>
             <Textarea
-              name={'description'}
+              key={form.key(`items.${index}.description`)}
+              {...form.getInputProps(`items.${index}.description`)}
               variant={'unstyled'}
               placeholder={
                 item?.description?.trim() === '' || !item?.description?.trim()
                   ? 'Description'
                   : item?.description?.trim()
               }
-              value={item?.description}
+              defaultValue={item?.description}
               size={'md'}
-              onChange={(e) => 
-                index !== undefined && handlers.setItem(index, {
-                  ...item,
-                  description: e.currentTarget.value
-                })
-              }
               autosize
               required={!readOnly}
               readOnly={readOnly}
@@ -202,17 +246,12 @@ const ItemTableClient = ({
         return (
           <Table.Td>
             <NumberInput
-              name={'stock_no'}
+              key={form.key(`items.${index}.stock_no`)}
+              {...form.getInputProps(`items.${index}.stock_no`)}
               variant={'unstyled'}
               placeholder={item?.stock_no ? String(item?.stock_no) : 'Stock No'}
-              value={item?.stock_no}
+              defaultValue={item?.stock_no}
               size={'md'}
-              onChange={(value) => 
-                index !== undefined && handlers.setItem(index, {
-                  ...item,
-                  stock_no: value as number ?? 0
-                })
-              }
               required={!readOnly}
               readOnly={readOnly}
             />
@@ -223,24 +262,16 @@ const ItemTableClient = ({
         return (
           <Table.Td>
             <NumberInput
-              name={'estimated_unit_cost'}
+              key={form.key(`items.${index}.estimated_unit_cost`)}
+              {...form.getInputProps(`items.${index}.estimated_unit_cost`)}
               variant={'unstyled'}
               placeholder={
                 item?.estimated_unit_cost
                   ? String(item?.estimated_unit_cost)
                   : 'Estimated Unit Cost'
               }
-              value={item?.estimated_unit_cost}
+              defaultValue={item?.estimated_unit_cost}
               size={'md'}
-              onChange={(value) => {
-                if (index !== undefined) handlers.setItem(index, {
-                  ...item,
-                  estimated_unit_cost: value as number ?? 0,
-                  estimated_cost: parseFloat(
-                    ((value as number) * (item.quantity ?? 0)).toFixed(2)
-                  ),
-                });
-              }}
               required={!readOnly}
               readOnly={readOnly}
             />
@@ -251,7 +282,8 @@ const ItemTableClient = ({
         return (
           <Table.Td>
             <NumberInput
-              name={'estimated_cost'}
+              key={form.key(`items.${index}.estimated_cost`)}
+              {...form.getInputProps(`items.${index}.estimated_cost`)}
               variant={'unstyled'}
               placeholder={
                 item?.estimated_cost
@@ -285,11 +317,13 @@ const ItemTableClient = ({
           {itemHeaders.map((header) => {
             if (readOnly && header.id === 'delete') return;
 
+            if (!readOnly && header.id === 'estimated_cost') return;
+
             return (
               <Table.Th key={header.id} w={header?.width ?? undefined}>
                 <Group gap={1} align={'flex-start'}>
                   {header.label}{' '}
-                  {(header?.required && !readOnly) && (
+                  {header?.required && !readOnly && (
                     <Stack>
                       <IconAsterisk
                         size={7}
@@ -305,19 +339,25 @@ const ItemTableClient = ({
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
-        {itemFields.map((item, index) => (
+        {form.getValues().items.map((item, index) => (
           <Table.Tr
             key={`item-${index}-${item.item_key}`}
             sx={{ verticalAlign: 'top' }}
           >
-            {itemHeaders.map(
-              (header) =>
-                header.id !== 'delete' && (
-                  <React.Fragment key={`field-${index}-${header.id}`}>
-                    {renderDynamicTdContent(header.id, item, index)}
-                  </React.Fragment>
-                )
-            )}
+            {itemHeaders.map((header) => {
+              if (
+                header.id === 'delete' ||
+                (!readOnly && header.id === 'estimated_cost')
+              ) {
+                return null;
+              }
+
+              return (
+                <React.Fragment key={`field-${index}-${header.id}`}>
+                  {renderDynamicTdContent(header.id, item, index)}
+                </React.Fragment>
+              );
+            })}
 
             {!readOnly && (
               <Table.Td>
@@ -325,10 +365,10 @@ const ItemTableClient = ({
                   color={'var(--mantine-color-red-7)'}
                   radius={'lg'}
                   variant={'outline'}
-                  disabled={itemFields.length === 1}
+                  disabled={form.getValues().items.length === 1}
                   onClick={() => {
-                    if (itemFields.length === 1) return;
-                    handlers.remove(index);
+                    if (form.getValues().items.length === 1) return;
+                    form.removeListItem('items', index);
                   }}
                 >
                   <IconTrash size={18} stroke={2} />
@@ -342,20 +382,22 @@ const ItemTableClient = ({
       {!readOnly && (
         <Table.Tfoot>
           <Table.Tr>
-            <Table.Td colSpan={7}>
+            <Table.Td colSpan={readOnly ? 7 : 6}>
               <Button
                 variant={'light'}
                 color={'var(--mantine-color-primary-9)'}
                 leftSection={<IconPlus size={18} stroke={2} />}
                 onClick={() =>
-                  handlers.append({
+                  form.insertListItem('items', {
                     item_key:
-                      (itemFields[itemFields.length - 1]?.item_key ?? 1) + 1,
+                      (form.getValues().items[form.getValues().items.length - 1]
+                        ?.item_key ?? 1) + 1,
                     quantity: undefined,
                     unit_issue_id: undefined,
                     description: undefined,
                     stock_no:
-                      (itemFields[itemFields.length - 1]?.stock_no ?? 1) + 1,
+                      (form.getValues().items[form.getValues().items.length - 1]
+                        ?.stock_no ?? 1) + 1,
                     estimated_unit_cost: undefined,
                     estimated_cost: undefined,
                   })
@@ -393,6 +435,7 @@ const PurchaseRequestContentClient = forwardRef<
       items: data?.items ? JSON.stringify(data?.items) : '',
     },
   });
+  const [prStatus] = useState(data?.status ?? '');
   const [location, setLocation] = useState('Loading...');
   const [companyType, setCompanyType] = useState('Loading...');
   const [department, setDepartment] = useState('Loading...');
@@ -401,7 +444,9 @@ const PurchaseRequestContentClient = forwardRef<
     API.get('/companies')
       .then((res) => {
         const company: CompanyType = res?.data?.company;
-        setLocation(`${company?.municipality}, ${company?.province}`.toUpperCase());
+        setLocation(
+          `${company?.municipality}, ${company?.province}`.toUpperCase()
+        );
         setCompanyType(company?.company_type ?? '');
         setDepartment(company?.company_name ?? '');
       })
@@ -421,21 +466,41 @@ const PurchaseRequestContentClient = forwardRef<
   return (
     <form
       ref={ref}
-      onSubmit={form.onSubmit((values) => handleCreateUpdate && handleCreateUpdate({
-        ...values,
-        pr_date: values.pr_date ? dayjs(values.pr_date).format('YYYY-MM-DD') : '',
-        sai_date: values.sai_date ? dayjs(values.sai_date).format('YYYY-MM-DD') : '',
-        alobs_date: values.alobs_date ? dayjs(values.alobs_date).format('YYYY-MM-DD') : ''
-      }))}
+      onSubmit={form.onSubmit((values) => {
+        if (!['', 'draft', 'disapproved'].includes(prStatus)) {
+          notify({
+            title: 'Update Failed',
+            message:
+              'Purchase Request cannot be updated as it is either already being processed or has been cancelled.',
+            color: 'var(--mantine-color-red-7)',
+          });
+          return;
+        }
+
+        if (handleCreateUpdate) {
+          handleCreateUpdate({
+            ...values,
+            pr_date: values.pr_date
+              ? dayjs(values.pr_date).format('YYYY-MM-DD')
+              : '',
+            sai_date: values.sai_date
+              ? dayjs(values.sai_date).format('YYYY-MM-DD')
+              : '',
+            alobs_date: values.alobs_date
+              ? dayjs(values.alobs_date).format('YYYY-MM-DD')
+              : '',
+          });
+        }
+      })}
     >
       <Stack
         bd={'1px solid var(--mantine-color-gray-8)'}
         justify={'center'}
         gap={0}
       >
-        <Stack 
+        <Stack
           bd={'1px solid var(--mantine-color-gray-8)'}
-          justify={'center'} 
+          justify={'center'}
           align={'center'}
           pt={'lg'}
           pb={'sm'}
@@ -476,13 +541,13 @@ const PurchaseRequestContentClient = forwardRef<
                 <Text>Section:</Text>
                 {!readOnly && (
                   <Stack>
-                  <IconAsterisk
-                    size={7}
-                    color={'var(--mantine-color-red-8)'}
-                    stroke={2}
-                  />
-                </Stack>
-              )}
+                    <IconAsterisk
+                      size={7}
+                      color={'var(--mantine-color-red-8)'}
+                      stroke={2}
+                    />
+                  </Stack>
+                )}
               </Group>
               <Stack justify={'center'} flex={1}>
                 {!readOnly ? (
@@ -493,6 +558,16 @@ const PurchaseRequestContentClient = forwardRef<
                     endpoint={'/accounts/sections'}
                     endpointParams={{ paginated: false }}
                     column={'section_name'}
+                    defaultData={
+                      data?.section_id
+                        ? [
+                            {
+                              value: data?.section_id ?? '',
+                              label: data?.section_name ?? '',
+                            },
+                          ]
+                        : undefined
+                    }
                     value={form.values.section_id}
                     size={'md'}
                     placeholder={'Select a section...'}
@@ -531,7 +606,7 @@ const PurchaseRequestContentClient = forwardRef<
               <Group gap={1} align={'flex-start'}>
                 <Text>Date:</Text>
                 {!readOnly && (
-                    <Stack>
+                  <Stack>
                     <IconAsterisk
                       size={7}
                       color={'var(--mantine-color-red-8)'}
@@ -662,10 +737,22 @@ const PurchaseRequestContentClient = forwardRef<
               {...form.getInputProps('funding_source_id')}
               variant={'unstyled'}
               label={'Funding Source / Project'}
-              placeholder={!readOnly ? 'Select a funding source or project...' : 'None'}
+              placeholder={
+                !readOnly ? 'Select a funding source or project...' : 'None'
+              }
               endpoint={'/libraries/funding-sources'}
               endpointParams={{ paginated: false }}
               column={'title'}
+              defaultData={
+                data?.funding_source_id
+                  ? [
+                      {
+                        value: data?.funding_source_id ?? '',
+                        label: data?.funding_source_title ?? '',
+                      },
+                    ]
+                  : undefined
+              }
               value={form.values.funding_source_id}
               size={'md'}
               readOnly={readOnly}
@@ -683,11 +770,7 @@ const PurchaseRequestContentClient = forwardRef<
           )}
         </Group>
 
-        <Group
-          align={'flex-start'}
-          gap={0}
-          grow
-        >
+        <Group align={'flex-start'} gap={0} grow>
           <Stack bd={'1px solid var(--mantine-color-gray-8)'} p={'md'}>
             {!readOnly ? (
               <DynamicSelect
@@ -699,6 +782,16 @@ const PurchaseRequestContentClient = forwardRef<
                 endpoint={'/accounts/users'}
                 endpointParams={{ paginated: false, show_all: true }}
                 column={'fullname'}
+                defaultData={
+                  data?.requested_by_id
+                    ? [
+                        {
+                          value: data?.requested_by_id ?? '',
+                          label: data?.requestor_fullname ?? '',
+                        },
+                      ]
+                    : undefined
+                }
                 value={form.values.requested_by_id}
                 size={'md'}
                 required={!readOnly}
@@ -732,6 +825,16 @@ const PurchaseRequestContentClient = forwardRef<
                   document: 'pr',
                   signatory_type: 'cash_availability',
                 }}
+                defaultData={
+                  data?.sig_cash_availability_id
+                    ? [
+                        {
+                          value: data?.sig_cash_availability_id ?? '',
+                          label: data?.cash_availability_fullname ?? '',
+                        },
+                      ]
+                    : undefined
+                }
                 valueColumn={'signatory_id'}
                 column={'fullname_designation'}
                 value={form.values.sig_cash_availability_id}
@@ -769,6 +872,16 @@ const PurchaseRequestContentClient = forwardRef<
                 }}
                 valueColumn={'signatory_id'}
                 column={'fullname_designation'}
+                defaultData={
+                  data?.sig_approved_by_id
+                    ? [
+                        {
+                          value: data?.sig_approved_by_id ?? '',
+                          label: data?.approver_fullname ?? '',
+                        },
+                      ]
+                    : undefined
+                }
                 value={form.values.sig_approved_by_id}
                 size={'md'}
                 required={!readOnly}

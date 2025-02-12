@@ -6,6 +6,7 @@ import { notify } from '@/libs/Notification';
 
 const DynamicSelect = ({
   name,
+  defaultData,
   endpoint,
   endpointParams = {},
   column = 'column',
@@ -20,12 +21,26 @@ const DynamicSelect = ({
   onChange,
   readOnly,
   required,
+  enableOnClickRefresh = true,
+  disableFetch = false,
+  isLoading,
 }: DynamicSelectProps) => {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<{ label: string; value: string }[]>([]);
+  const [loading, setLoading] = useState(disableFetch ? false : true);
+  const [data, setData] = useState<{ label: string; value: string }[]>(
+    defaultData ?? []
+  );
   const [inputValue, setInputValue] = useState<string | undefined>(value);
 
-  useEffect(() => handleFetchData(), []);
+  useEffect(() => {
+    if (disableFetch) return;
+    handleFetchData();
+  }, [disableFetch]);
+
+  useEffect(() => {
+    if (disableFetch) {
+      setData(defaultData ?? []);
+    }
+  }, [disableFetch, defaultData]);
 
   useEffect(() => {
     if (onChange) onChange(inputValue ?? '');
@@ -36,6 +51,8 @@ const DynamicSelect = ({
   }, [value]);
 
   const handleFetchData = () => {
+    if (disableFetch) return;
+
     setLoading(true);
 
     API.get(endpoint, {
@@ -82,10 +99,12 @@ const DynamicSelect = ({
       onChange={(_value, option) => setInputValue(option?.value ?? null)}
       nothingFoundMessage={'Nothing found...'}
       leftSection={
-        loading && <Loader color={'var(--mantine-color-primary-9)'} size='xs' />
+        (loading || isLoading) && (
+          <Loader color={'var(--mantine-color-primary-9)'} size='xs' />
+        )
       }
       variant={variant ?? 'default'}
-      onClick={!readOnly ? handleFetchData : undefined}
+      onClick={!readOnly && enableOnClickRefresh ? handleFetchData : undefined}
       searchable
       clearable
       maxDropdownHeight={limit ? undefined : 200}

@@ -152,7 +152,7 @@ type SystemLogType = {
   user_id?: string;
   log_id?: string;
   log_module?: string;
-  log_type?: string;
+  log_type?: 'log' | 'error';
   message?: string;
   details?: string;
   data?: object;

@@ -1,7 +1,23 @@
-import { Box, Button, Group, Menu, Modal, Paper, ScrollArea, Stack, Text } from '@mantine/core';
-import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  Group,
+  Menu,
+  Modal,
+  Paper,
+  ScrollArea,
+  Stack,
+  Text,
+} from '@mantine/core';
+import React, { useEffect, useState } from 'react';
 import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
-import { IconActivity, IconHandFinger, IconPencil, IconPrinter, IconX } from '@tabler/icons-react';
+import {
+  IconActivity,
+  IconHandFinger,
+  IconPencil,
+  IconPrinter,
+  IconX,
+} from '@tabler/icons-react';
 import StatusClient from '@/components/PurchaseRequests/Status';
 import ActionsClient from '@/components/PurchaseRequests/Actions';
 import { useDisclosure } from '@mantine/hooks';
@@ -14,7 +30,7 @@ const DetailActionsClient = ({
   hasStatus,
   status,
   stack,
-  updateTable
+  updateTable,
 }: DetailActionProps) => {
   const [
     actionModalOpened,
@@ -25,14 +41,14 @@ const DetailActionsClient = ({
   const [message, setMessage] = useState('');
   const [color, setColor] = useState('var(--mantine-color-primary-9)');
   const [buttonLabel, setButtonLabel] = useState('');
-  const [endpoint, setEndpoint]= useState('');
+  const [endpoint, setEndpoint] = useState('');
 
   const handleOpenActionModal = (
-    actionType: ActionType, 
-    title: string, 
-    message: string, 
-    color: string, 
-    buttonLabel: string, 
+    actionType: ActionType,
+    title: string,
+    message: string,
+    color: string,
+    buttonLabel: string,
     endpoint: string
   ) => {
     setActionType(actionType);
@@ -43,26 +59,26 @@ const DetailActionsClient = ({
     setEndpoint(endpoint);
 
     openActionModal();
-  }
+  };
 
   const dynamicStatus = (content?: ModuleType) => {
     switch (content) {
       case 'pr':
-        return <StatusClient size={'lg'} status={status  as PurchaseRequestStatus ?? ''} />
-      
+        return (
+          <StatusClient
+            size={'lg'}
+            status={(status as PurchaseRequestStatus) ?? ''}
+          />
+        );
+
       default:
         return <>-</>;
     }
-  }
+  };
 
   const dynamicActions = (content?: ModuleType) => {
     return (
-      <Menu 
-        offset={6} 
-        shadow={'md'}
-        width={300} 
-        withArrow
-      >
+      <Menu offset={6} shadow={'md'} width={300} withArrow>
         <Menu.Target>
           <Button
             color={'var(--mantine-color-secondary-9)'}
@@ -75,7 +91,7 @@ const DetailActionsClient = ({
         <Menu.Dropdown>
           <Menu.Label>Actions</Menu.Label>
           {content === 'pr' && (
-            <ActionsClient 
+            <ActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
@@ -83,7 +99,7 @@ const DetailActionsClient = ({
               approvedCashAvailableAt={data?.approved_cash_available_at}
               approvedAt={data?.approved_at}
               disapprovedAt={data?.disapproved_at}
-              cancelledAt ={data?.cancelled_at}
+              cancelledAt={data?.cancelled_at}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -103,7 +119,7 @@ const DetailActionsClient = ({
         </Menu.Dropdown>
       </Menu>
     );
-  }
+  };
 
   return (
     <Paper w={'100%'} py={'sm'} px={'lg'} shadow={'sm'}>
@@ -116,11 +132,11 @@ const DetailActionsClient = ({
         ) : (
           <Box></Box>
         )}
-        
+
         <Stack>
           {dynamicActions(content)}
 
-          <ActionModalClient 
+          <ActionModalClient
             title={title}
             message={message}
             color={color}
@@ -136,7 +152,7 @@ const DetailActionsClient = ({
       </Group>
     </Paper>
   );
-}
+};
 
 const DetailModalClient = ({
   permissions,
@@ -146,8 +162,26 @@ const DetailModalClient = ({
   content,
   close,
   stack,
-  updateTable
+  updateTable,
 }: DetailModalProps) => {
+  const [showEdit, setShowEdit] = useState(true);
+
+  useEffect(() => {
+    switch (content) {
+      case 'pr':
+        if (['draft', 'disapproved'].includes(data?.status ?? '')) {
+          setShowEdit(true);
+        } else {
+          setShowEdit(false);
+        }
+        break;
+
+      default:
+        setShowEdit(true);
+        break;
+    }
+  }, [content, data]);
+
   return (
     <Modal
       overlayProps={{
@@ -162,7 +196,7 @@ const DetailModalClient = ({
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <Stack 
+      <Stack
         w={'100%'}
         bg={'white'}
         pos={'fixed'}
@@ -172,7 +206,7 @@ const DetailModalClient = ({
         align={'end'}
         sx={{ zIndex: 100 }}
       >
-        <DetailActionsClient 
+        <DetailActionsClient
           permissions={permissions ?? []}
           data={data}
           content={content}
@@ -185,11 +219,8 @@ const DetailModalClient = ({
 
       <Stack p={'md'} my={70}>
         <Paper shadow={'lg'} p={0}>
-          {content === 'pr' && (
-            <PurchaseRequestContentClient
-              data={data}
-              readOnly
-            />
+          {opened && content === 'pr' && (
+            <PurchaseRequestContentClient data={data} readOnly />
           )}
         </Paper>
       </Stack>
@@ -217,19 +248,23 @@ const DetailModalClient = ({
           >
             Print
           </Button>
-          <Button
-            variant={'outline'}
-            type={'button'}
-            color={'var(--mantine-color-primary-9)'}
-            size={'sm'}
-            leftSection={<IconPencil size={18} />}
-            onClick={() => {
-              stack.close('detail-modal');
-              stack.open('update-modal');
-            }}
-          >
-            Edit
-          </Button>
+
+          {showEdit && (
+            <Button
+              variant={'outline'}
+              type={'button'}
+              color={'var(--mantine-color-primary-9)'}
+              size={'sm'}
+              leftSection={<IconPencil size={18} />}
+              onClick={() => {
+                stack.close('detail-modal');
+                stack.open('update-modal');
+              }}
+            >
+              Edit
+            </Button>
+          )}
+
           <Button
             variant={'outline'}
             size={'sm'}

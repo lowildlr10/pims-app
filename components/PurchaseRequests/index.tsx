@@ -133,14 +133,14 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
 
   useEffect(() => {
     const _data = data?.data?.map((body: PurchaseRequestType) => {
-      const { 
+      const {
         section,
-        funding_source, 
-        requestor, 
-        signatory_cash_availability, 
+        funding_source,
+        requestor,
+        signatory_cash_availability,
         signatory_approved_by,
-        items, 
-        ..._data 
+        items,
+        ..._data
       } = body;
 
       return {

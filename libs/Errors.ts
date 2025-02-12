@@ -6,7 +6,10 @@ export const getErrors = (error: any) => {
     return errorLists;
   }
 
-  if (error?.response?.data?.message === 'Unauthenticated.' || error.message === 'Unauthenticated.') {
+  if (
+    error?.response?.data?.message === 'Unauthenticated.' ||
+    error.message === 'Unauthenticated.'
+  ) {
     window.location.href = '/login';
   }
 
