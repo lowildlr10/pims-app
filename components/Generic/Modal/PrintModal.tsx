@@ -1,6 +1,18 @@
-import { Button, Group, Modal, Stack } from '@mantine/core';
-import React from 'react';
-import { IconDownload, IconX } from '@tabler/icons-react';
+import {
+  Button,
+  Card,
+  Group,
+  LoadingOverlay,
+  Modal,
+  Stack,
+  Text,
+} from '@mantine/core';
+import React, { useEffect, useState } from 'react';
+import { IconDownload, IconPrinter, IconX } from '@tabler/icons-react';
+import DynamicSelect from '../DynamicSelect';
+import API from '@/libs/API';
+import { getErrors } from '@/libs/Errors';
+import { notify } from '@/libs/Notification';
 
 const PrintModalClient = ({
   title,
@@ -8,6 +20,65 @@ const PrintModalClient = ({
   opened,
   close,
 }: PrintModalProps) => {
+  const [loading, setLoading] = useState(false);
+  const [filename, setFilename] = useState<string>('');
+  const [base64File, setBase64File] = useState<string>();
+  const [paperId, setPaperId] = useState<string>('');
+  const [pageOrientation, setPageOrientation] = useState<string>('P');
+
+  useEffect(() => {
+    if (paperId && pageOrientation) handleFetchData();
+  }, [paperId, pageOrientation]);
+
+  useEffect(() => {
+    if (!opened) setPaperId('');
+  }, [opened]);
+
+  const handleFetchData = () => {
+    setLoading(true);
+
+    setFilename('');
+    setBase64File('');
+
+    API.get(endpoint, {
+      paper_id: paperId,
+      page_orientation: pageOrientation,
+    })
+      .then((res) => {
+        if (res?.data) {
+          setFilename(res?.data?.filename);
+          setBase64File(`data:application/pdf;base64,${res?.data?.blob}`);
+        } else {
+          setFilename('');
+          setBase64File('');
+        }
+
+        setLoading(false);
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
+            color: 'red',
+          });
+        });
+
+        setLoading(false);
+      });
+  };
+
+  const handleDownload = () => {
+    if (!base64File) return;
+
+    const link = document.createElement('a');
+    link.href = `${base64File}`;
+    link.download = filename;
+    link.click();
+  };
+
   return (
     <Modal
       overlayProps={{
@@ -22,17 +93,81 @@ const PrintModalClient = ({
       centered
     >
       <Stack mb={50}>
-        {opened && (
-          <iframe
-            src={endpoint}
-            height='100%'
-            width='100%'
-            style={{
-              height: 'calc(100vh - 8.2em)',
-              border: '1px solid var(--mantine-color-tertiary-9)',
-            }}
-          ></iframe>
-        )}
+        <Group w={'100%'} align={'flex-start'}>
+          <Stack flex={{ base: 1, md: 0.65, lg: 0.75 }}>
+            <Card p={0} radius={'sm'} h={'calc(100vh - 8.2em)'} withBorder>
+              <LoadingOverlay
+                visible={loading}
+                zIndex={1000}
+                overlayProps={{ radius: 'sm', blur: 2 }}
+              />
+
+              {opened && base64File && paperId && pageOrientation && (
+                <iframe
+                  src={base64File}
+                  height='100%'
+                  width='100%'
+                  style={{
+                    height: 'calc(100vh - 8.2em)',
+                    border: 0,
+                  }}
+                ></iframe>
+              )}
+            </Card>
+          </Stack>
+          <Stack
+            flex={{ base: undefined, md: 0.35, lg: 0.25 }}
+            display={{ base: 'none', md: 'initial' }}
+          >
+            <Card
+              padding={'md'}
+              radius={'sm'}
+              h={'calc(100vh - 8.2em)'}
+              withBorder
+            >
+              <Card.Section withBorder inheritPadding py={'sm'}>
+                <Group>
+                  <IconPrinter size={24} />
+                  <Text size={'lg'}>Settings</Text>
+                </Group>
+              </Card.Section>
+
+              <Stack my={'md'}>
+                <DynamicSelect
+                  label={'Document Size'}
+                  placeholder={'Select a document size'}
+                  size={'md'}
+                  endpoint={'/libraries/paper-sizes'}
+                  column={'paper_type'}
+                  value={paperId}
+                  onChange={(value) => setPaperId(value)}
+                  hasPresetValue
+                  required
+                />
+                <DynamicSelect
+                  label={'Page Orientation'}
+                  placeholder={'Select a page orientation'}
+                  size={'md'}
+                  defaultData={[
+                    {
+                      value: 'P',
+                      label: 'Portrait',
+                    },
+                    {
+                      value: 'L',
+                      label: 'Landscape',
+                    },
+                  ]}
+                  value={pageOrientation}
+                  onChange={(value) => setPageOrientation(value)}
+                  hasPresetValue
+                  disableFetch
+                  required
+                />
+              </Stack>
+            </Card>
+          </Stack>
+        </Group>
       </Stack>
 
       <Stack
@@ -51,6 +186,10 @@ const PrintModalClient = ({
             color={'var(--mantine-color-primary-9)'}
             size={'sm'}
             leftSection={<IconDownload size={18} />}
+            disabled={loading || !base64File}
+            loaderProps={{ type: 'dots' }}
+            loading={loading}
+            onClick={!loading && base64File ? handleDownload : undefined}
           >
             Download
           </Button>

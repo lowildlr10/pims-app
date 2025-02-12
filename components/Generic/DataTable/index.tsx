@@ -406,7 +406,7 @@ const DataTableClient = ({
         setUpdateModalFullscreen(true);
 
         setPrintModalTitle(`Print Purchase Request [${data?.pr_no}]`);
-        setPrintEndpoint('');
+        setPrintEndpoint(`/documents/${moduleType}/prints/${id}`);
 
         setLogModalTitle(`Purchase Request Logs [${data?.pr_no}]`);
         setLogEndpoint(`/logs`);

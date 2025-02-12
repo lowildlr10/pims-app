@@ -22,7 +22,8 @@ const DynamicSelect = ({
   readOnly,
   required,
   enableOnClickRefresh = true,
-  disableFetch = false,
+  disableFetch,
+  hasPresetValue,
   isLoading,
 }: DynamicSelectProps) => {
   const [loading, setLoading] = useState(disableFetch ? false : true);
@@ -30,6 +31,8 @@ const DynamicSelect = ({
     defaultData ?? []
   );
   const [inputValue, setInputValue] = useState<string | undefined>(value);
+  const [isPresetValueSet, setIsPresetValueSet] = useState(false);
+  const [presetValue, setPresetValue] = useState<string | undefined>();
 
   useEffect(() => {
     if (disableFetch) return;
@@ -47,11 +50,20 @@ const DynamicSelect = ({
   }, [inputValue]);
 
   useEffect(() => {
+    if (!hasPresetValue || isPresetValueSet) return;
+
+    if (presetValue) {
+      setInputValue(presetValue);
+      setIsPresetValueSet(true);
+    }
+  }, [presetValue, hasPresetValue, isPresetValueSet]);
+
+  useEffect(() => {
     setInputValue(value);
   }, [value]);
 
   const handleFetchData = () => {
-    if (disableFetch) return;
+    if (disableFetch || !endpoint) return;
 
     setLoading(true);
 
@@ -68,6 +80,11 @@ const DynamicSelect = ({
               }))
             : [{ label: 'No data.', value: '' }]
         );
+
+        if (res?.data?.length > 0 && hasPresetValue && !isPresetValueSet) {
+          setPresetValue(res?.data[0][valueColumn]);
+        }
+
         setLoading(false);
       })
       .catch((err) => {

@@ -50,7 +50,7 @@ type MainContainerProps = {
 type DynamicSelectProps = {
   name?: string;
   defaultData?: { value: string; label: string }[];
-  endpoint: string;
+  endpoint?: string;
   endpointParams?: any;
   valueColumn?: string;
   column?: string;
@@ -65,6 +65,7 @@ type DynamicSelectProps = {
   required?: boolean;
   enableOnClickRefresh?: boolean;
   disableFetch?: boolean;
+  hasPresetValue?: boolean;
   isLoading?: boolean;
   onChange?: (value: string) => void;
 };
