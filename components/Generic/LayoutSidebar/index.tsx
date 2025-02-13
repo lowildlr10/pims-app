@@ -9,7 +9,7 @@ import {
   ScrollArea,
 } from '@mantine/core';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
   IconArrowBack,
@@ -381,6 +381,7 @@ export function LayoutSidebarClient({
   permissions,
   children,
 }: LayoutSidebarProps) {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [menus, setMenus] = useState<LinksGroupProps[]>(defaultMenu);
   const links = menus.map((item) => (
     <LinksGroupClient {...item} key={item.label} permissions={permissions} />
@@ -407,9 +408,9 @@ export function LayoutSidebarClient({
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{ height: lgScreenAndBelow ? 50 : 60 }}
       navbar={{
-        width: 300,
+        width: lgScreenAndBelow ? 250 : 300,
         breakpoint: 'md',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
@@ -419,38 +420,38 @@ export function LayoutSidebarClient({
       transitionTimingFunction='ease'
     >
       <AppShell.Header bg={'var(--mantine-color-primary-9)'} c={'white'}>
-        <Group h='100%' px='md' justify={'space-between'}>
+        <Group h='100%' px={'md'} justify={'space-between'}>
           <Group>
             <Burger
               color={'white'}
               opened={mobileOpened}
               onClick={toggleMobile}
               hiddenFrom={'md'}
-              size={'sm'}
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
             />
             <Burger
               color={'white'}
               opened={desktopOpened}
               onClick={toggleDesktop}
               visibleFrom={'md'}
-              size={'sm'}
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
             />
             <Group>
               <Image
-                width={30}
-                height={30}
+                width={lgScreenAndBelow ? 20 : 30}
+                height={lgScreenAndBelow ? 20 : 30}
                 src={company?.company_logo ?? '/images/logo-fallback.png'}
                 alt={company?.company_name ?? 'Company'}
               />
-              <Text size={'lg'} fw={400}>
+              <Text size={lgScreenAndBelow ? 'md' : 'lg'} fw={400}>
                 Procurement System
               </Text>
             </Group>
           </Group>
 
-          <Group>
+          {/* <Group>
             <NotificationMenuButtonClient />
-          </Group>
+          </Group> */}
         </Group>
       </AppShell.Header>
       <AppShell.Navbar
