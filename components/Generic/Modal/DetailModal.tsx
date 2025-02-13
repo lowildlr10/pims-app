@@ -137,7 +137,9 @@ const DetailActionsClient = ({
               size={lgScreenAndBelow ? 'sm' : 'md'}
               fw={700}
               tt={'uppercase'}
-            >Status:</Text>
+            >
+              Status:
+            </Text>
             {dynamicStatus(content)}
           </Group>
         ) : (

@@ -6,8 +6,8 @@ import classes from '@/styles/generic/userbutton.module.css';
 
 export function UserButtonClient({ user, handleOpen }: UserButtonProps) {
   return (
-    <UnstyledButton 
-      className={classes.user} 
+    <UnstyledButton
+      className={classes.user}
       onClick={handleOpen}
       p={{ base: 'sm', lg: 'xs', xl: 'md' }}
     >

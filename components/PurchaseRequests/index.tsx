@@ -148,7 +148,12 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
       return {
         ..._data,
         pr_date_formatted: dayjs(body.pr_date).format('MM/DD/YYYY'),
-        status_formatted: <StatusClient size={lgScreenAndBelow ? 'xs' : 'md'} status={body.status} />,
+        status_formatted: (
+          <StatusClient
+            size={lgScreenAndBelow ? 'xs' : 'md'}
+            status={body.status}
+          />
+        ),
         section_name: section?.section_name ?? '-',
         funding_source_title: funding_source?.title ?? '-',
         requestor_fullname: body.requestor?.fullname ?? '-',

@@ -9,9 +9,7 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    domains: [
-      'procsys-api.onrender.com'
-    ],
+    domains: ['procsys-api.onrender.com'],
   },
 };
 

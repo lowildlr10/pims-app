@@ -675,7 +675,7 @@ const DataTableClient = ({
                                         <Table.Td
                                           key={`${subBody.id}-${subHeadIndex}`}
                                           // fw={500}
-                                          fz={{ base: 11, lg: 'xs', xl: 'xs' }}
+                                          fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                                           onClick={() =>
                                             itemsClickable &&
                                             enableUpdateSubItem &&

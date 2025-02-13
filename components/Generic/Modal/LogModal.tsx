@@ -27,9 +27,16 @@ const LogCard = ({ fullname, message, logType, loggedAt }: LogCardProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
 
   return (
-    <Card shadow='sm' padding={lgScreenAndBelow ? 'md' : 'lg'} radius='md' withBorder>
+    <Card
+      shadow='sm'
+      padding={lgScreenAndBelow ? 'md' : 'lg'}
+      radius='md'
+      withBorder
+    >
       <Group justify='space-between' mt='md' mb='xs'>
-        <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>{fullname ?? '-'}</Text>
+        <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
+          {fullname ?? '-'}
+        </Text>
         <Badge
           size={lgScreenAndBelow ? 'sm' : 'md'}
           color={
@@ -44,7 +51,11 @@ const LogCard = ({ fullname, message, logType, loggedAt }: LogCardProps) => {
 
       <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>{message}</Text>
 
-      <Text size={lgScreenAndBelow ? 'xs' : 'sm'} c='dimmed' pt={lgScreenAndBelow ? 'xs' : 'sm'}>
+      <Text
+        size={lgScreenAndBelow ? 'xs' : 'sm'}
+        c='dimmed'
+        pt={lgScreenAndBelow ? 'xs' : 'sm'}
+      >
         {loggedAt}
       </Text>
     </Card>
@@ -78,7 +89,7 @@ const LogModalClient = ({
       refreshWhenHidden: true,
       keepPreviousData: false,
       revalidateOnFocus: true,
-      revalidateOnMount: true
+      revalidateOnMount: true,
     }
   );
 
@@ -109,14 +120,16 @@ const LogModalClient = ({
 
       {opened && (
         <Stack mb={60} p={'sm'}>
-          <Button 
+          <Button
             size={lgScreenAndBelow ? 'xs' : 'sm'}
             variant={'outline'}
             leftSection={<IconRefresh size={18} stroke={1.5} />}
             loaderProps={{ type: 'dots' }}
             loading={isLoading}
             onClick={() => opened && mutate()}
-          >Refresh</Button>
+          >
+            Refresh
+          </Button>
           {data &&
             data?.data.map((log) => (
               <LogCard
