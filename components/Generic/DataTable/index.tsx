@@ -84,13 +84,10 @@ const DataTableClient = ({
   const [updateModalFullscreen, setUpdateModalFullscreen] = useState(false);
   const [currentUpdateModule, setCurrentUpdateModule] = useState<ModuleType>();
 
-  const [
-    detailModalOpened,
-    { open: openDetailModal, close: closeDetailModal },
-  ] = useDisclosure(false);
   const [detailModalTitle, setDetailModalTitle] = useState('Details');
-  const [detailModalFullscreen, setDetailModalFullscreen] = useState(false);
   const [currentDetailModule, setCurrentDetailModule] = useState<ModuleType>();
+  const [detailModalShowPrint, setDetailModalShowPrint] = useState(false);
+  const [detailModalShowEdit, setDetailModalShowEdit] = useState(false);
 
   const [printModalTitle, setPrintModalTitle] = useState('Print');
   const [printEndpoint, setPrintEndpoint] = useState('');
@@ -399,7 +396,16 @@ const DataTableClient = ({
     switch (moduleType) {
       case 'pr':
         setDetailModalTitle(`Purchase Request Details [${data?.pr_no}]`);
-        setDetailModalFullscreen(true);
+        setDetailModalShowPrint(
+          ['supply:*', ...getAllowedPermissions('pr', 'print')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('pr', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
 
         setUpdateModalTitle(`Update Purchase Request [${data?.pr_no}]`);
         setUpdateEndpoint(`/purchase-requests/${id}`);
@@ -591,7 +597,7 @@ const DataTableClient = ({
                     )}
 
                     {hasSubBody && (
-                      <Table.Td>
+                      <Table.Td valign={'top'}>
                         <Button
                           size={'xs'}
                           variant='light'
@@ -785,6 +791,8 @@ const DataTableClient = ({
               setLogEndpoint('');
             }}
             updateTable={handleUpdateTable}
+            showPrint={detailModalShowPrint}
+            showEdit={detailModalShowEdit}
           />
           <PrintModalClient
             title={printModalTitle}

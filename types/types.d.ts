@@ -121,11 +121,7 @@ type DivisionType = {
   division_name?: string;
   active?: boolean;
   division_head_id?: string;
-  head?: {
-    id?: string;
-    firstname?: string;
-    lastname?: string;
-  };
+  head?: UserType;
   sections?: SectionType[];
   created_at?: string;
   updated_at?: string;
@@ -137,11 +133,7 @@ type SectionType = {
   section_name?: string;
   active?: boolean;
   section_head_id?: string;
-  head?: {
-    id?: string;
-    firstname?: string;
-    lastname?: string;
-  };
+  head?: UserType;
   division?: DivisionType;
   created_at?: string;
   updated_at?: string;
@@ -265,7 +257,6 @@ type SignatoryDetailType = {
 
 type SignatoryType = {
   id?: string;
-  fullname?: string;
   user_id?: string;
   active?: boolean;
   details?: SignatoryDetailType[];
@@ -359,9 +350,9 @@ type PurchaseRequestType = {
   requested_by_id?: string;
   requestor?: UserType;
   sig_cash_availability_id?: string;
-  signatory_cash_availability?: SignatoryType;
+  signatory_cash_available?: SignatoryType;
   sig_approved_by_id?: string;
-  signatory_approved_by?: SignatoryType;
+  signatory_approval?: SignatoryType;
   status?: PurchaseRequestStatus;
   items?: PurchaseRequestItemType[];
   total_estimated_cost?: number;
@@ -369,8 +360,8 @@ type PurchaseRequestType = {
   section_name?: string;
   funding_source_title?: string;
   requestor_fullname?: string;
-  cash_availability_fullname?: string;
-  approver_fullname?: string;
+  cash_available_fullname?: string;
+  approval_fullname?: string;
   submitted_at?: string;
   approved_cash_available_at?: string;
   approved_at?: string;

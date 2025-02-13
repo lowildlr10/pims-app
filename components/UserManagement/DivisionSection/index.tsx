@@ -92,10 +92,12 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       const { sections, ..._data } = body;
       return {
         ..._data,
+        headfullname: body.head?.fullname ?? '-',
         sub_body:
-          sections?.map((subBody: any) => {
+          sections?.map((subBody) => {
             return {
               ...subBody,
+              headfullname: subBody.head?.fullname ?? '-',
               section_name_formatted: (
                 <Group>
                   <Text size={'sm'}>{subBody.section_name}</Text>

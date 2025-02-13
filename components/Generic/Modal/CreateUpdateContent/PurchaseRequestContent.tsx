@@ -8,16 +8,10 @@ import {
   Textarea,
   TextInput,
 } from '@mantine/core';
-import React, {
-  forwardRef,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, ReactNode, useEffect, useState } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
-import { useListState, useUncontrolled } from '@mantine/hooks';
+import { useUncontrolled } from '@mantine/hooks';
 import { Button } from '@mantine/core';
 import { IconAsterisk, IconPlus, IconTrash } from '@tabler/icons-react';
 import { DateInput } from '@mantine/dates';
@@ -830,7 +824,7 @@ const PurchaseRequestContentClient = forwardRef<
                     ? [
                         {
                           value: data?.sig_cash_availability_id ?? '',
-                          label: data?.cash_availability_fullname ?? '',
+                          label: data?.cash_available_fullname ?? '',
                         },
                       ]
                     : undefined
@@ -847,7 +841,7 @@ const PurchaseRequestContentClient = forwardRef<
                 label={'Cash Availability'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                value={data?.cash_availability_fullname ?? ''}
+                value={data?.cash_available_fullname ?? '-'}
                 size={'md'}
                 flex={1}
                 readOnly
@@ -877,7 +871,7 @@ const PurchaseRequestContentClient = forwardRef<
                     ? [
                         {
                           value: data?.sig_approved_by_id ?? '',
-                          label: data?.approver_fullname ?? '',
+                          label: data?.approval_fullname ?? '',
                         },
                       ]
                     : undefined
@@ -892,7 +886,7 @@ const PurchaseRequestContentClient = forwardRef<
                 label={'Approved By'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                value={data?.approver_fullname ?? ''}
+                value={data?.approval_fullname ?? '-'}
                 size={'md'}
                 flex={1}
                 readOnly

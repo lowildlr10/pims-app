@@ -137,8 +137,8 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
         section,
         funding_source,
         requestor,
-        signatory_cash_availability,
-        signatory_approved_by,
+        signatory_cash_available,
+        signatory_approval,
         items,
         ..._data
       } = body;
@@ -147,6 +147,11 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
         ..._data,
         pr_date_formatted: dayjs(body.pr_date).format('DD/MM/YYYY'),
         status_formatted: <StatusClient status={body.status} />,
+        section_name: section?.section_name ?? '-',
+        funding_source_title: funding_source?.title ?? '-',
+        requestor_fullname: body.requestor?.fullname ?? '-',
+        cash_available_fullname: signatory_cash_available?.user?.fullname,
+        approval_fullname: signatory_approval?.user?.fullname,
         items,
         sub_body:
           items?.map((subBody: PurchaseRequestItemType) => {

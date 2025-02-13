@@ -163,21 +163,23 @@ const DetailModalClient = ({
   close,
   stack,
   updateTable,
+  showPrint,
+  showEdit,
 }: DetailModalProps) => {
-  const [showEdit, setShowEdit] = useState(true);
+  const [showEditButton, setShowEditButton] = useState(false);
 
   useEffect(() => {
     switch (content) {
       case 'pr':
-        if (['draft', 'disapproved'].includes(data?.status ?? '')) {
-          setShowEdit(true);
+        if (showEdit && ['draft', 'disapproved'].includes(data?.status ?? '')) {
+          setShowEditButton(true);
         } else {
-          setShowEdit(false);
+          setShowEditButton(false);
         }
         break;
 
       default:
-        setShowEdit(true);
+        setShowEditButton(true);
         break;
     }
   }, [content, data]);
@@ -236,20 +238,22 @@ const DetailModalClient = ({
         sx={{ zIndex: 100 }}
       >
         <Group>
-          <Button
-            type={'button'}
-            color={'var(--mantine-color-primary-9)'}
-            size={'sm'}
-            leftSection={<IconPrinter size={18} />}
-            onClick={() => {
-              stack.close('detail-modal');
-              stack.open('print-modal');
-            }}
-          >
-            Print
-          </Button>
+          {showPrint && (
+            <Button
+              type={'button'}
+              color={'var(--mantine-color-primary-9)'}
+              size={'sm'}
+              leftSection={<IconPrinter size={18} />}
+              onClick={() => {
+                stack.close('detail-modal');
+                stack.open('print-modal');
+              }}
+            >
+              Print
+            </Button>
+          )}
 
-          {showEdit && (
+          {showEditButton && (
             <Button
               variant={'outline'}
               type={'button'}

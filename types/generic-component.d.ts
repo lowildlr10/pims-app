@@ -194,10 +194,11 @@ type DetailModalProps = {
   permissions?: string[];
   title: string;
   content?: ModuleType;
-  // endpoint: string;
   data: any;
   opened: boolean;
   fullscreen?: boolean;
+  showPrint?: boolean;
+  showEdit?: boolean;
   stack?: ModalStackReturnType;
   close: () => void;
   updateTable?: (id: string | null, payload: any) => void;
