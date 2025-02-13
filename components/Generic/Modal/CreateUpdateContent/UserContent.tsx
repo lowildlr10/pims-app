@@ -39,9 +39,9 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
         roles: data?.roles?.map((role) => role.id) ?? [],
       },
 
-      validate: {
-        email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-      },
+      // validate: {
+      //   email: (value) => (/^\S+@\S+$/.test(value) ? 'null' : 'Invalid email'),
+      // },
     });
 
     useEffect(() => {
