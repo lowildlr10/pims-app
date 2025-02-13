@@ -28,6 +28,7 @@ import SignatoryContentClient from './CreateUpdateContent/SignatoryContent';
 import BidsAwardsCommitteeContentClient from './CreateUpdateContent/BidsAwardsCommitteeContent';
 import ResponsibilityCenterContentClient from './CreateUpdateContent/ResponsibilityCenterContent';
 import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
+import { useMediaQuery } from '@mantine/hooks';
 
 const UpdateModalClient = ({
   title,
@@ -40,6 +41,7 @@ const UpdateModalClient = ({
   updateTable,
   stack,
 }: CreateModalProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
   const formRef = useRef<HTMLFormElement>(null);
@@ -290,7 +292,7 @@ const UpdateModalClient = ({
             }
             type={'button'}
             color={'var(--mantine-color-primary-9)'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             leftSection={<IconPencil size={18} />}
             loading={loading}
             loaderProps={{ type: 'dots' }}
@@ -299,7 +301,7 @@ const UpdateModalClient = ({
           </Button>
           <Button
             variant={'outline'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             color={'var(--mantine-color-gray-8)'}
             leftSection={<IconCancel size={18} />}
             onClick={close}

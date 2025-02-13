@@ -45,6 +45,7 @@ export function LinksGroupClient({
               : undefined
           }
           c={pathname === link.link ? 'black' : undefined}
+          fz={{ base: 'sm', lg: 13, xl: 'md' }}
         >
           {link.label}
         </Anchor>
@@ -73,6 +74,7 @@ export function LinksGroupClient({
             href={link ?? '#'}
             underline={'never'}
             c={'inherit'}
+            fz={{ base: 'sm', lg: 13, xl: 'md' }}
           >
             <Group justify='space-between' gap={0}>
               <Flex align={'center'}>

@@ -2,6 +2,7 @@ import React from 'react';
 import { ActionIcon, Button, Modal, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconSearch, IconX } from '@tabler/icons-react';
+import { useMediaQuery } from '@mantine/hooks';
 
 const SearchModalClient = ({
   search,
@@ -9,6 +10,7 @@ const SearchModalClient = ({
   close,
   setSearch,
 }: SearchModalProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const form = useForm({
     mode: 'controlled',
     initialValues: {
@@ -30,7 +32,7 @@ const SearchModalClient = ({
         backgroundOpacity: 0.55,
         blur: 3,
       }}
-      size={'sm'}
+      size={lgScreenAndBelow ? 'xs' : 'sm'}
       opened={opened}
       onClose={close}
       title='Search'
@@ -51,7 +53,7 @@ const SearchModalClient = ({
           rightSection={
             <ActionIcon
               variant={'light'}
-              size='sm'
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
               radius='sm'
               color={'var(--mantine-color-tertiary-9)'}
               onClick={handleClearSearch}
@@ -68,13 +70,13 @@ const SearchModalClient = ({
           color={'var(--mantine-color-primary-9)'}
           type={'submit'}
           mb={'sm'}
-          size={'sm'}
+          size={lgScreenAndBelow ? 'xs' : 'sm'}
           fullWidth
         >
           Search
         </Button>
         <Button
-          size={'sm'}
+          size={lgScreenAndBelow ? 'xs' : 'sm'}
           variant={'outline'}
           color={'var(--mantine-color-tertiary-9)'}
           onClick={handleClearSearch}

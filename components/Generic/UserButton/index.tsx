@@ -6,16 +6,20 @@ import classes from '@/styles/generic/userbutton.module.css';
 
 export function UserButtonClient({ user, handleOpen }: UserButtonProps) {
   return (
-    <UnstyledButton className={classes.user} onClick={handleOpen}>
+    <UnstyledButton 
+      className={classes.user} 
+      onClick={handleOpen}
+      p={{ base: 'sm', lg: 'xs', xl: 'md' }}
+    >
       <Group>
         <Avatar src={user?.avatar ?? undefined} radius='xl' />
 
         <div style={{ flex: 1 }}>
-          <Text size='sm' fw={500}>
+          <Text fz={{ base: 'sm', lg: 13, xl: 'sm' }} size='sm' fw={500}>
             {user?.fullname}
           </Text>
 
-          <Text c='dimmed' size='xs'>
+          <Text fz={{ base: 'xs', lg: 11, xl: 'xs' }} c='dimmed' size='xs'>
             {user?.position?.position_name}
           </Text>
         </div>

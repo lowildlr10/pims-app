@@ -13,6 +13,7 @@ import DynamicSelect from '../DynamicSelect';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
+import { useMediaQuery } from '@mantine/hooks';
 
 const PrintModalClient = ({
   title,
@@ -20,6 +21,7 @@ const PrintModalClient = ({
   opened,
   close,
 }: PrintModalProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [loading, setLoading] = useState(false);
   const [filename, setFilename] = useState<string>('');
   const [base64File, setBase64File] = useState<string>();
@@ -89,7 +91,7 @@ const PrintModalClient = ({
       onClose={close}
       title={title ?? 'Print'}
       fullScreen={true}
-      size={'md'}
+      size={lgScreenAndBelow ? 'sm' : 'md'}
       centered
     >
       <Stack mb={50}>
@@ -136,7 +138,7 @@ const PrintModalClient = ({
                 <DynamicSelect
                   label={'Document Size'}
                   placeholder={'Select a document size'}
-                  size={'md'}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
                   endpoint={'/libraries/paper-sizes'}
                   column={'paper_type'}
                   value={paperId}
@@ -147,7 +149,7 @@ const PrintModalClient = ({
                 <DynamicSelect
                   label={'Page Orientation'}
                   placeholder={'Select a page orientation'}
-                  size={'md'}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
                   defaultData={[
                     {
                       value: 'P',
@@ -184,7 +186,7 @@ const PrintModalClient = ({
           <Button
             type={'button'}
             color={'var(--mantine-color-primary-9)'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             leftSection={<IconDownload size={18} />}
             disabled={loading || !base64File}
             loaderProps={{ type: 'dots' }}
@@ -195,7 +197,7 @@ const PrintModalClient = ({
           </Button>
           <Button
             variant={'outline'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             color={'var(--mantine-color-gray-8)'}
             leftSection={<IconX size={18} />}
             onClick={close}

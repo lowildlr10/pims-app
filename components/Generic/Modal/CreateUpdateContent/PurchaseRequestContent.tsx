@@ -11,7 +11,7 @@ import {
 import React, { forwardRef, ReactNode, useEffect, useState } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
-import { useUncontrolled } from '@mantine/hooks';
+import { useMediaQuery, useUncontrolled } from '@mantine/hooks';
 import { Button } from '@mantine/core';
 import { IconAsterisk, IconPlus, IconTrash } from '@tabler/icons-react';
 import { DateInput } from '@mantine/dates';
@@ -71,6 +71,7 @@ const ItemTableClient = ({
   readOnly,
   onChange,
 }: PurchaseRequestItemTableProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -175,7 +176,7 @@ const ItemTableClient = ({
               variant={'unstyled'}
               placeholder={item?.quantity ? String(item?.quantity) : 'Quantity'}
               defaultValue={item?.quantity}
-              size={'md'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
               required={!readOnly}
               readOnly={readOnly}
             />
@@ -196,7 +197,7 @@ const ItemTableClient = ({
                 column={'unit_name'}
                 defaultData={unitIssueData}
                 value={item?.unit_issue_id}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 required={!readOnly}
                 readOnly={readOnly}
                 disableFetch
@@ -207,7 +208,7 @@ const ItemTableClient = ({
                 variant={'unstyled'}
                 placeholder={'None'}
                 value={unitIssues[index]}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
               />
@@ -228,7 +229,7 @@ const ItemTableClient = ({
                   : item?.description?.trim()
               }
               defaultValue={item?.description}
-              size={'md'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
               required={!readOnly}
               readOnly={readOnly}
@@ -245,7 +246,7 @@ const ItemTableClient = ({
               variant={'unstyled'}
               placeholder={item?.stock_no ? String(item?.stock_no) : 'Stock No'}
               defaultValue={item?.stock_no}
-              size={'md'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
               required={!readOnly}
               readOnly={readOnly}
             />
@@ -265,7 +266,7 @@ const ItemTableClient = ({
                   : 'Estimated Unit Cost'
               }
               defaultValue={item?.estimated_unit_cost}
-              size={'md'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
               required={!readOnly}
               readOnly={readOnly}
             />
@@ -285,7 +286,7 @@ const ItemTableClient = ({
                   : 'Estimated Cost'
               }
               value={item?.estimated_cost}
-              size={'md'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
               required={!readOnly}
               readOnly={readOnly}
             />
@@ -314,7 +315,11 @@ const ItemTableClient = ({
             if (!readOnly && header.id === 'estimated_cost') return;
 
             return (
-              <Table.Th key={header.id} w={header?.width ?? undefined}>
+              <Table.Th 
+                key={header.id} 
+                w={header?.width ?? undefined}
+                fz={lgScreenAndBelow ? 'sm' : 'md'}
+              >
                 <Group gap={1} align={'flex-start'}>
                   {header.label}{' '}
                   {header?.required && !readOnly && (
@@ -378,6 +383,7 @@ const ItemTableClient = ({
           <Table.Tr>
             <Table.Td colSpan={readOnly ? 7 : 6}>
               <Button
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 variant={'light'}
                 color={'var(--mantine-color-primary-9)'}
                 leftSection={<IconPlus size={18} stroke={2} />}
@@ -412,6 +418,7 @@ const PurchaseRequestContentClient = forwardRef<
   HTMLFormElement,
   ModalPurchaseRequestContentProps
 >(({ data, readOnly, handleCreateUpdate }, ref) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -490,13 +497,13 @@ const PurchaseRequestContentClient = forwardRef<
           pb={'sm'}
           gap={1}
         >
-          <Text fz={'h3'} fw={600}>
+          <Text fz={lgScreenAndBelow ? 'h4' : 'h3'} fw={600}>
             Purchase Request
           </Text>
-          <Text fz={'h5'} fw={600} td={'underline'}>
+          <Text fz={lgScreenAndBelow ? 'h6' : 'h5'} fw={600} td={'underline'}>
             {location}
           </Text>
-          <Text fz={'h5'} fw={600}>
+          <Text fz={lgScreenAndBelow ? 'h6' : 'h5'} fw={600}>
             {companyType}
           </Text>
         </Stack>
@@ -509,12 +516,14 @@ const PurchaseRequestContentClient = forwardRef<
         >
           <Stack p={'md'} flex={0.35}>
             <Group>
-              <Text>Department:</Text>
+              <Text
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+              >Department:</Text>
               <TextInput
                 variant={'unstyled'}
                 placeholder={'Loading...'}
                 value={department}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 leftSection={!department ? <Loader size={16} /> : undefined}
                 readOnly
@@ -522,7 +531,9 @@ const PurchaseRequestContentClient = forwardRef<
             </Group>
             <Group>
               <Group gap={1} align={'flex-start'}>
-                <Text>Section:</Text>
+                <Text
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                >Section:</Text>
                 {!readOnly && (
                   <Stack>
                     <IconAsterisk
@@ -553,7 +564,7 @@ const PurchaseRequestContentClient = forwardRef<
                         : undefined
                     }
                     value={form.values.section_id}
-                    size={'md'}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
                     placeholder={'Select a section...'}
                     required={!readOnly}
                     readOnly={readOnly}
@@ -563,7 +574,7 @@ const PurchaseRequestContentClient = forwardRef<
                     variant={'unstyled'}
                     placeholder={'None'}
                     value={data?.section_name ?? '-'}
-                    size={'md'}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
                     flex={1}
                     readOnly
                   />
@@ -578,17 +589,21 @@ const PurchaseRequestContentClient = forwardRef<
             sx={{ borderLeft: '1px solid var(--mantine-color-gray-8)' }}
           >
             <Group>
-              <Text>PR No.</Text>
+              <Text
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+              >PR No.</Text>
               <TextInput
                 variant={'unstyled'}
                 placeholder={'Autogenerated'}
                 value={data?.pr_no ?? 'Auto-generated'}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
               />
               <Group gap={1} align={'flex-start'}>
-                <Text>Date:</Text>
+                <Text
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                >Date:</Text>
                 {!readOnly && (
                   <Stack>
                     <IconAsterisk
@@ -612,14 +627,16 @@ const PurchaseRequestContentClient = forwardRef<
                 placeholder={'Enter the PR Date here...'}
                 error={form.errors.pr_date && ''}
                 flex={1}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 clearable
                 required={!readOnly}
                 readOnly={readOnly}
               />
             </Group>
             <Group>
-              <Text>SAI No.</Text>
+              <Text
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+              >SAI No.</Text>
               <TextInput
                 key={form.key('sai_no')}
                 {...form.getInputProps('sai_no')}
@@ -627,11 +644,13 @@ const PurchaseRequestContentClient = forwardRef<
                 placeholder={!readOnly ? 'Enter the SAI number here...' : ''}
                 defaultValue={form.values.sai_no}
                 error={form.errors.sai_no && ''}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly={readOnly}
               />
-              <Text>Date:</Text>
+              <Text
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+              >Date:</Text>
               <DateInput
                 key={form.key('sai_date')}
                 {...form.getInputProps('sai_date')}
@@ -645,13 +664,15 @@ const PurchaseRequestContentClient = forwardRef<
                 placeholder={!readOnly ? 'Enter the SAI date here...' : ''}
                 error={form.errors.sai_date && ''}
                 flex={1}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 clearable
                 readOnly={readOnly}
               />
             </Group>
             <Group>
-              <Text>ALOBS No.</Text>
+              <Text
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+              >ALOBS No.</Text>
               <TextInput
                 key={form.key('alobs_no')}
                 {...form.getInputProps('alobs_no')}
@@ -659,11 +680,13 @@ const PurchaseRequestContentClient = forwardRef<
                 placeholder={!readOnly ? 'Enter the ALOBS number here...' : ''}
                 defaultValue={form.values.alobs_no}
                 error={form.errors.alobs_no && ''}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly={readOnly}
               />
-              <Text>Date:</Text>
+              <Text
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+              >Date:</Text>
               <DateInput
                 key={form.key('alobs_date')}
                 {...form.getInputProps('alobs_date')}
@@ -677,7 +700,7 @@ const PurchaseRequestContentClient = forwardRef<
                 placeholder={!readOnly ? 'Enter the ALOBS date here...' : ''}
                 error={form.errors.alobs_date && ''}
                 flex={1}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 clearable
                 readOnly={readOnly}
               />
@@ -711,7 +734,7 @@ const PurchaseRequestContentClient = forwardRef<
             placeholder={'Enter the purpose here...'}
             defaultValue={form.values.purpose}
             error={form.errors.purpose && ''}
-            size={'md'}
+            size={lgScreenAndBelow ? 'sm' : 'md'}
             autosize
             autoCapitalize={'sentences'}
             required={!readOnly}
@@ -741,7 +764,7 @@ const PurchaseRequestContentClient = forwardRef<
                   : undefined
               }
               value={form.values.funding_source_id}
-              size={'md'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
               readOnly={readOnly}
             />
           ) : (
@@ -750,7 +773,7 @@ const PurchaseRequestContentClient = forwardRef<
               variant={'unstyled'}
               placeholder={'None'}
               value={data?.funding_source_title ?? '-'}
-              size={'md'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
               flex={1}
               readOnly
             />
@@ -780,7 +803,7 @@ const PurchaseRequestContentClient = forwardRef<
                     : undefined
                 }
                 value={form.values.requested_by_id}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 required={!readOnly}
                 readOnly={readOnly}
               />
@@ -790,7 +813,7 @@ const PurchaseRequestContentClient = forwardRef<
                 variant={'unstyled'}
                 placeholder={'None'}
                 value={data?.requestor_fullname ?? '-'}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
               />
@@ -825,7 +848,7 @@ const PurchaseRequestContentClient = forwardRef<
                 valueColumn={'signatory_id'}
                 column={'fullname_designation'}
                 value={form.values.sig_cash_availability_id}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 required={!readOnly}
                 readOnly={readOnly}
               />
@@ -835,7 +858,7 @@ const PurchaseRequestContentClient = forwardRef<
                 variant={'unstyled'}
                 placeholder={'None'}
                 value={data?.cash_available_fullname ?? '-'}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
               />
@@ -870,7 +893,7 @@ const PurchaseRequestContentClient = forwardRef<
                     : undefined
                 }
                 value={form.values.sig_approved_by_id}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 required={!readOnly}
                 readOnly={readOnly}
               />
@@ -880,7 +903,7 @@ const PurchaseRequestContentClient = forwardRef<
                 variant={'unstyled'}
                 placeholder={'None'}
                 value={data?.approval_fullname ?? '-'}
-                size={'md'}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
               />

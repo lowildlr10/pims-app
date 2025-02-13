@@ -20,7 +20,7 @@ import {
 } from '@tabler/icons-react';
 import DataTablePaginationClient from './DataTablePaginations';
 import DataTableActionsClient from './DataTableActions';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import UpdateModalClient from '../Modal/UpdateModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import CreateModalClient from '../Modal/CreateModal';
@@ -53,6 +53,8 @@ const DataTableClient = ({
   refreshData,
   onChange,
 }: DataTableProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+
   const [collapseStates, setCollapseStates] = useState<CollapseType>({});
   const [tableBody, setTableBody] = useState<any>(data.body);
   const [hasSubBody, setHasSubBody] = useState(false);
@@ -477,24 +479,26 @@ const DataTableClient = ({
                 >
                   {head.sortable ? (
                     <Button
+                      size={lgScreenAndBelow ? 'xs' : 'sm'}
                       variant={'transparent'}
                       c={'var(--mantine-color-white-9)'}
                       m={0}
-                      py={'var(--mantine-spacing-sm)'}
                       h={'auto'}
+                      py={'var(--mantine-spacing-sm)'}
                       justify={'left'}
+                      fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                       rightSection={
                         <>
                           {columnSort === head.id ? (
                             <>
                               {sortDirection === 'desc' ? (
-                                <IconSortDescending2Filled size={18} />
+                                <IconSortDescending2Filled size={14} />
                               ) : (
-                                <IconSortAscending2Filled size={18} />
+                                <IconSortAscending2Filled size={14} />
                               )}
                             </>
                           ) : (
-                            <IconSortDescending2Filled size={18} />
+                            <IconSortDescending2Filled size={14} />
                           )}
                         </>
                       }
@@ -533,6 +537,7 @@ const DataTableClient = ({
                     c={'var(--mantine-color-red-5)'}
                     ta={'center'}
                     colSpan={data.head?.length}
+                    fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                   >
                     No data.
                   </Table.Td>
@@ -556,6 +561,7 @@ const DataTableClient = ({
                       (head, i) =>
                         typeof body[head.id] !== 'undefined' && (
                           <Table.Td
+                            fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                             valign={'top'}
                             key={`${body.id}-${body[head.id]}-${i}`}
                             // fw={500}
@@ -599,7 +605,8 @@ const DataTableClient = ({
                     {hasSubBody && (
                       <Table.Td valign={'top'}>
                         <Button
-                          size={'xs'}
+                          fz={{ base: 10, lg: 11, xl: 'xs' }}
+                          size={lgScreenAndBelow ? 'compact-xs' : 'xs'}
                           variant='light'
                           color={'var(--mantine-color-secondary-9)'}
                           rightSection={
@@ -629,7 +636,7 @@ const DataTableClient = ({
                         <Collapse in={collapseStates[body.id ?? '']}>
                           <Table
                             bg={'white'}
-                            verticalSpacing={'xs'}
+                            verticalSpacing={'sm'}
                             highlightOnHover
                             withTableBorder
                           >
@@ -643,6 +650,7 @@ const DataTableClient = ({
                                     key={subHead.id}
                                     w={subHead.width}
                                     fw={500}
+                                    fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                                   >
                                     {subHead.label}
                                   </Table.Th>
@@ -667,6 +675,7 @@ const DataTableClient = ({
                                         <Table.Td
                                           key={`${subBody.id}-${subHeadIndex}`}
                                           // fw={500}
+                                          fz={{ base: 11, lg: 'xs', xl: 'xs' }}
                                           onClick={() =>
                                             itemsClickable &&
                                             enableUpdateSubItem &&

@@ -7,6 +7,7 @@ import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
 import dayjs from 'dayjs';
 import StatusClient from './Status';
+import { useMediaQuery } from '@mantine/hooks';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -88,6 +89,7 @@ const defaultTableData: TableDataType = {
 };
 
 const PurchaseRequestsClient = ({ permissions }: MainProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -145,8 +147,8 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
 
       return {
         ..._data,
-        pr_date_formatted: dayjs(body.pr_date).format('DD/MM/YYYY'),
-        status_formatted: <StatusClient status={body.status} />,
+        pr_date_formatted: dayjs(body.pr_date).format('MM/DD/YYYY'),
+        status_formatted: <StatusClient size={lgScreenAndBelow ? 'xs' : 'md'} status={body.status} />,
         section_name: section?.section_name ?? '-',
         funding_source_title: funding_source?.title ?? '-',
         requestor_fullname: body.requestor?.fullname ?? '-',

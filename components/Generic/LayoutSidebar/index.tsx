@@ -456,7 +456,7 @@ export function LayoutSidebarClient({
       <AppShell.Navbar
         p='md'
         sx={(theme, u) => ({
-          [u.smallerThan('lg')]: {
+          [u.smallerThan('md')]: {
             transform: `${
               mobileOpened
                 ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'

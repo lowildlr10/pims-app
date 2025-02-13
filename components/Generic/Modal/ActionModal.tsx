@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   IconCancel,
   IconDiscountCheckFilled,
@@ -30,6 +31,7 @@ const ActionModalClient = ({
   stack,
   updateTable,
 }: ActionModalProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [loading, setLoading] = useState(false);
 
   const handleAction = () => {
@@ -145,7 +147,7 @@ const ActionModalClient = ({
           <Button
             type={'button'}
             color={color ?? 'var(--mantine-color-primary-9)'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             leftSection={dynamicButtonIcon(actionType)}
             loading={loading}
             loaderProps={{ type: 'dots' }}
@@ -155,7 +157,7 @@ const ActionModalClient = ({
           </Button>
           <Button
             variant={'outline'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             color={'var(--mantine-color-gray-8)'}
             leftSection={<IconCancel size={18} />}
             onClick={close}
