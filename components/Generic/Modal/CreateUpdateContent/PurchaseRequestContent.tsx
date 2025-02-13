@@ -461,16 +461,6 @@ const PurchaseRequestContentClient = forwardRef<
     <form
       ref={ref}
       onSubmit={form.onSubmit((values) => {
-        if (!['', 'draft', 'disapproved'].includes(prStatus)) {
-          notify({
-            title: 'Update Failed',
-            message:
-              'Purchase Request cannot be updated as it is either already being processed or has been cancelled.',
-            color: 'var(--mantine-color-red-7)',
-          });
-          return;
-        }
-
         if (handleCreateUpdate) {
           handleCreateUpdate({
             ...values,
@@ -695,14 +685,17 @@ const PurchaseRequestContentClient = forwardRef<
           </Stack>
         </Group>
 
-        <Stack>
-          <ItemTableClient
-            key={form.key('items')}
-            {...form.getInputProps('items')}
-            items={data?.items ?? []}
-            readOnly={readOnly}
-          />
-        </Stack>
+        {(readOnly ||
+          ['', 'draft', 'disapproved'].includes(data?.status ?? '')) && (
+          <Stack>
+            <ItemTableClient
+              key={form.key('items')}
+              {...form.getInputProps('items')}
+              items={data?.items ?? []}
+              readOnly={readOnly}
+            />
+          </Stack>
+        )}
 
         <Group
           align={'flex-start'}

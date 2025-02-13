@@ -171,7 +171,16 @@ const DetailModalClient = ({
   useEffect(() => {
     switch (content) {
       case 'pr':
-        if (showEdit && ['draft', 'disapproved'].includes(data?.status ?? '')) {
+        if (
+          showEdit &&
+          [
+            'draft',
+            'disapproved',
+            'pending',
+            'approved_cash_available',
+            'approved',
+          ].includes(data?.status ?? '')
+        ) {
           setShowEditButton(true);
         } else {
           setShowEditButton(false);
