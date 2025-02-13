@@ -403,6 +403,7 @@ const DataTableClient = ({
             (permission) => permissions?.includes(permission)
           )
         );
+
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('pr', 'update')].some(
             (permission) => permissions?.includes(permission)

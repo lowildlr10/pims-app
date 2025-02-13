@@ -53,7 +53,7 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
             variant={'light'}
             leftSection={<IconDiscountCheckFilled size={18} stroke={1.5} />}
           >
-            Signed - Cash Available
+            Approved - Cash Available
           </Badge>
         </Tooltip>
       );

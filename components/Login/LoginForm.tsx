@@ -58,7 +58,7 @@ const LoginFormClient = () => {
         return 'Invalid username or email';
       },
       password: (val) =>
-        val.length <= 6
+        val.length < 6
           ? 'Password should include at least 6 characters'
           : null,
     },
@@ -149,7 +149,7 @@ const LoginFormClient = () => {
             size='md'
             type='submit'
             color={'var(--mantine-color-primary-9)'}
-            loading={loading}
+            loading={loading || loggedIn}
             loaderProps={{ type: 'dots' }}
             autoContrast
             fullWidth
