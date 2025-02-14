@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: [
+      '@mantine/core',
+      '@mantine/hooks',
+      '@mantine/dates',
+      '@mantine/form',
+    ],
+  },
   images: {
     remotePatterns: [
       {
@@ -9,7 +17,7 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    domains: ['procsys-api.onrender.com'],
+    domains: ['localhost', 'procsys-api.onrender.com'],
   },
 };
 
