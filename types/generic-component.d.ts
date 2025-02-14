@@ -223,6 +223,7 @@ type PrintModalProps = {
   title: string;
   endpoint: string;
   opened: boolean;
+  defaultValue?: string;
   stack?: ModalStackReturnType;
   close: () => void;
 };

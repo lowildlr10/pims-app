@@ -33,25 +33,25 @@ const defaultTableData: TableDataType = {
     {
       id: 'purpose_formatted',
       label: 'Purpose',
-      width: '30%',
+      width: '31%',
       sortable: true,
     },
     {
       id: 'requestor_fullname',
       label: 'Requested By',
-      width: '18%',
+      width: '16%',
       sortable: true,
     },
     {
       id: 'status_formatted',
       label: 'Status',
-      width: '12%',
+      width: '16%',
       sortable: true,
     },
     {
       id: 'show-items',
       label: '',
-      width: '5%',
+      width: '2%',
     },
   ],
   subHead: [
@@ -101,7 +101,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate, error } = useSWR<PurchaseRequestsResponse>(
+  const { data, isLoading, mutate } = useSWR<PurchaseRequestsResponse>(
     [
       `/purchase-requests`,
       search,
@@ -135,10 +135,6 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
   );
 
   useEffect(() => {
-    console.log(error);
-  }, [error]);
-
-  useEffect(() => {
     const _data = data?.data?.map((body: PurchaseRequestType) => {
       const {
         section,
@@ -164,7 +160,10 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
         requestor_fullname: body.requestor?.fullname ?? '-',
         cash_available_fullname: signatory_cash_available?.user?.fullname,
         approval_fullname: signatory_approval?.user?.fullname,
-        purpose_formatted: Helper.shortenText(body.purpose ?? '-'),
+        purpose_formatted: Helper.shortenText(
+          body.purpose ?? '-',
+          lgScreenAndBelow ? 80 : 150
+        ),
         items,
         sub_body:
           items?.map((subBody: PurchaseRequestItemType) => {
@@ -182,7 +181,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
       ...prevState,
       body: _data ?? [],
     }));
-  }, [data]);
+  }, [data, lgScreenAndBelow]);
 
   return (
     <DataTableClient

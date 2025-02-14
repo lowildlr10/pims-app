@@ -18,6 +18,7 @@ import { useMediaQuery } from '@mantine/hooks';
 const PrintModalClient = ({
   title,
   endpoint,
+  defaultValue,
   opened,
   close,
 }: PrintModalProps) => {
@@ -141,6 +142,7 @@ const PrintModalClient = ({
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   endpoint={'/libraries/paper-sizes'}
                   column={'paper_type'}
+                  defaultValue={defaultValue}
                   value={paperId}
                   onChange={(value) => setPaperId(value)}
                   hasPresetValue

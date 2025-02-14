@@ -82,7 +82,15 @@ const DynamicSelect = ({
         );
 
         if (res?.data?.length > 0 && hasPresetValue && !isPresetValueSet) {
-          setPresetValue(res?.data[0][valueColumn]);
+          setPresetValue(
+            defaultValue
+              ? (res?.data?.find(
+                  (item: any) =>
+                    item[valueColumn] === defaultValue ||
+                    item[column].toLowerCase() === defaultValue.toLowerCase()
+                )[valueColumn] ?? res?.data[0][valueColumn])
+              : res?.data[0][valueColumn]
+          );
         }
 
         setLoading(false);
@@ -111,7 +119,7 @@ const DynamicSelect = ({
       limit={limit ?? undefined}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       data={data}
-      defaultValue={defaultValue}
+      defaultValue={!hasPresetValue ? defaultValue : undefined}
       value={inputValue}
       onChange={(_value, option) => setInputValue(option?.value ?? null)}
       nothingFoundMessage={'Nothing found...'}

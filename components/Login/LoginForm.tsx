@@ -25,9 +25,7 @@ const LoginFormClient = () => {
 
   useEffect(() => {
     if (loading) return;
-
     if (!message) return;
-
     if (!error) setLoggedIn(true);
 
     notify({

@@ -38,7 +38,7 @@ const useAuth = () => {
     }
   }, []); // No dependencies, only memoized once during hook initialization
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     setLoading(true);
     setError(false);
 

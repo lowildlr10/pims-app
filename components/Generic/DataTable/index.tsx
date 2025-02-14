@@ -94,6 +94,7 @@ const DataTableClient = ({
 
   const [printModalTitle, setPrintModalTitle] = useState('Print');
   const [printEndpoint, setPrintEndpoint] = useState('');
+  const [printDefaultPaper, setPrintDefaultPaper] = useState('');
 
   const [logModalTitle, setLogModalTitle] = useState('Document Logs');
   const [logEndpoint, setLogEndpoint] = useState('');
@@ -417,6 +418,7 @@ const DataTableClient = ({
 
         setPrintModalTitle(`Print Purchase Request [${data?.pr_no}]`);
         setPrintEndpoint(`/documents/${moduleType}/prints/${id}`);
+        setPrintDefaultPaper('A4');
 
         setLogModalTitle(`Purchase Request Logs [${data?.pr_no}]`);
         setLogEndpoint(`/logs`);
@@ -809,6 +811,7 @@ const DataTableClient = ({
           <PrintModalClient
             title={printModalTitle}
             endpoint={stack.register('print-modal').opened ? printEndpoint : ''}
+            defaultValue={printDefaultPaper}
             opened={stack.register('print-modal').opened}
             stack={stack}
             close={() => {
