@@ -1,6 +1,8 @@
 {
   "name": "procsys_app",
-  "version": "0.1.0",
+  "description": "this web app features a procurement system specifically designed for use by LGUs, streamlining their purchasing processes with tailored tools and functionalities.",
+  "version": "1.0.0",
+  "author": "Lowil Ray Delos Reyes <lowilray.dlr@gmail.com> (https://github.com/lowildlr10)",
   "private": true,
   "scripts": {
     "dev": "next dev",
