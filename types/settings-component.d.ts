@@ -38,6 +38,7 @@ type LibraryProps = {
 };
 
 type MainProps = {
+  user: UserType;
   permissions: string[];
 };
 

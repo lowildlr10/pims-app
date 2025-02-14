@@ -6,6 +6,7 @@ import {
   Group,
   Image,
   Loader,
+  Overlay,
   ScrollArea,
 } from '@mantine/core';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
@@ -30,6 +31,7 @@ import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { Text } from '@mantine/core';
 import NotificationMenuButtonClient from '../NotificationMenuButton';
+import { keyframes } from '@emotion/react';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -387,7 +389,7 @@ export function LayoutSidebarClient({
     <LinksGroupClient {...item} key={item.label} permissions={permissions} />
   ));
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
-  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
   const [opened, { open, close }] = useDisclosure(false);
 
   useEffect(() => {
@@ -457,6 +459,11 @@ export function LayoutSidebarClient({
       <AppShell.Navbar
         p='md'
         sx={(theme, u) => ({
+          transform: `${
+            desktopOpened
+              ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
+              : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
+          } !important`,
           [u.smallerThan('md')]: {
             transform: `${
               mobileOpened
@@ -480,6 +487,27 @@ export function LayoutSidebarClient({
         </AppShell.Section>
       </AppShell.Navbar>
       <AppShell.Main bg={'var(--mantine-color-gray-1)'}>
+        <Overlay
+          color={'var(--mantine-color-black-7)'}
+          backgroundOpacity={0.6}
+          blur={2}
+          zIndex={5}
+          onClick={() => {
+            toggleDesktop();
+          }}
+          display={{ base: 'none', lg: desktopOpened ? 'initial' : 'none' }}
+          sx={{
+            animation: desktopOpened
+              ? `${keyframes`
+                0%,100% { opacity: 0 }
+                100% { opacity: 1 }
+              `} 0.2s linear`
+              : `${keyframes`
+                100%,0% { opacity: 1 }
+                9% { opacity: 0 }
+              `} 0.3s linear`,
+          }}
+        />
         {children}
         <ProgressBar
           height={'2.5px'}

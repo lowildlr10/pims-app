@@ -113,6 +113,7 @@ type DataTableProps = {
   mainModule?: ModuleType;
   subModule?: ModuleType;
 
+  user?: UserType;
   permissions: string[];
 
   columnSort?: string;
@@ -191,6 +192,7 @@ type DetailActionProps = {
 };
 
 type DetailModalProps = {
+  user?: UserType;
   permissions?: string[];
   title: string;
   content?: ModuleType;

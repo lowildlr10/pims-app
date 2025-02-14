@@ -774,7 +774,11 @@ const PurchaseRequestContentClient = forwardRef<
                 label={'Requested By'}
                 placeholder={'Select a requestor...'}
                 endpoint={'/accounts/users'}
-                endpointParams={{ paginated: false, show_all: true }}
+                endpointParams={{
+                  paginated: false,
+                  show_all: true,
+                  document: 'pr',
+                }}
                 column={'fullname'}
                 defaultData={
                   data?.requested_by_id

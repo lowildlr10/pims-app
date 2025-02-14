@@ -168,6 +168,7 @@ const DetailActionsClient = ({
 };
 
 const DetailModalClient = ({
+  user,
   permissions,
   title,
   data,
@@ -190,19 +191,25 @@ const DetailModalClient = ({
   useEffect(() => {
     switch (content) {
       case 'pr':
+        const isEditable = [
+          'draft',
+          'disapproved',
+          'pending',
+          'approved_cash_available',
+          'approved',
+        ].includes(currentData?.status ?? '');
+
         if (
           showEdit &&
-          [
-            'draft',
-            'disapproved',
-            'pending',
-            'approved_cash_available',
-            'approved',
-          ].includes(currentData?.status ?? '')
+          isEditable &&
+          !['super:*', 'supply:*'].some((permission) =>
+            permissions?.includes(permission)
+          ) &&
+          user?.id !== data?.requested_by_id
         ) {
-          setShowEditButton(true);
-        } else {
           setShowEditButton(false);
+        } else {
+          setShowEditButton(isEditable);
         }
         break;
 

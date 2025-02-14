@@ -58,9 +58,7 @@ const LoginFormClient = () => {
         return 'Invalid username or email';
       },
       password: (val) =>
-        val.length < 6
-          ? 'Password should include at least 6 characters'
-          : null,
+        val.length < 6 ? 'Password should include at least 6 characters' : null,
     },
   });
 

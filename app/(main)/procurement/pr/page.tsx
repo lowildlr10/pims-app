@@ -26,7 +26,7 @@ const BidsAwardsCommitteePage = async () => {
       type={'main'}
     >
       <MainContainerClient title={'Procurement - Purchase Request'}>
-        <PurchaseRequestsClient permissions={permissions} />
+        <PurchaseRequestsClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

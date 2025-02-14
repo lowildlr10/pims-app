@@ -31,6 +31,7 @@ import LogModalClient from '../Modal/LogModal';
 const DataTableClient = ({
   mainModule,
   subModule,
+  user,
   permissions,
   columnSort,
   sortDirection,
@@ -789,6 +790,7 @@ const DataTableClient = ({
       {showDetailsFirst && (
         <Modal.Stack>
           <DetailModalClient
+            user={user}
             permissions={permissions}
             title={detailModalTitle}
             data={stack.register('detail-modal').opened ? formData : undefined}

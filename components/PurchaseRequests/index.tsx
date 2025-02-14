@@ -8,31 +8,32 @@ import DataTableClient from '../Generic/DataTable';
 import dayjs from 'dayjs';
 import StatusClient from './Status';
 import { useMediaQuery } from '@mantine/hooks';
+import Helper from '@/utils/Helpers';
 
 const defaultTableData: TableDataType = {
   head: [
     {
       id: 'pr_no',
       label: 'PR No',
-      width: '12%',
+      width: '10%',
       sortable: true,
     },
     {
       id: 'pr_date_formatted',
       label: 'PR Date',
-      width: '12%',
+      width: '10%',
       sortable: true,
     },
     {
       id: 'funding_source_title',
       label: 'Funding Source',
-      width: '18%',
+      width: '15%',
       sortable: true,
     },
     {
-      id: 'purpose',
+      id: 'purpose_formatted',
       label: 'Purpose',
-      width: '23%',
+      width: '30%',
       sortable: true,
     },
     {
@@ -88,7 +89,7 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const PurchaseRequestsClient = ({ permissions }: MainProps) => {
+const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -159,6 +160,7 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
         requestor_fullname: body.requestor?.fullname ?? '-',
         cash_available_fullname: signatory_cash_available?.user?.fullname,
         approval_fullname: signatory_approval?.user?.fullname,
+        purpose_formatted: Helper.shortenText(body.purpose ?? '-'),
         items,
         sub_body:
           items?.map((subBody: PurchaseRequestItemType) => {
@@ -182,6 +184,7 @@ const PurchaseRequestsClient = ({ permissions }: MainProps) => {
     <DataTableClient
       mainModule={'pr'}
       subModule={'pr-item'}
+      user={user}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
