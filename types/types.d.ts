@@ -261,6 +261,7 @@ type SignatoryType = {
   active?: boolean;
   details?: SignatoryDetailType[];
   user?: UserType;
+  fullname_plain?: string;
   created_at?: string;
   updated_at?: string;
 };

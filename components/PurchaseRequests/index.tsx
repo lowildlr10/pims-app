@@ -101,7 +101,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<PurchaseRequestsResponse>(
+  const { data, isLoading, mutate, error } = useSWR<PurchaseRequestsResponse>(
     [
       `/purchase-requests`,
       search,
@@ -133,6 +133,10 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
       keepPreviousData: true,
     }
   );
+
+  useEffect(() => {
+    console.log(error);
+  }, [error]);
 
   useEffect(() => {
     const _data = data?.data?.map((body: PurchaseRequestType) => {

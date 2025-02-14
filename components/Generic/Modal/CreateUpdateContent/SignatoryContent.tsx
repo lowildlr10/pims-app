@@ -1,4 +1,4 @@
-import { Divider, Paper, Stack, Switch, Text } from '@mantine/core';
+import { Divider, Paper, Stack, Switch, Text, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
@@ -186,20 +186,31 @@ const SignatoryContentClient = forwardRef<
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
-        <DynamicSelect
-          endpoint={'/accounts/users'}
-          endpointParams={{
-            paginated: false,
-            show_all: true,
-            show_inactive: true,
-          }}
-          column={'fullname'}
-          label='User'
-          value={form.values.user_id}
-          size={'sm'}
-          onChange={(value) => form.setFieldValue('user_id', value)}
-          required
-        />
+        {!data?.user_id ? (
+          <DynamicSelect
+            endpoint={'/accounts/users'}
+            endpointParams={{
+              paginated: false,
+              show_all: true,
+              show_inactive: true,
+            }}
+            column={'fullname'}
+            label='User'
+            value={form.values.user_id}
+            size={'sm'}
+            onChange={(value) => form.setFieldValue('user_id', value)}
+            required
+          />
+        ) : (
+          <TextInput
+            label={'User'}
+            placeholder={data?.fullname_plain ?? 'None'}
+            value={data?.fullname_plain ?? ''}
+            size={'sm'}
+            flex={1}
+            readOnly
+          />
+        )}
 
         <Switch
           label={'Status'}
