@@ -407,7 +407,7 @@ type RoleCheckedType = {
 };
 
 type PurchaseRequestItemsFieldType = {
-  item_key: number;
+  key: string;
   quantity?: number;
   unit_issue_id?: string;
   unit_issue?: string;
@@ -426,8 +426,6 @@ type PurchaseRequestItemHeader = {
 
 type PurchaseRequestItemTableProps = {
   items?: PurchaseRequestItemType[];
-  value?: string;
-  defaultValue?: string;
   readOnly?: boolean;
   onChange?: (value: string) => void;
 };
