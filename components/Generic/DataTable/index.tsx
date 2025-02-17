@@ -702,6 +702,7 @@ const DataTableClient = ({
                                       subBody[subHead.id] && (
                                         <Table.Td
                                           key={`${subBody.id}-${subHeadIndex}`}
+                                          valign={'top'}
                                           // fw={500}
                                           fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                                           onClick={() => {

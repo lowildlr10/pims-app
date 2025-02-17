@@ -335,6 +335,12 @@ type PurchaseRequestStatus =
   | 'for_po'
   | 'completed';
 
+type RequestQuotationStatus =
+  | 'draft'
+  | 'canvassing'
+  | 'completed'
+  | 'cancelled';
+
 type PurchaseRequestType = {
   id?: string;
   section_id?: string;
@@ -356,6 +362,7 @@ type PurchaseRequestType = {
   signatory_approval?: SignatoryType;
   status?: PurchaseRequestStatus;
   items?: PurchaseRequestItemType[];
+  rfqs?: RequestQuotationType[];
   total_estimated_cost?: number;
   total_estimated_cost_formatted?: string;
   section_name?: string;
@@ -371,3 +378,47 @@ type PurchaseRequestType = {
   created_at?: string;
   updated_at?: string;
 };
+
+type RequestQuotationItemType = {
+  id?: string;
+  request_quotation_id?: string;
+  pr_item_id?: string;
+  pr_item?: PurchaseRequestItemType;
+  supplier_id?: string;
+  supplier?: SupplierType;
+  brand_model?: string;
+  unit_cost?: number;
+  total_cost?: number;
+}
+
+type RequestQuotationCanvasserType = {
+  id?: string;
+  request_quotation_id?: string;
+  user_id?: string;
+  user?: UserType;
+}
+
+type RequestQuotationType = {
+  id?: string;
+  purchase_request_id?: string;
+  signed_type?: 'bac' | 'lce';
+  rfq_date?: string;
+  rfq_no?: string;
+  supplier_id?: string;
+  supplier?: SupplierType;
+  supplier_name?: string;
+  canvasser_names?: string;
+  openning_dt?: string;
+  sig_approval_id?: string;
+  signatory_approval?: SignatoryType;
+  approval_fullname?: string;
+  vat_registered?: boolean;
+  canvassers?: RequestQuotationCanvasserType[];
+  items?: RequestQuotationItemType[];
+  status?: RequestQuotationStatus;
+  canvassing_at?: string;
+  completed_at?: string;
+  cancelled_at?: string;
+  created_at?: string;
+  updated_at?: string;
+}
