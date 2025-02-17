@@ -412,7 +412,7 @@ export function LayoutSidebarClient({
     <AppShell
       header={{ height: lgScreenAndBelow ? 50 : 60 }}
       navbar={{
-        width: lgScreenAndBelow ? 250 : 300,
+        width: 300,
         breakpoint: 'md',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}

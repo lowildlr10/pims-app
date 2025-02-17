@@ -659,9 +659,9 @@ const PurchaseRequestContentClient = forwardRef<
                     {!readOnly && (
                       <Table.Td>
                         <ActionIcon
+                          w={'100%'}
                           color={'var(--mantine-color-red-7)'}
-                          radius={'lg'}
-                          variant={'outline'}
+                          variant={'light'}
                           disabled={form.getValues().items.length === 1}
                           onClick={() => {
                             if (form.getValues().items.length === 1) return;

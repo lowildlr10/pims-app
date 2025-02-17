@@ -16,8 +16,12 @@ const nextConfig = {
         hostname: 'localhost',
         pathname: '/**',
       },
-    ],
-    domains: ['localhost', 'procsys-api.onrender.com'],
+      {
+        protocol: 'https',
+        hostname: 'procsys-api.onrender.com',
+        pathname: '/**',
+      },
+    ]
   },
 };
 

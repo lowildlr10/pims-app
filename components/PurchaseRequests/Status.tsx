@@ -36,7 +36,7 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
             color={'var(--mantine-color-gray-7)'}
             variant={'light'}
             leftSection={
-              <Loader size={16} color={'var(--mantine-color-gray-7)'} />
+              <Loader size={12} color={'var(--mantine-color-gray-7)'} />
             }
           >
             {Helper.formatStringHasUnderscores(status)}
