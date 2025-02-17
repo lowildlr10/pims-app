@@ -21,7 +21,7 @@ const nextConfig = {
         hostname: 'procsys-api.onrender.com',
         pathname: '/**',
       },
-    ]
+    ],
   },
 };
 

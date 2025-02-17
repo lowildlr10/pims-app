@@ -72,8 +72,9 @@ const DataTableClient = ({
     { open: openCreateModal, close: closeCreateModal },
   ] = useDisclosure(false);
   const [currentId, setCurrentId] = useState<string>();
-  const [currentOpenedModuleType, setCurrentOpenedModuleType] = 
-    useState<'main' | 'sub'>();
+  const [currentOpenedModuleType, setCurrentOpenedModuleType] = useState<
+    'main' | 'sub'
+  >();
 
   const [createModalTitle, setCreateModalTitle] = useState('Create');
   const [createEndpoint, setCreateEndpoint] = useState('');
@@ -119,12 +120,10 @@ const DataTableClient = ({
         parentBody?.sub_body.find((subBody: any) => subBody.id === currentId)
       );
       return;
-    } 
-    
+    }
+
     if (currentOpenedModuleType === 'main') {
-      setFormData(
-        data?.body?.find((form: any) => form.id === currentId)
-      );
+      setFormData(data?.body?.find((form: any) => form.id === currentId));
       return;
     }
   }, [data, currentId, currentOpenedModuleType]);
@@ -706,20 +705,22 @@ const DataTableClient = ({
                                           // fw={500}
                                           fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                                           onClick={() => {
-                                            if (itemsClickable &&
+                                            if (
+                                              itemsClickable &&
                                               enableUpdateSubItem &&
                                               getAllowedPermissions(
                                                 subModule,
                                                 'update'
                                               )?.some((permission) =>
                                                 permissions.includes(permission)
-                                            )) {
+                                              )
+                                            ) {
                                               setCurrentId(subBody.id);
                                               setCurrentOpenedModuleType('sub');
                                               handleOpenUpdateModal(
                                                 subBody.id,
                                                 subModule ?? null
-                                              )
+                                              );
                                             }
                                           }}
                                         >
