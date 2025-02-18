@@ -211,7 +211,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
       showSearch
       showCreate
       showDetailsFirst
-      autoCollapseFirstSubItems={false}
+      autoCollapseSubItems={'none'}
     />
   );
 };

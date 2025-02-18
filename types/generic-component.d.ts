@@ -126,7 +126,7 @@ type DataTableProps = {
   showSearch?: boolean;
   showCreate?: boolean;
   showDetailsFirst?: boolean;
-  autoCollapseFirstSubItems?: boolean;
+  autoCollapseSubItems?: 'all' | 'first' | 'none';
 
   data: TableDataType;
   perPage: number;
@@ -428,4 +428,15 @@ type PurchaseRequestItemTableProps = {
   items?: PurchaseRequestItemType[];
   readOnly?: boolean;
   onChange?: (value: string) => void;
+};
+
+type RequestQuotationItemsFieldType = {
+  key: string;
+  stock_no?: number;
+  quantity?: number;
+  unit_issue?: string;
+  description?: string;
+  brand_model?: string;
+  unit_cost?: number;
+  total_cost?: number;
 };

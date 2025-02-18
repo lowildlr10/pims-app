@@ -13,6 +13,7 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import {
   IconCancel,
+  IconCheck,
   IconDiscountCheckFilled,
   IconThumbDownFilled,
   IconThumbUpFilled,
@@ -101,6 +102,18 @@ const ActionModalClient = ({
         return (
           <IconCancel
             color={'var(--mantine-color-red-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'issue_canvassing':
+        return <Loader size={18} color={'var(--mantine-color-gray-3)'} />;
+
+      case 'canvass_complete':
+        return (
+          <IconCheck
+            color={'var(--mantine-color-green-3)'}
             size={18}
             stroke={1.5}
           />

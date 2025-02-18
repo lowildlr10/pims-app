@@ -29,6 +29,7 @@ import BidsAwardsCommitteeContentClient from './CreateUpdateContent/BidsAwardsCo
 import ResponsibilityCenterContentClient from './CreateUpdateContent/ResponsibilityCenterContent';
 import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
 import { useMediaQuery } from '@mantine/hooks';
+import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
 
 const CreateModalClient = ({
   title,
@@ -265,6 +266,15 @@ const CreateModalClient = ({
             ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
+          />
+        )}
+
+        {opened && content === 'rfq' && (
+          <RequestQuotionContentClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleCreate}
+            isCreate
           />
         )}
       </Stack>

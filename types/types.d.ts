@@ -48,7 +48,9 @@ type ActionType =
   | 'approve_cash_available'
   | 'approve'
   | 'disapprove'
-  | 'cancel';
+  | 'cancel'
+  | 'issue_canvassing'
+  | 'canvass_complete';
 
 type CompanyType = {
   id?: string;
@@ -367,6 +369,7 @@ type PurchaseRequestType = {
   total_estimated_cost_formatted?: string;
   section_name?: string;
   funding_source_title?: string;
+  funding_source_location?: string;
   requestor_fullname?: string;
   cash_available_fullname?: string;
   approval_fullname?: string;
@@ -382,6 +385,7 @@ type PurchaseRequestType = {
 type RequestQuotationItemType = {
   id?: string;
   request_quotation_id?: string;
+  request_quotation?: RequestQuotationType;
   pr_item_id?: string;
   pr_item?: PurchaseRequestItemType;
   supplier_id?: string;
@@ -389,25 +393,28 @@ type RequestQuotationItemType = {
   brand_model?: string;
   unit_cost?: number;
   total_cost?: number;
-}
+  included?: boolean;
+};
 
 type RequestQuotationCanvasserType = {
   id?: string;
   request_quotation_id?: string;
+  request_quotation?: RequestQuotationType;
   user_id?: string;
   user?: UserType;
-}
+};
 
 type RequestQuotationType = {
   id?: string;
   purchase_request_id?: string;
+  purchase_request?: PurchaseRequestType;
   signed_type?: 'bac' | 'lce';
   rfq_date?: string;
   rfq_no?: string;
   supplier_id?: string;
   supplier?: SupplierType;
   supplier_name?: string;
-  canvasser_names?: string;
+  canvasser_names?: string[];
   openning_dt?: string;
   sig_approval_id?: string;
   signatory_approval?: SignatoryType;
@@ -416,9 +423,13 @@ type RequestQuotationType = {
   canvassers?: RequestQuotationCanvasserType[];
   items?: RequestQuotationItemType[];
   status?: RequestQuotationStatus;
+  pr_no?: string;
+  funding_source_title?: string;
+  funding_source_location?: string;
+  purpose?: string;
   canvassing_at?: string;
   completed_at?: string;
   cancelled_at?: string;
   created_at?: string;
   updated_at?: string;
-}
+};

@@ -70,15 +70,21 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
+      id: 'signed_type_formatted',
+      label: 'Signed Type',
+      width: '10%',
+      sortable: true,
+    },
+    {
       id: 'supplier_name',
       label: 'Supplier',
       width: '15%',
       sortable: true,
     },
     {
-      id: 'canvasser_names',
+      id: 'canvasser_names_formatted',
       label: 'Canvassers',
-      width: '49%',
+      width: '39%',
       sortable: false,
     },
     {
@@ -86,7 +92,7 @@ const defaultTableData: TableDataType = {
       label: 'Status',
       width: '16%',
       sortable: true,
-    }
+    },
   ],
   body: [],
 };
@@ -145,6 +151,7 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
         signatory_cash_available,
         signatory_approval,
         rfqs,
+        items,
         ..._data
       } = body;
 
@@ -167,29 +174,46 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
           lgScreenAndBelow ? 80 : 150
         ),
         rfqs,
+        items,
         sub_body:
           rfqs?.map((subBody: RequestQuotationType) => {
             return {
               ...subBody,
+              pr_no: body?.pr_no ?? '-',
+              funding_source_title: funding_source?.title ?? '-',
+              funding_source_location:
+                funding_source?.location?.location_name ?? '-',
               rfq_date_formatted: dayjs(subBody.rfq_date).format('MM/DD/YYYY'),
-              supplier_name: subBody.supplier?.supplier_name,
+              signed_type_formatted: subBody.signed_type
+                ? subBody.signed_type.toUpperCase()
+                : '-',
+              supplier_name: subBody.supplier?.supplier_name ?? '-',
               canvasser_names: subBody.canvassers?.map(
-                (canvasser, i) => (
-                  <Badge
-                    mr={4}
-                    variant={'light'}
-                    color={'var(--mantine-color-primary-9)'}
-                    key={i}
-                    sx={{ cursor: 'pointer' }}
-                  >{canvasser.user?.fullname}</Badge>
-                )
+                (canvasser, i) => canvasser.user?.fullname
+              ),
+              canvasser_names_formatted: (
+                <>
+                  {subBody.canvassers?.map((canvasser, i) => (
+                    <Badge
+                      mr={4}
+                      variant={'light'}
+                      color={'var(--mantine-color-primary-9)'}
+                      key={i}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      {canvasser.user?.fullname}
+                    </Badge>
+                  ))}
+                </>
               ),
               status_formatted: (
                 <StatusClient
                   size={lgScreenAndBelow ? 'xs' : 'md'}
                   status={subBody.status}
                 />
-              )
+              ),
+              purpose: body.purpose ?? '-',
+              approval_fullname: subBody.signatory_approval?.user?.fullname,
             };
           }) || [],
       };
@@ -228,7 +252,7 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
       }}
       showSearch
       showDetailsFirst
-      autoCollapseFirstSubItems={false}
+      autoCollapseSubItems={'all'}
       enableCreateSubItem
       enableUpdateSubItem
     />

@@ -42,7 +42,7 @@ const DataTableClient = ({
   showSearch,
   showCreate,
   showDetailsFirst,
-  autoCollapseFirstSubItems = true,
+  autoCollapseSubItems = 'first',
   data,
   perPage,
   loading,
@@ -112,7 +112,7 @@ const DataTableClient = ({
   ]);
 
   useEffect(() => {
-    if (currentOpenedModuleType === 'sub') {
+    if (currentOpenedModuleType === 'sub' && currentId) {
       const parentBody = data?.body?.find((body: any) =>
         body?.sub_body.some((subBody: any) => subBody.id === currentId)
       );
@@ -122,7 +122,7 @@ const DataTableClient = ({
       return;
     }
 
-    if (currentOpenedModuleType === 'main') {
+    if (currentOpenedModuleType === 'main' && currentId) {
       setFormData(data?.body?.find((form: any) => form.id === currentId));
       return;
     }
@@ -133,10 +133,17 @@ const DataTableClient = ({
       if (body?.sub_body?.length > 0) setHasSubBody(true);
     });
 
-    if (autoCollapseFirstSubItems) {
+    if (autoCollapseSubItems === 'first') {
       setCollapseStates({
         [data?.body[0]?.id as string]: true,
       });
+    } else if (autoCollapseSubItems === 'all') {
+      setCollapseStates(
+        data?.body?.reduce((acc: any, item: any) => {
+          acc[item?.id] = true;
+          return acc;
+        }, {})
+      );
     }
 
     setTableBody(data?.body);
@@ -172,31 +179,17 @@ const DataTableClient = ({
         break;
 
       case 'pr':
-        setSubButtonLabel('Items');
+        if (subModule === 'rfq') {
+          setSubButtonLabel('RFQs');
+        } else {
+          setSubButtonLabel('Items');
+        }
         break;
 
       default:
         break;
     }
   }, [mainModule]);
-
-  useEffect(() => {
-    if (!subModule) return;
-
-    switch (subModule) {
-      case 'account-section':
-        setCreateModalTitle('Add Section');
-        setCreateEndpoint('/account/sections');
-        break;
-      case 'lib-signatory-detail':
-        setCreateModalTitle('Add Details');
-        setCreateEndpoint('#');
-        break;
-
-      default:
-        break;
-    }
-  }, [subModule]);
 
   const handleToggleCollapse = (id: string | undefined) => {
     if (!id) return;
@@ -318,6 +311,35 @@ const DataTableClient = ({
       case 'pr':
         setCreateModalTitle('Create Purchase Request');
         setCreateEndpoint('/purchase-requests');
+        setCreateModalFullscreen(true);
+        break;
+      case 'rfq':
+        const parentBody = data?.body?.find(
+          (form: any) => form.id === parentId
+        );
+        const items =
+          parentBody.items?.map((item: PurchaseRequestItemType) => ({
+            pr_item_id: item.id,
+            brand_model: '',
+            unit_cost: undefined,
+            total_cost: undefined,
+            pr_item: {
+              stock_no: item.stock_no,
+              quantity: item.quantity,
+              description: item.description,
+            },
+          })) ?? [];
+
+        setFormData({
+          purchase_request_id: parentId,
+          items,
+          purpose: parentBody?.purpose,
+          pr_no: parentBody?.pr_no,
+          funding_source_title: parentBody?.funding_source_title,
+          funding_source_location: parentBody?.funding_source_location,
+        });
+        setCreateModalTitle('Create Request for Quotation');
+        setCreateEndpoint('/request-quotations');
         setCreateModalFullscreen(true);
         break;
       default:
@@ -442,6 +464,43 @@ const DataTableClient = ({
 
         setLogModalTitle(`Purchase Request Logs [${data?.pr_no}]`);
         setLogEndpoint(`/logs`);
+
+        setCurrentOpenedModuleType('main');
+        break;
+      case 'rfq':
+        const parentBody = tableBody?.find((body: any) =>
+          body?.sub_body.some((subBody: any) => subBody.id === id)
+        );
+        const subData = parentBody?.sub_body.find(
+          (subBody: any) => subBody.id === id
+        );
+
+        setFormData(subData);
+        setDetailModalTitle(`Request Quotation Details [${subData?.rfq_no}]`);
+        setDetailModalShowPrint(
+          ['supply:*', ...getAllowedPermissions('rfq', 'print')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('rfq', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+
+        setUpdateModalTitle(`Update Request Quotation [${subData?.rfq_no}]`);
+        setUpdateEndpoint(`/request-quotations/${id}`);
+        setUpdateModalFullscreen(true);
+
+        setPrintModalTitle(`Print Request Quotation [${subData?.rfq_no}]`);
+        setPrintEndpoint(`/documents/${moduleType}/prints/${id}`);
+        setPrintDefaultPaper('A4');
+
+        setLogModalTitle(`Request Quotation Logs [${subData?.rfq_no}]`);
+        setLogEndpoint(`/logs`);
+
+        setCurrentOpenedModuleType('sub');
         break;
       default:
         break;
@@ -630,7 +689,7 @@ const DataTableClient = ({
                         )
                     )}
 
-                    {hasSubBody && (
+                    {(hasSubBody || subModule) && (
                       <Table.Td valign={'top'}>
                         <Button
                           fz={{ base: 10, lg: 11, xl: 'xs' }}
@@ -654,7 +713,7 @@ const DataTableClient = ({
                     )}
                   </Table.Tr>
 
-                  {hasSubBody && (
+                  {(hasSubBody || subModule) && (
                     <Table.Tr>
                       <Table.Td
                         bg={'var(--mantine-color-secondary-0)'}
@@ -687,6 +746,19 @@ const DataTableClient = ({
                             </Table.Thead>
 
                             <Table.Tbody>
+                              {!loading && body?.sub_body?.length === 0 && (
+                                <Table.Tr>
+                                  <Table.Td
+                                    c={'var(--mantine-color-red-5)'}
+                                    ta={'center'}
+                                    colSpan={data.head?.length}
+                                    fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                                  >
+                                    No data.
+                                  </Table.Td>
+                                </Table.Tr>
+                              )}
+
                               {body?.sub_body?.map((subBody: any) => (
                                 <Table.Tr
                                   key={subBody.id}
@@ -714,11 +786,30 @@ const DataTableClient = ({
                                                 'update'
                                               )?.some((permission) =>
                                                 permissions.includes(permission)
-                                              )
+                                              ) &&
+                                              !showDetailsFirst
                                             ) {
                                               setCurrentId(subBody.id);
                                               setCurrentOpenedModuleType('sub');
                                               handleOpenUpdateModal(
+                                                subBody.id,
+                                                subModule ?? null
+                                              );
+                                            }
+
+                                            if (
+                                              itemsClickable &&
+                                              getAllowedPermissions(
+                                                mainModule,
+                                                'view'
+                                              )?.some((permission) =>
+                                                permissions.includes(permission)
+                                              ) &&
+                                              showDetailsFirst
+                                            ) {
+                                              setCurrentId(subBody.id);
+                                              setCurrentOpenedModuleType('sub');
+                                              handleOpenDetailModal(
                                                 subBody.id,
                                                 subModule ?? null
                                               );
@@ -745,13 +836,14 @@ const DataTableClient = ({
                                     <Table.Td
                                       bg={'white'}
                                       colSpan={data.subHead?.length}
+                                      p={0}
                                     >
                                       <Button
-                                        size={'xs'}
-                                        color={
-                                          'var(--mantine-color-secondary-9)'
+                                        variant={'outline'}
+                                        size={
+                                          lgScreenAndBelow ? 'compact-xs' : 'xs'
                                         }
-                                        variant='outline'
+                                        color={'var(--mantine-color-primary-9)'}
                                         leftSection={<IconPlus size={12} />}
                                         onClick={() => {
                                           setCurrentOpenedModuleType('sub');
@@ -762,7 +854,7 @@ const DataTableClient = ({
                                         }}
                                         fullWidth
                                       >
-                                        Add
+                                        Add {subButtonLabel}
                                       </Button>
                                     </Table.Td>
                                   </Table.Tr>

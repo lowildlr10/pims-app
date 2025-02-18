@@ -25,11 +25,6 @@ type PurchaseRequestActionProps = {
   permissions?: string[];
   id: string;
   status: PurchaseRequestStatus;
-  submittedAt?: string;
-  approvedCashAvailableAt?: string;
-  approvedAt?: string;
-  disapprovedAt?: string;
-  cancelledAt?: string;
   handleOpenActionModal?: (
     actionType: ActionType,
     title: string,
@@ -78,8 +73,23 @@ type RequestQuotationActionProps = {
   ) => void;
 };
 
+type RequestQuotationActionProps = {
+  permissions?: string[];
+  id: string;
+  status: RequestQuotationStatus;
+  handleOpenActionModal?: (
+    actionType: ActionType,
+    title: string,
+    message: string,
+    color: string,
+    buttonLabel: string,
+    endpoint: string
+  ) => void;
+};
+
 type ModalRequestQuotationContentProps = {
   data: RequestQuotationType;
+  isCreate?: boolean;
   readOnly?: boolean;
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };

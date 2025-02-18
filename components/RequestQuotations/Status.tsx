@@ -1,10 +1,6 @@
 import Helper from '@/utils/Helpers';
 import { Badge, Loader, Tooltip } from '@mantine/core';
-import {
-  IconCancel,
-  IconCheck,
-  IconFileIsr
-} from '@tabler/icons-react';
+import { IconCancel, IconCheck, IconFileIsr } from '@tabler/icons-react';
 import React from 'react';
 
 const StatusClient = ({ size = 'md', status }: RequestQuotationStatusProps) => {

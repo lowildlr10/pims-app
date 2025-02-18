@@ -18,10 +18,13 @@ import {
   IconPrinter,
   IconX,
 } from '@tabler/icons-react';
-import StatusClient from '@/components/PurchaseRequests/Status';
-import ActionsClient from '@/components/PurchaseRequests/Actions';
+import PurchaseRequestStatusClient from '@/components/PurchaseRequests/Status';
+import PurchaseRequestActionsClient from '@/components/PurchaseRequests/Actions';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import ActionModalClient from './ActionModal';
+import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
+import RequestQuotationStatusClient from '@/components/RequestQuotations/Status';
+import RequestQuotationActionsClient from '@/components/RequestQuotations/Actions';
 
 const DetailActionsClient = ({
   permissions,
@@ -71,12 +74,18 @@ const DetailActionsClient = ({
     switch (content) {
       case 'pr':
         return (
-          <StatusClient
+          <PurchaseRequestStatusClient
             size={lgScreenAndBelow ? 'sm' : 'lg'}
             status={(currentStatus as PurchaseRequestStatus) ?? ''}
           />
         );
-
+      case 'rfq':
+        return (
+          <RequestQuotationStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as RequestQuotationStatus) ?? ''}
+          />
+        );
       default:
         return <>-</>;
     }
@@ -98,15 +107,19 @@ const DetailActionsClient = ({
         <Menu.Dropdown>
           <Menu.Label>Actions</Menu.Label>
           {content === 'pr' && (
-            <ActionsClient
+            <PurchaseRequestActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
-              submittedAt={data?.submitted_at}
-              approvedCashAvailableAt={data?.approved_cash_available_at}
-              approvedAt={data?.approved_at}
-              disapprovedAt={data?.disapproved_at}
-              cancelledAt={data?.cancelled_at}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'rfq' && (
+            <RequestQuotationActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -189,9 +202,11 @@ const DetailModalClient = ({
   }, [data]);
 
   useEffect(() => {
+    let isEditable = true;
+
     switch (content) {
       case 'pr':
-        const isEditable = [
+        isEditable = [
           'draft',
           'disapproved',
           'pending',
@@ -210,6 +225,18 @@ const DetailModalClient = ({
           setShowEditButton(false);
         } else {
           setShowEditButton(isEditable);
+        }
+        break;
+
+      case 'rfq':
+        isEditable = ['draft', 'canvassing'].includes(
+          currentData?.status ?? ''
+        );
+
+        if (showEdit && isEditable) {
+          setShowEditButton(true);
+        } else {
+          setShowEditButton(false);
         }
         break;
 
@@ -258,6 +285,10 @@ const DetailModalClient = ({
         <Paper shadow={'lg'} p={0}>
           {opened && content === 'pr' && (
             <PurchaseRequestContentClient data={currentData} readOnly />
+          )}
+
+          {opened && content === 'rfq' && (
+            <RequestQuotionContentClient data={currentData} readOnly />
           )}
         </Paper>
       </Stack>
