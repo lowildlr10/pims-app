@@ -1,6 +1,7 @@
 import { Loader } from '@mantine/core';
 import { Menu } from '@mantine/core';
 import {
+  IconArrowLeftDashed,
   IconArrowRightDashed,
   IconCancel,
   IconDiscountCheckFilled,
@@ -10,6 +11,133 @@ import {
 import React from 'react';
 import Link from 'next/link';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { usePathname } from 'next/navigation';
+
+const NavigationMenus = ({
+  permissions,
+  status,
+}: {
+  permissions?: string[];
+  status: PurchaseRequestStatus;
+}) => {
+  const pathname = usePathname();
+
+  return (
+    <>
+      {['supply:*', ...getAllowedPermissions('rfq', 'view')].some(
+        (permission) => permissions?.includes(permission)
+      ) &&
+        [
+          'approved',
+          'for_canvassing',
+          'for_abstract',
+          'for_po',
+          'completed',
+        ].includes(status) &&
+        pathname === '/procurement/pr' && (
+          <Menu.Item
+            rightSection={
+              <IconArrowRightDashed
+                color={'var(--mantine-color-primary-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            component={Link}
+            href={'/procurement/rfq'}
+          >
+            Navigate to RFQ
+          </Menu.Item>
+        )}
+
+      {['supply:*', ...getAllowedPermissions('aoq', 'view')].some(
+        (permission) => permissions?.includes(permission)
+      ) &&
+        ['for_abstract', 'for_po', 'completed'].includes(status) &&
+        pathname === '/procurement/rfq' && (
+          <Menu.Item
+            rightSection={
+              <IconArrowRightDashed
+                color={'var(--mantine-color-primary-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            component={Link}
+            href={'/procurement/aoq'}
+          >
+            Navigate to Abstract
+          </Menu.Item>
+        )}
+
+      {['supply:*', ...getAllowedPermissions('aoq', 'view')].some(
+        (permission) => permissions?.includes(permission)
+      ) &&
+        ['for_po', 'completed'].includes(status) &&
+        pathname === '/procurement/aoq' && (
+          <Menu.Item
+            rightSection={
+              <IconArrowRightDashed
+                color={'var(--mantine-color-primary-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            component={Link}
+            href={'/procurement/po'}
+          >
+            Navigate to PO/JO
+          </Menu.Item>
+        )}
+
+      {['supply:*', ...getAllowedPermissions('pr', 'view')].some((permission) =>
+        permissions?.includes(permission)
+      ) &&
+        [
+          'approved',
+          'for_canvassing',
+          'for_abstract',
+          'for_po',
+          'completed',
+        ].includes(status) &&
+        pathname === '/procurement/rfq' && (
+          <Menu.Item
+            leftSection={
+              <IconArrowLeftDashed
+                color={'var(--mantine-color-primary-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            component={Link}
+            href={'/procurement/pr'}
+          >
+            Navigate back to PR
+          </Menu.Item>
+        )}
+
+      {['supply:*', ...getAllowedPermissions('pr', 'view')].some((permission) =>
+        permissions?.includes(permission)
+      ) &&
+        ['for_abstract', 'for_po', 'completed'].includes(status) &&
+        pathname === '/procurement/aoq' && (
+          <Menu.Item
+            leftSection={
+              <IconArrowLeftDashed
+                color={'var(--mantine-color-primary-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            component={Link}
+            href={'/procurement/rfq'}
+          >
+            Navigate back to RFQ
+          </Menu.Item>
+        )}
+    </>
+  );
+};
 
 const ActionsClient = ({
   permissions,
@@ -135,30 +263,7 @@ const ActionsClient = ({
         </>
       )}
 
-      {['supply:*', ...getAllowedPermissions('rfq', 'view')].some(
-        (permission) => permissions?.includes(permission)
-      ) &&
-        [
-          'approved',
-          'for_canvassing',
-          'for_abstract',
-          'for_po',
-          'completed',
-        ].includes(status) && (
-          <Menu.Item
-            rightSection={
-              <IconArrowRightDashed
-                color={'var(--mantine-color-primary-9)'}
-                size={18}
-                stroke={1.5}
-              />
-            }
-            component={Link}
-            href={'/procurement/rfq'}
-          >
-            Navigate to RFQ
-          </Menu.Item>
-        )}
+      <NavigationMenus permissions={permissions} status={status} />
 
       {status !== 'cancelled' &&
         ['supply:*', ...getAllowedPermissions('pr', 'cancel')].some(
