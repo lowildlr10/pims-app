@@ -50,7 +50,8 @@ type ActionType =
   | 'disapprove'
   | 'cancel'
   | 'issue_canvassing'
-  | 'canvass_complete';
+  | 'canvass_complete'
+  | 'approve_rfq';
 
 type CompanyType = {
   id?: string;

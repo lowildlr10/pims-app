@@ -467,7 +467,6 @@ const RequestQuotionContentClient = forwardRef<
                   value={form.values.supplier_id}
                   size={lgScreenAndBelow ? 'sm' : 'lg'}
                   placeholder={'Select a supplier...'}
-                  required={!readOnly || data.status !== 'completed'}
                   readOnly={readOnly || data.status === 'completed'}
                 />
               ) : (
@@ -508,7 +507,9 @@ const RequestQuotionContentClient = forwardRef<
                     ? new Date(form.values?.openning_dt)
                     : undefined
                 }
-                placeholder={'Enter the opening date time here...'}
+                placeholder={
+                  readOnly ? 'None' : 'Enter the opening date time here...'
+                }
                 error={form?.errors?.openning_dt && ''}
                 flex={1}
                 size={lgScreenAndBelow ? 'sm' : 'lg'}

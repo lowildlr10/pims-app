@@ -4,6 +4,7 @@ import {
   IconArrowLeftDashed,
   IconArrowRightDashed,
   IconCancel,
+  IconChecklist,
   IconDiscountCheckFilled,
   IconThumbDownFilled,
   IconThumbUpFilled,
@@ -262,6 +263,34 @@ const ActionsClient = ({
           )}
         </>
       )}
+
+      {status === 'for_canvassing' &&
+        ['supply:*', ...getAllowedPermissions('pr', 'approve_rfq')].some(
+          (permission) => permissions?.includes(permission)
+        ) && (
+          <Menu.Item
+            leftSection={
+              <IconChecklist
+                color={'var(--mantine-color-green-7)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            onClick={() =>
+              handleOpenActionModal &&
+              handleOpenActionModal(
+                'approve_rfq',
+                'Approve RFQs',
+                'Are you sure you want to approve the RFQs for this Purchase Request for Abstract of Quotation?',
+                'var(--mantine-color-green-7)',
+                'Approve',
+                `/purchase-requests/${id}/approve-request-quotations`
+              )
+            }
+          >
+            Approve RFQs
+          </Menu.Item>
+        )}
 
       <NavigationMenus permissions={permissions} status={status} />
 

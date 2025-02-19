@@ -61,6 +61,16 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
             checked: false,
           },
           {
+            label: 'Approve Request for Quotations',
+            value: 'approve-rfq',
+            checked: false,
+          },
+          {
+            label: 'Award',
+            value: 'award',
+            checked: false,
+          },
+          {
             label: 'Cancel',
             value: 'cancel',
             checked: false,
@@ -73,11 +83,6 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
           {
             label: 'Print',
             value: 'print',
-            checked: false,
-          },
-          {
-            label: 'Approve Request for Quoations',
-            value: 'approve-rfq',
             checked: false,
           },
         ],
