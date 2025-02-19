@@ -82,7 +82,7 @@ const RequestQuotionContentClient = forwardRef<
       rfq_date: data?.rfq_date ?? dayjs().format('YYYY-MM-DD'),
       rfq_no: data?.rfq_no ?? '',
       supplier_id: data?.supplier_id ?? '',
-      openning_dt: data?.openning_dt ?? dayjs().format('YYYY-MM-DDTHH:mm'),
+      openning_dt: data?.openning_dt ?? '',
       sig_approval_id: data?.sig_approval_id ?? '',
       items:
         data?.items &&
@@ -440,21 +440,17 @@ const RequestQuotionContentClient = forwardRef<
                 <Text size={lgScreenAndBelow ? 'sm' : 'lg'} fw={500}>
                   Company Name / Supplier:
                 </Text>
-                {/* {!readOnly && (
-                  <Stack>
-                    <IconAsterisk
-                      size={7}
-                      color={'var(--mantine-color-red-8)'}
-                      stroke={2}
-                    />
-                  </Stack>
-                )} */}
               </Group>
 
               {!readOnly ? (
                 <DynamicSelect
                   key={form.key('supplier_id')}
                   {...form.getInputProps('supplier_id')}
+                  variant={
+                    readOnly || data.status === 'completed'
+                      ? 'filled'
+                      : 'default'
+                  }
                   endpoint={'/libraries/suppliers'}
                   endpointParams={{ paginated: false }}
                   column={'supplier_name'}
@@ -471,8 +467,8 @@ const RequestQuotionContentClient = forwardRef<
                   value={form.values.supplier_id}
                   size={lgScreenAndBelow ? 'sm' : 'lg'}
                   placeholder={'Select a supplier...'}
-                  // required={!readOnly}
-                  readOnly={readOnly}
+                  required={!readOnly || data.status !== 'completed'}
+                  readOnly={readOnly || data.status === 'completed'}
                 />
               ) : (
                 <TextInput

@@ -229,7 +229,7 @@ const DetailModalClient = ({
         break;
 
       case 'rfq':
-        isEditable = ['draft', 'canvassing'].includes(
+        isEditable = ['draft', 'canvassing', 'completed'].includes(
           currentData?.status ?? ''
         );
 
