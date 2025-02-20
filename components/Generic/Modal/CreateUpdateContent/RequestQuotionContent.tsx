@@ -575,14 +575,17 @@ const RequestQuotionContentClient = forwardRef<
               justify={'flex-end'}
               direction={lgScreenAndBelow ? 'column' : 'row'}
             >
-              <Group justify={'space-between'} flex={0.5}>
+              <Group
+                justify={signedType === 'lce' ? 'space-between' : 'flex-end'}
+                flex={0.5}
+              >
                 {signedType === 'lce' && (
                   <DateTimePicker
                     key={form.key('openning_dt')}
                     {...form.getInputProps('openning_dt')}
                     variant={'unstyled'}
                     label={'Date and Time of Opening'}
-                    valueFormat={'YYYY-MM-DD HH:mm'}
+                    valueFormat={'YYYY-MM-DD hh:mm A'}
                     defaultValue={
                       form.values.openning_dt
                         ? new Date(form.values?.openning_dt)
