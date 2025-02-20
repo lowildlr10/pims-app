@@ -188,6 +188,7 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
                 ? subBody.signed_type.toUpperCase()
                 : '-',
               supplier_name: subBody.supplier?.supplier_name ?? '-',
+              supplier_address: subBody.supplier?.address ?? '-',
               canvasser_names: subBody.canvassers?.map(
                 (canvasser, i) => canvasser.user?.fullname
               ),

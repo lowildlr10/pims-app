@@ -61,6 +61,7 @@ type DynamicSelectProps = {
   defaultValue?: string;
   limit?: number;
   variant?: 'unstyled' | 'filled' | 'default';
+  sx?: EmotionSx;
   readOnly?: boolean;
   required?: boolean;
   enableOnClickRefresh?: boolean;
@@ -76,7 +77,9 @@ type DynamicMultiselectProps = {
   column?: string;
   label?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'unstyled' | 'filled' | 'default';
   value?: string[];
+  sx?: EmotionSx;
   limit?: number;
   readOnly?: boolean;
   required?: boolean;

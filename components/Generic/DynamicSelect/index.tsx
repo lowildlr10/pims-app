@@ -18,6 +18,7 @@ const DynamicSelect = ({
   value,
   defaultValue,
   variant,
+  sx,
   onChange,
   readOnly,
   required,
@@ -129,6 +130,7 @@ const DynamicSelect = ({
         )
       }
       variant={variant ?? 'default'}
+      sx={sx}
       onClick={!readOnly && enableOnClickRefresh ? handleFetchData : undefined}
       searchable
       clearable
