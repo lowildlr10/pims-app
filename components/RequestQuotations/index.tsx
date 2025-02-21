@@ -194,17 +194,21 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
               ),
               canvasser_names_formatted: (
                 <>
-                  {subBody.canvassers?.map((canvasser, i) => (
-                    <Badge
-                      mr={4}
-                      variant={'light'}
-                      color={'var(--mantine-color-primary-9)'}
-                      key={i}
-                      sx={{ cursor: 'pointer' }}
-                    >
-                      {canvasser.user?.fullname}
-                    </Badge>
-                  ))}
+                  {subBody?.canvassers && subBody?.canvassers?.length > 0 ? (
+                    subBody.canvassers?.map((canvasser, i) => (
+                      <Badge
+                        mr={4}
+                        variant={'light'}
+                        color={'var(--mantine-color-primary-9)'}
+                        key={i}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        {canvasser.user?.fullname}
+                      </Badge>
+                    ))
+                  ) : (
+                    <>-</>
+                  )}
                 </>
               ),
               status_formatted: (

@@ -46,12 +46,6 @@ const SignatoryContentClient = forwardRef<
           signatory_type: 'approval',
           position: '',
         },
-        {
-          checked: false,
-          label: 'Canvassers',
-          signatory_type: 'canvassers',
-          position: '',
-        },
       ],
     },
     {

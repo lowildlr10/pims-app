@@ -870,7 +870,6 @@ const RequestQuotionContentClient = forwardRef<
                   sx={{
                     borderBottom: '2px solid var(--mantine-color-gray-5)',
                   }}
-                  required={!readOnly}
                   readOnly={readOnly}
                 />
               ) : (
