@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActionIcon, Button, Modal, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconSearch, IconX } from '@tabler/icons-react';
@@ -14,9 +14,13 @@ const SearchModalClient = ({
   const form = useForm({
     mode: 'controlled',
     initialValues: {
-      search: search ?? '',
+      search,
     },
   });
+
+  useEffect(() => {
+    form.setFieldValue('search', search);
+  }, [search]);
 
   const handleClearSearch = () => {
     if (!setSearch) return;
@@ -37,54 +41,56 @@ const SearchModalClient = ({
       onClose={close}
       title='Search'
     >
-      <form
-        onSubmit={form.onSubmit(() => {
-          if (setSearch) setSearch(form.values.search);
-          close();
-        })}
-      >
-        <TextInput
-          data-autofocus
-          placeholder='Keyword...'
-          description={'Enter a keyword and press Enter to begin the search.'}
-          m={0}
-          mb={'lg'}
-          leftSection={<IconSearch size={14} />}
-          rightSection={
-            <ActionIcon
-              variant={'light'}
-              size={lgScreenAndBelow ? 'xs' : 'sm'}
-              radius='sm'
-              color={'var(--mantine-color-tertiary-9)'}
-              onClick={handleClearSearch}
-            >
-              <IconX size={14} stroke={3} />
-            </ActionIcon>
-          }
-          value={form.values.search}
-          onChange={(event) =>
-            form.setFieldValue('search', event.currentTarget.value)
-          }
-        />
-        <Button
-          color={'var(--mantine-color-primary-9)'}
-          type={'submit'}
-          mb={'sm'}
-          size={lgScreenAndBelow ? 'xs' : 'sm'}
-          fullWidth
+      {opened && (
+        <form
+          onSubmit={form.onSubmit(() => {
+            if (setSearch) setSearch(form.values.search);
+            close();
+          })}
         >
-          Search
-        </Button>
-        <Button
-          size={lgScreenAndBelow ? 'xs' : 'sm'}
-          variant={'outline'}
-          color={'var(--mantine-color-tertiary-9)'}
-          onClick={handleClearSearch}
-          fullWidth
-        >
-          Clear
-        </Button>
-      </form>
+          <TextInput
+            data-autofocus
+            placeholder='Keyword...'
+            description={'Enter a keyword and press Enter to begin the search.'}
+            m={0}
+            mb={'lg'}
+            leftSection={<IconSearch size={14} />}
+            rightSection={
+              <ActionIcon
+                variant={'light'}
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+                radius='sm'
+                color={'var(--mantine-color-tertiary-9)'}
+                onClick={handleClearSearch}
+              >
+                <IconX size={14} stroke={3} />
+              </ActionIcon>
+            }
+            value={form.values.search ?? search}
+            onChange={(event) =>
+              form.setFieldValue('search', event.currentTarget.value)
+            }
+          />
+          <Button
+            color={'var(--mantine-color-primary-9)'}
+            type={'submit'}
+            mb={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
+            fullWidth
+          >
+            Search
+          </Button>
+          <Button
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
+            variant={'outline'}
+            color={'var(--mantine-color-tertiary-9)'}
+            onClick={handleClearSearch}
+            fullWidth
+          >
+            Clear
+          </Button>
+        </form>
+      )}
     </Modal>
   );
 };

@@ -86,7 +86,7 @@ const RequestQuotionContentClient = forwardRef<
       rfq_date: data?.rfq_date ?? dayjs().format('YYYY-MM-DD'),
       rfq_no: data?.rfq_no ?? '',
       supplier_id: data?.supplier_id ?? '',
-      openning_dt: data?.openning_dt ?? '',
+      opening_dt: data?.opening_dt ?? '',
       sig_approval_id: data?.sig_approval_id ?? '',
       items:
         data?.items &&
@@ -105,9 +105,9 @@ const RequestQuotionContentClient = forwardRef<
             }))
           : [],
       vat_registered:
-        data?.vat_registered === undefined
-          ? '1'
-          : data?.vat_registered
+        data?.vat_registered === undefined || data?.vat_registered === null
+          ? ''
+          : data?.vat_registered === true
             ? '1'
             : '0',
       canvassers: data?.canvassers?.map((canvasser) => canvasser.user_id) ?? [],
@@ -263,6 +263,14 @@ const RequestQuotionContentClient = forwardRef<
     <form
       ref={ref}
       onSubmit={form.onSubmit((values) => {
+        let vatRegistered = '';
+
+        if (values.vat_registered === '1') {
+          vatRegistered = 'true';
+        } else if (values.vat_registered === '0') {
+          vatRegistered = 'false';
+        }
+
         if (handleCreateUpdate) {
           handleCreateUpdate({
             ...values,
@@ -271,15 +279,15 @@ const RequestQuotionContentClient = forwardRef<
             rfq_date: values.rfq_date
               ? dayjs(values.rfq_date).format('YYYY-MM-DD')
               : '',
-            openning_dt: values.openning_dt
-              ? dayjs(values.openning_dt).format('YYYY-MM-DD HH:mm')
+            opening_dt: values.opening_dt
+              ? dayjs(values.opening_dt).format('YYYY-MM-DD HH:mm')
               : '',
             items: JSON.stringify(values.items),
             canvassers:
               values.canvassers.length > 0
                 ? JSON.stringify(values.canvassers)
                 : '',
-            vat_registered: values.vat_registered === '1' ? true : false,
+            vat_registered: vatRegistered,
           });
         }
       })}
@@ -581,20 +589,20 @@ const RequestQuotionContentClient = forwardRef<
               >
                 {signedType === 'lce' && (
                   <DateTimePicker
-                    key={form.key('openning_dt')}
-                    {...form.getInputProps('openning_dt')}
+                    key={form.key('opening_dt')}
+                    {...form.getInputProps('opening_dt')}
                     variant={'unstyled'}
                     label={'Date and Time of Opening'}
                     valueFormat={'YYYY-MM-DD hh:mm A'}
                     defaultValue={
-                      form.values.openning_dt
-                        ? new Date(form.values?.openning_dt)
+                      form.values.opening_dt
+                        ? new Date(form.values?.opening_dt)
                         : undefined
                     }
                     placeholder={
                       readOnly ? 'None' : 'Enter the opening date time here...'
                     }
-                    error={form?.errors?.openning_dt && ''}
+                    error={form?.errors?.opening_dt && ''}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
                     }}
@@ -677,6 +685,9 @@ const RequestQuotionContentClient = forwardRef<
 
                       if (!readOnly && header.id === 'total_cost') return;
 
+                      if (signedType === 'bac' && header.id === 'brand_model')
+                        return;
+
                       return (
                         <Table.Th
                           key={header.id}
@@ -709,7 +720,8 @@ const RequestQuotionContentClient = forwardRef<
                       {itemHeaders.map((header) => {
                         if (
                           header.id === 'include_checkbox' ||
-                          (!readOnly && header.id === 'total_cost')
+                          (!readOnly && header.id === 'total_cost') ||
+                          (signedType === 'bac' && header.id === 'brand_model')
                         ) {
                           return null;
                         }
@@ -794,8 +806,10 @@ const RequestQuotionContentClient = forwardRef<
                       }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       defaultValue={form.values.vat_registered}
+                      readOnly={readOnly}
                     >
                       <Stack mt={'xs'} mb={'md'}>
+                        <Radio value={''} label={'Not set'} />
                         <Radio value={'1'} label={'VAT Registered     OR'} />
                         <Radio value={'0'} label={'Non VAT Registered'} />
                       </Stack>

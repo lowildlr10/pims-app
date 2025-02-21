@@ -417,7 +417,7 @@ type RequestQuotationType = {
   supplier_name?: string;
   supplier_address?: string;
   canvasser_names?: string[];
-  openning_dt?: string;
+  opening_dt?: string;
   sig_approval_id?: string;
   signatory_approval?: SignatoryType;
   approval_fullname?: string;

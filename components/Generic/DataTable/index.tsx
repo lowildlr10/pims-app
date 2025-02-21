@@ -27,6 +27,7 @@ import CreateModalClient from '../Modal/CreateModal';
 import DetailModalClient from '../Modal/DetailModal';
 import PrintModalClient from '../Modal/PrintModal';
 import LogModalClient from '../Modal/LogModal';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const DataTableClient = ({
   mainModule,
@@ -54,6 +55,9 @@ const DataTableClient = ({
   refreshData,
   onChange,
 }: DataTableProps) => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
 
   const [collapseStates, setCollapseStates] = useState<CollapseType>({});
@@ -110,6 +114,15 @@ const DataTableClient = ({
     'update-modal',
     'log-modal',
   ]);
+
+  useEffect(() => {
+    const search = searchParams.get('search');
+
+    if (search) {
+      setTableSearch(search);
+      replace(pathname);
+    }
+  }, []);
 
   useEffect(() => {
     if (currentOpenedModuleType === 'sub' && currentId) {
@@ -233,6 +246,8 @@ const DataTableClient = ({
     );
 
     if (refreshData) refreshData({ ...tableBody, payload });
+
+    setTableSearch(id ?? '');
   };
 
   const handleOpenCreateModal = (

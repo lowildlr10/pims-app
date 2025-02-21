@@ -15,9 +15,11 @@ import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { usePathname } from 'next/navigation';
 
 const NavigationMenus = ({
+  id,
   permissions,
   status,
 }: {
+  id: string;
   permissions?: string[];
   status: PurchaseRequestStatus;
 }) => {
@@ -45,7 +47,7 @@ const NavigationMenus = ({
               />
             }
             component={Link}
-            href={'/procurement/rfq'}
+            href={`/procurement/rfq?search=${id}`}
           >
             Navigate to RFQ
           </Menu.Item>
@@ -65,7 +67,7 @@ const NavigationMenus = ({
               />
             }
             component={Link}
-            href={'/procurement/aoq'}
+            href={`/procurement/aoq?search=${id}`}
           >
             Navigate to Abstract
           </Menu.Item>
@@ -85,7 +87,7 @@ const NavigationMenus = ({
               />
             }
             component={Link}
-            href={'/procurement/po'}
+            href={`/procurement/po?search=${id}`}
           >
             Navigate to PO/JO
           </Menu.Item>
@@ -111,7 +113,7 @@ const NavigationMenus = ({
               />
             }
             component={Link}
-            href={'/procurement/pr'}
+            href={`/procurement/pr?search=${id}`}
           >
             Navigate back to PR
           </Menu.Item>
@@ -131,7 +133,7 @@ const NavigationMenus = ({
               />
             }
             component={Link}
-            href={'/procurement/rfq'}
+            href={`/procurement/rfq?search=${id}`}
           >
             Navigate back to RFQ
           </Menu.Item>
@@ -292,7 +294,7 @@ const ActionsClient = ({
           </Menu.Item>
         )}
 
-      <NavigationMenus permissions={permissions} status={status} />
+      <NavigationMenus id={id} permissions={permissions} status={status} />
 
       {status !== 'cancelled' &&
         ['supply:*', ...getAllowedPermissions('pr', 'cancel')].some(

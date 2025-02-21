@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
-import { ActionIcon, Button, Group, Paper } from '@mantine/core';
-import { IconPencilPlus, IconSearch } from '@tabler/icons-react';
+import React, { useEffect, useState } from 'react';
+import { ActionIcon, Button, Group, Paper, Tooltip } from '@mantine/core';
+import { IconPencilPlus, IconRefresh, IconSearch } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import SearchModalClient from '../Modal/SearchModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { usePathname } from 'next/navigation';
 
 const DataTableActionsClient = ({
   permissions,
@@ -16,10 +17,17 @@ const DataTableActionsClient = ({
   setSearch,
   handleOpenCreateModal,
 }: DataTableActionsProps) => {
+  const pathname = usePathname();
+  const [refreshLoading, setRefreshLoading] = useState(false);
+  const [currentSearch, setCurrentSearch] = useState(search);
   const [
     searchModalOpened,
     { open: openSearchModal, close: closeSearchModal },
   ] = useDisclosure(false);
+
+  useEffect(() => {
+    setCurrentSearch(search);
+  }, [search]);
 
   return (
     <Paper p={'sm'} shadow={'sm'}>
@@ -44,37 +52,59 @@ const DataTableActionsClient = ({
           <div></div>
         )}
 
-        {showSearch && (
-          <>
-            {search ? (
-              <Button
-                variant={'outline'}
-                radius={'xl'}
-                color={'var(--mantine-color-primary-9)'}
-                size={'xs'}
-                leftSection={<IconSearch size={14} stroke={3} />}
-                onClick={openSearchModal}
-              >
-                &quot;{search}&quot;
-              </Button>
-            ) : (
-              <ActionIcon
-                variant={'outline'}
-                size='md'
-                radius='xl'
-                color={'var(--mantine-color-primary-9)'}
-                onClick={openSearchModal}
-              >
-                <IconSearch size={14} stroke={3} />
-              </ActionIcon>
-            )}
-          </>
-        )}
+        <Group>
+          {showSearch && (
+            <Tooltip label={'Search'} withArrow>
+              {search ? (
+                <Button
+                  variant={'outline'}
+                  radius={'xl'}
+                  color={'var(--mantine-color-primary-9)'}
+                  size={'xs'}
+                  leftSection={<IconSearch size={14} stroke={3} />}
+                  onClick={openSearchModal}
+                >
+                  &quot;
+                  {currentSearch !== undefined && currentSearch.length > 10
+                    ? currentSearch.slice(0, 10) + '....'
+                    : currentSearch}
+                  &quot;
+                </Button>
+              ) : (
+                <ActionIcon
+                  variant={'outline'}
+                  size='md'
+                  radius='xl'
+                  color={'var(--mantine-color-primary-9)'}
+                  onClick={openSearchModal}
+                >
+                  <IconSearch size={14} stroke={3} />
+                </ActionIcon>
+              )}
+            </Tooltip>
+          )}
+
+          <Tooltip label={'Refresh'} withArrow>
+            <ActionIcon
+              variant={'outline'}
+              size='md'
+              radius='xl'
+              color={'var(--mantine-color-primary-9)'}
+              loading={refreshLoading}
+              onClick={() => {
+                setRefreshLoading(true);
+                window.location.href = pathname;
+              }}
+            >
+              <IconRefresh size={14} stroke={3} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
       </Group>
 
       {showSearch && (
         <SearchModalClient
-          search={search ?? ''}
+          search={currentSearch ?? ''}
           opened={searchModalOpened}
           close={closeSearchModal}
           setSearch={setSearch}

@@ -1,14 +1,22 @@
 import {
+  ActionIcon,
   Button,
   Card,
   Group,
   LoadingOverlay,
   Modal,
   Stack,
+  Switch,
   Text,
+  Tooltip,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { IconDownload, IconPrinter, IconX } from '@tabler/icons-react';
+import {
+  IconDownload,
+  IconPrinter,
+  IconRefresh,
+  IconX,
+} from '@tabler/icons-react';
 import DynamicSelect from '../DynamicSelect';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
@@ -28,10 +36,12 @@ const PrintModalClient = ({
   const [base64File, setBase64File] = useState<string>();
   const [paperId, setPaperId] = useState<string>('');
   const [pageOrientation, setPageOrientation] = useState<string>('P');
+  const [showSignatures, setShowSignatures] = useState<boolean>(true);
 
   useEffect(() => {
-    if (paperId && pageOrientation) handleFetchData();
-  }, [paperId, pageOrientation]);
+    if (paperId && pageOrientation && showSignatures !== undefined)
+      handleFetchData();
+  }, [paperId, pageOrientation, showSignatures]);
 
   useEffect(() => {
     if (!opened) setPaperId('');
@@ -46,6 +56,7 @@ const PrintModalClient = ({
     API.get(endpoint, {
       paper_id: paperId,
       page_orientation: pageOrientation,
+      show_signatures: showSignatures,
     })
       .then((res) => {
         if (res?.data) {
@@ -105,17 +116,21 @@ const PrintModalClient = ({
                 overlayProps={{ radius: 'sm', blur: 2 }}
               />
 
-              {opened && base64File && paperId && pageOrientation && (
-                <iframe
-                  src={base64File}
-                  height='100%'
-                  width='100%'
-                  style={{
-                    height: 'calc(100vh - 8.2em)',
-                    border: 0,
-                  }}
-                ></iframe>
-              )}
+              {opened &&
+                base64File &&
+                paperId &&
+                pageOrientation &&
+                showSignatures !== undefined && (
+                  <iframe
+                    src={base64File}
+                    height='100%'
+                    width='100%'
+                    style={{
+                      height: 'calc(100vh - 8.2em)',
+                      border: 0,
+                    }}
+                  ></iframe>
+                )}
             </Card>
           </Stack>
           <Stack
@@ -132,6 +147,18 @@ const PrintModalClient = ({
                 <Group>
                   <IconPrinter size={24} />
                   <Text size={'lg'}>Settings</Text>
+                  <Tooltip label={'Refresh'}>
+                    <ActionIcon
+                      variant={'light'}
+                      radius={'xl'}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      color={'var(--mantine-color-primary-9)'}
+                      loading={loading}
+                      onClick={handleFetchData}
+                    >
+                      <IconRefresh size={14} />
+                    </ActionIcon>
+                  </Tooltip>
                 </Group>
               </Card.Section>
 
@@ -167,6 +194,17 @@ const PrintModalClient = ({
                   hasPresetValue
                   disableFetch
                   required
+                />
+                <Switch
+                  color={'var(--mantine-color-primary-9)'}
+                  labelPosition={'left'}
+                  label={'Show Signatures?'}
+                  checked={showSignatures}
+                  onLabel={'Show'}
+                  offLabel={'hide'}
+                  onChange={(event) =>
+                    setShowSignatures(event.currentTarget.checked)
+                  }
                 />
               </Stack>
             </Card>
