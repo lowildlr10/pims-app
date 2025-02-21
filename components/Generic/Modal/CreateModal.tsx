@@ -28,6 +28,8 @@ import SignatoryContentClient from './CreateUpdateContent/SignatoryContent';
 import BidsAwardsCommitteeContentClient from './CreateUpdateContent/BidsAwardsCommitteeContent';
 import ResponsibilityCenterContentClient from './CreateUpdateContent/ResponsibilityCenterContent';
 import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
+import { useMediaQuery } from '@mantine/hooks';
+import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
 
 const CreateModalClient = ({
   title,
@@ -39,6 +41,7 @@ const CreateModalClient = ({
   close,
   updateTable,
 }: CreateModalProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
   const formRef = useRef<HTMLFormElement>(null);
@@ -265,6 +268,15 @@ const CreateModalClient = ({
             handleCreateUpdate={handleCreate}
           />
         )}
+
+        {opened && content === 'rfq' && (
+          <RequestQuotionContentClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleCreate}
+            isCreate
+          />
+        )}
       </Stack>
 
       <Stack
@@ -284,7 +296,7 @@ const CreateModalClient = ({
             }
             type={'button'}
             color={'var(--mantine-color-primary-9)'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             leftSection={<IconPencilPlus size={18} />}
             loading={loading}
             loaderProps={{ type: 'dots' }}
@@ -293,7 +305,7 @@ const CreateModalClient = ({
           </Button>
           <Button
             variant={'outline'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             color={'var(--mantine-color-gray-8)'}
             leftSection={<IconCancel size={18} />}
             onClick={close}

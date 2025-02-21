@@ -50,7 +50,7 @@ type MainContainerProps = {
 type DynamicSelectProps = {
   name?: string;
   defaultData?: { value: string; label: string }[];
-  endpoint: string;
+  endpoint?: string;
   endpointParams?: any;
   valueColumn?: string;
   column?: string;
@@ -61,10 +61,12 @@ type DynamicSelectProps = {
   defaultValue?: string;
   limit?: number;
   variant?: 'unstyled' | 'filled' | 'default';
+  sx?: EmotionSx;
   readOnly?: boolean;
   required?: boolean;
   enableOnClickRefresh?: boolean;
   disableFetch?: boolean;
+  hasPresetValue?: boolean;
   isLoading?: boolean;
   onChange?: (value: string) => void;
 };
@@ -75,7 +77,9 @@ type DynamicMultiselectProps = {
   column?: string;
   label?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'unstyled' | 'filled' | 'default';
   value?: string[];
+  sx?: EmotionSx;
   limit?: number;
   readOnly?: boolean;
   required?: boolean;
@@ -112,6 +116,7 @@ type DataTableProps = {
   mainModule?: ModuleType;
   subModule?: ModuleType;
 
+  user?: UserType;
   permissions: string[];
 
   columnSort?: string;
@@ -124,7 +129,7 @@ type DataTableProps = {
   showSearch?: boolean;
   showCreate?: boolean;
   showDetailsFirst?: boolean;
-  autoCollapseFirstSubItems?: boolean;
+  autoCollapseSubItems?: 'all' | 'first' | 'none';
 
   data: TableDataType;
   perPage: number;
@@ -190,13 +195,15 @@ type DetailActionProps = {
 };
 
 type DetailModalProps = {
+  user?: UserType;
   permissions?: string[];
   title: string;
   content?: ModuleType;
-  // endpoint: string;
   data: any;
   opened: boolean;
   fullscreen?: boolean;
+  showPrint?: boolean;
+  showEdit?: boolean;
   stack?: ModalStackReturnType;
   close: () => void;
   updateTable?: (id: string | null, payload: any) => void;
@@ -219,6 +226,7 @@ type PrintModalProps = {
   title: string;
   endpoint: string;
   opened: boolean;
+  defaultValue?: string;
   stack?: ModalStackReturnType;
   close: () => void;
 };
@@ -402,7 +410,7 @@ type RoleCheckedType = {
 };
 
 type PurchaseRequestItemsFieldType = {
-  item_key: number;
+  key: string;
   quantity?: number;
   unit_issue_id?: string;
   unit_issue?: string;
@@ -421,8 +429,17 @@ type PurchaseRequestItemHeader = {
 
 type PurchaseRequestItemTableProps = {
   items?: PurchaseRequestItemType[];
-  value?: string;
-  defaultValue?: string;
   readOnly?: boolean;
   onChange?: (value: string) => void;
+};
+
+type RequestQuotationItemsFieldType = {
+  key: string;
+  stock_no?: number;
+  quantity?: number;
+  unit_issue?: string;
+  description?: string;
+  brand_model?: string;
+  unit_cost?: number;
+  total_cost?: number;
 };

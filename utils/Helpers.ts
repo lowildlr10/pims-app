@@ -23,4 +23,11 @@ export default class Helper {
     result = result.replace(/\b\w/g, (char) => char.toUpperCase());
     return result;
   }
+
+  static shortenText(text: string, length = 150) {
+    if (text.length > length) {
+      return text.slice(0, length) + '...';
+    }
+    return text;
+  }
 }

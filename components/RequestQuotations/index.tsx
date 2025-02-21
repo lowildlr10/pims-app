@@ -6,9 +6,11 @@ import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
 import dayjs from 'dayjs';
-import StatusClient from './Status';
 import { useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
+import PurchaseRequestStatusClient from '../PurchaseRequests/Status';
+import StatusClient from './Status';
+import { Badge } from '@mantine/core';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -56,40 +58,46 @@ const defaultTableData: TableDataType = {
   ],
   subHead: [
     {
-      id: 'quantity_formatted',
-      label: 'Quantity',
+      id: 'rfq_no',
+      label: 'RFQ No',
       width: '10%',
+      sortable: true,
     },
     {
-      id: 'unit_issue_formatted',
-      label: 'Unit of Issue',
+      id: 'rfq_date_formatted',
+      label: 'RFQ Date',
       width: '10%',
+      sortable: true,
     },
     {
-      id: 'description',
-      label: 'Description',
-      width: '40%',
-    },
-    {
-      id: 'stock_no_formatted',
-      label: 'Stock No',
+      id: 'signed_type_formatted',
+      label: 'Signed Type',
       width: '10%',
+      sortable: true,
     },
     {
-      id: 'estimated_unit_cost_formatted',
-      label: 'Estimated Unit Cost',
+      id: 'supplier_name',
+      label: 'Supplier',
       width: '15%',
+      sortable: true,
     },
     {
-      id: 'estimated_cost_formatted',
-      label: 'Estimated Cost',
-      width: '15%',
+      id: 'canvasser_names_formatted',
+      label: 'Canvassers',
+      width: '39%',
+      sortable: false,
+    },
+    {
+      id: 'status_formatted',
+      label: 'Status',
+      width: '16%',
+      sortable: true,
     },
   ],
   body: [],
 };
 
-const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
+const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -101,9 +109,9 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<PurchaseRequestsResponse>(
+  const { data, isLoading, mutate } = useSWR<RequestQuotationsResponse>(
     [
-      `/purchase-requests`,
+      `/request-quotations`,
       search,
       page,
       perPage,
@@ -142,6 +150,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
         requestor,
         signatory_cash_available,
         signatory_approval,
+        rfqs,
         items,
         ..._data
       } = body;
@@ -150,7 +159,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
         ..._data,
         pr_date_formatted: dayjs(body.pr_date).format('MM/DD/YYYY'),
         status_formatted: (
-          <StatusClient
+          <PurchaseRequestStatusClient
             size={lgScreenAndBelow ? 'xs' : 'md'}
             status={body.status}
           />
@@ -164,14 +173,52 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
           body.purpose ?? '-',
           lgScreenAndBelow ? 80 : 150
         ),
+        rfqs,
         items,
         sub_body:
-          items?.map((subBody: PurchaseRequestItemType) => {
+          rfqs?.map((subBody: RequestQuotationType) => {
             return {
               ...subBody,
-              quantity_formatted: String(subBody.quantity),
-              stock_no_formatted: String(subBody.stock_no),
-              unit_issue_formatted: subBody.unit_issue?.unit_name ?? '-',
+              pr_no: body?.pr_no ?? '-',
+              funding_source_title: funding_source?.title ?? '-',
+              funding_source_location:
+                funding_source?.location?.location_name ?? '-',
+              rfq_date_formatted: dayjs(subBody.rfq_date).format('MM/DD/YYYY'),
+              signed_type_formatted: subBody.signed_type
+                ? subBody.signed_type.toUpperCase()
+                : '-',
+              supplier_name: subBody.supplier?.supplier_name ?? '-',
+              supplier_address: subBody.supplier?.address ?? '-',
+              canvasser_names: subBody.canvassers?.map(
+                (canvasser, i) => canvasser.user?.fullname
+              ),
+              canvasser_names_formatted: (
+                <>
+                  {subBody?.canvassers && subBody?.canvassers?.length > 0 ? (
+                    subBody.canvassers?.map((canvasser, i) => (
+                      <Badge
+                        mr={4}
+                        variant={'light'}
+                        color={'var(--mantine-color-primary-9)'}
+                        key={i}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        {canvasser.user?.fullname}
+                      </Badge>
+                    ))
+                  ) : (
+                    <>-</>
+                  )}
+                </>
+              ),
+              status_formatted: (
+                <StatusClient
+                  size={lgScreenAndBelow ? 'xs' : 'md'}
+                  status={subBody.status}
+                />
+              ),
+              purpose: body.purpose ?? '-',
+              approval_fullname: subBody.signatory_approval?.user?.fullname,
             };
           }) || [],
       };
@@ -186,7 +233,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
   return (
     <DataTableClient
       mainModule={'pr'}
-      subModule={'pr-item'}
+      subModule={'rfq'}
       user={user}
       permissions={permissions}
       columnSort={columnSort}
@@ -209,11 +256,12 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
         setSortDirection(_sortDirection ?? 'desc');
       }}
       showSearch
-      showCreate
       showDetailsFirst
-      autoCollapseSubItems={'none'}
+      autoCollapseSubItems={'all'}
+      enableCreateSubItem
+      enableUpdateSubItem
     />
   );
 };
 
-export default PurchaseRequestsClient;
+export default RequestQuotationsClient;

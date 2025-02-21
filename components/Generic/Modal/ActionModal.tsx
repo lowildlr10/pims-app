@@ -10,8 +10,11 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   IconCancel,
+  IconCheck,
+  IconChecklist,
   IconDiscountCheckFilled,
   IconThumbDownFilled,
   IconThumbUpFilled,
@@ -30,6 +33,7 @@ const ActionModalClient = ({
   stack,
   updateTable,
 }: ActionModalProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [loading, setLoading] = useState(false);
 
   const handleAction = () => {
@@ -43,7 +47,7 @@ const ActionModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(null, res?.data?.data);
+        if (updateTable) updateTable(res?.data?.data?.id, res?.data?.data);
 
         setLoading(false);
 
@@ -104,6 +108,27 @@ const ActionModalClient = ({
           />
         );
 
+      case 'issue_canvassing':
+        return <Loader size={18} color={'var(--mantine-color-gray-3)'} />;
+
+      case 'canvass_complete':
+        return (
+          <IconCheck
+            color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'approve_rfq':
+        return (
+          <IconChecklist
+            color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
       default:
         return <></>;
     }
@@ -145,7 +170,7 @@ const ActionModalClient = ({
           <Button
             type={'button'}
             color={color ?? 'var(--mantine-color-primary-9)'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             leftSection={dynamicButtonIcon(actionType)}
             loading={loading}
             loaderProps={{ type: 'dots' }}
@@ -155,7 +180,7 @@ const ActionModalClient = ({
           </Button>
           <Button
             variant={'outline'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             color={'var(--mantine-color-gray-8)'}
             leftSection={<IconCancel size={18} />}
             onClick={close}

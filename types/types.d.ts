@@ -48,7 +48,10 @@ type ActionType =
   | 'approve_cash_available'
   | 'approve'
   | 'disapprove'
-  | 'cancel';
+  | 'cancel'
+  | 'issue_canvassing'
+  | 'canvass_complete'
+  | 'approve_rfq';
 
 type CompanyType = {
   id?: string;
@@ -121,11 +124,7 @@ type DivisionType = {
   division_name?: string;
   active?: boolean;
   division_head_id?: string;
-  head?: {
-    id?: string;
-    firstname?: string;
-    lastname?: string;
-  };
+  head?: UserType;
   sections?: SectionType[];
   created_at?: string;
   updated_at?: string;
@@ -137,11 +136,7 @@ type SectionType = {
   section_name?: string;
   active?: boolean;
   section_head_id?: string;
-  head?: {
-    id?: string;
-    firstname?: string;
-    lastname?: string;
-  };
+  head?: UserType;
   division?: DivisionType;
   created_at?: string;
   updated_at?: string;
@@ -265,11 +260,11 @@ type SignatoryDetailType = {
 
 type SignatoryType = {
   id?: string;
-  fullname?: string;
   user_id?: string;
   active?: boolean;
   details?: SignatoryDetailType[];
   user?: UserType;
+  fullname_plain?: string;
   created_at?: string;
   updated_at?: string;
 };
@@ -343,6 +338,12 @@ type PurchaseRequestStatus =
   | 'for_po'
   | 'completed';
 
+type RequestQuotationStatus =
+  | 'draft'
+  | 'canvassing'
+  | 'completed'
+  | 'cancelled';
+
 type PurchaseRequestType = {
   id?: string;
   section_id?: string;
@@ -359,22 +360,77 @@ type PurchaseRequestType = {
   requested_by_id?: string;
   requestor?: UserType;
   sig_cash_availability_id?: string;
-  signatory_cash_availability?: SignatoryType;
+  signatory_cash_available?: SignatoryType;
   sig_approved_by_id?: string;
-  signatory_approved_by?: SignatoryType;
+  signatory_approval?: SignatoryType;
   status?: PurchaseRequestStatus;
   items?: PurchaseRequestItemType[];
+  rfqs?: RequestQuotationType[];
   total_estimated_cost?: number;
   total_estimated_cost_formatted?: string;
   section_name?: string;
   funding_source_title?: string;
+  funding_source_location?: string;
   requestor_fullname?: string;
-  cash_availability_fullname?: string;
-  approver_fullname?: string;
+  cash_available_fullname?: string;
+  approval_fullname?: string;
   submitted_at?: string;
   approved_cash_available_at?: string;
   approved_at?: string;
   disapproved_at?: string;
+  cancelled_at?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type RequestQuotationItemType = {
+  id?: string;
+  request_quotation_id?: string;
+  request_quotation?: RequestQuotationType;
+  pr_item_id?: string;
+  pr_item?: PurchaseRequestItemType;
+  supplier_id?: string;
+  supplier?: SupplierType;
+  brand_model?: string;
+  unit_cost?: number;
+  total_cost?: number;
+  included?: boolean;
+};
+
+type RequestQuotationCanvasserType = {
+  id?: string;
+  request_quotation_id?: string;
+  request_quotation?: RequestQuotationType;
+  user_id?: string;
+  user?: UserType;
+};
+
+type RequestQuotationType = {
+  id?: string;
+  purchase_request_id?: string;
+  purchase_request?: PurchaseRequestType;
+  signed_type?: 'bac' | 'lce';
+  rfq_date?: string;
+  rfq_no?: string;
+  supplier_id?: string;
+  supplier?: SupplierType;
+  supplier_name?: string;
+  supplier_address?: string;
+  canvasser_names?: string[];
+  opening_dt?: string;
+  sig_approval_id?: string;
+  signatory_approval?: SignatoryType;
+  approval_fullname?: string;
+  vat_registered?: boolean;
+  canvassers?: RequestQuotationCanvasserType[];
+  items?: RequestQuotationItemType[];
+  status?: RequestQuotationStatus;
+  pr_no?: string;
+  funding_source_title?: string;
+  funding_source_location?: string;
+  purpose?: string;
+  canvassing_at?: string;
+  completed_at?: string;
   cancelled_at?: string;
   created_at?: string;
   updated_at?: string;

@@ -11,6 +11,8 @@ const DynamicMultiselect = ({
   endpointParams = {},
   column,
   size,
+  variant,
+  sx,
   label,
   limit,
   value,
@@ -67,6 +69,7 @@ const DynamicMultiselect = ({
 
   return (
     <MultiSelect
+      variant={variant}
       size={size}
       label={label}
       placeholder={label}
@@ -81,6 +84,7 @@ const DynamicMultiselect = ({
       }
       searchable
       clearable
+      sx={sx}
       maxDropdownHeight={limit ? undefined : 200}
       required={required}
       readOnly={readOnly}

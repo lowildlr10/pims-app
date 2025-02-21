@@ -18,10 +18,13 @@ import {
   IconPrinter,
   IconX,
 } from '@tabler/icons-react';
-import StatusClient from '@/components/PurchaseRequests/Status';
-import ActionsClient from '@/components/PurchaseRequests/Actions';
-import { useDisclosure } from '@mantine/hooks';
+import PurchaseRequestStatusClient from '@/components/PurchaseRequests/Status';
+import PurchaseRequestActionsClient from '@/components/PurchaseRequests/Actions';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import ActionModalClient from './ActionModal';
+import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
+import RequestQuotationStatusClient from '@/components/RequestQuotations/Status';
+import RequestQuotationActionsClient from '@/components/RequestQuotations/Actions';
 
 const DetailActionsClient = ({
   permissions,
@@ -32,6 +35,7 @@ const DetailActionsClient = ({
   stack,
   updateTable,
 }: DetailActionProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [
     actionModalOpened,
     { open: openActionModal, close: closeActionModal },
@@ -42,6 +46,11 @@ const DetailActionsClient = ({
   const [color, setColor] = useState('var(--mantine-color-primary-9)');
   const [buttonLabel, setButtonLabel] = useState('');
   const [endpoint, setEndpoint] = useState('');
+  const [currentStatus, setCurrentStatus] = useState(status);
+
+  useEffect(() => {
+    setCurrentStatus(status);
+  }, [status]);
 
   const handleOpenActionModal = (
     actionType: ActionType,
@@ -65,12 +74,18 @@ const DetailActionsClient = ({
     switch (content) {
       case 'pr':
         return (
-          <StatusClient
-            size={'lg'}
-            status={(status as PurchaseRequestStatus) ?? ''}
+          <PurchaseRequestStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as PurchaseRequestStatus) ?? ''}
           />
         );
-
+      case 'rfq':
+        return (
+          <RequestQuotationStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as RequestQuotationStatus) ?? ''}
+          />
+        );
       default:
         return <>-</>;
     }
@@ -81,6 +96,7 @@ const DetailActionsClient = ({
       <Menu offset={6} shadow={'md'} width={300} withArrow>
         <Menu.Target>
           <Button
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             color={'var(--mantine-color-secondary-9)'}
             rightSection={<IconHandFinger size={18} stroke={1.5} />}
           >
@@ -91,15 +107,19 @@ const DetailActionsClient = ({
         <Menu.Dropdown>
           <Menu.Label>Actions</Menu.Label>
           {content === 'pr' && (
-            <ActionsClient
+            <PurchaseRequestActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
-              submittedAt={data?.submitted_at}
-              approvedCashAvailableAt={data?.approved_cash_available_at}
-              approvedAt={data?.approved_at}
-              disapprovedAt={data?.disapproved_at}
-              cancelledAt={data?.cancelled_at}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'rfq' && (
+            <RequestQuotationActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -126,7 +146,13 @@ const DetailActionsClient = ({
       <Group justify={'space-between'}>
         {hasStatus ? (
           <Group>
-            <Text>Status:</Text>
+            <Text
+              size={lgScreenAndBelow ? 'sm' : 'md'}
+              fw={700}
+              tt={'uppercase'}
+            >
+              Status:
+            </Text>
             {dynamicStatus(content)}
           </Group>
         ) : (
@@ -155,6 +181,7 @@ const DetailActionsClient = ({
 };
 
 const DetailModalClient = ({
+  user,
   permissions,
   title,
   data,
@@ -163,24 +190,61 @@ const DetailModalClient = ({
   close,
   stack,
   updateTable,
+  showPrint,
+  showEdit,
 }: DetailModalProps) => {
-  const [showEdit, setShowEdit] = useState(true);
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const [currentData, setCurrentData] = useState(data);
+  const [showEditButton, setShowEditButton] = useState(false);
 
   useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    let isEditable = true;
+
     switch (content) {
       case 'pr':
-        if (['draft', 'disapproved'].includes(data?.status ?? '')) {
-          setShowEdit(true);
+        isEditable = [
+          'draft',
+          'disapproved',
+          'pending',
+          'approved_cash_available',
+          'approved',
+        ].includes(currentData?.status ?? '');
+
+        if (
+          showEdit &&
+          isEditable &&
+          !['super:*', 'supply:*'].some((permission) =>
+            permissions?.includes(permission)
+          ) &&
+          user?.id !== data?.requested_by_id
+        ) {
+          setShowEditButton(false);
         } else {
-          setShowEdit(false);
+          setShowEditButton(isEditable);
+        }
+        break;
+
+      case 'rfq':
+        isEditable = ['draft', 'canvassing', 'completed'].includes(
+          currentData?.status ?? ''
+        );
+
+        if (showEdit && isEditable) {
+          setShowEditButton(true);
+        } else {
+          setShowEditButton(false);
         }
         break;
 
       default:
-        setShowEdit(true);
+        setShowEditButton(true);
         break;
     }
-  }, [content, data]);
+  }, [content, currentData]);
 
   return (
     <Modal
@@ -208,7 +272,7 @@ const DetailModalClient = ({
       >
         <DetailActionsClient
           permissions={permissions ?? []}
-          data={data}
+          data={currentData}
           content={content}
           status={data?.status ?? ''}
           stack={stack}
@@ -220,7 +284,11 @@ const DetailModalClient = ({
       <Stack p={'md'} my={70}>
         <Paper shadow={'lg'} p={0}>
           {opened && content === 'pr' && (
-            <PurchaseRequestContentClient data={data} readOnly />
+            <PurchaseRequestContentClient data={currentData} readOnly />
+          )}
+
+          {opened && content === 'rfq' && (
+            <RequestQuotionContentClient data={currentData} readOnly />
           )}
         </Paper>
       </Stack>
@@ -236,25 +304,27 @@ const DetailModalClient = ({
         sx={{ zIndex: 100 }}
       >
         <Group>
-          <Button
-            type={'button'}
-            color={'var(--mantine-color-primary-9)'}
-            size={'sm'}
-            leftSection={<IconPrinter size={18} />}
-            onClick={() => {
-              stack.close('detail-modal');
-              stack.open('print-modal');
-            }}
-          >
-            Print
-          </Button>
+          {showPrint && (
+            <Button
+              type={'button'}
+              color={'var(--mantine-color-primary-9)'}
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
+              leftSection={<IconPrinter size={18} />}
+              onClick={() => {
+                stack.close('detail-modal');
+                stack.open('print-modal');
+              }}
+            >
+              Print
+            </Button>
+          )}
 
-          {showEdit && (
+          {showEditButton && (
             <Button
               variant={'outline'}
               type={'button'}
               color={'var(--mantine-color-primary-9)'}
-              size={'sm'}
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
               leftSection={<IconPencil size={18} />}
               onClick={() => {
                 stack.close('detail-modal');
@@ -267,7 +337,7 @@ const DetailModalClient = ({
 
           <Button
             variant={'outline'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             color={'var(--mantine-color-gray-8)'}
             leftSection={<IconX size={18} />}
             onClick={close}

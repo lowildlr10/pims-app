@@ -18,11 +18,13 @@ const DynamicSelect = ({
   value,
   defaultValue,
   variant,
+  sx,
   onChange,
   readOnly,
   required,
   enableOnClickRefresh = true,
-  disableFetch = false,
+  disableFetch,
+  hasPresetValue,
   isLoading,
 }: DynamicSelectProps) => {
   const [loading, setLoading] = useState(disableFetch ? false : true);
@@ -30,6 +32,8 @@ const DynamicSelect = ({
     defaultData ?? []
   );
   const [inputValue, setInputValue] = useState<string | undefined>(value);
+  const [isPresetValueSet, setIsPresetValueSet] = useState(false);
+  const [presetValue, setPresetValue] = useState<string | undefined>();
 
   useEffect(() => {
     if (disableFetch) return;
@@ -47,11 +51,20 @@ const DynamicSelect = ({
   }, [inputValue]);
 
   useEffect(() => {
+    if (!hasPresetValue || isPresetValueSet) return;
+
+    if (presetValue) {
+      setInputValue(presetValue);
+      setIsPresetValueSet(true);
+    }
+  }, [presetValue, hasPresetValue, isPresetValueSet]);
+
+  useEffect(() => {
     setInputValue(value);
   }, [value]);
 
   const handleFetchData = () => {
-    if (disableFetch) return;
+    if (disableFetch || !endpoint) return;
 
     setLoading(true);
 
@@ -68,6 +81,19 @@ const DynamicSelect = ({
               }))
             : [{ label: 'No data.', value: '' }]
         );
+
+        if (res?.data?.length > 0 && hasPresetValue && !isPresetValueSet) {
+          setPresetValue(
+            defaultValue
+              ? (res?.data?.find(
+                  (item: any) =>
+                    item[valueColumn] === defaultValue ||
+                    item[column].toLowerCase() === defaultValue.toLowerCase()
+                )[valueColumn] ?? res?.data[0][valueColumn])
+              : res?.data[0][valueColumn]
+          );
+        }
+
         setLoading(false);
       })
       .catch((err) => {
@@ -94,7 +120,7 @@ const DynamicSelect = ({
       limit={limit ?? undefined}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       data={data}
-      defaultValue={defaultValue}
+      defaultValue={!hasPresetValue ? defaultValue : undefined}
       value={inputValue}
       onChange={(_value, option) => setInputValue(option?.value ?? null)}
       nothingFoundMessage={'Nothing found...'}
@@ -104,6 +130,7 @@ const DynamicSelect = ({
         )
       }
       variant={variant ?? 'default'}
+      sx={sx}
       onClick={!readOnly && enableOnClickRefresh ? handleFetchData : undefined}
       searchable
       clearable

@@ -47,7 +47,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
           },
           {
             label: 'Approve for Cash Availability',
-            value: 'approve_cash_available',
+            value: 'approve-cash-available',
             checked: false,
           },
           {
@@ -58,6 +58,16 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
           {
             label: 'Disapprove',
             value: 'disapprove',
+            checked: false,
+          },
+          {
+            label: 'Approve Request for Quotations',
+            value: 'approve-rfq',
+            checked: false,
+          },
+          {
+            label: 'Award',
+            value: 'award',
             checked: false,
           },
           {
@@ -106,13 +116,18 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
             checked: false,
           },
           {
-            label: 'Issue',
+            label: 'Issue for Canvassing',
             value: 'issue',
             checked: false,
           },
           {
-            label: 'Receive',
-            value: 'receive',
+            label: 'Canvass Completed',
+            value: 'complete',
+            checked: false,
+          },
+          {
+            label: 'Cancel',
+            value: 'cancel',
             checked: false,
           },
           {

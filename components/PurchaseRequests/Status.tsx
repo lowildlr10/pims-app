@@ -3,8 +3,8 @@ import { Badge, Loader, Tooltip } from '@mantine/core';
 import {
   IconAwardFilled,
   IconCancel,
+  IconChecklist,
   IconDiscountCheckFilled,
-  IconFileDollar,
   IconFileIsr,
   IconFileSearch,
   IconThumbDownFilled,
@@ -36,7 +36,7 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
             color={'var(--mantine-color-gray-7)'}
             variant={'light'}
             leftSection={
-              <Loader size={16} color={'var(--mantine-color-gray-7)'} />
+              <Loader size={12} color={'var(--mantine-color-gray-7)'} />
             }
           >
             {Helper.formatStringHasUnderscores(status)}
@@ -53,7 +53,7 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
             variant={'light'}
             leftSection={<IconDiscountCheckFilled size={18} stroke={1.5} />}
           >
-            Signed - Cash Available
+            Approved - Cash Available
           </Badge>
         </Tooltip>
       );
@@ -105,7 +105,7 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
             size={size}
-            color={'var(--mantine-color-blue-7)'}
+            color={'var(--mantine-color-green-7)'}
             variant={'light'}
             leftSection={<IconFileSearch size={18} stroke={1.5} />}
           >
@@ -119,9 +119,9 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
             size={size}
-            color={'var(--mantine-color-blue-7)'}
+            color={'var(--mantine-color-green-7)'}
             variant={'light'}
-            leftSection={<IconFileDollar size={18} stroke={1.5} />}
+            leftSection={<IconChecklist size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>

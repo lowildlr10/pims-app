@@ -1,6 +1,7 @@
 'use client';
 
 import { Group, Pagination, Paper, Select, Text } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import React from 'react';
 
 const DataTablePaginationClient = ({
@@ -13,11 +14,13 @@ const DataTablePaginationClient = ({
   setPage,
   setPerPage,
 }: DataTablePaginationProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+
   return (
     <Paper p={'md'}>
       <Group justify={'space-between'}>
         <Group>
-          <Text size='sm'>Result Per Page</Text>
+          <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>Result Per Page</Text>
           <Select
             size={'xs'}
             w={70}
@@ -28,7 +31,7 @@ const DataTablePaginationClient = ({
               setPerPage && setPerPage(parseInt(_value ?? '10'))
             }
           />
-          <Text size={'sm'}>
+          <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>
             {from.toString() ?? '0'} - {to.toString() ?? '0'} of{' '}
             {total.toString() ?? '0'}
           </Text>
@@ -38,7 +41,7 @@ const DataTablePaginationClient = ({
           value={page}
           onChange={setPage}
           total={lastPage ?? 0}
-          size={'xs'}
+          size={lgScreenAndBelow ? 'xs' : 'sm'}
           radius='xl'
           color={'var(--mantine-color-primary-9)'}
           withEdges

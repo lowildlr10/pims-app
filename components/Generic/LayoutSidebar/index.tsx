@@ -6,10 +6,11 @@ import {
   Group,
   Image,
   Loader,
+  Overlay,
   ScrollArea,
 } from '@mantine/core';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
   IconArrowBack,
@@ -30,6 +31,7 @@ import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { Text } from '@mantine/core';
 import NotificationMenuButtonClient from '../NotificationMenuButton';
+import { keyframes } from '@emotion/react';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -381,12 +383,13 @@ export function LayoutSidebarClient({
   permissions,
   children,
 }: LayoutSidebarProps) {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [menus, setMenus] = useState<LinksGroupProps[]>(defaultMenu);
   const links = menus.map((item) => (
     <LinksGroupClient {...item} key={item.label} permissions={permissions} />
   ));
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
-  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
   const [opened, { open, close }] = useDisclosure(false);
 
   useEffect(() => {
@@ -407,7 +410,7 @@ export function LayoutSidebarClient({
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{ height: lgScreenAndBelow ? 50 : 60 }}
       navbar={{
         width: 300,
         breakpoint: 'md',
@@ -419,44 +422,49 @@ export function LayoutSidebarClient({
       transitionTimingFunction='ease'
     >
       <AppShell.Header bg={'var(--mantine-color-primary-9)'} c={'white'}>
-        <Group h='100%' px='md' justify={'space-between'}>
+        <Group h='100%' px={'md'} justify={'space-between'}>
           <Group>
             <Burger
               color={'white'}
               opened={mobileOpened}
               onClick={toggleMobile}
               hiddenFrom={'md'}
-              size={'sm'}
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
             />
             <Burger
               color={'white'}
               opened={desktopOpened}
               onClick={toggleDesktop}
               visibleFrom={'md'}
-              size={'sm'}
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
             />
             <Group>
               <Image
-                width={30}
-                height={30}
+                width={lgScreenAndBelow ? 20 : 30}
+                height={lgScreenAndBelow ? 20 : 30}
                 src={company?.company_logo ?? '/images/logo-fallback.png'}
                 alt={company?.company_name ?? 'Company'}
               />
-              <Text size={'lg'} fw={400}>
+              <Text size={lgScreenAndBelow ? 'md' : 'lg'} fw={400}>
                 Procurement System
               </Text>
             </Group>
           </Group>
 
-          <Group>
+          {/* <Group>
             <NotificationMenuButtonClient />
-          </Group>
+          </Group> */}
         </Group>
       </AppShell.Header>
       <AppShell.Navbar
         p='md'
         sx={(theme, u) => ({
-          [u.smallerThan('lg')]: {
+          transform: `${
+            desktopOpened
+              ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
+              : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
+          } !important`,
+          [u.smallerThan('md')]: {
             transform: `${
               mobileOpened
                 ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
@@ -479,6 +487,27 @@ export function LayoutSidebarClient({
         </AppShell.Section>
       </AppShell.Navbar>
       <AppShell.Main bg={'var(--mantine-color-gray-1)'}>
+        <Overlay
+          color={'var(--mantine-color-black-7)'}
+          backgroundOpacity={0.6}
+          blur={2}
+          zIndex={5}
+          onClick={() => {
+            toggleDesktop();
+          }}
+          display={{ base: 'none', lg: desktopOpened ? 'initial' : 'none' }}
+          sx={{
+            animation: desktopOpened
+              ? `${keyframes`
+                0%,100% { opacity: 0 }
+                100% { opacity: 1 }
+              `} 0.2s linear`
+              : `${keyframes`
+                100%,0% { opacity: 1 }
+                9% { opacity: 0 }
+              `} 0.3s linear`,
+          }}
+        />
         {children}
         <ProgressBar
           height={'2.5px'}

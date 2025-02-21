@@ -10,24 +10,35 @@ import {
   Text,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { IconX } from '@tabler/icons-react';
-import useSWR, { useSWRConfig } from 'swr';
+import { IconRefresh, IconX } from '@tabler/icons-react';
+import useSWR from 'swr';
 import API from '@/libs/API';
 import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import { LoadingOverlay } from '@mantine/core';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useMediaQuery } from '@mantine/hooks';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
 const LogCard = ({ fullname, message, logType, loggedAt }: LogCardProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+
   return (
-    <Card shadow='sm' padding='lg' radius='md' withBorder>
+    <Card
+      shadow='sm'
+      padding={lgScreenAndBelow ? 'md' : 'lg'}
+      radius='md'
+      withBorder
+    >
       <Group justify='space-between' mt='md' mb='xs'>
-        <Text fw={500}>{fullname ?? '-'}</Text>
+        <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
+          {fullname ?? '-'}
+        </Text>
         <Badge
+          size={lgScreenAndBelow ? 'sm' : 'md'}
           color={
             logType === 'error'
               ? 'var(--mantine-color-red-7)'
@@ -38,9 +49,13 @@ const LogCard = ({ fullname, message, logType, loggedAt }: LogCardProps) => {
         </Badge>
       </Group>
 
-      <Text size='sm'>{message}</Text>
+      <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>{message}</Text>
 
-      <Text size='sm' c='dimmed' pt={'sm'}>
+      <Text
+        size={lgScreenAndBelow ? 'xs' : 'sm'}
+        c='dimmed'
+        pt={lgScreenAndBelow ? 'xs' : 'sm'}
+      >
         {loggedAt}
       </Text>
     </Card>
@@ -54,13 +69,13 @@ const LogModalClient = ({
   opened,
   close,
 }: LogModalProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [logId] = useState(id ?? '');
   const [page, setPage] = useState(1);
   const [perPage] = useState(10);
   const [paginated] = useState(true);
 
-  const { mutate } = useSWRConfig();
-  const { data, isLoading } = useSWR<SystemLogResponse>(
+  const { data, isLoading, mutate } = useSWR<SystemLogResponse>(
     [endpoint ?? null, logId, page, perPage, paginated],
     ([url, logId, page, perPage, paginated]: GeneralResponse) =>
       API.get(url, {
@@ -71,16 +86,18 @@ const LogModalClient = ({
       }),
     {
       refreshInterval: API_REFRESH_INTERVAL,
+      refreshWhenHidden: true,
       keepPreviousData: false,
       revalidateOnFocus: true,
+      revalidateOnMount: true,
     }
   );
 
   useEffect(() => {
-    if (!opened || !endpoint) return;
+    if (!opened) return;
 
-    mutate(endpoint);
-  }, [opened, endpoint]);
+    mutate();
+  }, [opened]);
 
   return (
     <Modal
@@ -103,6 +120,16 @@ const LogModalClient = ({
 
       {opened && (
         <Stack mb={60} p={'sm'}>
+          <Button
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
+            variant={'outline'}
+            leftSection={<IconRefresh size={18} stroke={1.5} />}
+            loaderProps={{ type: 'dots' }}
+            loading={isLoading}
+            onClick={() => opened && mutate()}
+          >
+            Refresh
+          </Button>
           {data &&
             data?.data.map((log) => (
               <LogCard
@@ -148,7 +175,7 @@ const LogModalClient = ({
         <Group>
           <Button
             variant={'outline'}
-            size={'sm'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
             color={'var(--mantine-color-gray-8)'}
             leftSection={<IconX size={18} />}
             onClick={close}

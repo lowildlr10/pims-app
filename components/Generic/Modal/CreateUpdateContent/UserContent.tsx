@@ -33,15 +33,15 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
         designation: data?.designation?.designation_name ?? '',
         username: data?.username ?? '',
         email: data?.email ?? '',
-        phone: data?.phone ?? '+639',
+        phone: data?.phone ?? '',
         restricted: data?.restricted ?? false,
         password: '',
         roles: data?.roles?.map((role) => role.id) ?? [],
       },
 
-      validate: {
-        email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-      },
+      // validate: {
+      //   email: (value) => (/^\S+@\S+$/.test(value) ? 'null' : 'Invalid email'),
+      // },
     });
 
     useEffect(() => {
@@ -165,13 +165,12 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           <TextInput
             size={'sm'}
             label='Email'
-            placeholder=''
+            placeholder={'Email'}
             value={form.values.email}
             onChange={(event) =>
               form.setFieldValue('email', event.currentTarget.value)
             }
             error={form.errors.email && ''}
-            required
           />
           <InputBase
             size={'sm'}
