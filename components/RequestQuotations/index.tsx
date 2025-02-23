@@ -58,6 +58,12 @@ const defaultTableData: TableDataType = {
   ],
   subHead: [
     {
+      id: 'batch',
+      label: 'Batch',
+      width: '8%',
+      sortable: true,
+    },
+    {
       id: 'rfq_no',
       label: 'RFQ No',
       width: '10%',
@@ -84,7 +90,7 @@ const defaultTableData: TableDataType = {
     {
       id: 'canvasser_names_formatted',
       label: 'Canvassers',
-      width: '39%',
+      width: '31%',
       sortable: false,
     },
     {

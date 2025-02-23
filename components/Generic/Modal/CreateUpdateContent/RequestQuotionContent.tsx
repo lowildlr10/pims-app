@@ -98,7 +98,7 @@ const RequestQuotionContentClient = forwardRef<
               stock_no: item.pr_item?.stock_no ?? 1,
               quantity: item.pr_item?.quantity,
               description: item.pr_item?.description ?? '-',
-              brand_model: item.brand_model ?? '-',
+              brand_model: item.brand_model ?? '',
               unit_cost: item?.unit_cost ?? undefined,
               total_cost: item?.total_cost ?? undefined,
               included: item?.included ?? true,

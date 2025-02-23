@@ -529,7 +529,7 @@ const DataTableClient = ({
     if (typeof value === 'string') {
       return value;
     } else if (typeof value === 'number') {
-      return `₱${value.toFixed(2)}`;
+      return `${value}`;
     } else if (Array.isArray(value)) {
       return value.join(', ');
     } else if (value instanceof Date) {
