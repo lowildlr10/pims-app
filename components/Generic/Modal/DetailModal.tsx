@@ -260,26 +260,28 @@ const DetailModalClient = ({
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <Stack
-        w={'100%'}
-        bg={'white'}
-        pos={'fixed'}
-        top={50}
-        left={0}
-        p={15}
-        align={'end'}
-        sx={{ zIndex: 100 }}
-      >
-        <DetailActionsClient
-          permissions={permissions ?? []}
-          data={currentData}
-          content={content}
-          status={data?.status ?? ''}
-          stack={stack}
-          updateTable={updateTable}
-          hasStatus
-        />
-      </Stack>
+      {opened && (
+        <Stack
+          w={'100%'}
+          bg={'white'}
+          pos={'fixed'}
+          top={50}
+          left={0}
+          p={15}
+          align={'end'}
+          sx={{ zIndex: 100 }}
+        >
+          <DetailActionsClient
+            permissions={permissions ?? []}
+            data={currentData}
+            content={content}
+            status={data?.status ?? ''}
+            stack={stack}
+            updateTable={updateTable}
+            hasStatus
+          />
+        </Stack>
+      )}
 
       <Stack p={'md'} my={70}>
         <Paper shadow={'lg'} p={0}>

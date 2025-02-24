@@ -53,7 +53,7 @@ const ActionModalClient = ({
 
         if (stack) {
           close();
-          stack.closeAll();
+          stack.open('detail-modal');
         } else {
           close();
         }

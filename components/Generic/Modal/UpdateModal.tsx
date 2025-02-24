@@ -82,7 +82,8 @@ const UpdateModalClient = ({
         setLoading(false);
 
         if (stack) {
-          stack.closeAll();
+          stack.close('update-modal');
+          stack.open('detail-modal');
         } else {
           close();
         }

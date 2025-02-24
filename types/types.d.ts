@@ -324,6 +324,7 @@ type PurchaseRequestItemType = {
   estimated_cost?: number;
   estimated_unit_cost_formatted?: string;
   estimated_cost_formatted?: string;
+  awarded_to_id?: string;
 };
 
 type PurchaseRequestStatus =

@@ -3,18 +3,23 @@
 import {
   Box,
   Card,
-  Divider,
+  Checkbox,
   Flex,
   Group,
   NumberInput,
-  Paper,
   Stack,
   Table,
   Text,
   Textarea,
   TextInput,
 } from '@mantine/core';
-import React, { forwardRef, ReactNode, useEffect, useState } from 'react';
+import React, {
+  forwardRef,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
@@ -28,7 +33,6 @@ import dayjs from 'dayjs';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
-import { Switch } from '@mantine/core';
 import { Select } from '@mantine/core';
 import { List } from '@mantine/core';
 import DynamicMultiselect from '../../DynamicMultiselect';
@@ -54,13 +58,11 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
     id: 'brand_model',
     label: 'Brand/Model',
     width: '16%',
-    required: true,
   },
   {
     id: 'unit_cost',
     label: 'Unit Cost',
     width: '16%',
-    required: true,
   },
   {
     id: 'total_cost',
@@ -79,20 +81,20 @@ const RequestQuotionContentClient = forwardRef<
   ModalRequestQuotationContentProps
 >(({ data, isCreate, readOnly, handleCreateUpdate }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
-  const form = useForm({
-    mode: 'uncontrolled',
-    initialValues: {
-      signed_type: data?.signed_type ?? 'lce',
-      rfq_date: data?.rfq_date ?? dayjs().format('YYYY-MM-DD'),
-      rfq_no: data?.rfq_no ?? '',
-      supplier_id: data?.supplier_id ?? '',
-      opening_dt: data?.opening_dt ?? '',
-      sig_approval_id: data?.sig_approval_id ?? '',
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
+      signed_type: currentData?.signed_type ?? 'lce',
+      rfq_date: currentData?.rfq_date ?? dayjs().format('YYYY-MM-DD'),
+      rfq_no: currentData?.rfq_no ?? '',
+      supplier_id: currentData?.supplier_id ?? '',
+      opening_dt: currentData?.opening_dt ?? '',
+      sig_approval_id: currentData?.sig_approval_id ?? '',
       items:
-        data?.items &&
-        typeof data?.items !== undefined &&
-        data?.items.length > 0
-          ? data?.items?.map((item, index) => ({
+        currentData?.items &&
+        typeof currentData?.items !== undefined &&
+        currentData?.items.length > 0
+          ? currentData?.items?.map((item, index) => ({
               key: randomId(),
               pr_item_id: item?.pr_item_id,
               stock_no: item.pr_item?.stock_no ?? 1,
@@ -101,27 +103,50 @@ const RequestQuotionContentClient = forwardRef<
               brand_model: item.brand_model ?? '',
               unit_cost: item?.unit_cost ?? undefined,
               total_cost: item?.total_cost ?? undefined,
-              included: item?.included ?? true,
+              included:
+                item.pr_item?.awarded_to_id === undefined ||
+                item.pr_item?.awarded_to_id === null ||
+                !!item.pr_item.awarded_to_id === false
+                  ? true
+                  : false,
             }))
           : [],
       vat_registered:
-        data?.vat_registered === undefined || data?.vat_registered === null
+        currentData?.vat_registered === undefined ||
+        currentData?.vat_registered === null
           ? ''
-          : data?.vat_registered === true
+          : currentData?.vat_registered === true
             ? '1'
             : '0',
-      canvassers: data?.canvassers?.map((canvasser) => canvasser.user_id) ?? [],
-    },
+      canvassers:
+        currentData?.canvassers?.map((canvasser) => canvasser.user_id) ?? [],
+    }),
+    [currentData]
+  );
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: currentForm,
   });
   const [signedType, setSignedType] = useState<'lce' | 'bac'>(
-    data.signed_type ?? 'lce'
+    currentData?.signed_type ?? 'lce'
   );
   const [municipality, setMunicipality] = useState('Loading...');
 
   useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    setSignedType(currentForm.signed_type);
+
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
+
+  useEffect(() => {
     API.get('/companies')
       .then((res) => {
-        const company: CompanyType = res?.data?.company;
+        const company: CompanyType = res?.currentData?.company;
 
         setMunicipality(company?.municipality?.toUpperCase() ?? '');
       })
@@ -204,13 +229,13 @@ const RequestQuotionContentClient = forwardRef<
             <Textarea
               key={form.key(`items.${index}.brand_model`)}
               {...form.getInputProps(`items.${index}.brand_model`)}
-              variant={isCreate ? 'filled' : 'unstyled'}
+              variant={isCreate || !item.included ? 'filled' : 'unstyled'}
               placeholder={isCreate ? 'To be quoted' : 'Brand/Model'}
               defaultValue={item?.brand_model}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
-              required={!readOnly && !isCreate}
-              readOnly={readOnly || isCreate}
+              // required={!readOnly && !isCreate && item.included}
+              readOnly={readOnly || isCreate || !item.included}
             />
           </Table.Td>
         );
@@ -221,17 +246,17 @@ const RequestQuotionContentClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.unit_cost`)}
               {...form.getInputProps(`items.${index}.unit_cost`)}
-              variant={isCreate ? 'filled' : 'unstyled'}
+              variant={isCreate || !item.included ? 'filled' : 'unstyled'}
               placeholder={isCreate ? 'To be quoted' : 'Unit Cost'}
               defaultValue={item?.unit_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
-              clampBehavior={'strict'}
+              // clampBehavior={'strict'}
               decimalScale={2}
               fixedDecimalScale
               thousandSeparator={','}
-              required={!readOnly && !isCreate}
-              readOnly={readOnly || isCreate}
+              // required={!readOnly && !isCreate && item.included}
+              readOnly={readOnly || isCreate || !item.included}
             />
           </Table.Td>
         );
@@ -274,7 +299,7 @@ const RequestQuotionContentClient = forwardRef<
         if (handleCreateUpdate) {
           handleCreateUpdate({
             ...values,
-            purchase_request_id: data.purchase_request_id,
+            purchase_request_id: currentData?.purchase_request_id,
             signed_type: signedType,
             rfq_date: values.rfq_date
               ? dayjs(values.rfq_date).format('YYYY-MM-DD')
@@ -342,7 +367,7 @@ const RequestQuotionContentClient = forwardRef<
                   <TextInput
                     variant={'unstyled'}
                     placeholder={'None'}
-                    defaultValue={data?.pr_no ?? '-'}
+                    defaultValue={currentData?.pr_no ?? '-'}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -362,7 +387,12 @@ const RequestQuotionContentClient = forwardRef<
                   <TextInput
                     variant={'unstyled'}
                     placeholder={'None'}
-                    defaultValue={data?.funding_source_title ?? '-'}
+                    defaultValue={
+                      readOnly ? undefined : currentData?.funding_source_title
+                    }
+                    value={
+                      readOnly ? currentData?.funding_source_title : undefined
+                    }
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -382,7 +412,16 @@ const RequestQuotionContentClient = forwardRef<
                   <TextInput
                     variant={'unstyled'}
                     placeholder={'None'}
-                    defaultValue={data?.funding_source_location ?? '-'}
+                    defaultValue={
+                      readOnly
+                        ? undefined
+                        : currentData?.funding_source_location
+                    }
+                    value={
+                      readOnly
+                        ? currentData?.funding_source_location
+                        : undefined
+                    }
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -428,8 +467,17 @@ const RequestQuotionContentClient = forwardRef<
                     variant={'unstyled'}
                     valueFormat={'YYYY-MM-DD'}
                     defaultValue={
-                      form.values.rfq_date
-                        ? new Date(form.values?.rfq_date)
+                      readOnly
+                        ? undefined
+                        : form.values.rfq_date
+                          ? new Date(form.values.rfq_date)
+                          : undefined
+                    }
+                    value={
+                      readOnly
+                        ? currentData?.rfq_date
+                          ? new Date(currentData?.rfq_date)
+                          : undefined
                         : undefined
                     }
                     placeholder={`Enter the ${signedType === 'lce' ? 'quotation' : 'solicitation'} date here...`}
@@ -459,11 +507,23 @@ const RequestQuotionContentClient = forwardRef<
                         <>Quotation No.:</>
                       )}
                     </Text>
+                    {!readOnly && (
+                      <Stack>
+                        <IconAsterisk
+                          size={7}
+                          color={'var(--mantine-color-red-8)'}
+                          stroke={2}
+                        />
+                      </Stack>
+                    )}
                   </Box>
                   <TextInput
+                    key={form.key('rfq_no')}
+                    {...form.getInputProps('rfq_no')}
                     variant={'unstyled'}
-                    placeholder={'Autogenerated'}
-                    defaultValue={data?.rfq_no}
+                    placeholder={'Enter RFQ number here...'}
+                    defaultValue={readOnly ? undefined : form.values.rfq_no}
+                    value={readOnly ? currentData?.rfq_no : undefined}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -472,7 +532,8 @@ const RequestQuotionContentClient = forwardRef<
                         height: '30px',
                       },
                     }}
-                    readOnly
+                    required={!readOnly}
+                    readOnly={readOnly}
                   />
                 </Group>
               </Stack>
@@ -495,7 +556,7 @@ const RequestQuotionContentClient = forwardRef<
                       key={form.key('supplier_id')}
                       {...form.getInputProps('supplier_id')}
                       variant={
-                        readOnly || data.status === 'completed'
+                        readOnly || currentData?.status === 'completed'
                           ? 'filled'
                           : 'unstyled'
                       }
@@ -510,11 +571,11 @@ const RequestQuotionContentClient = forwardRef<
                       endpointParams={{ paginated: false }}
                       column={'supplier_name'}
                       defaultData={
-                        data?.supplier_id
+                        currentData?.supplier_id
                           ? [
                               {
-                                value: data?.supplier_id ?? '',
-                                label: data?.supplier_name ?? '',
+                                value: currentData?.supplier_id ?? '',
+                                label: currentData?.supplier_name ?? '',
                               },
                             ]
                           : undefined
@@ -522,13 +583,13 @@ const RequestQuotionContentClient = forwardRef<
                       value={form.values.supplier_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       placeholder={'Select a supplier...'}
-                      readOnly={readOnly || data.status === 'completed'}
+                      readOnly={readOnly || currentData?.status === 'completed'}
                     />
                   ) : (
                     <TextInput
                       variant={'unstyled'}
                       placeholder={'None'}
-                      defaultValue={data?.supplier_name ?? '-'}
+                      value={currentData?.supplier_name ?? '-'}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -552,7 +613,7 @@ const RequestQuotionContentClient = forwardRef<
                     <TextInput
                       variant={'unstyled'}
                       placeholder={'None'}
-                      defaultValue={data?.supplier_address}
+                      value={currentData?.supplier_address}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -595,8 +656,17 @@ const RequestQuotionContentClient = forwardRef<
                     label={'Date and Time of Opening'}
                     valueFormat={'YYYY-MM-DD hh:mm A'}
                     defaultValue={
-                      form.values.opening_dt
-                        ? new Date(form.values?.opening_dt)
+                      readOnly
+                        ? undefined
+                        : form.values.opening_dt
+                          ? new Date(form.values.opening_dt)
+                          : undefined
+                    }
+                    value={
+                      readOnly
+                        ? currentData?.opening_dt
+                          ? new Date(currentData?.opening_dt)
+                          : undefined
                         : undefined
                     }
                     placeholder={
@@ -632,11 +702,11 @@ const RequestQuotionContentClient = forwardRef<
                       signatory_type: 'approval',
                     }}
                     defaultData={
-                      data?.sig_approval_id
+                      currentData?.sig_approval_id
                         ? [
                             {
-                              value: data?.sig_approval_id ?? '',
-                              label: data?.approval_fullname ?? '',
+                              value: currentData?.sig_approval_id ?? '',
+                              label: currentData?.approval_fullname ?? '',
                             },
                           ]
                         : undefined
@@ -658,7 +728,7 @@ const RequestQuotionContentClient = forwardRef<
                     }
                     variant={'unstyled'}
                     placeholder={'None'}
-                    defaultValue={data?.approval_fullname ?? '-'}
+                    value={currentData?.approval_fullname ?? '-'}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -736,21 +806,18 @@ const RequestQuotionContentClient = forwardRef<
                       })}
 
                       {!readOnly && (
-                        <Table.Td valign={'middle'}>
-                          <Switch
+                        <Table.Td valign={'top'} ta={'center'} pt={'sm'}>
+                          <Checkbox
                             key={form.key(`items.${index}.included`)}
                             {...form.getInputProps(`items.${index}.included`)}
                             w={'100%'}
-                            size={lgScreenAndBelow ? 'xs' : 'sm'}
+                            size={lgScreenAndBelow ? 'sm' : 'md'}
                             color={'var(--mantine-color-primary-9)'}
-                            onLabel={'Yes'}
-                            offLabel={'No'}
                             defaultChecked={item.included}
                             sx={{
-                              label: {
-                                justifyContent: 'center',
-                              },
+                              justifyItems: 'center',
                             }}
+                            disabled
                           />
                           <input
                             key={form.key(`items.${index}.quantity`)}
@@ -775,7 +842,7 @@ const RequestQuotionContentClient = forwardRef<
                         variant={readOnly ? 'unstyled' : 'filled'}
                         label={'Purpose'}
                         placeholder={'Purpose'}
-                        defaultValue={data?.purpose ?? '-'}
+                        value={currentData?.purpose ?? '-'}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         autosize
                         autoCapitalize={'sentences'}
@@ -877,7 +944,7 @@ const RequestQuotionContentClient = forwardRef<
                   label={'CANVASSERS'}
                   variant={'unstyled'}
                   placeholder={'None'}
-                  defaultValue={data?.canvasser_names?.join('\n') ?? '-'}
+                  value={currentData?.canvasser_names?.join('\n') ?? '-'}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   sx={{
                     borderBottom: '2px solid var(--mantine-color-gray-5)',

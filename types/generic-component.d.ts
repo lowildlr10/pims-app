@@ -442,4 +442,5 @@ type RequestQuotationItemsFieldType = {
   brand_model?: string;
   unit_cost?: number;
   total_cost?: number;
+  included?: boolean;
 };
