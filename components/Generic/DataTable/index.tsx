@@ -9,6 +9,7 @@ import {
   Skeleton,
   Stack,
   Table,
+  Tooltip,
   useModalsStack,
 } from '@mantine/core';
 import {
@@ -641,11 +642,11 @@ const DataTableClient = ({
                   </Table.Td>
                 </Table.Tr>
 
-                {Array.from({ length: perPage - 1 }).map((_, i) => (
+                {/* {Array.from({ length: perPage - 1 }).map((_, i) => (
                   <Table.Tr key={i}>
                     <Table.Td colSpan={data.head?.length} py={'lg'}></Table.Td>
                   </Table.Tr>
-                ))}
+                ))} */}
               </>
             )}
 
@@ -658,49 +659,74 @@ const DataTableClient = ({
                     {data.head?.map(
                       (head, i) =>
                         typeof body[head.id] !== 'undefined' && (
-                          <Table.Td
-                            fz={{ base: 11, lg: 'xs', xl: 'sm' }}
-                            valign={'top'}
+                          <Tooltip.Floating
                             key={`${body.id}-${body[head.id]}-${i}`}
-                            // fw={500}
-                            onClick={() => {
-                              if (
-                                itemsClickable &&
-                                getAllowedPermissions(
-                                  mainModule,
-                                  'update'
-                                )?.some((permission) =>
-                                  permissions.includes(permission)
-                                ) &&
-                                !showDetailsFirst
-                              ) {
-                                setCurrentId(body.id);
-                                setCurrentOpenedModuleType('main');
-                                handleOpenUpdateModal(
-                                  body.id,
-                                  mainModule ?? null
-                                );
-                              }
-
-                              if (
-                                itemsClickable &&
-                                getAllowedPermissions(mainModule, 'view')?.some(
-                                  (permission) =>
-                                    permissions.includes(permission)
-                                ) &&
-                                showDetailsFirst
-                              ) {
-                                setCurrentId(body.id);
-                                setCurrentOpenedModuleType('main');
-                                handleOpenDetailModal(
-                                  body.id,
-                                  mainModule ?? null
-                                );
-                              }
-                            }}
+                            fz={'xs'}
+                            label={
+                              itemsClickable &&
+                              getAllowedPermissions(mainModule, 'view')?.some(
+                                (permission) => permissions.includes(permission)
+                              ) &&
+                              showDetailsFirst
+                                ? 'Click to show details'
+                                : itemsClickable &&
+                                    getAllowedPermissions(
+                                      mainModule,
+                                      'update'
+                                    )?.some((permission) =>
+                                      permissions.includes(permission)
+                                    ) &&
+                                    !showDetailsFirst
+                                  ? 'Click to update'
+                                  : undefined
+                            }
+                            disabled={!itemsClickable}
                           >
-                            {renderDynamicTdContent(body[head.id])}
-                          </Table.Td>
+                            <Table.Td
+                              fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                              valign={'top'}
+                              // fw={500}
+                              onClick={() => {
+                                if (
+                                  itemsClickable &&
+                                  getAllowedPermissions(
+                                    mainModule,
+                                    'update'
+                                  )?.some((permission) =>
+                                    permissions.includes(permission)
+                                  ) &&
+                                  !showDetailsFirst
+                                ) {
+                                  setCurrentId(body.id);
+                                  setCurrentOpenedModuleType('main');
+                                  handleOpenUpdateModal(
+                                    body.id,
+                                    mainModule ?? null
+                                  );
+                                }
+
+                                if (
+                                  itemsClickable &&
+                                  getAllowedPermissions(
+                                    mainModule,
+                                    'view'
+                                  )?.some((permission) =>
+                                    permissions.includes(permission)
+                                  ) &&
+                                  showDetailsFirst
+                                ) {
+                                  setCurrentId(body.id);
+                                  setCurrentOpenedModuleType('main');
+                                  handleOpenDetailModal(
+                                    body.id,
+                                    mainModule ?? null
+                                  );
+                                }
+                              }}
+                            >
+                              {renderDynamicTdContent(body[head.id])}
+                            </Table.Td>
+                          </Tooltip.Floating>
                         )
                     )}
 
@@ -787,54 +813,98 @@ const DataTableClient = ({
                                   {data.subHead?.map(
                                     (subHead, subHeadIndex) =>
                                       subBody[subHead.id] && (
-                                        <Table.Td
+                                        <Tooltip.Floating
                                           key={`${subBody.id}-${subHeadIndex}`}
-                                          valign={'top'}
-                                          // fw={500}
-                                          fz={{ base: 11, lg: 'xs', xl: 'sm' }}
-                                          onClick={() => {
-                                            if (
-                                              itemsClickable &&
-                                              enableUpdateSubItem &&
-                                              getAllowedPermissions(
-                                                subModule,
-                                                'update'
-                                              )?.some((permission) =>
-                                                permissions.includes(permission)
-                                              ) &&
-                                              !showDetailsFirst
-                                            ) {
-                                              setCurrentId(subBody.id);
-                                              setCurrentOpenedModuleType('sub');
-                                              handleOpenUpdateModal(
-                                                subBody.id,
-                                                subModule ?? null
-                                              );
-                                            }
-
-                                            if (
-                                              itemsClickable &&
-                                              getAllowedPermissions(
-                                                mainModule,
-                                                'view'
-                                              )?.some((permission) =>
-                                                permissions.includes(permission)
-                                              ) &&
-                                              showDetailsFirst
-                                            ) {
-                                              setCurrentId(subBody.id);
-                                              setCurrentOpenedModuleType('sub');
-                                              handleOpenDetailModal(
-                                                subBody.id,
-                                                subModule ?? null
-                                              );
-                                            }
-                                          }}
+                                          fz={'xs'}
+                                          label={
+                                            itemsClickable &&
+                                            getAllowedPermissions(
+                                              subModule,
+                                              'view'
+                                            )?.some((permission) =>
+                                              permissions.includes(permission)
+                                            ) &&
+                                            showDetailsFirst
+                                              ? 'Click to show details'
+                                              : itemsClickable &&
+                                                  enableUpdateSubItem &&
+                                                  getAllowedPermissions(
+                                                    subModule,
+                                                    'update'
+                                                  )?.some((permission) =>
+                                                    permissions.includes(
+                                                      permission
+                                                    )
+                                                  ) &&
+                                                  !showDetailsFirst
+                                                ? 'Click to update'
+                                                : undefined
+                                          }
+                                          disabled={
+                                            !itemsClickable ||
+                                            !enableUpdateSubItem
+                                          }
                                         >
-                                          {renderDynamicTdContent(
-                                            subBody[subHead.id]
-                                          )}
-                                        </Table.Td>
+                                          <Table.Td
+                                            valign={'top'}
+                                            // fw={500}
+                                            fz={{
+                                              base: 11,
+                                              lg: 'xs',
+                                              xl: 'sm',
+                                            }}
+                                            onClick={() => {
+                                              if (
+                                                itemsClickable &&
+                                                enableUpdateSubItem &&
+                                                getAllowedPermissions(
+                                                  subModule,
+                                                  'update'
+                                                )?.some((permission) =>
+                                                  permissions.includes(
+                                                    permission
+                                                  )
+                                                ) &&
+                                                !showDetailsFirst
+                                              ) {
+                                                setCurrentId(subBody.id);
+                                                setCurrentOpenedModuleType(
+                                                  'sub'
+                                                );
+                                                handleOpenUpdateModal(
+                                                  subBody.id,
+                                                  subModule ?? null
+                                                );
+                                              }
+
+                                              if (
+                                                itemsClickable &&
+                                                getAllowedPermissions(
+                                                  subModule,
+                                                  'view'
+                                                )?.some((permission) =>
+                                                  permissions.includes(
+                                                    permission
+                                                  )
+                                                ) &&
+                                                showDetailsFirst
+                                              ) {
+                                                setCurrentId(subBody.id);
+                                                setCurrentOpenedModuleType(
+                                                  'sub'
+                                                );
+                                                handleOpenDetailModal(
+                                                  subBody.id,
+                                                  subModule ?? null
+                                                );
+                                              }
+                                            }}
+                                          >
+                                            {renderDynamicTdContent(
+                                              subBody[subHead.id]
+                                            )}
+                                          </Table.Td>
+                                        </Tooltip.Floating>
                                       )
                                   )}
                                 </Table.Tr>
@@ -883,7 +953,7 @@ const DataTableClient = ({
                 </React.Fragment>
               ))}
 
-            {!loading &&
+            {/* {!loading &&
               Array.from({ length: perPage - data.body?.length }).map(
                 (_, i) => (
                   <Table.Tr key={i}>
@@ -892,7 +962,7 @@ const DataTableClient = ({
                     </Table.Td>
                   </Table.Tr>
                 )
-              )}
+              )} */}
           </Table.Tbody>
         </Table>
       </ScrollArea>
