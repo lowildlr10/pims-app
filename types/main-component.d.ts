@@ -31,7 +31,8 @@ type PurchaseRequestActionProps = {
     message: string,
     color: string,
     buttonLabel: string,
-    endpoint: string
+    endpoint: string,
+    redirect?: string
   ) => void;
 };
 
@@ -89,6 +90,59 @@ type RequestQuotationActionProps = {
 
 type ModalRequestQuotationContentProps = {
   data: RequestQuotationType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
+};
+
+type AbstractQuotationsResponse = {
+  data: PurchaseRequestType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type AbstractQuotationStatusProps = {
+  size?: string;
+  status?: AbstractQuotationStatus;
+};
+
+type AbstractQuotationActionProps = {
+  permissions?: string[];
+  id: string;
+  status: AbstractQuotationStatus;
+  canvassingAt?: string;
+  completedAt?: string;
+  cancelledAt?: string;
+  handleOpenActionModal?: (
+    actionType: ActionType,
+    title: string,
+    message: string,
+    color: string,
+    buttonLabel: string,
+    endpoint: string
+  ) => void;
+};
+
+type AbstractQuotationActionProps = {
+  permissions?: string[];
+  id: string;
+  status: AbstractQuotationStatus;
+  handleOpenActionModal?: (
+    actionType: ActionType,
+    title: string,
+    message: string,
+    color: string,
+    buttonLabel: string,
+    endpoint: string
+  ) => void;
+};
+
+type ModalAbstractQuotationContentProps = {
+  data: AbstractQuotationType;
   isCreate?: boolean;
   readOnly?: boolean;
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;

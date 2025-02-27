@@ -216,6 +216,7 @@ type ActionModalProps = {
   actionType?: ActionType;
   buttonLabel: string;
   endpoint: string;
+  redirect?: string;
   opened: boolean;
   close: () => void;
   stack?: ModalStackReturnType;

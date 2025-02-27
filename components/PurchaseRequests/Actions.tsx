@@ -353,7 +353,8 @@ const ActionsClient = ({
                 'Are you sure you want to cancel this Purchase Request?',
                 'var(--mantine-color-red-7)',
                 'Cancel',
-                `/purchase-requests/${id}/cancel`
+                `/purchase-requests/${id}/cancel`,
+                `/procurement/pr?search=${id}`
               )
             }
           >

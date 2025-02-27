@@ -46,6 +46,7 @@ const DetailActionsClient = ({
   const [color, setColor] = useState('var(--mantine-color-primary-9)');
   const [buttonLabel, setButtonLabel] = useState('');
   const [endpoint, setEndpoint] = useState('');
+  const [redirect, setRedirect] = useState<string>();
   const [currentStatus, setCurrentStatus] = useState(status);
 
   useEffect(() => {
@@ -58,7 +59,8 @@ const DetailActionsClient = ({
     message: string,
     color: string,
     buttonLabel: string,
-    endpoint: string
+    endpoint: string,
+    redirect?: string
   ) => {
     setActionType(actionType);
     setTitle(title);
@@ -66,6 +68,7 @@ const DetailActionsClient = ({
     setColor(color);
     setButtonLabel(buttonLabel);
     setEndpoint(endpoint);
+    setRedirect(redirect);
 
     openActionModal();
   };
@@ -169,6 +172,7 @@ const DetailActionsClient = ({
             actionType={actionType}
             buttonLabel={buttonLabel}
             endpoint={endpoint}
+            redirect={redirect}
             opened={actionModalOpened}
             close={closeActionModal}
             stack={stack}
