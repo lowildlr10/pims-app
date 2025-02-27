@@ -33,8 +33,10 @@ const NavigationMenus = ({
         [
           'approved',
           'for_canvassing',
+          'for_recanvassing',
           'for_abstract',
-          'for_po',
+          'partially_awarded',
+          'awarded',
           'completed',
         ].includes(status) &&
         pathname === '/procurement/pr' && (
@@ -56,7 +58,13 @@ const NavigationMenus = ({
       {['supply:*', ...getAllowedPermissions('aoq', 'view')].some(
         (permission) => permissions?.includes(permission)
       ) &&
-        ['for_abstract', 'for_po', 'completed'].includes(status) &&
+        [
+          'for_recanvassing',
+          'for_abstract',
+          'partially_awarded',
+          'awarded',
+          'completed',
+        ].includes(status) &&
         pathname === '/procurement/rfq' && (
           <Menu.Item
             rightSection={
@@ -73,10 +81,10 @@ const NavigationMenus = ({
           </Menu.Item>
         )}
 
-      {['supply:*', ...getAllowedPermissions('aoq', 'view')].some(
-        (permission) => permissions?.includes(permission)
+      {['supply:*', ...getAllowedPermissions('po', 'view')].some((permission) =>
+        permissions?.includes(permission)
       ) &&
-        ['for_po', 'completed'].includes(status) &&
+        ['partially_awarded', 'awarded', 'completed'].includes(status) &&
         pathname === '/procurement/aoq' && (
           <Menu.Item
             rightSection={
@@ -99,8 +107,10 @@ const NavigationMenus = ({
         [
           'approved',
           'for_canvassing',
+          'for_recanvassing',
           'for_abstract',
-          'for_po',
+          'partially_awarded',
+          'awarded',
           'completed',
         ].includes(status) &&
         pathname === '/procurement/rfq' && (
@@ -119,10 +129,16 @@ const NavigationMenus = ({
           </Menu.Item>
         )}
 
-      {['supply:*', ...getAllowedPermissions('pr', 'view')].some((permission) =>
-        permissions?.includes(permission)
+      {['supply:*', ...getAllowedPermissions('rfq', 'view')].some(
+        (permission) => permissions?.includes(permission)
       ) &&
-        ['for_abstract', 'for_po', 'completed'].includes(status) &&
+        [
+          'for_recanvassing',
+          'for_abstract',
+          'partially_awarded',
+          'awarded',
+          'completed',
+        ].includes(status) &&
         pathname === '/procurement/aoq' && (
           <Menu.Item
             leftSection={
@@ -136,6 +152,26 @@ const NavigationMenus = ({
             href={`/procurement/rfq?search=${id}`}
           >
             Navigate back to RFQ
+          </Menu.Item>
+        )}
+
+      {['supply:*', ...getAllowedPermissions('aoq', 'view')].some(
+        (permission) => permissions?.includes(permission)
+      ) &&
+        ['partially_awarded', 'awarded', 'completed'].includes(status) &&
+        pathname === '/procurement/po' && (
+          <Menu.Item
+            leftSection={
+              <IconArrowLeftDashed
+                color={'var(--mantine-color-primary-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            component={Link}
+            href={`/procurement/aoq?search=${id}`}
+          >
+            Navigate back to Abstract
           </Menu.Item>
         )}
     </>
@@ -266,7 +302,7 @@ const ActionsClient = ({
         </>
       )}
 
-      {status === 'for_canvassing' &&
+      {['for_canvassing', 'for_recanvassing'].includes(status) &&
         ['supply:*', ...getAllowedPermissions('pr', 'approve_rfq')].some(
           (permission) => permissions?.includes(permission)
         ) && (
@@ -283,18 +319,19 @@ const ActionsClient = ({
               handleOpenActionModal(
                 'approve_rfq',
                 'Approve RFQs',
-                'Are you sure you want to approve the RFQs for this Purchase Request for Abstract of Quotation?',
+                `Are you sure you want to approve the 
+                ${status === 'for_canvassing' ? 'RFQs' : 'new RFQs'} 
+                for this Purchase Request for Abstract of Quotation?`,
                 'var(--mantine-color-green-7)',
                 'Approve',
                 `/purchase-requests/${id}/approve-request-quotations`
               )
             }
           >
-            Approve RFQs
+            {status === 'for_canvassing' && 'Approve RFQs'}
+            {status === 'for_recanvassing' && 'Approve New RFQs'}
           </Menu.Item>
         )}
-
-      <NavigationMenus id={id} permissions={permissions} status={status} />
 
       {status !== 'cancelled' &&
         ['supply:*', ...getAllowedPermissions('pr', 'cancel')].some(
@@ -320,7 +357,7 @@ const ActionsClient = ({
               )
             }
           >
-            Cancel
+            Cancel PR
           </Menu.Item>
         )}
 
@@ -328,6 +365,14 @@ const ActionsClient = ({
         <Menu.Item color={'var(--mantine-color-gray-5)'}>
           No available action
         </Menu.Item>
+      )}
+
+      {status !== 'cancelled' && (
+        <>
+          <Menu.Divider />
+          <Menu.Label>Navigation</Menu.Label>
+          <NavigationMenus id={id} permissions={permissions} status={status} />
+        </>
       )}
     </>
   );

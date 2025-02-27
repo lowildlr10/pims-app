@@ -335,8 +335,10 @@ type PurchaseRequestStatus =
   | 'disapproved'
   | 'cancelled'
   | 'for_canvassing'
+  | 'for_recanvassing'
   | 'for_abstract'
-  | 'for_po'
+  | 'partially_awarded'
+  | 'awarded'
   | 'completed';
 
 type RequestQuotationStatus =

@@ -89,7 +89,7 @@ const ActionsClient = ({
               )
             }
           >
-            Cancel
+            Cancel RFQ
           </Menu.Item>
         )}
 
