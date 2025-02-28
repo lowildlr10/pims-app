@@ -195,6 +195,10 @@ const DataTableClient = ({
       case 'pr':
         if (subModule === 'rfq') {
           setSubButtonLabel('RFQs');
+        } else if (subModule === 'aoq') {
+          setSubButtonLabel('Abstract');
+        } else if (subModule === 'po') {
+          setSubButtonLabel('PO/JO');
         } else {
           setSubButtonLabel('Items');
         }
@@ -450,6 +454,12 @@ const DataTableClient = ({
 
   const handleOpenDetailModal = (id: string, moduleType: ModuleType | null) => {
     const data = tableBody?.find((form: any) => form.id === id);
+    const parentBody = tableBody?.find((body: any) =>
+      body?.sub_body.some((subBody: any) => subBody.id === id)
+    );
+    const subData = parentBody?.sub_body.find(
+      (subBody: any) => subBody.id === id
+    );
 
     setFormData(data);
     setCurrentDetailModule(moduleType ?? undefined);
@@ -484,15 +494,10 @@ const DataTableClient = ({
         setCurrentOpenedModuleType('main');
         break;
       case 'rfq':
-        const parentBody = tableBody?.find((body: any) =>
-          body?.sub_body.some((subBody: any) => subBody.id === id)
-        );
-        const subData = parentBody?.sub_body.find(
-          (subBody: any) => subBody.id === id
-        );
-
         setFormData(subData);
-        setDetailModalTitle(`Request Quotation Details [${subData?.rfq_no}]`);
+        setDetailModalTitle(
+          `Request for Quotation Details [${subData?.rfq_no}]`
+        );
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('rfq', 'print')].some(
             (permission) => permissions?.includes(permission)
@@ -505,15 +510,53 @@ const DataTableClient = ({
           )
         );
 
-        setUpdateModalTitle(`Update Request Quotation [${subData?.rfq_no}]`);
+        setUpdateModalTitle(
+          `Update Request for Quotation [${subData?.rfq_no}]`
+        );
         setUpdateEndpoint(`/request-quotations/${id}`);
         setUpdateModalFullscreen(true);
 
-        setPrintModalTitle(`Print Request Quotation [${subData?.rfq_no}]`);
+        setPrintModalTitle(`Print Request for Quotation [${subData?.rfq_no}]`);
         setPrintEndpoint(`/documents/${moduleType}/prints/${id}`);
         setPrintDefaultPaper('A4');
 
-        setLogModalTitle(`Request Quotation Logs [${subData?.rfq_no}]`);
+        setLogModalTitle(`Request for Quotation Logs [${subData?.rfq_no}]`);
+        setLogEndpoint(`/logs`);
+
+        setCurrentOpenedModuleType('sub');
+        break;
+      case 'aoq':
+        setFormData(subData);
+        setDetailModalTitle(
+          `Abstract of Quotation Details [${subData?.abstract_no}]`
+        );
+        setDetailModalShowPrint(
+          ['supply:*', ...getAllowedPermissions('aoq', 'print')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('aoq', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+
+        setUpdateModalTitle(
+          `Update Abstract of Quotation [${subData?.abstract_no}]`
+        );
+        setUpdateEndpoint(`/request-quotations/${id}`);
+        setUpdateModalFullscreen(true);
+
+        setPrintModalTitle(
+          `Print Abstract of Quotation [${subData?.abstract_no}]`
+        );
+        setPrintEndpoint(`/documents/${moduleType}/prints/${id}`);
+        setPrintDefaultPaper('A4');
+
+        setLogModalTitle(
+          `Abstract of Quotation Logs [${subData?.abstract_no}]`
+        );
         setLogEndpoint(`/logs`);
 
         setCurrentOpenedModuleType('sub');

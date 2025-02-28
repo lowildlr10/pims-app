@@ -25,6 +25,10 @@ import ActionModalClient from './ActionModal';
 import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
 import RequestQuotationStatusClient from '@/components/RequestQuotations/Status';
 import RequestQuotationActionsClient from '@/components/RequestQuotations/Actions';
+// import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
+import AbstractQuotationStatusClient from '@/components/AbstractQuotations/Status';
+import AbstractQuotationActionsClient from '@/components/AbstractQuotations/Actions';
+import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
 
 const DetailActionsClient = ({
   permissions,
@@ -89,6 +93,13 @@ const DetailActionsClient = ({
             status={(currentStatus as RequestQuotationStatus) ?? ''}
           />
         );
+      case 'aoq':
+        return (
+          <AbstractQuotationStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as AbstractQuotationStatus) ?? ''}
+          />
+        );
       default:
         return <>-</>;
     }
@@ -120,6 +131,15 @@ const DetailActionsClient = ({
 
           {content === 'rfq' && (
             <RequestQuotationActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'aoq' && (
+            <AbstractQuotationActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
@@ -295,6 +315,10 @@ const DetailModalClient = ({
 
           {opened && content === 'rfq' && (
             <RequestQuotionContentClient data={currentData} readOnly />
+          )}
+
+          {opened && content === 'aoq' && (
+            <AbstractQuotionContentClient data={currentData} readOnly />
           )}
         </Paper>
       </Stack>

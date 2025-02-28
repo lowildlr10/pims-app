@@ -41,7 +41,7 @@ const NavigationMenus = ({
         ].includes(status) &&
         pathname === '/procurement/pr' && (
           <Menu.Item
-            rightSection={
+            leftSection={
               <IconArrowRightDashed
                 color={'var(--mantine-color-primary-9)'}
                 size={18}
@@ -67,7 +67,7 @@ const NavigationMenus = ({
         ].includes(status) &&
         pathname === '/procurement/rfq' && (
           <Menu.Item
-            rightSection={
+            leftSection={
               <IconArrowRightDashed
                 color={'var(--mantine-color-primary-9)'}
                 size={18}
@@ -87,7 +87,7 @@ const NavigationMenus = ({
         ['partially_awarded', 'awarded', 'completed'].includes(status) &&
         pathname === '/procurement/aoq' && (
           <Menu.Item
-            rightSection={
+            leftSection={
               <IconArrowRightDashed
                 color={'var(--mantine-color-primary-9)'}
                 size={18}

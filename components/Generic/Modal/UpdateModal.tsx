@@ -30,6 +30,7 @@ import ResponsibilityCenterContentClient from './CreateUpdateContent/Responsibil
 import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
 import { useMediaQuery } from '@mantine/hooks';
 import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
+import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
 
 const UpdateModalClient = ({
   title,
@@ -278,6 +279,14 @@ const UpdateModalClient = ({
 
         {opened && content === 'rfq' && (
           <RequestQuotionContentClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleUpdate}
+          />
+        )}
+
+        {opened && content === 'aoq' && (
+          <AbstractQuotionContentClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}

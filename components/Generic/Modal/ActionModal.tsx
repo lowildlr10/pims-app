@@ -54,16 +54,16 @@ const ActionModalClient = ({
 
         setLoading(false);
 
-        if (redirect) {
-          setLoading(true);
-          push(redirect);
-        }
-
         if (stack) {
           close();
           stack.open('detail-modal');
         } else {
           close();
+        }
+
+        if (redirect) {
+          setLoading(true);
+          push(redirect);
         }
       })
       .catch((err) => {
