@@ -49,6 +49,42 @@ const SignatoryContentClient = forwardRef<
       ],
     },
     {
+      document: 'aoq',
+      label: 'Abstract of Bids or Quotation Document',
+      details: [
+        {
+          checked: false,
+          label: 'BAC-TWG Chairperson',
+          signatory_type: 'twg_chairperson',
+          position: '',
+        },
+        {
+          checked: false,
+          label: 'TWG Member',
+          signatory_type: 'twg_member',
+          position: '',
+        },
+        {
+          checked: false,
+          label: 'Chairman & Presiding Officer',
+          signatory_type: 'chairman',
+          position: '',
+        },
+        {
+          checked: false,
+          label: 'Vice Chairman',
+          signatory_type: 'vice_chairman',
+          position: '',
+        },
+        {
+          checked: false,
+          label: 'Member',
+          signatory_type: 'member',
+          position: '',
+        },
+      ],
+    },
+    {
       document: 'po',
       label: 'Purchase/Job Order Document',
       details: [

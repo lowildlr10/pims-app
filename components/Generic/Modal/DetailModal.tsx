@@ -25,7 +25,6 @@ import ActionModalClient from './ActionModal';
 import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
 import RequestQuotationStatusClient from '@/components/RequestQuotations/Status';
 import RequestQuotationActionsClient from '@/components/RequestQuotations/Actions';
-// import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
 import AbstractQuotationStatusClient from '@/components/AbstractQuotations/Status';
 import AbstractQuotationActionsClient from '@/components/AbstractQuotations/Actions';
 import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
@@ -331,7 +330,7 @@ const DetailModalClient = ({
         left={0}
         align={'end'}
         p={15}
-        sx={{ zIndex: 100 }}
+        sx={{ zIndex: 1001 }}
       >
         <Group>
           {showPrint && (

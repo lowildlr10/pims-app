@@ -445,3 +445,22 @@ type RequestQuotationItemsFieldType = {
   total_cost?: number;
   included?: boolean;
 };
+
+type AbstractQuotationItemsFieldType = {
+  key: string;
+  stock_no?: number;
+  quantity?: number;
+  unit_issue?: string;
+  description?: string;
+  details?: {
+    key: string;
+    supplier_id?: string;
+    supplier_name?: string;
+    brand_model: string;
+    unit_cost: number;
+    total_cost: number;
+  }[];
+  awardee_id?: string;
+  awardee_name?: string;
+  included?: boolean;
+};

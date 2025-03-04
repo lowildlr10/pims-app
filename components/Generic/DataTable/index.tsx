@@ -545,7 +545,7 @@ const DataTableClient = ({
         setUpdateModalTitle(
           `Update Abstract of Quotation [${subData?.abstract_no}]`
         );
-        setUpdateEndpoint(`/request-quotations/${id}`);
+        setUpdateEndpoint(`/abstract-quotations/${id}`);
         setUpdateModalFullscreen(true);
 
         setPrintModalTitle(

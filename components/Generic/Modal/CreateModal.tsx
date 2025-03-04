@@ -287,7 +287,7 @@ const CreateModalClient = ({
         right={0}
         align={'end'}
         p={15}
-        sx={{ zIndex: 100 }}
+        sx={{ zIndex: 1001 }}
       >
         <Group>
           <Button

@@ -230,6 +230,11 @@ type SignatoryDetailTypeType =
   | 'approved_by'
   | 'approval'
   | 'canvassers'
+  | 'twg_chairperson'
+  | 'twg_member'
+  | 'chairman'
+  | 'vice_chairman'
+  | 'member'
   | 'authorized_official'
   | 'inspection'
   | 'acceptance'
@@ -463,6 +468,8 @@ type AbstractQuotationItemType = {
   abstract_quotation?: AbstractQuotationType;
   pr_item_id?: string;
   pr_item?: PurchaseRequestItemType;
+  awardee_id?: string;
+  awardee?: SupplierType;
   included?: boolean;
   details?: AbstractQuotationDetailType[];
 };

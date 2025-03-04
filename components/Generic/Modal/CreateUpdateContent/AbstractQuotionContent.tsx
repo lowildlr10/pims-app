@@ -37,42 +37,29 @@ import { Select } from '@mantine/core';
 import { List } from '@mantine/core';
 import DynamicMultiselect from '../../DynamicMultiselect';
 import { Radio } from '@mantine/core';
+import { Tooltip } from '@mantine/core';
+import { NumberFormatter } from '@mantine/core';
 
-const itemHeaders: PurchaseRequestItemHeader[] = [
+const defaultItemHeaders: PurchaseRequestItemHeader[] = [
   {
     id: 'stock_no',
-    label: 'Item No.',
-    width: '11%',
+    label: 'Stock No.',
+    width: '120px',
   },
   {
     id: 'quantity',
-    label: 'QTY',
-    width: '12%',
+    label: 'QTY.',
+    width: '120px',
+  },
+  {
+    id: 'unit_issue',
+    label: 'UNIT',
+    width: '140px',
   },
   {
     id: 'description',
-    label: 'Item & Description',
-    width: '28%',
-  },
-  {
-    id: 'brand_model',
-    label: 'Brand/Model',
-    width: '16%',
-  },
-  {
-    id: 'unit_cost',
-    label: 'Unit Cost',
-    width: '16%',
-  },
-  {
-    id: 'total_cost',
-    label: 'Total Cost',
-    width: '16%',
-  },
-  {
-    id: 'include_checkbox',
-    label: 'Included?',
-    width: '2%',
+    label: 'DESCRIPTION/SPECIFICATION OF ARTICLES',
+    width: '450px',
   },
 ];
 
@@ -108,7 +95,7 @@ const AbstractQuotionContentClient = forwardRef<
               pr_item_id: item?.pr_item_id,
               stock_no: item.pr_item?.stock_no ?? 1,
               quantity: item.pr_item?.quantity,
-              unit: item.pr_item?.unit_issue?.unit_name,
+              unit_issue: item.pr_item?.unit_issue?.unit_name,
               description: item.pr_item?.description ?? '-',
               details: item.details?.map((detail) => ({
                 key: randomId(),
@@ -124,6 +111,8 @@ const AbstractQuotionContentClient = forwardRef<
                     ? parseFloat(detail?.total_cost ?? '0')
                     : (detail?.total_cost ?? 0),
               })),
+              awardee_id: item?.awardee_id ?? '',
+              awardee_name: item.awardee?.supplier_name ?? 'No awardee',
               included:
                 item.pr_item?.awarded_to_id === undefined ||
                 item.pr_item?.awarded_to_id === null ||
@@ -139,7 +128,10 @@ const AbstractQuotionContentClient = forwardRef<
     mode: 'uncontrolled',
     initialValues: currentForm,
   });
-  const [supplierHeaders, setSupplierHeaders] = useState<object[]>([]);
+  const [itemHeaders, setItemHeaders] = useState(defaultItemHeaders);
+  const [supplierHeaders, setSupplierHeaders] = useState<
+    AbstractQuotationSupplierHeaderType[]
+  >([]);
 
   useEffect(() => {
     setCurrentData(data);
@@ -169,15 +161,39 @@ const AbstractQuotionContentClient = forwardRef<
       };
     });
 
-    setSupplierHeaders(headers);
+    setSupplierHeaders(headers as AbstractQuotationSupplierHeaderType[]);
   }, [currentForm]);
 
-  useEffect(() => console.log(supplierHeaders), [supplierHeaders]);
+  useEffect(() => {
+    const headers: PurchaseRequestItemHeader[] = supplierHeaders.map(
+      (head) => ({
+        id: 'supplier',
+        label: head.supplier_id,
+        width: '600px',
+      })
+    );
+
+    setItemHeaders([
+      ...defaultItemHeaders,
+      ...headers,
+      {
+        id: 'awardee',
+        label: 'Awardee',
+        width: '350px',
+      },
+      {
+        id: 'include_checkbox',
+        label: 'Included?',
+        width: '3px',
+      },
+    ]);
+  }, [supplierHeaders]);
 
   const renderDynamicTdContent = (
     id: string,
-    item: RequestQuotationItemsFieldType,
-    index: number
+    item: AbstractQuotationItemsFieldType,
+    index: number,
+    supplierId?: string
   ): ReactNode => {
     switch (id) {
       case 'stock_no':
@@ -185,11 +201,7 @@ const AbstractQuotionContentClient = forwardRef<
           <Table.Td>
             <NumberInput
               variant={readOnly ? 'unstyled' : 'filled'}
-              placeholder={`Item No ${
-                item?.stock_no?.toString() !== ''
-                  ? `: ${item?.stock_no?.toString()}`
-                  : ''
-              }`}
+              placeholder={'Stock No'}
               defaultValue={item?.stock_no}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -205,16 +217,26 @@ const AbstractQuotionContentClient = forwardRef<
           <Table.Td>
             <NumberInput
               variant={readOnly ? 'unstyled' : 'filled'}
-              placeholder={`Quantity ${
-                item?.quantity?.toString() !== ''
-                  ? `: ${item?.quantity?.toString()}`
-                  : ''
-              }`}
+              placeholder={'QTY'}
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
               clampBehavior={'strict'}
               allowDecimal={false}
+              readOnly
+            />
+          </Table.Td>
+        );
+
+      case 'unit_issue':
+        return (
+          <Table.Td>
+            <TextInput
+              variant={readOnly ? 'unstyled' : 'filled'}
+              placeholder={'None'}
+              defaultValue={item.unit_issue}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
+              flex={1}
               readOnly
             />
           </Table.Td>
@@ -226,7 +248,7 @@ const AbstractQuotionContentClient = forwardRef<
             <Textarea
               variant={readOnly ? 'unstyled' : 'filled'}
               placeholder={'Description'}
-              defaultValue={item?.description}
+              defaultValue={item?.description ?? '-'}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
               readOnly
@@ -234,59 +256,162 @@ const AbstractQuotionContentClient = forwardRef<
           </Table.Td>
         );
 
-      case 'brand_model':
-        return (
-          <Table.Td>
-            <Textarea
-              key={form.key(`items.${index}.brand_model`)}
-              {...form.getInputProps(`items.${index}.brand_model`)}
-              variant={isCreate || !item.included ? 'filled' : 'unstyled'}
-              placeholder={isCreate ? 'To be quoted' : 'Brand/Model'}
-              defaultValue={item?.brand_model}
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              autosize
-              // required={!readOnly && !isCreate && item.included}
-              readOnly={readOnly || isCreate || !item.included}
-            />
-          </Table.Td>
+      case 'supplier':
+        const detalIndex =
+          item.details?.findIndex(
+            (detail) => detail.supplier_id === supplierId
+          ) ?? 0;
+        const detail = item.details?.find(
+          (detail) => detail.supplier_id === supplierId
         );
 
-      case 'unit_cost':
         return (
-          <Table.Td>
-            <NumberInput
-              key={form.key(`items.${index}.unit_cost`)}
-              {...form.getInputProps(`items.${index}.unit_cost`)}
-              variant={isCreate || !item.included ? 'filled' : 'unstyled'}
-              placeholder={isCreate ? 'To be quoted' : 'Unit Cost'}
-              defaultValue={item?.unit_cost}
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              min={0}
-              // clampBehavior={'strict'}
-              decimalScale={2}
-              fixedDecimalScale
-              thousandSeparator={','}
-              // required={!readOnly && !isCreate && item.included}
-              readOnly={readOnly || isCreate || !item.included}
-            />
-          </Table.Td>
+          <>
+            <Table.Td>
+              <Tooltip
+                label={
+                  <>
+                    <strong>DESCRIPTION/SPECIFICATION OF ARTICLES</strong>
+                    <br />
+                    {item.description?.split('\n')?.map((description) => (
+                      <>
+                        {description}
+                        <br />
+                      </>
+                    ))}
+                  </>
+                }
+                w={350}
+                position={'left-start'}
+                offset={30}
+                disabled={readOnly}
+                multiline
+              >
+                <Textarea
+                  key={form.key(
+                    `items.${index}.details.${detalIndex}.brand_model`
+                  )}
+                  {...form.getInputProps(
+                    `items.${index}.details.${detalIndex}.brand_model`
+                  )}
+                  variant={isCreate || !item.included ? 'filled' : 'unstyled'}
+                  placeholder={isCreate ? 'To be quoted' : 'Brand/Model'}
+                  defaultValue={detail?.brand_model}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  autosize
+                  readOnly={readOnly || isCreate || !item.included}
+                />
+              </Tooltip>
+            </Table.Td>
+            <Table.Td>
+              <Tooltip
+                label={
+                  <>
+                    <strong>DESCRIPTION/SPECIFICATION OF ARTICLES</strong>
+                    <br />
+                    {item.description?.split('\n')?.map((description) => (
+                      <>
+                        {description}
+                        <br />
+                      </>
+                    ))}
+                  </>
+                }
+                w={350}
+                position={'left-start'}
+                offset={30}
+                disabled={readOnly}
+                multiline
+              >
+                <NumberInput
+                  key={form.key(
+                    `items.${index}.details.${detalIndex}.unit_cost`
+                  )}
+                  {...form.getInputProps(
+                    `items.${index}.details.${detalIndex}.unit_cost`
+                  )}
+                  variant={isCreate || !item.included ? 'filled' : 'unstyled'}
+                  placeholder={isCreate ? 'To be quoted' : 'Unit Cost'}
+                  defaultValue={detail?.unit_cost}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  min={0}
+                  decimalScale={2}
+                  fixedDecimalScale
+                  thousandSeparator={','}
+                  readOnly={readOnly || isCreate || !item.included}
+                />
+              </Tooltip>
+            </Table.Td>
+
+            {readOnly && (
+              <Table.Td>
+                <NumberInput
+                  variant={readOnly ? 'unstyled' : 'filled'}
+                  placeholder={'Total Cost'}
+                  defaultValue={detail?.total_cost}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  min={0}
+                  clampBehavior={'strict'}
+                  decimalScale={2}
+                  fixedDecimalScale
+                  thousandSeparator={','}
+                  readOnly
+                />
+              </Table.Td>
+            )}
+          </>
         );
 
-      case 'total_cost':
+      case 'awardee':
         return (
           <Table.Td>
-            <NumberInput
-              variant={readOnly ? 'unstyled' : 'filled'}
-              placeholder={'Total Cost'}
-              defaultValue={item?.total_cost}
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              min={0}
-              clampBehavior={'strict'}
-              decimalScale={2}
-              fixedDecimalScale
-              thousandSeparator={','}
-              readOnly
-            />
+            {!readOnly ? (
+              <Tooltip
+                label={
+                  <>
+                    <strong>DESCRIPTION/SPECIFICATION OF ARTICLES</strong>
+                    <br />
+                    {item.description?.split('\n')?.map((description) => (
+                      <>
+                        {description}
+                        <br />
+                      </>
+                    ))}
+                  </>
+                }
+                w={350}
+                position={'left-start'}
+                offset={30}
+                multiline
+              >
+                <DynamicSelect
+                  key={form.key(`items.${index}.awardee_id`)}
+                  {...form.getInputProps(`items.${index}.awardee_id`)}
+                  variant={'unstyled'}
+                  placeholder={'Select an awardee here...'}
+                  defaultData={
+                    supplierHeaders &&
+                    supplierHeaders?.map((supplier) => ({
+                      value: supplier.supplier_id,
+                      label: supplier.supplier_name,
+                    }))
+                  }
+                  value={item?.awardee_id}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  readOnly={readOnly}
+                  disableFetch
+                />
+              </Tooltip>
+            ) : (
+              <TextInput
+                variant={'unstyled'}
+                placeholder={'None'}
+                defaultValue={item.awardee_name}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                flex={1}
+                readOnly
+              />
+            )}
           </Table.Td>
         );
 
@@ -299,26 +424,32 @@ const AbstractQuotionContentClient = forwardRef<
     <form
       ref={ref}
       onSubmit={form.onSubmit((values) => {
-        console.log(values);
-
         if (handleCreateUpdate) {
-          // handleCreateUpdate({
-          //   ...values,
-          //   purchase_request_id: currentData?.purchase_request_id,
-          //   signed_type: signedType,
-          //   rfq_date: values.rfq_date
-          //     ? dayjs(values.rfq_date).format('YYYY-MM-DD')
-          //     : '',
-          //   opening_dt: values.opening_dt
-          //     ? dayjs(values.opening_dt).format('YYYY-MM-DD HH:mm')
-          //     : '',
-          //   items: JSON.stringify(values.items),
-          //   canvassers:
-          //     values.canvassers.length > 0
-          //       ? JSON.stringify(values.canvassers)
-          //       : '',
-          //   vat_registered: vatRegistered,
-          // });
+          const items = values.items.map((item) => ({
+            pr_item_id: item.pr_item_id,
+            awardee_id: item.awardee_id,
+            included: item.included,
+            details: JSON.stringify(
+              item.details?.map((detail) => ({
+                supplier_id: detail.supplier_id,
+                brand_model: detail?.brand_model ?? '',
+                quantity: item.quantity,
+                unit_cost: detail.unit_cost,
+              }))
+            ),
+          }));
+
+          handleCreateUpdate({
+            ...values,
+            purchase_request_id: currentData?.purchase_request_id,
+            solicitation_date: values.solicitation_date
+              ? dayjs(values.solicitation_date).format('YYYY-MM-DD')
+              : '',
+            opened_on: values.opened_on
+              ? dayjs(values.opened_on).format('YYYY-MM-DD HH:mm')
+              : '',
+            items: JSON.stringify(items),
+          });
         }
       })}
     >
@@ -652,6 +783,801 @@ const AbstractQuotionContentClient = forwardRef<
                       readOnly
                     />
                   </Group>
+                </Stack>
+              </Flex>
+            </Stack>
+
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-7)'}
+              w={'100%'}
+              mt={'lg'}
+              gap={0}
+            >
+              <Table.ScrollContainer
+                minWidth={500}
+                w={readOnly ? 'calc(100vw - 8.6em)' : 'calc(100vw - 6.7em)'}
+                h={'calc(100vh - 20em)'}
+              >
+                <Table
+                  withColumnBorders
+                  withRowBorders
+                  verticalSpacing={'sm'}
+                  withTableBorder
+                  m={0}
+                  borderColor={'var(--mantine-color-gray-8)'}
+                  stickyHeader
+                  stickyHeaderOffset={-1}
+                >
+                  <Table.Thead>
+                    <Table.Tr
+                      sx={{
+                        backgroundColor: 'var(--mantine-color-gray-2)',
+                        th: {
+                          borderLeft: '1px solid',
+                        },
+                      }}
+                    >
+                      {itemHeaders.map((header) => {
+                        const supplierHeader =
+                          header.id === 'supplier'
+                            ? supplierHeaders.find(
+                                (supplier) =>
+                                  supplier.supplier_id === header?.label
+                              )
+                            : undefined;
+
+                        if (readOnly && header.id === 'include_checkbox')
+                          return;
+
+                        return (
+                          <Table.Th
+                            key={
+                              header.id === 'supplier'
+                                ? header.label
+                                : header.id
+                            }
+                            w={header?.width ?? undefined}
+                            miw={header?.width ?? undefined}
+                            fz={lgScreenAndBelow ? 'sm' : 'md'}
+                            rowSpan={header.id === 'supplier' ? 1 : 2}
+                            colSpan={
+                              header.id === 'supplier' ? (readOnly ? 3 : 2) : 1
+                            }
+                          >
+                            <Group gap={1} align={'center'} justify={'center'}>
+                              {header.id === 'supplier'
+                                ? supplierHeader?.supplier_name
+                                : header.label}{' '}
+                              {header?.required && !readOnly && !isCreate && (
+                                <Stack>
+                                  <IconAsterisk
+                                    size={7}
+                                    color={'var(--mantine-color-red-8)'}
+                                    stroke={2}
+                                  />
+                                </Stack>
+                              )}
+                            </Group>
+                          </Table.Th>
+                        );
+                      })}
+                    </Table.Tr>
+                    <Table.Tr
+                      sx={{
+                        lineHeight: 0.4,
+                        backgroundColor: 'var(--mantine-color-gray-2)',
+                        th: {
+                          border: '1px solid',
+                        },
+                      }}
+                    >
+                      {itemHeaders.map((header, index) => {
+                        if (header.id !== 'supplier') return;
+
+                        return (
+                          <React.Fragment key={header.label}>
+                            <Table.Th
+                              ta={'center'}
+                              w={'150px'}
+                              miw={'150px'}
+                              fz={lgScreenAndBelow ? 'sm' : 'md'}
+                            >
+                              Brand
+                            </Table.Th>
+                            <Table.Th
+                              ta={'center'}
+                              w={'225px'}
+                              miw={'225px'}
+                              fz={lgScreenAndBelow ? 'sm' : 'md'}
+                            >
+                              Unit Cost
+                            </Table.Th>
+
+                            {readOnly && (
+                              <Table.Th
+                                ta={'center'}
+                                w={'225px'}
+                                miw={'225px'}
+                                fz={lgScreenAndBelow ? 'sm' : 'md'}
+                              >
+                                Total Cost
+                              </Table.Th>
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {form.getValues().items.map((item, index) => (
+                      <Table.Tr
+                        key={`item-${item.key}`}
+                        sx={{ verticalAlign: 'top' }}
+                      >
+                        {itemHeaders.map((header) => {
+                          if (header.id === 'include_checkbox') {
+                            return null;
+                          }
+
+                          return (
+                            <React.Fragment
+                              key={`field-${item.key}-${header.id === 'supplier' ? header.label : header.id}`}
+                            >
+                              {renderDynamicTdContent(
+                                header.id,
+                                item,
+                                index,
+                                header.id === 'supplier'
+                                  ? header.label
+                                  : undefined
+                              )}
+                            </React.Fragment>
+                          );
+                        })}
+
+                        {!readOnly && (
+                          <Table.Td valign={'top'} ta={'center'} pt={'sm'}>
+                            <Checkbox
+                              key={form.key(`items.${index}.included`)}
+                              {...form.getInputProps(`items.${index}.included`)}
+                              w={'100%'}
+                              size={lgScreenAndBelow ? 'sm' : 'md'}
+                              color={'var(--mantine-color-primary-9)'}
+                              defaultChecked={item.included}
+                              sx={{
+                                justifyItems: 'center',
+                              }}
+                              disabled
+                            />
+                            <input
+                              key={form.key(`items.${index}.quantity`)}
+                              {...form.getInputProps(`items.${index}.quantity`)}
+                              type={'hidden'}
+                              value={item.quantity}
+                            />
+                            <input
+                              key={form.key(`items.${index}.pr_item_id`)}
+                              {...form.getInputProps(
+                                `items.${index}.pr_item_id`
+                              )}
+                              type={'hidden'}
+                              value={item.pr_item_id}
+                            />
+                          </Table.Td>
+                        )}
+                      </Table.Tr>
+                    ))}
+
+                    {readOnly && (
+                      <Table.Tr>
+                        <Table.Td colSpan={4}></Table.Td>
+
+                        {supplierHeaders?.map((supplier) => (
+                          <React.Fragment key={supplier.supplier_id}>
+                            <Table.Td></Table.Td>
+                            <Table.Td></Table.Td>
+                            <Table.Td>
+                              <NumberFormatter
+                                style={{
+                                  fontSize: lgScreenAndBelow
+                                    ? '0.75rem'
+                                    : '0.95rem',
+                                  fontWeight: 600,
+                                }}
+                                prefix={'P '}
+                                value={supplier.total_cost}
+                                decimalScale={2}
+                                fixedDecimalScale
+                                thousandSeparator
+                              />
+                            </Table.Td>
+                          </React.Fragment>
+                        ))}
+
+                        <Table.Td></Table.Td>
+                      </Table.Tr>
+                    )}
+                  </Table.Tbody>
+                </Table>
+              </Table.ScrollContainer>
+              <Table
+                withColumnBorders
+                withRowBorders
+                verticalSpacing={'sm'}
+                withTableBorder
+                m={0}
+                borderColor={'var(--mantine-color-gray-8)'}
+              >
+                <Table.Td>
+                  <Textarea
+                    key={form.key('bac_action')}
+                    {...form.getInputProps('bac_action')}
+                    label={'BAC Action'}
+                    variant={'unstyled'}
+                    placeholder={readOnly ? '' : 'Enter BAC action here...'}
+                    defaultValue={readOnly ? undefined : form.values.bac_action}
+                    value={readOnly ? currentData?.bac_action : undefined}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    autosize
+                    readOnly={readOnly}
+                  />
+                </Table.Td>
+              </Table>
+            </Stack>
+
+            <Stack
+              align={'center'}
+              w={'100%'}
+              p={0}
+              my={'lg'}
+              justify={'center'}
+            >
+              <Flex
+                w={'100%'}
+                justify={'space-between'}
+                direction={lgScreenAndBelow ? 'column' : 'row'}
+              >
+                <Stack px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_twg_chairperson_id')}
+                      {...form.getInputProps('sig_twg_chairperson_id')}
+                      label={'BAC-TWG Chairperson'}
+                      variant={
+                        readOnly ||
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
+                          ? 'filled'
+                          : 'unstyled'
+                      }
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'aoq',
+                        signatory_type: 'twg_chairperson',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_twg_chairperson_id
+                          ? [
+                              {
+                                value:
+                                  currentData?.sig_twg_chairperson_id ?? '',
+                                label:
+                                  currentData?.twg_chairperson_fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_twg_chairperson_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      readOnly={readOnly}
+                      required={!readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'BAC-TWG Chairperson'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={currentData?.twg_chairperson_fullname ?? '-'}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      readOnly
+                    />
+                  )}
+                </Stack>
+
+                <Stack px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_twg_member_1_id')}
+                      {...form.getInputProps('sig_twg_member_1_id')}
+                      label={'TWG Member'}
+                      variant={
+                        readOnly ||
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
+                          ? 'filled'
+                          : 'unstyled'
+                      }
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'aoq',
+                        signatory_type: 'twg_member',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_twg_member_1_id
+                          ? [
+                              {
+                                value: currentData?.sig_twg_member_1_id ?? '',
+                                label: currentData?.twg_member_1_fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_twg_member_1_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      readOnly={readOnly}
+                      required={!readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'TWG Member'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={currentData?.twg_member_1_fullname ?? '-'}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      readOnly
+                    />
+                  )}
+                </Stack>
+
+                <Stack px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_twg_member_2_id')}
+                      {...form.getInputProps('sig_twg_member_2_id')}
+                      label={'TWG Member'}
+                      variant={
+                        readOnly ||
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
+                          ? 'filled'
+                          : 'unstyled'
+                      }
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'aoq',
+                        signatory_type: 'twg_member',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_twg_member_2_id
+                          ? [
+                              {
+                                value: currentData?.sig_twg_member_2_id ?? '',
+                                label: currentData?.twg_member_2_fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_twg_member_2_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      readOnly={readOnly}
+                      required={!readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'TWG Member'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={currentData?.twg_member_2_fullname ?? '-'}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      readOnly
+                    />
+                  )}
+                </Stack>
+              </Flex>
+            </Stack>
+
+            <Stack
+              align={'center'}
+              w={'100%'}
+              p={0}
+              my={'lg'}
+              justify={'center'}
+            >
+              <Flex
+                w={'100%'}
+                justify={'space-around'}
+                direction={lgScreenAndBelow ? 'column' : 'row'}
+              >
+                <Stack px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_chairman_id')}
+                      {...form.getInputProps('sig_chairman_id')}
+                      label={'Chairman & Presiding Officer'}
+                      variant={
+                        readOnly ||
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
+                          ? 'filled'
+                          : 'unstyled'
+                      }
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'aoq',
+                        signatory_type: 'chairman',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_chairman_id
+                          ? [
+                              {
+                                value: currentData?.sig_chairman_id ?? '',
+                                label: currentData?.chairman_fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_chairman_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      readOnly={readOnly}
+                      required={!readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'Chairman & Presiding Officer'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={currentData?.chairman_fullname ?? '-'}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      readOnly
+                    />
+                  )}
+                </Stack>
+
+                <Stack px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_vice_chairman_id')}
+                      {...form.getInputProps('sig_vice_chairman_id')}
+                      label={'Vice Chairman'}
+                      variant={
+                        readOnly ||
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
+                          ? 'filled'
+                          : 'unstyled'
+                      }
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'aoq',
+                        signatory_type: 'vice_chairman',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_vice_chairman_id
+                          ? [
+                              {
+                                value: currentData?.sig_vice_chairman_id ?? '',
+                                label:
+                                  currentData?.vice_chairman_fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_vice_chairman_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      readOnly={readOnly}
+                      required={!readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'Vice Chairman'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={currentData?.vice_chairman_fullname ?? '-'}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      readOnly
+                    />
+                  )}
+                </Stack>
+              </Flex>
+            </Stack>
+
+            <Stack
+              align={'center'}
+              w={'100%'}
+              p={0}
+              my={'lg'}
+              justify={'center'}
+            >
+              <Flex
+                w={'100%'}
+                justify={'space-between'}
+                direction={lgScreenAndBelow ? 'column' : 'row'}
+              >
+                <Stack px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_member_1_id')}
+                      {...form.getInputProps('sig_member_1_id')}
+                      label={'Member'}
+                      variant={
+                        readOnly ||
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
+                          ? 'filled'
+                          : 'unstyled'
+                      }
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'aoq',
+                        signatory_type: 'member',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_member_1_id
+                          ? [
+                              {
+                                value: currentData?.sig_member_1_id ?? '',
+                                label: currentData?.member_1_fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_member_1_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      readOnly={readOnly}
+                      required={!readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'Member'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={currentData?.member_1_fullname ?? '-'}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      readOnly
+                    />
+                  )}
+                </Stack>
+
+                <Stack px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_member_2_id')}
+                      {...form.getInputProps('sig_member_2_id')}
+                      label={'Member'}
+                      variant={
+                        readOnly ||
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
+                          ? 'filled'
+                          : 'unstyled'
+                      }
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'aoq',
+                        signatory_type: 'member',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_member_2_id
+                          ? [
+                              {
+                                value: currentData?.sig_member_2_id ?? '',
+                                label: currentData?.member_2_fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_member_2_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      readOnly={readOnly}
+                      required={!readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'Member'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={currentData?.member_2_fullname ?? '-'}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      readOnly
+                    />
+                  )}
+                </Stack>
+
+                <Stack px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_member_3_id')}
+                      {...form.getInputProps('sig_member_3_id')}
+                      label={'Member'}
+                      variant={
+                        readOnly ||
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
+                          ? 'filled'
+                          : 'unstyled'
+                      }
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'aoq',
+                        signatory_type: 'member',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_member_3_id
+                          ? [
+                              {
+                                value: currentData?.sig_member_3_id ?? '',
+                                label: currentData?.member_3_fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_member_3_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      readOnly={readOnly}
+                      required={!readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'Member'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={currentData?.member_3_fullname ?? '-'}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      readOnly
+                    />
+                  )}
                 </Stack>
               </Flex>
             </Stack>

@@ -147,3 +147,10 @@ type ModalAbstractQuotationContentProps = {
   readOnly?: boolean;
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
+
+type AbstractQuotationSupplierHeaderType = {
+  supplier_id: string;
+  supplier_name: string;
+  unit_cost: number;
+  total_cost: number;
+};
