@@ -9,8 +9,8 @@ const UacsCodeClassificationContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      classification_name: data?.classification_name ?? '',
-      active: data?.active ?? false,
+      classification_name: currentData?.classification_name ?? '',
+      active: currentData?.active ?? false,
     }),
     [currentData]
   );

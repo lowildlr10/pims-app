@@ -9,8 +9,8 @@ const ProcurementModeContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      mode_name: data?.mode_name ?? '',
-      active: data?.active ?? false,
+      mode_name: currentData?.mode_name ?? '',
+      active: currentData?.active ?? false,
     }),
     [currentData]
   );

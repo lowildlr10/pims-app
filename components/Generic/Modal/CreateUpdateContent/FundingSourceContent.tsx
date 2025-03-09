@@ -10,10 +10,10 @@ const FundingSourceContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      location: data?.location?.location_name ?? '',
-      title: data?.title ?? '',
-      total_cost: data?.total_cost ?? '',
-      active: data?.active ?? false,
+      location: currentData?.location?.location_name ?? '',
+      title: currentData?.title ?? '',
+      total_cost: currentData?.total_cost ?? '',
+      active: currentData?.active ?? false,
     }),
     [currentData]
   );

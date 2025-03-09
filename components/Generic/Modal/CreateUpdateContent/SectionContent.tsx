@@ -10,10 +10,10 @@ const SectionContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      division_id: data?.division_id,
-      section_name: data?.section_name ?? '',
-      active: data?.active ?? false,
-      section_head_id: data?.section_head_id,
+      division_id: currentData?.division_id,
+      section_name: currentData?.section_name ?? '',
+      active: currentData?.active ?? false,
+      section_head_id: currentData?.section_head_id,
     }),
     [currentData]
   );

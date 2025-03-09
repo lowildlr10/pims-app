@@ -10,11 +10,11 @@ const UacsCodeContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      classification_id: data?.classification_id ?? '',
-      account_title: data?.account_title ?? '',
-      code: data?.code ?? '',
-      description: data?.description ?? '',
-      active: data?.active ?? false,
+      classification_id: currentData?.classification_id ?? '',
+      account_title: currentData?.account_title ?? '',
+      code: currentData?.code ?? '',
+      description: currentData?.description ?? '',
+      active: currentData?.active ?? false,
     }),
     [currentData]
   );

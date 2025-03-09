@@ -9,9 +9,9 @@ const MfoPapContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      code: data?.code ?? '',
-      description: data?.description ?? '',
-      active: data?.active ?? false,
+      code: currentData?.code ?? '',
+      description: currentData?.description ?? '',
+      active: currentData?.active ?? false,
     }),
     [currentData]
   );

@@ -9,8 +9,8 @@ const UnitIssueContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      unit_name: data?.unit_name ?? '',
-      active: data?.active ?? false,
+      unit_name: currentData?.unit_name ?? '',
+      active: currentData?.active ?? false,
     }),
     [currentData]
   );

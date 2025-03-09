@@ -9,14 +9,14 @@ const SupplierContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      supplier_name: data?.supplier_name ?? '',
-      address: data?.address ?? '',
-      tin_no: data?.tin_no ?? '',
-      phone: data?.phone ?? '',
-      telephone: data?.telephone ?? '',
-      vat_no: data?.vat_no ?? '',
-      contact_person: data?.contact_person ?? '',
-      active: data?.active ?? false,
+      supplier_name: currentData?.supplier_name ?? '',
+      address: currentData?.address ?? '',
+      tin_no: currentData?.tin_no ?? '',
+      phone: currentData?.phone ?? '',
+      telephone: currentData?.telephone ?? '',
+      vat_no: currentData?.vat_no ?? '',
+      contact_person: currentData?.contact_person ?? '',
+      active: currentData?.active ?? false,
     }),
     [currentData]
   );

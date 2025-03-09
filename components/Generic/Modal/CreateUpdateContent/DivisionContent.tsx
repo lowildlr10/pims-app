@@ -10,9 +10,9 @@ const DivisionContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      division_name: data?.division_name ?? '',
-      active: data?.active ?? false,
-      division_head_id: data?.division_head_id,
+      division_name: currentData?.division_name ?? '',
+      active: currentData?.active ?? false,
+      division_head_id: currentData?.division_head_id,
     }),
     [currentData]
   );

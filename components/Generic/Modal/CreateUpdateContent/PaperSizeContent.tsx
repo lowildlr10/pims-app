@@ -9,10 +9,10 @@ const PaperSizeContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      paper_type: data?.paper_type ?? '',
-      unit: data?.unit ?? '',
-      width: data?.width ?? '',
-      height: data?.height ?? '',
+      paper_type: currentData?.paper_type ?? '',
+      unit: currentData?.unit ?? '',
+      width: currentData?.width ?? '',
+      height: currentData?.height ?? '',
     }),
     [currentData]
   );

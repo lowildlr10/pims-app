@@ -16,9 +16,9 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
     const [currentData, setCurrentData] = useState(data);
     const currentForm = useMemo(
       () => ({
-        role_name: data?.role_name ?? '',
-        permissions: JSON.stringify(data?.permissions ?? []),
-        active: data?.active ?? false,
+        role_name: currentData?.role_name ?? '',
+        permissions: JSON.stringify(currentData?.permissions ?? []),
+        active: currentData?.active ?? false,
       }),
       [currentData]
     );
@@ -736,8 +736,8 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
     }, [form.values]);
 
     useEffect(() => {
-      if (data?.permissions) {
-        data.permissions.forEach((permission) => {
+      if (currentData?.permissions) {
+        currentData.permissions.forEach((permission) => {
           const [permissionModule, permissionScopes] = permission.split(':');
           const scopes = permissionScopes.split(',');
 
@@ -765,7 +765,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
           );
         });
       }
-    }, [data]);
+    }, [currentData]);
 
     useEffect(() => {
       if (!trackCheckAll) return;

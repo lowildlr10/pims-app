@@ -12,9 +12,9 @@ const SignatoryContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      user_id: data?.user_id ?? '',
-      details: JSON.stringify(data?.details ?? []),
-      active: data?.active ?? false,
+      user_id: currentData?.user_id ?? '',
+      details: JSON.stringify(currentData?.details ?? []),
+      active: currentData?.active ?? false,
     }),
     [currentData]
   );
@@ -184,8 +184,8 @@ const SignatoryContentClient = forwardRef<
   }, [detailFields]);
 
   useEffect(() => {
-    if (data?.details) {
-      data.details.forEach((detail) => {
+    if (currentData?.details) {
+      currentData.details.forEach((detail) => {
         handlers.setState((current) =>
           current.map((value) => {
             const isMatching = value.document === detail.document;
@@ -210,7 +210,7 @@ const SignatoryContentClient = forwardRef<
         );
       });
     }
-  }, [data]);
+  }, [currentData]);
 
   useEffect(() => {
     setCurrentData(data);
@@ -236,7 +236,7 @@ const SignatoryContentClient = forwardRef<
             <Text fw={500}>Signatory</Text>
             <Divider />
 
-            {!data?.user_id ? (
+            {!currentData?.user_id ? (
               <DynamicSelect
                 endpoint={'/accounts/users'}
                 endpointParams={{

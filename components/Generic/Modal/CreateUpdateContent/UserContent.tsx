@@ -23,20 +23,20 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
     const [currentData, setCurrentData] = useState(data);
     const currentForm = useMemo(
       () => ({
-        employee_id: data?.employee_id ?? '',
-        firstname: data?.firstname ?? '',
-        middlename: data?.middlename ?? '',
-        lastname: data?.lastname ?? '',
-        sex: data?.sex ?? '',
-        section_id: data?.section_id ?? '',
-        position: data?.position?.position_name ?? '',
-        designation: data?.designation?.designation_name ?? '',
-        username: data?.username ?? '',
-        email: data?.email ?? '',
-        phone: data?.phone ?? '',
-        restricted: data?.restricted ?? false,
+        employee_id: currentData?.employee_id ?? '',
+        firstname: currentData?.firstname ?? '',
+        middlename: currentData?.middlename ?? '',
+        lastname: currentData?.lastname ?? '',
+        sex: currentData?.sex ?? '',
+        section_id: currentData?.section_id ?? '',
+        position: currentData?.position?.position_name ?? '',
+        designation: currentData?.designation?.designation_name ?? '',
+        username: currentData?.username ?? '',
+        email: currentData?.email ?? '',
+        phone: currentData?.phone ?? '',
+        restricted: currentData?.restricted ?? false,
         password: '',
-        roles: data?.roles?.map((role) => role.id) ?? [],
+        roles: currentData?.roles?.map((role) => role.id) ?? [],
       }),
       [currentData]
     );
@@ -55,7 +55,10 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
     }, [currentForm]);
 
     useEffect(() => {
-      setPayload(form.values);
+      setPayload({
+        ...form.values,
+        roles: JSON.stringify(form.values.roles),
+      });
     }, [form.values]);
 
     return (
@@ -66,11 +69,11 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
         )}
       >
         <Stack>
-          {data?.id && (
+          {currentData?.id && (
             <Box mb={10}>
               <SingleImageUploadClient
-                image={data.avatar ?? ''}
-                postUrl={`/media/${data.id}`}
+                image={currentData.avatar ?? ''}
+                postUrl={`/media/${currentData.id}`}
                 params={{ update_type: 'user-avatar' }}
                 height={150}
                 type={'avatar'}
@@ -238,14 +241,14 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
             required
           />
 
-          {data?.id && (
+          {currentData?.id && (
             <Stack>
               <Text size={'sm'} fw={500}>
                 Signature
               </Text>
               <SingleImageUploadClient
-                image={data?.signature ?? ''}
-                postUrl={`/media/${data?.id}`}
+                image={currentData?.signature ?? ''}
+                postUrl={`/media/${currentData?.id}`}
                 params={{ update_type: 'user-signature' }}
                 height={150}
                 type={'signature'}
