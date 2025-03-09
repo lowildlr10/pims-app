@@ -141,10 +141,14 @@ const RequestQuotionContentClient = forwardRef<
 
         setCurrentData({
           ...currentData,
-          items: resData?.items,
-          funding_source_title: resData?.funding_source?.title ?? '-',
+          items: resData?.items?.map((item) => ({
+            ...item,
+            pr_item_id: item.id,
+          })),
+          pr_no: resData?.pr_no,
+          funding_source_title: resData?.funding_source?.title,
           funding_source_location:
-            resData?.funding_source?.location?.location_name ?? '-',
+            resData?.funding_source?.location?.location_name,
         });
       })
       .catch((err) => {
@@ -395,7 +399,11 @@ const RequestQuotionContentClient = forwardRef<
                   <TextInput
                     variant={'unstyled'}
                     placeholder={'None'}
-                    defaultValue={currentData?.pr_no ?? '-'}
+                    defaultValue={
+                      currentData?.pr_no ??
+                      currentData?.purchase_request?.pr_no ??
+                      '-'
+                    }
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -416,10 +424,16 @@ const RequestQuotionContentClient = forwardRef<
                     variant={'unstyled'}
                     placeholder={'None'}
                     defaultValue={
-                      readOnly ? undefined : currentData?.funding_source_title
+                      readOnly
+                        ? undefined
+                        : (currentData?.funding_source_title ??
+                          currentData?.purchase_request?.funding_source?.title)
                     }
                     value={
-                      readOnly ? currentData?.funding_source_title : undefined
+                      readOnly
+                        ? (currentData?.funding_source_title ??
+                          currentData?.purchase_request?.funding_source?.title)
+                        : undefined
                     }
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
@@ -443,11 +457,15 @@ const RequestQuotionContentClient = forwardRef<
                     defaultValue={
                       readOnly
                         ? undefined
-                        : currentData?.funding_source_location
+                        : (currentData?.funding_source_location ??
+                          currentData?.purchase_request?.funding_source
+                            ?.location?.location_name)
                     }
                     value={
                       readOnly
-                        ? currentData?.funding_source_location
+                        ? (currentData?.funding_source_location ??
+                          currentData?.purchase_request?.funding_source
+                            ?.location?.location_name)
                         : undefined
                     }
                     size={lgScreenAndBelow ? 'sm' : 'md'}

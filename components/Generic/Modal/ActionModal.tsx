@@ -50,16 +50,11 @@ const ActionModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(res?.data?.data);
+        if (updateTable) updateTable(null);
 
         setLoading(false);
 
-        if (stack) {
-          close();
-          stack.open('detail-modal');
-        } else {
-          close();
-        }
+        close();
 
         if (redirect) {
           setLoading(true);

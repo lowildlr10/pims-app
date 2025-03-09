@@ -679,7 +679,7 @@ const PurchaseRequestContentClient = forwardRef<
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {form.getValues().items.map((item, index) => (
+                {form.getValues()?.items?.map((item, index) => (
                   <Table.Tr
                     key={`item-${item.key}`}
                     sx={{ verticalAlign: 'top' }}
@@ -786,7 +786,10 @@ const PurchaseRequestContentClient = forwardRef<
                 !readOnly ? 'Select a funding source or project...' : 'None'
               }
               endpoint={'/libraries/funding-sources'}
-              endpointParams={{ paginated: false }}
+              endpointParams={{
+                paginated: false,
+                show_all: true,
+              }}
               column={'title'}
               defaultData={
                 currentData?.funding_source_id

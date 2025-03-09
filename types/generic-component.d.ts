@@ -68,6 +68,7 @@ type DynamicSelectProps = {
   disableFetch?: boolean;
   hasPresetValue?: boolean;
   isLoading?: boolean;
+  preLoading?: boolean;
   onChange?: (value: string) => void;
 };
 

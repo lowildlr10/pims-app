@@ -439,6 +439,7 @@ type RequestQuotationType = {
   items?: RequestQuotationItemType[];
   status?: RequestQuotationStatus;
   pr_no?: string;
+  funding_source?: FundingSourceType;
   funding_source_title?: string;
   funding_source_location?: string;
   purpose?: string;
