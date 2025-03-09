@@ -8,7 +8,13 @@ import {
   Textarea,
   TextInput,
 } from '@mantine/core';
-import React, { forwardRef, ReactNode, useEffect, useState } from 'react';
+import React, {
+  forwardRef,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
@@ -69,25 +75,25 @@ const PurchaseRequestContentClient = forwardRef<
   ModalPurchaseRequestContentProps
 >(({ data, readOnly, handleCreateUpdate }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
-  const form = useForm({
-    mode: 'uncontrolled',
-    initialValues: {
-      section_id: data?.section_id ?? '',
-      pr_date: data?.pr_date ?? dayjs().format('YYYY-MM-DD'),
-      sai_no: data?.sai_no ?? '',
-      sai_date: data?.sai_date ?? '',
-      alobs_no: data?.alobs_no ?? '',
-      alobs_date: data?.alobs_date ?? '',
-      funding_source_id: data?.funding_source_id ?? '',
-      purpose: data?.purpose ?? '',
-      requested_by_id: data?.requested_by_id ?? '',
-      sig_cash_availability_id: data?.sig_cash_availability_id ?? '',
-      sig_approved_by_id: data?.sig_approved_by_id ?? '',
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
+      section_id: currentData?.section_id ?? '',
+      pr_date: currentData?.pr_date ?? dayjs().format('YYYY-MM-DD'),
+      sai_no: currentData?.sai_no ?? '',
+      sai_date: currentData?.sai_date ?? '',
+      alobs_no: currentData?.alobs_no ?? '',
+      alobs_date: currentData?.alobs_date ?? '',
+      funding_source_id: currentData?.funding_source_id ?? '',
+      purpose: currentData?.purpose ?? '',
+      requested_by_id: currentData?.requested_by_id ?? '',
+      sig_cash_availability_id: currentData?.sig_cash_availability_id ?? '',
+      sig_approved_by_id: currentData?.sig_approved_by_id ?? '',
       items:
-        data?.items &&
-        typeof data?.items !== undefined &&
-        data?.items.length > 0
-          ? data?.items?.map((item, index) => ({
+        currentData?.items &&
+        typeof currentData?.items !== undefined &&
+        currentData?.items.length > 0
+          ? currentData?.items?.map((item, index) => ({
               key: randomId(),
               quantity: item.quantity,
               unit_issue_id: item.unit_issue_id,
@@ -107,7 +113,12 @@ const PurchaseRequestContentClient = forwardRef<
                 estimated_cost: undefined,
               },
             ],
-    },
+    }),
+    [currentData]
+  );
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: currentForm,
   });
   const [location, setLocation] = useState('Loading...');
   const [companyType, setCompanyType] = useState('Loading...');
@@ -122,48 +133,25 @@ const PurchaseRequestContentClient = forwardRef<
   >();
 
   useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
+
+  useEffect(() => {
     handleFetchUnitIssueData();
   }, []);
 
   useEffect(() => {
-    if (!data?.items || data?.items.length === 0) return;
+    if (!currentData?.items || currentData?.items.length === 0) return;
 
-    setUnitIssues(data?.items.map((item) => item.unit_issue?.unit_name ?? '-'));
-  }, [data?.items]);
-
-  const handleFetchUnitIssueData = () => {
-    setLoadingUnitIssues(true);
-
-    API.get('/libraries/unit-issues', {
-      paginated: false,
-      show_all: true,
-      sort_direction: 'asc',
-    })
-      .then((res) => {
-        setUnitIssueData(
-          res?.data?.length > 0
-            ? res.data.map((item: any) => ({
-                value: item['id'],
-                label: item['unit_name'],
-              }))
-            : [{ label: 'No data.', value: '' }]
-        );
-        setLoadingUnitIssues(false);
-      })
-      .catch((err) => {
-        const errors = getErrors(err);
-
-        errors.forEach((error) => {
-          notify({
-            title: 'Failed',
-            message: error,
-            color: 'red',
-          });
-        });
-
-        setLoadingUnitIssues(false);
-      });
-  };
+    setUnitIssues(
+      currentData?.items.map((item) => item.unit_issue?.unit_name ?? '-')
+    );
+  }, [currentData?.items]);
 
   useEffect(() => {
     API.get('/companies')
@@ -187,6 +175,40 @@ const PurchaseRequestContentClient = forwardRef<
         });
       });
   }, []);
+
+  const handleFetchUnitIssueData = () => {
+    setLoadingUnitIssues(true);
+
+    API.get('/libraries/unit-issues', {
+      paginated: false,
+      show_all: true,
+      sort_direction: 'asc',
+    })
+      .then((res) => {
+        setUnitIssueData(
+          res?.data?.length > 0
+            ? res.data?.map((item: any) => ({
+                value: item['id'],
+                label: item['unit_name'],
+              }))
+            : [{ label: 'No data.', value: '' }]
+        );
+        setLoadingUnitIssues(false);
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
+            color: 'red',
+          });
+        });
+
+        setLoadingUnitIssues(false);
+      });
+  };
 
   const renderDynamicTdContent = (
     id: string,
@@ -446,11 +468,11 @@ const PurchaseRequestContentClient = forwardRef<
                     endpointParams={{ paginated: false }}
                     column={'section_name'}
                     defaultData={
-                      data?.section_id
+                      currentData?.section_id
                         ? [
                             {
-                              value: data?.section_id ?? '',
-                              label: data?.section_name ?? '',
+                              value: currentData?.section_id ?? '',
+                              label: currentData?.section?.section_name ?? '',
                             },
                           ]
                         : undefined
@@ -465,7 +487,7 @@ const PurchaseRequestContentClient = forwardRef<
                   <TextInput
                     variant={'unstyled'}
                     placeholder={'None'}
-                    defaultValue={data?.section_name ?? '-'}
+                    value={currentData?.section?.section_name ?? '-'}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     flex={1}
                     readOnly
@@ -485,7 +507,8 @@ const PurchaseRequestContentClient = forwardRef<
               <TextInput
                 variant={'unstyled'}
                 placeholder={'Autogenerated'}
-                defaultValue={data?.pr_no ?? 'Auto-generated'}
+                defaultValue={readOnly ? undefined : currentData?.pr_no}
+                value={readOnly ? currentData?.pr_no : undefined}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
@@ -530,7 +553,8 @@ const PurchaseRequestContentClient = forwardRef<
                 placeholder={
                   !readOnly ? 'Enter the SAI number here...' : 'None'
                 }
-                defaultValue={form.values.sai_no}
+                defaultValue={readOnly ? undefined : form.values.sai_no}
+                value={readOnly ? currentData?.sai_no : undefined}
                 error={form.errors.sai_no && ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
@@ -543,8 +567,17 @@ const PurchaseRequestContentClient = forwardRef<
                 variant={'unstyled'}
                 valueFormat={'YYYY-MM-DD'}
                 defaultValue={
-                  form.values.sai_date
-                    ? new Date(form.values?.sai_date)
+                  readOnly
+                    ? undefined
+                    : form.values.sai_date
+                      ? new Date(form.values.sai_date)
+                      : undefined
+                }
+                value={
+                  readOnly
+                    ? currentData?.sai_date
+                      ? new Date(currentData?.sai_date)
+                      : undefined
                     : undefined
                 }
                 placeholder={!readOnly ? 'Enter the SAI date here...' : 'None'}
@@ -564,7 +597,8 @@ const PurchaseRequestContentClient = forwardRef<
                 placeholder={
                   !readOnly ? 'Enter the ALOBS number here...' : 'None'
                 }
-                defaultValue={form.values.alobs_no}
+                defaultValue={readOnly ? undefined : form.values.alobs_no}
+                value={readOnly ? currentData?.alobs_no : undefined}
                 error={form.errors.alobs_no && ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
@@ -577,8 +611,17 @@ const PurchaseRequestContentClient = forwardRef<
                 variant={'unstyled'}
                 valueFormat={'YYYY-MM-DD'}
                 defaultValue={
-                  form.values.alobs_date
-                    ? new Date(form.values?.alobs_date)
+                  readOnly
+                    ? undefined
+                    : form.values.alobs_date
+                      ? new Date(form.values.alobs_date)
+                      : undefined
+                }
+                value={
+                  readOnly
+                    ? currentData?.alobs_date
+                      ? new Date(currentData?.alobs_date)
+                      : undefined
                     : undefined
                 }
                 placeholder={
@@ -595,7 +638,7 @@ const PurchaseRequestContentClient = forwardRef<
         </Group>
 
         {(readOnly ||
-          ['', 'draft', 'disapproved'].includes(data?.status ?? '')) && (
+          ['', 'draft', 'disapproved'].includes(currentData?.status ?? '')) && (
           <Stack>
             <Table
               withColumnBorders
@@ -636,7 +679,7 @@ const PurchaseRequestContentClient = forwardRef<
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {form.getValues().items.map((item, index) => (
+                {form.getValues()?.items?.map((item, index) => (
                   <Table.Tr
                     key={`item-${item.key}`}
                     sx={{ verticalAlign: 'top' }}
@@ -723,7 +766,8 @@ const PurchaseRequestContentClient = forwardRef<
             variant={'unstyled'}
             label={'Purpose'}
             placeholder={'Enter the purpose here...'}
-            defaultValue={form.values.purpose}
+            defaultValue={readOnly ? undefined : form.values.purpose}
+            value={readOnly ? currentData?.purpose : undefined}
             error={form.errors.purpose && ''}
             size={lgScreenAndBelow ? 'sm' : 'md'}
             autosize
@@ -742,14 +786,17 @@ const PurchaseRequestContentClient = forwardRef<
                 !readOnly ? 'Select a funding source or project...' : 'None'
               }
               endpoint={'/libraries/funding-sources'}
-              endpointParams={{ paginated: false }}
+              endpointParams={{
+                paginated: false,
+                show_all: true,
+              }}
               column={'title'}
               defaultData={
-                data?.funding_source_id
+                currentData?.funding_source_id
                   ? [
                       {
-                        value: data?.funding_source_id ?? '',
-                        label: data?.funding_source_title ?? '',
+                        value: currentData?.funding_source_id ?? '',
+                        label: currentData?.funding_source?.title ?? '',
                       },
                     ]
                   : undefined
@@ -763,7 +810,7 @@ const PurchaseRequestContentClient = forwardRef<
               label={'Funding Source / Project'}
               variant={'unstyled'}
               placeholder={'None'}
-              defaultValue={data?.funding_source_title ?? '-'}
+              value={currentData?.funding_source?.title ?? '-'}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               flex={1}
               readOnly
@@ -788,11 +835,11 @@ const PurchaseRequestContentClient = forwardRef<
                 }}
                 column={'fullname'}
                 defaultData={
-                  data?.requested_by_id
+                  currentData?.requested_by_id
                     ? [
                         {
-                          value: data?.requested_by_id ?? '',
-                          label: data?.requestor_fullname ?? '',
+                          value: currentData?.requested_by_id ?? '',
+                          label: currentData?.requestor?.fullname ?? '',
                         },
                       ]
                     : undefined
@@ -807,7 +854,7 @@ const PurchaseRequestContentClient = forwardRef<
                 label={'Requested By'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                defaultValue={data?.requestor_fullname ?? '-'}
+                value={currentData?.requestor?.fullname ?? '-'}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
@@ -831,11 +878,13 @@ const PurchaseRequestContentClient = forwardRef<
                   signatory_type: 'cash_availability',
                 }}
                 defaultData={
-                  data?.sig_cash_availability_id
+                  currentData?.sig_cash_availability_id
                     ? [
                         {
-                          value: data?.sig_cash_availability_id ?? '',
-                          label: data?.cash_available_fullname ?? '',
+                          value: currentData?.sig_cash_availability_id ?? '',
+                          label:
+                            currentData?.signatory_cash_available?.user
+                              ?.fullname ?? '',
                         },
                       ]
                     : undefined
@@ -852,7 +901,9 @@ const PurchaseRequestContentClient = forwardRef<
                 label={'Cash Availability'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                defaultValue={data?.cash_available_fullname ?? '-'}
+                value={
+                  currentData?.signatory_cash_available?.user?.fullname ?? '-'
+                }
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
@@ -878,11 +929,13 @@ const PurchaseRequestContentClient = forwardRef<
                 valueColumn={'signatory_id'}
                 column={'fullname_designation'}
                 defaultData={
-                  data?.sig_approved_by_id
+                  currentData?.sig_approved_by_id
                     ? [
                         {
-                          value: data?.sig_approved_by_id ?? '',
-                          label: data?.approval_fullname ?? '',
+                          value: currentData?.sig_approved_by_id ?? '',
+                          label:
+                            currentData?.signatory_approval?.user?.fullname ??
+                            '',
                         },
                       ]
                     : undefined
@@ -897,7 +950,7 @@ const PurchaseRequestContentClient = forwardRef<
                 label={'Approved By'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                defaultValue={data?.approval_fullname ?? '-'}
+                value={currentData?.signatory_approval?.user?.fullname ?? '-'}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly

@@ -23,7 +23,7 @@ const defaultTableData: TableDataType = {
 const UnitIssuesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('unit_name');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
@@ -98,6 +98,13 @@ const UnitIssuesClient = ({ permissions }: LibraryProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      showCreate
+      createMainItemModalTitle={'Create Unit of Issue'}
+      createMainItemEndpoint={'/libraries/unit-issues'}
+      updateMainItemModalTitle={'Update Unit of Issue'}
+      updateMainItemBaseEndpoint={'/libraries/unit-issues'}
+      detailMainItemBaseEndpoint={'/libraries/unit-issues'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -106,7 +113,7 @@ const UnitIssuesClient = ({ permissions }: LibraryProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -114,8 +121,6 @@ const UnitIssuesClient = ({ permissions }: LibraryProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
     />
   );
 };

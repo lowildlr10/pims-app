@@ -7,19 +7,24 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
 
 const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
+    const [currentData, setCurrentData] = useState(data);
+    const currentForm = useMemo(
+      () => ({
+        role_name: currentData?.role_name ?? '',
+        permissions: JSON.stringify(currentData?.permissions ?? []),
+        active: currentData?.active ?? false,
+      }),
+      [currentData]
+    );
     const form = useForm({
       mode: 'controlled',
-      initialValues: {
-        role_name: data?.role_name ?? '',
-        permissions: JSON.stringify(data?.permissions ?? []),
-        active: data?.active ?? false,
-      },
+      initialValues: currentForm,
     });
     const [trackCheckAll, setTrackCheckAll] = useState<boolean>(true);
     const [permissionFields, handlers] = useListState<PermissionsFieldType>([
@@ -147,6 +152,21 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
           {
             label: 'View',
             value: 'view',
+            checked: false,
+          },
+          {
+            label: 'Update',
+            value: 'update',
+            checked: false,
+          },
+          {
+            label: 'Set to Pending',
+            value: 'pending',
+            checked: false,
+          },
+          {
+            label: 'Approve',
+            value: 'approve',
             checked: false,
           },
           {
@@ -703,8 +723,21 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
     ]);
 
     useEffect(() => {
-      if (data?.permissions) {
-        data.permissions.forEach((permission) => {
+      setCurrentData(data);
+    }, [data]);
+
+    useEffect(() => {
+      form.reset();
+      form.setValues(currentForm);
+    }, [currentForm]);
+
+    useEffect(() => {
+      setPayload(form.values);
+    }, [form.values]);
+
+    useEffect(() => {
+      if (currentData?.permissions) {
+        currentData.permissions.forEach((permission) => {
           const [permissionModule, permissionScopes] = permission.split(':');
           const scopes = permissionScopes.split(',');
 
@@ -732,11 +765,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
           );
         });
       }
-    }, [data]);
-
-    useEffect(() => {
-      setPayload(form.values);
-    }, [form.values]);
+    }, [currentData]);
 
     useEffect(() => {
       if (!trackCheckAll) return;

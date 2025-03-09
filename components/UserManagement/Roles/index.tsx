@@ -118,6 +118,13 @@ const RolesClient = ({ permissions }: RolesProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      showCreate
+      createMainItemModalTitle={'Create Role'}
+      createMainItemEndpoint={'/accounts/roles'}
+      updateMainItemModalTitle={'Update Role'}
+      updateMainItemBaseEndpoint={'/accounts/roles'}
+      detailMainItemBaseEndpoint={'/accounts/roles'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -126,7 +133,7 @@ const RolesClient = ({ permissions }: RolesProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -134,8 +141,6 @@ const RolesClient = ({ permissions }: RolesProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
     />
   );
 };

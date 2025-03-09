@@ -46,7 +46,7 @@ const defaultTableData: TableDataType = {
 const SignatoriesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('fullname');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
@@ -135,6 +135,14 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showCreate
+      showSearch
+      createMainItemModalTitle={'Create Signatory'}
+      createMainItemEndpoint={'/libraries/signatories'}
+      updateMainItemModalTitle={'Update Signatory'}
+      updateMainItemBaseEndpoint={'/libraries/signatories'}
+      detailMainItemBaseEndpoint={'/libraries/signatories'}
+      subButtonLabel={'Details'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -143,7 +151,7 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -151,8 +159,6 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
     />
   );
 };

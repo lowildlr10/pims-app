@@ -1,18 +1,32 @@
 import { Stack, Switch, TextInput } from '@mantine/core';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 
 const UnitIssueContentClient = forwardRef<
   HTMLFormElement,
   ModalUnitIssueContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
+      unit_name: currentData?.unit_name ?? '',
+      active: currentData?.active ?? false,
+    }),
+    [currentData]
+  );
   const form = useForm({
     mode: 'controlled',
-    initialValues: {
-      unit_name: data?.unit_name ?? '',
-      active: data?.active ?? false,
-    },
+    initialValues: currentForm,
   });
+
+  useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
 
   useEffect(() => {
     setPayload(form.values);

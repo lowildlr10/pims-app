@@ -76,7 +76,7 @@ const LogModalClient = ({
   const [paginated] = useState(true);
 
   const { data, isLoading, mutate } = useSWR<SystemLogResponse>(
-    [endpoint ?? null, logId, page, perPage, paginated],
+    opened ? [endpoint ?? null, logId, page, perPage, paginated] : null,
     ([url, logId, page, perPage, paginated]: GeneralResponse) =>
       API.get(url, {
         page,

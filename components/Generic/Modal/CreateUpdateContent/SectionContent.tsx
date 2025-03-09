@@ -1,21 +1,36 @@
 import { Stack, Switch, TextInput } from '@mantine/core';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 
 const SectionContentClient = forwardRef<
   HTMLFormElement,
   ModalSectionContentProps
->(({ data, handleCreateUpdate, setPayload }, ref) => {
+>(({ data, handleCreateUpdate, setPayload, isCreate }, ref) => {
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
+      division_id: currentData?.division_id,
+      section_name: currentData?.section_name ?? '',
+      active: currentData?.active ?? false,
+      section_head_id: currentData?.section_head_id,
+    }),
+    [currentData]
+  );
   const form = useForm({
     mode: 'controlled',
-    initialValues: {
-      division_id: data?.division_id,
-      section_name: data?.section_name ?? '',
-      active: data?.active ?? false,
-      section_head_id: data?.section_head_id,
-    },
+    initialValues: currentForm,
   });
+
+  useEffect(() => {
+    setCurrentData(data);
+    console.log(data);
+  }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
 
   useEffect(() => {
     setPayload(form.values);
@@ -27,20 +42,33 @@ const SectionContentClient = forwardRef<
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
-        <DynamicSelect
-          endpoint={'/accounts/divisions'}
-          endpointParams={{
-            paginated: false,
-            show_all: true,
-            show_inactive: true,
-          }}
-          column={'division_name'}
-          label='Division'
-          value={form.values.division_id}
-          size={'sm'}
-          onChange={(value) => form.setFieldValue('division_id', value)}
-          required
-        />
+        {!isCreate && (
+          <DynamicSelect
+            endpoint={'/accounts/divisions'}
+            endpointParams={{
+              paginated: false,
+              show_all: true,
+              show_inactive: true,
+            }}
+            column={'division_name'}
+            label='Division'
+            defaultData={
+              currentData?.division_id
+                ? [
+                    {
+                      value: currentData?.division_id ?? '',
+                      label: currentData?.division?.division_name ?? '',
+                    },
+                  ]
+                : undefined
+            }
+            value={form.values.division_id}
+            size={'sm'}
+            onChange={(value) => form.setFieldValue('division_id', value)}
+            required
+          />
+        )}
+
         <TextInput
           label='Section Name'
           placeholder='Section name'
@@ -58,6 +86,16 @@ const SectionContentClient = forwardRef<
           column={'fullname'}
           label='Section Head'
           size={'sm'}
+          defaultData={
+            currentData?.section_head_id
+              ? [
+                  {
+                    value: currentData?.section_head_id ?? '',
+                    label: currentData?.head?.fullname ?? '',
+                  },
+                ]
+              : undefined
+          }
           value={form.values.section_head_id}
           onChange={(value) => form.setFieldValue('section_head_id', value)}
         />

@@ -52,6 +52,16 @@ type GeneralResponse = [
   paginated: boolean,
 ];
 
+type DetailResponse = {
+  data: any;
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
 type DivisionResponse = {
   data: DivisionType[];
   from: number;

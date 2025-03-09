@@ -10,7 +10,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import DynamicAutocomplete from '../../DynamicAutocomplete';
 import { IMaskInput } from 'react-imask';
 import { Switch } from '@mantine/core';
@@ -20,29 +20,39 @@ import SingleImageUploadClient from '../../SingleImageUpload';
 
 const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
+    const [currentData, setCurrentData] = useState(data);
+    const currentForm = useMemo(
+      () => ({
+        employee_id: currentData?.employee_id ?? '',
+        firstname: currentData?.firstname ?? '',
+        middlename: currentData?.middlename ?? '',
+        lastname: currentData?.lastname ?? '',
+        sex: currentData?.sex ?? '',
+        section_id: currentData?.section_id ?? '',
+        position: currentData?.position?.position_name ?? '',
+        designation: currentData?.designation?.designation_name ?? '',
+        username: currentData?.username ?? '',
+        email: currentData?.email ?? '',
+        phone: currentData?.phone ?? '',
+        restricted: currentData?.restricted ?? false,
+        password: '',
+        roles: currentData?.roles?.map((role) => role.id) ?? [],
+      }),
+      [currentData]
+    );
     const form = useForm({
       mode: 'controlled',
-      initialValues: {
-        employee_id: data?.employee_id ?? '',
-        firstname: data?.firstname ?? '',
-        middlename: data?.middlename ?? '',
-        lastname: data?.lastname ?? '',
-        sex: data?.sex ?? '',
-        section_id: data?.section_id ?? '',
-        position: data?.position?.position_name ?? '',
-        designation: data?.designation?.designation_name ?? '',
-        username: data?.username ?? '',
-        email: data?.email ?? '',
-        phone: data?.phone ?? '',
-        restricted: data?.restricted ?? false,
-        password: '',
-        roles: data?.roles?.map((role) => role.id) ?? [],
-      },
-
-      // validate: {
-      //   email: (value) => (/^\S+@\S+$/.test(value) ? 'null' : 'Invalid email'),
-      // },
+      initialValues: currentForm,
     });
+
+    useEffect(() => {
+      setCurrentData(data);
+    }, [data]);
+
+    useEffect(() => {
+      form.reset();
+      form.setValues(currentForm);
+    }, [currentForm]);
 
     useEffect(() => {
       setPayload({
@@ -59,11 +69,11 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
         )}
       >
         <Stack>
-          {data?.id && (
+          {currentData?.id && (
             <Box mb={10}>
               <SingleImageUploadClient
-                image={data.avatar ?? ''}
-                postUrl={`/media/${data.id}`}
+                image={currentData.avatar ?? ''}
+                postUrl={`/media/${currentData.id}`}
                 params={{ update_type: 'user-avatar' }}
                 height={150}
                 type={'avatar'}
@@ -96,7 +106,7 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           <TextInput
             size={'sm'}
             label='Middle Name'
-            placeholder=''
+            placeholder='Middle Name'
             value={form.values.middlename}
             onChange={(event) =>
               form.setFieldValue('middlename', event.currentTarget.value)
@@ -106,7 +116,7 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           <TextInput
             size={'sm'}
             label='Last Name'
-            placeholder=''
+            placeholder='Last Name'
             value={form.values.lastname}
             onChange={(event) =>
               form.setFieldValue('lastname', event.currentTarget.value)
@@ -117,6 +127,7 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           <Select
             size={'sm'}
             label='Sex'
+            placeholder='Sex'
             data={[
               { label: 'Male', value: 'male' },
               { label: 'Female', value: 'female' },
@@ -137,6 +148,16 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
             }}
             column={'division_section'}
             label='Section'
+            defaultData={
+              currentData?.section_id
+                ? [
+                    {
+                      value: currentData?.section_id ?? '',
+                      label: currentData?.section?.section_name ?? '',
+                    },
+                  ]
+                : undefined
+            }
             value={form.values.section_id}
             size={'sm'}
             onChange={(value) => form.setFieldValue('section_id', value)}
@@ -187,7 +208,7 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           <TextInput
             size={'sm'}
             label='Username'
-            placeholder=''
+            placeholder='Username'
             value={form.values.username}
             onChange={(event) =>
               form.setFieldValue('username', event.currentTarget.value)
@@ -220,14 +241,14 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
             required
           />
 
-          {data?.id && (
+          {currentData?.id && (
             <Stack>
               <Text size={'sm'} fw={500}>
                 Signature
               </Text>
               <SingleImageUploadClient
-                image={data?.signature ?? ''}
-                postUrl={`/media/${data?.id}`}
+                image={currentData?.signature ?? ''}
+                postUrl={`/media/${currentData?.id}`}
                 params={{ update_type: 'user-signature' }}
                 height={150}
                 type={'signature'}

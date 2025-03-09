@@ -205,10 +205,13 @@ const SystemLogsClient = ({ permissions }: LibraryProps) => {
   return (
     <>
       <DataTableClient
+        mainModule={'system-log'}
         permissions={permissions}
         columnSort={columnSort}
         sortDirection={sortDirection}
         search={search}
+        showSearch
+        mainItemsClickable={false}
         data={tableData}
         perPage={perPage}
         loading={isLoading}
@@ -217,7 +220,7 @@ const SystemLogsClient = ({ permissions }: LibraryProps) => {
         from={data?.from ?? 0}
         to={data?.to ?? 0}
         total={data?.total ?? 0}
-        refreshData={(params) => mutate(params)}
+        refreshData={mutate}
         onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
           setSearch(_search ?? '');
           setPage(_page);
@@ -225,8 +228,6 @@ const SystemLogsClient = ({ permissions }: LibraryProps) => {
           setColumnSort(_columnSort ?? columnSort);
           setSortDirection(_sortDirection ?? 'desc');
         }}
-        showSearch
-        itemsClickable={false}
       />
 
       <DataDisplay data={jsonData} opened={opened} close={close} />

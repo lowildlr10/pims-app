@@ -75,7 +75,7 @@ const CreateModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(null, payload);
+        if (updateTable) updateTable(null);
 
         setPayload({});
         setLoading(false);
@@ -132,6 +132,7 @@ const CreateModalClient = ({
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
+            isCreate
           />
         )}
 
@@ -287,7 +288,7 @@ const CreateModalClient = ({
         right={0}
         align={'end'}
         p={15}
-        sx={{ zIndex: 100 }}
+        sx={{ zIndex: 1001 }}
       >
         <Group>
           <Button

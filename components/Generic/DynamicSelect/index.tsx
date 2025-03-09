@@ -26,8 +26,9 @@ const DynamicSelect = ({
   disableFetch,
   hasPresetValue,
   isLoading,
+  preLoading,
 }: DynamicSelectProps) => {
-  const [loading, setLoading] = useState(disableFetch ? false : true);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{ label: string; value: string }[]>(
     defaultData ?? []
   );
@@ -36,15 +37,12 @@ const DynamicSelect = ({
   const [presetValue, setPresetValue] = useState<string | undefined>();
 
   useEffect(() => {
-    if (disableFetch) return;
-    handleFetchData();
-  }, [disableFetch]);
+    if (preLoading) handleFetchData();
+  }, [preLoading]);
 
   useEffect(() => {
-    if (disableFetch) {
-      setData(defaultData ?? []);
-    }
-  }, [disableFetch, defaultData]);
+    setData(defaultData ?? []);
+  }, [defaultData]);
 
   useEffect(() => {
     if (onChange) onChange(inputValue ?? '');

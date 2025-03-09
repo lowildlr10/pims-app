@@ -11,7 +11,7 @@ export const metadata = {
   description: 'Procurement System - Request Quotations',
 };
 
-const BidsAwardsCommitteePage = async () => {
+const RequestQuotationPage = async () => {
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
@@ -32,4 +32,4 @@ const BidsAwardsCommitteePage = async () => {
   );
 };
 
-export default BidsAwardsCommitteePage;
+export default RequestQuotationPage;

@@ -30,6 +30,7 @@ import ResponsibilityCenterContentClient from './CreateUpdateContent/Responsibil
 import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
 import { useMediaQuery } from '@mantine/hooks';
 import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
+import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
 
 const UpdateModalClient = ({
   title,
@@ -76,13 +77,14 @@ const UpdateModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(data?.id ?? null, payload);
+        if (updateTable) updateTable(data?.id ?? null);
 
         setPayload({});
         setLoading(false);
 
         if (stack) {
-          stack.closeAll();
+          stack.close('update-modal');
+          stack.open('detail-modal');
         } else {
           close();
         }
@@ -282,6 +284,14 @@ const UpdateModalClient = ({
             handleCreateUpdate={handleUpdate}
           />
         )}
+
+        {opened && content === 'aoq' && (
+          <AbstractQuotionContentClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleUpdate}
+          />
+        )}
       </Stack>
 
       <Stack
@@ -292,7 +302,7 @@ const UpdateModalClient = ({
         right={0}
         align={'end'}
         p={15}
-        sx={{ zIndex: 100 }}
+        sx={{ zIndex: 1001 }}
       >
         <Group>
           <Button

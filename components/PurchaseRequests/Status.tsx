@@ -114,6 +114,20 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
         </Tooltip>
       );
 
+    case 'for_recanvassing':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-green-7)'}
+            variant={'light'}
+            leftSection={<IconFileSearch size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
     case 'for_abstract':
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
@@ -128,16 +142,30 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
         </Tooltip>
       );
 
-    case 'for_po':
+    case 'partially_awarded':
       return (
-        <Tooltip label={'For PO/JO'}>
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-orange-9)'}
+            variant={'light'}
+            leftSection={<IconAwardFilled size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'awarded':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
             size={size}
             color={'var(--mantine-color-lime-9)'}
             variant={'light'}
             leftSection={<IconAwardFilled size={18} stroke={1.5} />}
           >
-            {'For PO/JO'}
+            {Helper.formatStringHasUnderscores(status)}
           </Badge>
         </Tooltip>
       );

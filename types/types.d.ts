@@ -51,7 +51,9 @@ type ActionType =
   | 'cancel'
   | 'issue_canvassing'
   | 'canvass_complete'
-  | 'approve_rfq';
+  | 'approve_rfq'
+  | 'pending_abstract'
+  | 'approve_abstract';
 
 type CompanyType = {
   id?: string;
@@ -228,6 +230,11 @@ type SignatoryDetailTypeType =
   | 'approved_by'
   | 'approval'
   | 'canvassers'
+  | 'twg_chairperson'
+  | 'twg_member'
+  | 'chairman'
+  | 'vice_chairman'
+  | 'member'
   | 'authorized_official'
   | 'inspection'
   | 'acceptance'
@@ -324,6 +331,7 @@ type PurchaseRequestItemType = {
   estimated_cost?: number;
   estimated_unit_cost_formatted?: string;
   estimated_cost_formatted?: string;
+  awarded_to_id?: string;
 };
 
 type PurchaseRequestStatus =
@@ -334,8 +342,10 @@ type PurchaseRequestStatus =
   | 'disapproved'
   | 'cancelled'
   | 'for_canvassing'
+  | 'for_recanvassing'
   | 'for_abstract'
-  | 'for_po'
+  | 'partially_awarded'
+  | 'awarded'
   | 'completed';
 
 type RequestQuotationStatus =
@@ -343,6 +353,8 @@ type RequestQuotationStatus =
   | 'canvassing'
   | 'completed'
   | 'cancelled';
+
+type AbstractQuotationStatus = 'draft' | 'pending' | 'approved' | 'awarded';
 
 type PurchaseRequestType = {
   id?: string;
@@ -366,6 +378,7 @@ type PurchaseRequestType = {
   status?: PurchaseRequestStatus;
   items?: PurchaseRequestItemType[];
   rfqs?: RequestQuotationType[];
+  aoqs?: AbstractQuotationType[];
   total_estimated_cost?: number;
   total_estimated_cost_formatted?: string;
   section_name?: string;
@@ -426,6 +439,7 @@ type RequestQuotationType = {
   items?: RequestQuotationItemType[];
   status?: RequestQuotationStatus;
   pr_no?: string;
+  funding_source?: FundingSourceType;
   funding_source_title?: string;
   funding_source_location?: string;
   purpose?: string;
@@ -434,4 +448,77 @@ type RequestQuotationType = {
   cancelled_at?: string;
   created_at?: string;
   updated_at?: string;
+};
+
+type AbstractQuotationDetailType = {
+  id?: string;
+  abstract_quotation_id?: string;
+  abstract_quotation?: AbstractQuotationType;
+  aoq_item_id?: string;
+  aoq_item?: AbstractQuotationItemType;
+  supplier_id?: string;
+  supplier?: SupplierType;
+  brand_model?: string;
+  unit_cost?: number;
+  total_cost?: number;
+};
+
+type AbstractQuotationItemType = {
+  id?: string;
+  abstract_quotation_id?: string;
+  abstract_quotation?: AbstractQuotationType;
+  pr_item_id?: string;
+  pr_item?: PurchaseRequestItemType;
+  awardee_id?: string;
+  awardee?: SupplierType;
+  included?: boolean;
+  details?: AbstractQuotationDetailType[];
+};
+
+type AbstractQuotationType = {
+  id?: string;
+  purchase_request_id?: string;
+  purchase_request?: PurchaseRequestType;
+  bids_awards_committee_id?: string;
+  bids_awards_committee_name?: string;
+  bids_awards_committee?: BidsAwardsCommitteeType;
+  mode_procurement_id?: string;
+  procurement_mode_name?: string;
+  mode_procurement?: ProcurementModeType;
+  solicitation_no?: string;
+  solicitation_date?: string;
+  opened_on?: string;
+  abstract_no?: string;
+  bac_action?: string;
+  sig_twg_chairperson_id?: string;
+  twg_chairperson_fullname?: string;
+  signatory_twg_chairperson?: SignatoryType;
+  sig_twg_member_1_id?: string;
+  twg_member_1_fullname?: string;
+  signatory_twg_member_1?: SignatoryType;
+  sig_twg_member_2_id?: string;
+  twg_member_2_fullname?: string;
+  signatory_twg_member_2?: SignatoryType;
+  sig_chairman_id?: string;
+  chairman_fullname?: string;
+  signatory_chairman?: SignatoryType;
+  sig_vice_chairman_id?: string;
+  vice_chairman_fullname?: string;
+  signatory_vice_chairman?: SignatoryType;
+  sig_member_1_id?: string;
+  member_1_fullname?: string;
+  signatory_member_1?: SignatoryType;
+  sig_member_2_id?: string;
+  member_2_fullname?: string;
+  signatory_member_2?: SignatoryType;
+  sig_member_3_id?: string;
+  member_3_fullname?: string;
+  signatory_member_3?: SignatoryType;
+  status?: AbstractQuotationStatus;
+  pending_at?: string;
+  approved_at?: string;
+  awarded_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  items?: AbstractQuotationItemType[];
 };
