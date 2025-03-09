@@ -1,20 +1,34 @@
 import { NumberInput, Select, Stack, TextInput } from '@mantine/core';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 
 const PaperSizeContentClient = forwardRef<
   HTMLFormElement,
   ModalPaperSizeContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
+      paper_type: currentData?.paper_type ?? '',
+      unit: currentData?.unit ?? '',
+      width: currentData?.width ?? '',
+      height: currentData?.height ?? '',
+    }),
+    [currentData]
+  );
   const form = useForm({
     mode: 'controlled',
-    initialValues: {
-      paper_type: data?.paper_type ?? '',
-      unit: data?.unit ?? '',
-      width: data?.width ?? '',
-      height: data?.height ?? '',
-    },
+    initialValues: currentForm,
   });
+
+  useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
 
   useEffect(() => {
     setPayload(form.values);

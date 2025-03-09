@@ -19,6 +19,7 @@ import {
   IconThumbDownFilled,
   IconThumbUpFilled,
 } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 const ActionModalClient = ({
@@ -28,12 +29,14 @@ const ActionModalClient = ({
   actionType,
   buttonLabel,
   endpoint,
+  redirect,
   opened,
   close,
   stack,
   updateTable,
 }: ActionModalProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const { push } = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleAction = () => {
@@ -47,15 +50,15 @@ const ActionModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(res?.data?.data?.id, res?.data?.data);
+        if (updateTable) updateTable(null);
 
         setLoading(false);
 
-        if (stack) {
-          close();
-          stack.closeAll();
-        } else {
-          close();
+        close();
+
+        if (redirect) {
+          setLoading(true);
+          push(redirect);
         }
       })
       .catch((err) => {

@@ -1,5 +1,5 @@
 import { Stack, Switch, TextInput } from '@mantine/core';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 
@@ -7,14 +7,28 @@ const DivisionContentClient = forwardRef<
   HTMLFormElement,
   ModalDivisionContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
+      division_name: currentData?.division_name ?? '',
+      active: currentData?.active ?? false,
+      division_head_id: currentData?.division_head_id,
+    }),
+    [currentData]
+  );
   const form = useForm({
     mode: 'controlled',
-    initialValues: {
-      division_name: data?.division_name ?? '',
-      active: data?.active ?? false,
-      division_head_id: data?.division_head_id,
-    },
+    initialValues: currentForm,
   });
+
+  useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
 
   useEffect(() => {
     setPayload(form.values);
@@ -42,6 +56,16 @@ const DivisionContentClient = forwardRef<
           endpointParams={{ paginated: false, show_all: true }}
           column={'fullname'}
           label='Division Head'
+          defaultData={
+            currentData?.division_head_id
+              ? [
+                  {
+                    value: currentData?.division_head_id ?? '',
+                    label: currentData?.head?.fullname ?? '',
+                  },
+                ]
+              : undefined
+          }
           value={form.values.division_head_id}
           size={'sm'}
           onChange={(value) => form.setFieldValue('division_head_id', value)}

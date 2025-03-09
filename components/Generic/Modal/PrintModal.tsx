@@ -174,6 +174,7 @@ const PrintModalClient = ({
                   onChange={(value) => setPaperId(value)}
                   hasPresetValue
                   required
+                  preLoading
                 />
                 <DynamicSelect
                   label={'Page Orientation'}

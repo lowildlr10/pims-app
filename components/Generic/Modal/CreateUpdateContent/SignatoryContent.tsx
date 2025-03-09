@@ -1,5 +1,5 @@
 import { Divider, Paper, Stack, Switch, Text, TextInput } from '@mantine/core';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
 import DynamicSelect from '../../DynamicSelect';
@@ -9,14 +9,20 @@ const SignatoryContentClient = forwardRef<
   HTMLFormElement,
   ModalSignatoryContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
+      user_id: currentData?.user_id ?? '',
+      details: JSON.stringify(currentData?.details ?? []),
+      active: currentData?.active ?? false,
+    }),
+    [currentData]
+  );
   const form = useForm({
     mode: 'controlled',
-    initialValues: {
-      user_id: data?.user_id ?? '',
-      details: JSON.stringify(data?.details ?? []),
-      active: data?.active ?? false,
-    },
+    initialValues: currentForm,
   });
+
   const [detailFields, handlers] = useListState<SignatoryDetailsFieldType>([
     {
       document: 'pr',
@@ -44,6 +50,42 @@ const SignatoryContentClient = forwardRef<
           checked: false,
           label: 'Approval',
           signatory_type: 'approval',
+          position: '',
+        },
+      ],
+    },
+    {
+      document: 'aoq',
+      label: 'Abstract of Bids or Quotation Document',
+      details: [
+        {
+          checked: false,
+          label: 'BAC-TWG Chairperson',
+          signatory_type: 'twg_chairperson',
+          position: '',
+        },
+        {
+          checked: false,
+          label: 'TWG Member',
+          signatory_type: 'twg_member',
+          position: '',
+        },
+        {
+          checked: false,
+          label: 'Chairman & Presiding Officer',
+          signatory_type: 'chairman',
+          position: '',
+        },
+        {
+          checked: false,
+          label: 'Vice Chairman',
+          signatory_type: 'vice_chairman',
+          position: '',
+        },
+        {
+          checked: false,
+          label: 'Member',
+          signatory_type: 'member',
           position: '',
         },
       ],
@@ -142,8 +184,8 @@ const SignatoryContentClient = forwardRef<
   }, [detailFields]);
 
   useEffect(() => {
-    if (data?.details) {
-      data.details.forEach((detail) => {
+    if (currentData?.details) {
+      currentData.details.forEach((detail) => {
         handlers.setState((current) =>
           current.map((value) => {
             const isMatching = value.document === detail.document;
@@ -168,7 +210,16 @@ const SignatoryContentClient = forwardRef<
         );
       });
     }
+  }, [currentData]);
+
+  useEffect(() => {
+    setCurrentData(data);
   }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
 
   useEffect(() => {
     setPayload(form.values);
@@ -180,47 +231,54 @@ const SignatoryContentClient = forwardRef<
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
-        {!data?.user_id ? (
-          <DynamicSelect
-            endpoint={'/accounts/users'}
-            endpointParams={{
-              paginated: false,
-              show_all: true,
-              show_inactive: true,
-            }}
-            column={'fullname'}
-            label='User'
-            value={form.values.user_id}
-            size={'sm'}
-            onChange={(value) => form.setFieldValue('user_id', value)}
-            required
-          />
-        ) : (
-          <TextInput
-            label={'User'}
-            placeholder={data?.fullname_plain ?? 'None'}
-            value={data?.fullname_plain ?? ''}
-            size={'sm'}
-            flex={1}
-            readOnly
-          />
-        )}
+        <Paper shadow={'xs'} p={'lg'} withBorder>
+          <Stack gap={'sm'}>
+            <Text fw={500}>Signatory</Text>
+            <Divider />
 
-        <Switch
-          label={'Status'}
-          mb={20}
-          onLabel='Active'
-          offLabel='Inactive'
-          color={'var(--mantine-color-secondary-9)'}
-          checked={form.values.active}
-          labelPosition={'left'}
-          fw={500}
-          size={'sm'}
-          sx={{ cursor: 'pointer' }}
-          onChange={(event) =>
-            form.setFieldValue('active', event.currentTarget.checked)
-          }
-        />
+            {!currentData?.user_id ? (
+              <DynamicSelect
+                endpoint={'/accounts/users'}
+                endpointParams={{
+                  paginated: false,
+                  show_all: true,
+                  show_inactive: true,
+                }}
+                column={'fullname'}
+                label='Name'
+                value={form.values.user_id}
+                size={'sm'}
+                onChange={(value) => form.setFieldValue('user_id', value)}
+                required
+              />
+            ) : (
+              <TextInput
+                label={'Name'}
+                placeholder={'None'}
+                value={currentData?.user?.fullname ?? ''}
+                size={'sm'}
+                flex={1}
+                readOnly
+              />
+            )}
+
+            <Switch
+              label={'Status'}
+              mb={20}
+              onLabel='Active'
+              offLabel='Inactive'
+              color={'var(--mantine-color-secondary-9)'}
+              checked={form.values.active}
+              labelPosition={'left'}
+              fw={500}
+              size={'sm'}
+              sx={{ cursor: 'pointer' }}
+              onChange={(event) =>
+                form.setFieldValue('active', event.currentTarget.checked)
+              }
+            />
+          </Stack>
+        </Paper>
 
         {detailFields.map((detail) => (
           <Paper key={detail.document} shadow={'xs'} p={'lg'} withBorder>

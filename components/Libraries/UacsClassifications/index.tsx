@@ -23,7 +23,7 @@ const defaultTableData: TableDataType = {
 const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('classification_name');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
@@ -98,6 +98,13 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      showCreate
+      createMainItemModalTitle={'Create UACS Code Classification'}
+      createMainItemEndpoint={'/libraries/uacs-code-classifications'}
+      updateMainItemModalTitle={'Update UACS Code Classification'}
+      updateMainItemBaseEndpoint={'/libraries/uacs-code-classifications'}
+      detailMainItemBaseEndpoint={'/libraries/uacs-code-classifications'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -106,7 +113,7 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -114,8 +121,6 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
     />
   );
 };

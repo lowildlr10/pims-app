@@ -1,5 +1,5 @@
 import { NumberInput, Stack, Switch, TextInput } from '@mantine/core';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 import DynamicAutocomplete from '../../DynamicAutocomplete';
 
@@ -7,15 +7,29 @@ const FundingSourceContentClient = forwardRef<
   HTMLFormElement,
   ModalFundingSourceContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
+      location: currentData?.location?.location_name ?? '',
+      title: currentData?.title ?? '',
+      total_cost: currentData?.total_cost ?? '',
+      active: currentData?.active ?? false,
+    }),
+    [currentData]
+  );
   const form = useForm({
     mode: 'controlled',
-    initialValues: {
-      location: data?.location?.location_name ?? '',
-      title: data?.title ?? '',
-      total_cost: data?.total_cost ?? '',
-      active: data?.active ?? false,
-    },
+    initialValues: currentForm,
   });
+
+  useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
 
   useEffect(() => {
     setPayload(form.values);

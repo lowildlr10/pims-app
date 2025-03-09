@@ -1,5 +1,5 @@
 import { Stack, Switch, Textarea, TextInput } from '@mantine/core';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 import DynamicSelect from '../../DynamicSelect';
 
@@ -7,16 +7,30 @@ const UacsCodeContentClient = forwardRef<
   HTMLFormElement,
   ModalUacsCodeContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
+      classification_id: currentData?.classification_id ?? '',
+      account_title: currentData?.account_title ?? '',
+      code: currentData?.code ?? '',
+      description: currentData?.description ?? '',
+      active: currentData?.active ?? false,
+    }),
+    [currentData]
+  );
   const form = useForm({
     mode: 'controlled',
-    initialValues: {
-      classification_id: data?.classification_id ?? '',
-      account_title: data?.account_title ?? '',
-      code: data?.code ?? '',
-      description: data?.description ?? '',
-      active: data?.active ?? false,
-    },
+    initialValues: currentForm,
   });
+
+  useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
 
   useEffect(() => {
     setPayload(form.values);
@@ -37,6 +51,17 @@ const UacsCodeContentClient = forwardRef<
           }}
           column={'classification_name'}
           label='Classification'
+          defaultData={
+            currentData?.classification_id
+              ? [
+                  {
+                    value: currentData?.classification_id ?? '',
+                    label:
+                      currentData?.classification?.classification_name ?? '',
+                  },
+                ]
+              : undefined
+          }
           value={form.values.classification_id}
           size={'sm'}
           onChange={(value) => form.setFieldValue('classification_id', value)}

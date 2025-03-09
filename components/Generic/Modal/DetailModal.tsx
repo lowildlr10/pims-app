@@ -25,6 +25,9 @@ import ActionModalClient from './ActionModal';
 import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
 import RequestQuotationStatusClient from '@/components/RequestQuotations/Status';
 import RequestQuotationActionsClient from '@/components/RequestQuotations/Actions';
+import AbstractQuotationStatusClient from '@/components/AbstractQuotations/Status';
+import AbstractQuotationActionsClient from '@/components/AbstractQuotations/Actions';
+import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
 
 const DetailActionsClient = ({
   permissions,
@@ -46,6 +49,7 @@ const DetailActionsClient = ({
   const [color, setColor] = useState('var(--mantine-color-primary-9)');
   const [buttonLabel, setButtonLabel] = useState('');
   const [endpoint, setEndpoint] = useState('');
+  const [redirect, setRedirect] = useState<string>();
   const [currentStatus, setCurrentStatus] = useState(status);
 
   useEffect(() => {
@@ -58,7 +62,8 @@ const DetailActionsClient = ({
     message: string,
     color: string,
     buttonLabel: string,
-    endpoint: string
+    endpoint: string,
+    redirect?: string
   ) => {
     setActionType(actionType);
     setTitle(title);
@@ -66,6 +71,7 @@ const DetailActionsClient = ({
     setColor(color);
     setButtonLabel(buttonLabel);
     setEndpoint(endpoint);
+    setRedirect(redirect);
 
     openActionModal();
   };
@@ -84,6 +90,13 @@ const DetailActionsClient = ({
           <RequestQuotationStatusClient
             size={lgScreenAndBelow ? 'sm' : 'lg'}
             status={(currentStatus as RequestQuotationStatus) ?? ''}
+          />
+        );
+      case 'aoq':
+        return (
+          <AbstractQuotationStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as AbstractQuotationStatus) ?? ''}
           />
         );
       default:
@@ -117,6 +130,15 @@ const DetailActionsClient = ({
 
           {content === 'rfq' && (
             <RequestQuotationActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'aoq' && (
+            <AbstractQuotationActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
@@ -169,6 +191,7 @@ const DetailActionsClient = ({
             actionType={actionType}
             buttonLabel={buttonLabel}
             endpoint={endpoint}
+            redirect={redirect}
             opened={actionModalOpened}
             close={closeActionModal}
             stack={stack}
@@ -260,26 +283,28 @@ const DetailModalClient = ({
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <Stack
-        w={'100%'}
-        bg={'white'}
-        pos={'fixed'}
-        top={50}
-        left={0}
-        p={15}
-        align={'end'}
-        sx={{ zIndex: 100 }}
-      >
-        <DetailActionsClient
-          permissions={permissions ?? []}
-          data={currentData}
-          content={content}
-          status={data?.status ?? ''}
-          stack={stack}
-          updateTable={updateTable}
-          hasStatus
-        />
-      </Stack>
+      {opened && (
+        <Stack
+          w={'100%'}
+          bg={'white'}
+          pos={'fixed'}
+          top={50}
+          left={0}
+          p={15}
+          align={'end'}
+          sx={{ zIndex: 1002 }}
+        >
+          <DetailActionsClient
+            permissions={permissions ?? []}
+            data={currentData}
+            content={content}
+            status={data?.status ?? ''}
+            stack={stack}
+            updateTable={updateTable}
+            hasStatus
+          />
+        </Stack>
+      )}
 
       <Stack p={'md'} my={70}>
         <Paper shadow={'lg'} p={0}>
@@ -289,6 +314,10 @@ const DetailModalClient = ({
 
           {opened && content === 'rfq' && (
             <RequestQuotionContentClient data={currentData} readOnly />
+          )}
+
+          {opened && content === 'aoq' && (
+            <AbstractQuotionContentClient data={currentData} readOnly />
           )}
         </Paper>
       </Stack>
@@ -301,7 +330,7 @@ const DetailModalClient = ({
         left={0}
         align={'end'}
         p={15}
-        sx={{ zIndex: 100 }}
+        sx={{ zIndex: 1001 }}
       >
         <Group>
           {showPrint && (
