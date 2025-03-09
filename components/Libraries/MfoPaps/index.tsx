@@ -29,7 +29,7 @@ const defaultTableData: TableDataType = {
 const MfoPapsClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('code');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
@@ -104,6 +104,13 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      showCreate
+      createMainItemModalTitle={'Create MFO/PAP'}
+      createMainItemEndpoint={'/libraries/mfo-paps'}
+      updateMainItemModalTitle={'Update MFO/PAP'}
+      updateMainItemBaseEndpoint={'/libraries/mfo-paps'}
+      detailMainItemBaseEndpoint={'/libraries/mfo-paps'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -112,7 +119,7 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -120,8 +127,6 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
     />
   );
 };

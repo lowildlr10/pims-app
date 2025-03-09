@@ -488,14 +488,18 @@ const AbstractQuotionContentClient = forwardRef<
                     ? [
                         {
                           value: currentData?.bids_awards_committee_id ?? '',
-                          label: currentData?.bids_awards_committee_name ?? '',
+                          label:
+                            currentData?.bids_awards_committee
+                              ?.committee_name ?? '',
                         },
                       ]
                     : undefined
                 }
                 value={form.values.bids_awards_committee_id}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
-                placeholder={'Select a bids and awards committee...'}
+                placeholder={
+                  readOnly ? 'None' : 'Select a bids and awards committee...'
+                }
                 readOnly={readOnly}
                 required={!readOnly}
               />
@@ -504,7 +508,9 @@ const AbstractQuotionContentClient = forwardRef<
                 label={'Bids and Awards Committee'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                value={currentData?.bids_awards_committee_name ?? '-'}
+                value={
+                  currentData?.bids_awards_committee?.committee_name ?? '-'
+                }
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 sx={{
                   borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -544,14 +550,16 @@ const AbstractQuotionContentClient = forwardRef<
                     ? [
                         {
                           value: currentData?.mode_procurement_id ?? '',
-                          label: currentData?.procurement_mode_name ?? '',
+                          label: currentData?.mode_procurement?.mode_name ?? '',
                         },
                       ]
                     : undefined
                 }
                 value={form.values.mode_procurement_id}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
-                placeholder={'Select a mode of procurement...'}
+                placeholder={
+                  readOnly ? 'None' : 'Select a mode of procurement...'
+                }
                 readOnly={readOnly}
                 required={!readOnly}
               />
@@ -560,7 +568,7 @@ const AbstractQuotionContentClient = forwardRef<
                 label={'Mode of Procurement'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                value={currentData?.procurement_mode_name ?? '-'}
+                value={currentData?.mode_procurement?.mode_name ?? '-'}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 sx={{
                   borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1008,20 +1016,39 @@ const AbstractQuotionContentClient = forwardRef<
                 m={0}
                 borderColor={'var(--mantine-color-gray-8)'}
               >
-                <Table.Td>
-                  <Textarea
-                    key={form.key('bac_action')}
-                    {...form.getInputProps('bac_action')}
-                    label={'BAC Action'}
-                    variant={'unstyled'}
-                    placeholder={readOnly ? '' : 'Enter BAC action here...'}
-                    defaultValue={readOnly ? undefined : form.values.bac_action}
-                    value={readOnly ? currentData?.bac_action : undefined}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    autosize
-                    readOnly={readOnly}
-                  />
-                </Table.Td>
+                <Table.Tbody>
+                  <Table.Tr>
+                    <Table.Td>
+                      <Textarea
+                        label={'Purpose'}
+                        variant={readOnly ? 'unstyled' : 'filled'}
+                        placeholder={'Purpose'}
+                        value={currentData?.purchase_request?.purpose}
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        autosize
+                        readOnly
+                      />
+                    </Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td>
+                      <Textarea
+                        key={form.key('bac_action')}
+                        {...form.getInputProps('bac_action')}
+                        label={'BAC Action'}
+                        variant={'unstyled'}
+                        placeholder={readOnly ? '' : 'Enter BAC action here...'}
+                        defaultValue={
+                          readOnly ? undefined : form.values.bac_action
+                        }
+                        value={readOnly ? currentData?.bac_action : undefined}
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        autosize
+                        readOnly={readOnly}
+                      />
+                    </Table.Td>
+                  </Table.Tr>
+                </Table.Tbody>
               </Table>
             </Stack>
 
@@ -1074,7 +1101,8 @@ const AbstractQuotionContentClient = forwardRef<
                                 value:
                                   currentData?.sig_twg_chairperson_id ?? '',
                                 label:
-                                  currentData?.twg_chairperson_fullname ?? '',
+                                  currentData?.signatory_twg_chairperson?.user
+                                    ?.fullname ?? '',
                               },
                             ]
                           : undefined
@@ -1089,7 +1117,10 @@ const AbstractQuotionContentClient = forwardRef<
                       label={'BAC-TWG Chairperson'}
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.twg_chairperson_fullname ?? '-'}
+                      value={
+                        currentData?.signatory_twg_chairperson?.user
+                          ?.fullname ?? '-'
+                      }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1138,7 +1169,9 @@ const AbstractQuotionContentClient = forwardRef<
                           ? [
                               {
                                 value: currentData?.sig_twg_member_1_id ?? '',
-                                label: currentData?.twg_member_1_fullname ?? '',
+                                label:
+                                  currentData?.signatory_twg_member_1?.user
+                                    ?.fullname ?? '',
                               },
                             ]
                           : undefined
@@ -1153,7 +1186,10 @@ const AbstractQuotionContentClient = forwardRef<
                       label={'TWG Member'}
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.twg_member_1_fullname ?? '-'}
+                      value={
+                        currentData?.signatory_twg_member_1?.user?.fullname ??
+                        '-'
+                      }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1202,7 +1238,9 @@ const AbstractQuotionContentClient = forwardRef<
                           ? [
                               {
                                 value: currentData?.sig_twg_member_2_id ?? '',
-                                label: currentData?.twg_member_2_fullname ?? '',
+                                label:
+                                  currentData?.signatory_twg_member_2?.user
+                                    ?.fullname ?? '',
                               },
                             ]
                           : undefined
@@ -1217,7 +1255,10 @@ const AbstractQuotionContentClient = forwardRef<
                       label={'TWG Member'}
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.twg_member_2_fullname ?? '-'}
+                      value={
+                        currentData?.signatory_twg_member_2?.user?.fullname ??
+                        '-'
+                      }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1280,7 +1321,9 @@ const AbstractQuotionContentClient = forwardRef<
                           ? [
                               {
                                 value: currentData?.sig_chairman_id ?? '',
-                                label: currentData?.chairman_fullname ?? '',
+                                label:
+                                  currentData?.signatory_chairman?.user
+                                    ?.fullname ?? '',
                               },
                             ]
                           : undefined
@@ -1295,7 +1338,9 @@ const AbstractQuotionContentClient = forwardRef<
                       label={'Chairman & Presiding Officer'}
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.chairman_fullname ?? '-'}
+                      value={
+                        currentData?.signatory_chairman?.user?.fullname ?? '-'
+                      }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1345,7 +1390,8 @@ const AbstractQuotionContentClient = forwardRef<
                               {
                                 value: currentData?.sig_vice_chairman_id ?? '',
                                 label:
-                                  currentData?.vice_chairman_fullname ?? '',
+                                  currentData?.signatory_vice_chairman?.user
+                                    ?.fullname ?? '',
                               },
                             ]
                           : undefined
@@ -1360,7 +1406,10 @@ const AbstractQuotionContentClient = forwardRef<
                       label={'Vice Chairman'}
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.vice_chairman_fullname ?? '-'}
+                      value={
+                        currentData?.signatory_vice_chairman?.user?.fullname ??
+                        '-'
+                      }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1423,7 +1472,9 @@ const AbstractQuotionContentClient = forwardRef<
                           ? [
                               {
                                 value: currentData?.sig_member_1_id ?? '',
-                                label: currentData?.member_1_fullname ?? '',
+                                label:
+                                  currentData?.signatory_member_1?.user
+                                    ?.fullname ?? '',
                               },
                             ]
                           : undefined
@@ -1438,7 +1489,9 @@ const AbstractQuotionContentClient = forwardRef<
                       label={'Member'}
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.member_1_fullname ?? '-'}
+                      value={
+                        currentData?.signatory_member_1?.user?.fullname ?? '-'
+                      }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1487,7 +1540,9 @@ const AbstractQuotionContentClient = forwardRef<
                           ? [
                               {
                                 value: currentData?.sig_member_2_id ?? '',
-                                label: currentData?.member_2_fullname ?? '',
+                                label:
+                                  currentData?.signatory_member_2?.user
+                                    ?.fullname ?? '',
                               },
                             ]
                           : undefined
@@ -1502,7 +1557,9 @@ const AbstractQuotionContentClient = forwardRef<
                       label={'Member'}
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.member_2_fullname ?? '-'}
+                      value={
+                        currentData?.signatory_member_2?.user?.fullname ?? '-'
+                      }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1551,7 +1608,9 @@ const AbstractQuotionContentClient = forwardRef<
                           ? [
                               {
                                 value: currentData?.sig_member_3_id ?? '',
-                                label: currentData?.member_3_fullname ?? '',
+                                label:
+                                  currentData?.signatory_member_3?.user
+                                    ?.fullname ?? '',
                               },
                             ]
                           : undefined
@@ -1566,7 +1625,9 @@ const AbstractQuotionContentClient = forwardRef<
                       label={'Member'}
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.member_3_fullname ?? '-'}
+                      value={
+                        currentData?.signatory_member_3?.user?.fullname ?? '-'
+                      }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',

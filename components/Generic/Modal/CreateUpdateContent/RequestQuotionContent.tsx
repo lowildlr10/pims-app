@@ -133,6 +133,34 @@ const RequestQuotionContentClient = forwardRef<
   const [municipality, setMunicipality] = useState('Loading...');
 
   useEffect(() => {
+    if (!isCreate) return;
+
+    API.get(`/purchase-requests/${currentData?.purchase_request_id}`)
+      .then((res) => {
+        const resData: PurchaseRequestType = res?.data?.data;
+
+        setCurrentData({
+          ...currentData,
+          items: resData?.items,
+          funding_source_title: resData?.funding_source?.title ?? '-',
+          funding_source_location:
+            resData?.funding_source?.location?.location_name ?? '-',
+        });
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
+            color: 'red',
+          });
+        });
+      });
+  }, [isCreate]);
+
+  useEffect(() => {
     setCurrentData(data);
   }, [data]);
 
@@ -575,7 +603,8 @@ const RequestQuotionContentClient = forwardRef<
                           ? [
                               {
                                 value: currentData?.supplier_id ?? '',
-                                label: currentData?.supplier_name ?? '',
+                                label:
+                                  currentData?.supplier?.supplier_name ?? '',
                               },
                             ]
                           : undefined
@@ -589,7 +618,7 @@ const RequestQuotionContentClient = forwardRef<
                     <TextInput
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.supplier_name ?? '-'}
+                      value={currentData?.supplier?.supplier_name ?? '-'}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -613,7 +642,7 @@ const RequestQuotionContentClient = forwardRef<
                     <TextInput
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.supplier_address}
+                      value={currentData?.supplier?.address}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -706,7 +735,9 @@ const RequestQuotionContentClient = forwardRef<
                         ? [
                             {
                               value: currentData?.sig_approval_id ?? '',
-                              label: currentData?.approval_fullname ?? '',
+                              label:
+                                currentData?.signatory_approval?.user
+                                  ?.fullname ?? '',
                             },
                           ]
                         : undefined
@@ -728,7 +759,9 @@ const RequestQuotionContentClient = forwardRef<
                     }
                     variant={'unstyled'}
                     placeholder={'None'}
-                    value={currentData?.approval_fullname ?? '-'}
+                    value={
+                      currentData?.signatory_approval?.user?.fullname ?? '-'
+                    }
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -842,7 +875,11 @@ const RequestQuotionContentClient = forwardRef<
                         variant={readOnly ? 'unstyled' : 'filled'}
                         label={'Purpose'}
                         placeholder={'Purpose'}
-                        value={currentData?.purpose ?? '-'}
+                        value={
+                          currentData?.purchase_request?.purpose ??
+                          currentData?.purpose ??
+                          '-'
+                        }
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         autosize
                         autoCapitalize={'sentences'}
@@ -944,7 +981,11 @@ const RequestQuotionContentClient = forwardRef<
                   label={'CANVASSERS'}
                   variant={'unstyled'}
                   placeholder={'None'}
-                  value={currentData?.canvasser_names?.join('\n') ?? '-'}
+                  value={
+                    currentData?.canvassers
+                      ?.map((canvasser, i) => canvasser.user?.fullname)
+                      .join('\n') ?? '-'
+                  }
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   sx={{
                     borderBottom: '2px solid var(--mantine-color-gray-5)',

@@ -23,7 +23,7 @@ const defaultTableData: TableDataType = {
 const ProcurementModesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('mode_name');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
@@ -98,6 +98,13 @@ const ProcurementModesClient = ({ permissions }: LibraryProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      showCreate
+      createMainItemModalTitle={'Create Mode of Procurement'}
+      createMainItemEndpoint={'/libraries/procurement-modes'}
+      updateMainItemModalTitle={'Update Mode of Procurement'}
+      updateMainItemBaseEndpoint={'/libraries/procurement-modes'}
+      detailMainItemBaseEndpoint={'/libraries/procurement-modes'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -106,7 +113,7 @@ const ProcurementModesClient = ({ permissions }: LibraryProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -114,8 +121,6 @@ const ProcurementModesClient = ({ permissions }: LibraryProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
     />
   );
 };

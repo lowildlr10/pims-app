@@ -39,7 +39,7 @@ const defaultTableData: TableDataType = {
 const PaperSizesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('paper_type');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
@@ -100,6 +100,13 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      showCreate
+      createMainItemModalTitle={'Create Paper Size Type'}
+      createMainItemEndpoint={'/libraries/paper-sizes'}
+      updateMainItemModalTitle={'Update Paper Size Type'}
+      updateMainItemBaseEndpoint={'/libraries/paper-sizes'}
+      detailMainItemBaseEndpoint={'/libraries/paper-sizes'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -108,7 +115,7 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -116,8 +123,6 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
     />
   );
 };

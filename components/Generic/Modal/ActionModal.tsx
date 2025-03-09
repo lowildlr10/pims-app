@@ -50,7 +50,7 @@ const ActionModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(res?.data?.data?.id, res?.data?.data);
+        if (updateTable) updateTable(res?.data?.data);
 
         setLoading(false);
 

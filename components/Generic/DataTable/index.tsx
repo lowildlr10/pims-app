@@ -4,6 +4,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import {
   Button,
   Collapse,
+  LoadingOverlay,
   Modal,
   ScrollArea,
   Skeleton,
@@ -29,25 +30,59 @@ import DetailModalClient from '../Modal/DetailModal';
 import PrintModalClient from '../Modal/PrintModal';
 import LogModalClient from '../Modal/LogModal';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import useSWR from 'swr';
+import API from '@/libs/API';
+import { API_REFRESH_INTERVAL } from '@/config/intervals';
 
 const DataTableClient = ({
   mainModule,
   subModule,
+
   user,
   permissions,
+
   columnSort,
   sortDirection,
+
   search,
-  enableCreateSubItem,
-  enableUpdateSubItem,
-  itemsClickable = true,
   showSearch,
   showCreate,
-  showDetailsFirst,
-  autoCollapseSubItems = 'first',
+  defaultModalOnClick = 'update',
+  showCreateSubItem,
+  mainItemsClickable = true,
+  subItemsClickable,
+  autoCollapseSubItems = 'all',
+
+  createMainItemModalTitle = 'Create',
+  createMainItemEndpoint = '',
+  createSubItemModalTitle = 'Create',
+  createSubItemEndpoint = '',
+  createModalFullscreen,
+  updateMainItemModalTitle = 'Update',
+  updateMainItemBaseEndpoint = '',
+  updateSubItemModalTitle = 'Update',
+  updateSubItemBaseEndpoint = '',
+  updateModalFullscreen,
+  detailMainItemModalTitle = 'Details',
+  detailMainItemBaseEndpoint = '',
+  detailSubItemModalTitle = 'Details',
+  detailSubItemBaseEndpoint = '',
+  printMainItemModalTitle = 'Print',
+  printMainItemBaseEndpoint = '',
+  printSubItemModalTitle = 'Print',
+  printSubItemBaseEndpoint = '',
+  printMainItemDefaultPaper = 'A4',
+  printSubItemDefaultPaper = 'A4',
+  logMainItemModalTitle = 'Logs',
+  logMainItemEndpoint = '/logs',
+  logSubItemModalTitle = 'Logs',
+  logSuItemEndpoint = '/logs',
+  subButtonLabel = 'Items',
+
   data,
   perPage,
   loading,
+
   page,
   lastPage,
   from,
@@ -81,33 +116,17 @@ const DataTableClient = ({
     'main' | 'sub'
   >();
 
-  const [createModalTitle, setCreateModalTitle] = useState('Create');
-  const [createEndpoint, setCreateEndpoint] = useState('');
-  const [createModalFullscreen, setCreateModalFullscreen] = useState(false);
   const [currentCreateModule, setCurrentCreateModule] = useState<ModuleType>();
-
   const [
     updateModalOpened,
     { open: openUpdateModal, close: closeUpdateModal },
   ] = useDisclosure(false);
-  const [updateModalTitle, setUpdateModalTitle] = useState('Update');
-  const [updateEndpoint, setUpdateEndpoint] = useState('');
-  const [updateModalFullscreen, setUpdateModalFullscreen] = useState(false);
   const [currentUpdateModule, setCurrentUpdateModule] = useState<ModuleType>();
-
-  const [detailModalTitle, setDetailModalTitle] = useState('Details');
   const [currentDetailModule, setCurrentDetailModule] = useState<ModuleType>();
   const [detailModalShowPrint, setDetailModalShowPrint] = useState(false);
   const [detailModalShowEdit, setDetailModalShowEdit] = useState(false);
 
-  const [printModalTitle, setPrintModalTitle] = useState('Print');
-  const [printEndpoint, setPrintEndpoint] = useState('');
-  const [printDefaultPaper, setPrintDefaultPaper] = useState('');
-
-  const [logModalTitle, setLogModalTitle] = useState('Document Logs');
-  const [logEndpoint, setLogEndpoint] = useState('');
-
-  const [subButtonLabel, setSubButtonLabel] = useState('');
+  const [fetchDetails, setFetchDetails] = useState(false);
 
   const stack = useModalsStack([
     'detail-modal',
@@ -115,6 +134,49 @@ const DataTableClient = ({
     'update-modal',
     'log-modal',
   ]);
+
+  const {
+    data: detailData,
+    isLoading: detailLoading,
+    mutate: refreshDetail,
+  } = useSWR<DetailResponse>(
+    fetchDetails && currentId
+      ? [
+          currentOpenedModuleType === 'main'
+            ? detailMainItemBaseEndpoint
+              ? `${detailMainItemBaseEndpoint}/${currentId}`
+              : null
+            : detailSubItemBaseEndpoint
+              ? `${detailSubItemBaseEndpoint}/${currentId}`
+              : null,
+        ]
+      : null,
+    ([url]: GeneralResponse) => API.get(url),
+    {
+      refreshInterval: API_REFRESH_INTERVAL,
+      refreshWhenHidden: true,
+      keepPreviousData: false,
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+    }
+  );
+
+  useEffect(() => {
+    if (
+      (stack.register('detail-modal').opened ||
+        stack.register('update-modal').opened ||
+        updateModalOpened) &&
+      currentId
+    ) {
+      setFetchDetails(true);
+    } else {
+      setFetchDetails(false);
+    }
+  }, [stack, updateModalOpened, currentId]);
+
+  useEffect(() => {
+    setFormData(detailData?.data?.data);
+  }, [detailData]);
 
   useEffect(() => {
     const search = searchParams.get('search');
@@ -124,23 +186,6 @@ const DataTableClient = ({
       replace(pathname);
     }
   }, []);
-
-  useEffect(() => {
-    if (currentOpenedModuleType === 'sub' && currentId) {
-      const parentBody = data?.body?.find((body: any) =>
-        body?.sub_body.some((subBody: any) => subBody.id === currentId)
-      );
-      setFormData(
-        parentBody?.sub_body.find((subBody: any) => subBody.id === currentId)
-      );
-      return;
-    }
-
-    if (currentOpenedModuleType === 'main' && currentId) {
-      setFormData(data?.body?.find((form: any) => form.id === currentId));
-      return;
-    }
-  }, [data, currentId, currentOpenedModuleType]);
 
   useEffect(() => {
     data.body?.forEach((body: any) => {
@@ -180,35 +225,6 @@ const DataTableClient = ({
     tableSortDirection,
   ]);
 
-  useEffect(() => {
-    if (!mainModule) return;
-
-    switch (mainModule) {
-      case 'account-division':
-        setSubButtonLabel('Sections');
-        break;
-
-      case 'lib-signatory':
-        setSubButtonLabel('Details');
-        break;
-
-      case 'pr':
-        if (subModule === 'rfq') {
-          setSubButtonLabel('RFQs');
-        } else if (subModule === 'aoq') {
-          setSubButtonLabel('Abstract');
-        } else if (subModule === 'po') {
-          setSubButtonLabel('PO/JO');
-        } else {
-          setSubButtonLabel('Items');
-        }
-        break;
-
-      default:
-        break;
-    }
-  }, [mainModule]);
-
   const handleToggleCollapse = (id: string | undefined) => {
     if (!id) return;
 
@@ -218,39 +234,10 @@ const DataTableClient = ({
     });
   };
 
-  const handleUpdateTable = (
-    id: string | null,
-    payload: any,
-    isSubBody?: boolean
-  ) => {
-    setTableBody((prev: any[]) =>
-      prev.map((row: any) => {
-        if (id) {
-          if (isSubBody) {
-            return row.id === payload.division_id
-              ? {
-                  ...row,
-                  sub_body: row.sub_body.map((subRow: any) =>
-                    subRow.id === id ? { ...subRow, ...payload } : subRow
-                  ),
-                }
-              : row;
-          } else {
-            return row.id === id ? { ...row, ...payload } : row;
-          }
-        } else {
-          const newRow = { id: new Date().toISOString(), ...payload };
-          if (isSubBody) {
-            return row.id === payload.division_id
-              ? { ...row, sub_body: [...row.sub_body, newRow] }
-              : row;
-          }
-          return [...prev, newRow];
-        }
-      })
-    );
+  const handleUpdateTable = (id: string | null) => {
+    if (refreshData) refreshData();
 
-    if (refreshData) refreshData({ ...tableBody, payload });
+    refreshDetail();
 
     setTableSearch(id ?? '');
   };
@@ -262,105 +249,19 @@ const DataTableClient = ({
     setCurrentCreateModule(moduleType ?? undefined);
 
     switch (moduleType) {
-      case 'account-division':
-        setCreateModalTitle('Create Division');
-        setCreateEndpoint('/accounts/divisions');
-        break;
       case 'account-section':
         setFormData({ division_id: parentId });
-        setCreateModalTitle('Add Section');
-        setCreateEndpoint('/accounts/sections');
-        break;
-      case 'account-role':
-        setCreateModalTitle('Create Role');
-        setCreateEndpoint('/accounts/roles');
-        break;
-      case 'account-user':
-        setCreateModalTitle('Create User');
-        setCreateEndpoint('/accounts/users');
-        setCreateModalFullscreen(false);
-        break;
-      case 'lib-bid-committee':
-        setCreateModalTitle('Create Bids and Awards Committee');
-        setCreateEndpoint('/libraries/bids-awards-committees');
-        break;
-      case 'lib-fund-source':
-        setCreateModalTitle('Create Funding Source/Project');
-        setCreateEndpoint('/libraries/funding-sources');
-        break;
-      case 'lib-item-class':
-        setCreateModalTitle('Create Item Classification');
-        setCreateEndpoint('/libraries/item-classifications');
-        break;
-      case 'lib-mfo-pap':
-        setCreateModalTitle('Create MFO/PAP');
-        setCreateEndpoint('/libraries/mfo-paps');
-        break;
-      case 'lib-mode-proc':
-        setCreateModalTitle('Create Mode Procurement');
-        setCreateEndpoint('/libraries/procurement-modes');
-        break;
-      case 'lib-paper-size':
-        setCreateModalTitle('Create Paper Size');
-        setCreateEndpoint('/libraries/paper-sizes');
-        break;
-      case 'lib-responsibility-center':
-        setCreateModalTitle('Create Responsibility Center');
-        setCreateEndpoint('/libraries/responsibility-centers');
-        break;
-      case 'lib-signatory':
-        setCreateModalTitle('Create Signatory');
-        setCreateEndpoint('/libraries/signatories');
-        break;
-      case 'lib-supplier':
-        setCreateModalTitle('Create Supplier');
-        setCreateEndpoint('/libraries/suppliers');
-        break;
-      case 'lib-uacs-class':
-        setCreateModalTitle('Create UACS Code Classification');
-        setCreateEndpoint('/libraries/uacs-code-classifications');
-        break;
-      case 'lib-uacs-code':
-        setCreateModalTitle('Create UACS Code');
-        setCreateEndpoint('/libraries/uacs-codes');
-        break;
-      case 'lib-unit-issue':
-        setCreateModalTitle('Create Unit of Issue');
-        setCreateEndpoint('/libraries/unit-issues');
-        break;
-      case 'pr':
-        setCreateModalTitle('Create Purchase Request');
-        setCreateEndpoint('/purchase-requests');
-        setCreateModalFullscreen(true);
         break;
       case 'rfq':
         const parentBody = data?.body?.find(
           (form: any) => form.id === parentId
         );
-        const items =
-          parentBody.items?.map((item: PurchaseRequestItemType) => ({
-            pr_item_id: item.id,
-            brand_model: '',
-            unit_cost: undefined,
-            total_cost: undefined,
-            pr_item: {
-              stock_no: item.stock_no,
-              quantity: item.quantity,
-              description: item.description,
-            },
-          })) ?? [];
 
         setFormData({
           purchase_request_id: parentId,
-          items,
           purpose: parentBody?.purpose,
           pr_no: parentBody?.pr_no,
-          funding_source_title: parentBody?.funding_source_title,
-          funding_source_location: parentBody?.funding_source_location,
         });
-        setCreateModalTitle('Create Request for Quotation');
-        setCreateEndpoint('/request-quotations');
-        setCreateModalFullscreen(true);
         break;
       default:
         break;
@@ -370,104 +271,17 @@ const DataTableClient = ({
   };
 
   const handleOpenUpdateModal = (id: string, moduleType: ModuleType | null) => {
-    setFormData(tableBody?.find((form: any) => form.id === id));
     setCurrentUpdateModule(moduleType ?? undefined);
-
-    switch (moduleType) {
-      case 'account-division':
-        setUpdateEndpoint(`/accounts/divisions/${id}`);
-        setUpdateModalTitle('Update Division');
-        break;
-      case 'account-section':
-        const parentBody = tableBody?.find((body: any) =>
-          body?.sub_body.some((subBody: any) => subBody.id === id)
-        );
-        setUpdateEndpoint(`/accounts/sections/${id}`);
-        setUpdateModalTitle('Update Section');
-        setFormData(
-          parentBody?.sub_body.find((subBody: any) => subBody.id === id)
-        );
-        break;
-      case 'account-role':
-        setUpdateEndpoint(`/accounts/roles/${id}`);
-        setUpdateModalTitle('Update Role');
-        break;
-      case 'account-user':
-        setUpdateEndpoint(`/accounts/users/${id}`);
-        setUpdateModalTitle('Update User');
-        setUpdateModalFullscreen(false);
-        break;
-      case 'lib-bid-committee':
-        setUpdateModalTitle('Update Bids and Awards Committee');
-        setUpdateEndpoint(`/libraries/bids-awards-committees/${id}`);
-        break;
-      case 'lib-fund-source':
-        setUpdateModalTitle('Update Funding Source/Project');
-        setUpdateEndpoint(`/libraries/funding-sources/${id}`);
-        break;
-      case 'lib-item-class':
-        setUpdateModalTitle('Update Item Classification');
-        setUpdateEndpoint(`/libraries/item-classifications/${id}`);
-        break;
-      case 'lib-mfo-pap':
-        setUpdateModalTitle('Update MFO/PAP');
-        setUpdateEndpoint(`/libraries/mfo-paps/${id}`);
-        break;
-      case 'lib-mode-proc':
-        setUpdateModalTitle('Update Mode Procurement');
-        setUpdateEndpoint(`/libraries/procurement-modes/${id}`);
-        break;
-      case 'lib-paper-size':
-        setUpdateModalTitle('Update Paper Size');
-        setUpdateEndpoint(`/libraries/paper-sizes/${id}`);
-        break;
-      case 'lib-responsibility-center':
-        setUpdateModalTitle('Update Responsibility Center');
-        setUpdateEndpoint(`/libraries/responsibility-centers/${id}`);
-        break;
-      case 'lib-signatory':
-        setUpdateModalTitle('Update Signatory');
-        setUpdateEndpoint(`/libraries/signatories/${id}`);
-        break;
-      case 'lib-supplier':
-        setUpdateModalTitle('Update Supplier');
-        setUpdateEndpoint(`/libraries/suppliers/${id}`);
-        break;
-      case 'lib-uacs-class':
-        setUpdateModalTitle('Update UACS Code Classification');
-        setUpdateEndpoint(`/libraries/uacs-code-classifications/${id}`);
-        break;
-      case 'lib-uacs-code':
-        setUpdateModalTitle('Update UACS Code');
-        setUpdateEndpoint(`/libraries/uacs-codes/${id}`);
-        break;
-      case 'lib-unit-issue':
-        setUpdateModalTitle('Update Unit of Issue');
-        setUpdateEndpoint(`/libraries/unit-issues/${id}`);
-        break;
-      default:
-        break;
-    }
 
     openUpdateModal();
   };
 
   const handleOpenDetailModal = (id: string, moduleType: ModuleType | null) => {
-    const data = tableBody?.find((form: any) => form.id === id);
-    const parentBody = tableBody?.find((body: any) =>
-      body?.sub_body.some((subBody: any) => subBody.id === id)
-    );
-    const subData = parentBody?.sub_body.find(
-      (subBody: any) => subBody.id === id
-    );
-
-    setFormData(data);
     setCurrentDetailModule(moduleType ?? undefined);
     setCurrentUpdateModule(moduleType ?? undefined);
 
     switch (moduleType) {
       case 'pr':
-        setDetailModalTitle(`Purchase Request Details [${data?.pr_no}]`);
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('pr', 'print')].some(
             (permission) => permissions?.includes(permission)
@@ -479,25 +293,8 @@ const DataTableClient = ({
             (permission) => permissions?.includes(permission)
           )
         );
-
-        setUpdateModalTitle(`Update Purchase Request [${data?.pr_no}]`);
-        setUpdateEndpoint(`/purchase-requests/${id}`);
-        setUpdateModalFullscreen(true);
-
-        setPrintModalTitle(`Print Purchase Request [${data?.pr_no}]`);
-        setPrintEndpoint(`/documents/${moduleType}/prints/${id}`);
-        setPrintDefaultPaper('A4');
-
-        setLogModalTitle(`Purchase Request Logs [${data?.pr_no}]`);
-        setLogEndpoint(`/logs`);
-
-        setCurrentOpenedModuleType('main');
         break;
       case 'rfq':
-        setFormData(subData);
-        setDetailModalTitle(
-          `Request for Quotation Details [${subData?.rfq_no}]`
-        );
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('rfq', 'print')].some(
             (permission) => permissions?.includes(permission)
@@ -509,27 +306,8 @@ const DataTableClient = ({
             (permission) => permissions?.includes(permission)
           )
         );
-
-        setUpdateModalTitle(
-          `Update Request for Quotation [${subData?.rfq_no}]`
-        );
-        setUpdateEndpoint(`/request-quotations/${id}`);
-        setUpdateModalFullscreen(true);
-
-        setPrintModalTitle(`Print Request for Quotation [${subData?.rfq_no}]`);
-        setPrintEndpoint(`/documents/${moduleType}/prints/${id}`);
-        setPrintDefaultPaper('A4');
-
-        setLogModalTitle(`Request for Quotation Logs [${subData?.rfq_no}]`);
-        setLogEndpoint(`/logs`);
-
-        setCurrentOpenedModuleType('sub');
         break;
       case 'aoq':
-        setFormData(subData);
-        setDetailModalTitle(
-          `Abstract of Quotation Details [${subData?.abstract_no}]`
-        );
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('aoq', 'print')].some(
             (permission) => permissions?.includes(permission)
@@ -541,31 +319,11 @@ const DataTableClient = ({
             (permission) => permissions?.includes(permission)
           )
         );
-
-        setUpdateModalTitle(
-          `Update Abstract of Quotation [${subData?.abstract_no}]`
-        );
-        setUpdateEndpoint(`/abstract-quotations/${id}`);
-        setUpdateModalFullscreen(true);
-
-        setPrintModalTitle(
-          `Print Abstract of Quotation [${subData?.abstract_no}]`
-        );
-        setPrintEndpoint(`/documents/${moduleType}/prints/${id}`);
-        setPrintDefaultPaper('A4');
-
-        setLogModalTitle(
-          `Abstract of Quotation Logs [${subData?.abstract_no}]`
-        );
-        setLogEndpoint(`/logs`);
-
-        setCurrentOpenedModuleType('sub');
         break;
       default:
         break;
     }
 
-    // openDetailModal();
     stack.open('detail-modal');
   };
 
@@ -597,7 +355,10 @@ const DataTableClient = ({
         setSearch={setTableSearch}
         showCreate={showCreate}
         showSearch={showSearch}
-        handleOpenCreateModal={handleOpenCreateModal}
+        handleOpenCreateModal={(parentId, moduleType) => {
+          handleOpenCreateModal(parentId, moduleType);
+          setCurrentOpenedModuleType('main');
+        }}
       />
 
       <ScrollArea
@@ -697,7 +458,7 @@ const DataTableClient = ({
               tableBody?.map((body: any) => (
                 <React.Fragment key={body.id}>
                   <Table.Tr
-                    sx={{ cursor: itemsClickable ? 'pointer' : 'default' }}
+                    sx={{ cursor: mainItemsClickable ? 'pointer' : 'default' }}
                   >
                     {data.head?.map(
                       (head, i) =>
@@ -706,24 +467,24 @@ const DataTableClient = ({
                             key={`${body.id}-${body[head.id]}-${i}`}
                             fz={'xs'}
                             label={
-                              itemsClickable &&
+                              mainItemsClickable &&
                               getAllowedPermissions(mainModule, 'view')?.some(
                                 (permission) => permissions.includes(permission)
                               ) &&
-                              showDetailsFirst
+                              defaultModalOnClick === 'details'
                                 ? 'Click to show details'
-                                : itemsClickable &&
+                                : mainItemsClickable &&
                                     getAllowedPermissions(
                                       mainModule,
                                       'update'
                                     )?.some((permission) =>
                                       permissions.includes(permission)
                                     ) &&
-                                    !showDetailsFirst
+                                    defaultModalOnClick === 'update'
                                   ? 'Click to update'
                                   : undefined
                             }
-                            disabled={!itemsClickable}
+                            disabled={!mainItemsClickable}
                           >
                             <Table.Td
                               fz={{ base: 11, lg: 'xs', xl: 'sm' }}
@@ -731,14 +492,14 @@ const DataTableClient = ({
                               // fw={500}
                               onClick={() => {
                                 if (
-                                  itemsClickable &&
+                                  mainItemsClickable &&
                                   getAllowedPermissions(
                                     mainModule,
                                     'update'
                                   )?.some((permission) =>
                                     permissions.includes(permission)
                                   ) &&
-                                  !showDetailsFirst
+                                  defaultModalOnClick === 'update'
                                 ) {
                                   setCurrentId(body.id);
                                   setCurrentOpenedModuleType('main');
@@ -749,14 +510,14 @@ const DataTableClient = ({
                                 }
 
                                 if (
-                                  itemsClickable &&
+                                  mainItemsClickable &&
                                   getAllowedPermissions(
                                     mainModule,
                                     'view'
                                   )?.some((permission) =>
                                     permissions.includes(permission)
                                   ) &&
-                                  showDetailsFirst
+                                  defaultModalOnClick === 'details'
                                 ) {
                                   setCurrentId(body.id);
                                   setCurrentOpenedModuleType('main');
@@ -847,10 +608,9 @@ const DataTableClient = ({
                                 <Table.Tr
                                   key={subBody.id}
                                   sx={{
-                                    cursor:
-                                      itemsClickable && enableUpdateSubItem
-                                        ? 'pointer'
-                                        : 'default',
+                                    cursor: subItemsClickable
+                                      ? 'pointer'
+                                      : 'default',
                                   }}
                                 >
                                   {data.subHead?.map(
@@ -860,17 +620,16 @@ const DataTableClient = ({
                                           key={`${subBody.id}-${subHeadIndex}`}
                                           fz={'xs'}
                                           label={
-                                            itemsClickable &&
+                                            subItemsClickable &&
                                             getAllowedPermissions(
                                               subModule,
                                               'view'
                                             )?.some((permission) =>
                                               permissions.includes(permission)
                                             ) &&
-                                            showDetailsFirst
+                                            defaultModalOnClick === 'details'
                                               ? 'Click to show details'
-                                              : itemsClickable &&
-                                                  enableUpdateSubItem &&
+                                              : subItemsClickable &&
                                                   getAllowedPermissions(
                                                     subModule,
                                                     'update'
@@ -879,14 +638,12 @@ const DataTableClient = ({
                                                       permission
                                                     )
                                                   ) &&
-                                                  !showDetailsFirst
+                                                  defaultModalOnClick ===
+                                                    'update'
                                                 ? 'Click to update'
                                                 : undefined
                                           }
-                                          disabled={
-                                            !itemsClickable ||
-                                            !enableUpdateSubItem
-                                          }
+                                          disabled={!subItemsClickable}
                                         >
                                           <Table.Td
                                             valign={'top'}
@@ -898,8 +655,7 @@ const DataTableClient = ({
                                             }}
                                             onClick={() => {
                                               if (
-                                                itemsClickable &&
-                                                enableUpdateSubItem &&
+                                                subItemsClickable &&
                                                 getAllowedPermissions(
                                                   subModule,
                                                   'update'
@@ -908,7 +664,7 @@ const DataTableClient = ({
                                                     permission
                                                   )
                                                 ) &&
-                                                !showDetailsFirst
+                                                defaultModalOnClick === 'update'
                                               ) {
                                                 setCurrentId(subBody.id);
                                                 setCurrentOpenedModuleType(
@@ -921,7 +677,7 @@ const DataTableClient = ({
                                               }
 
                                               if (
-                                                itemsClickable &&
+                                                subItemsClickable &&
                                                 getAllowedPermissions(
                                                   subModule,
                                                   'view'
@@ -930,7 +686,8 @@ const DataTableClient = ({
                                                     permission
                                                   )
                                                 ) &&
-                                                showDetailsFirst
+                                                defaultModalOnClick ===
+                                                  'details'
                                               ) {
                                                 setCurrentId(subBody.id);
                                                 setCurrentOpenedModuleType(
@@ -953,7 +710,7 @@ const DataTableClient = ({
                                 </Table.Tr>
                               ))}
 
-                              {enableCreateSubItem &&
+                              {showCreateSubItem &&
                                 getAllowedPermissions(
                                   subModule,
                                   'create'
@@ -1010,9 +767,31 @@ const DataTableClient = ({
         </Table>
       </ScrollArea>
 
+      <LoadingOverlay
+        visible={detailLoading}
+        zIndex={1000}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+      />
+
       <CreateModalClient
-        title={createModalTitle}
-        endpoint={createEndpoint}
+        title={
+          currentOpenedModuleType === 'main'
+            ? createModalOpened
+              ? createMainItemModalTitle
+              : ''
+            : createModalOpened
+              ? createSubItemModalTitle
+              : ''
+        }
+        endpoint={
+          currentOpenedModuleType === 'main'
+            ? createModalOpened
+              ? createMainItemEndpoint
+              : ''
+            : createModalOpened
+              ? createSubItemEndpoint
+              : ''
+        }
         data={formData}
         content={currentCreateModule}
         fullscreen={createModalFullscreen}
@@ -1026,10 +805,26 @@ const DataTableClient = ({
         updateTable={handleUpdateTable}
       />
 
-      {!showDetailsFirst && (
+      {defaultModalOnClick === 'update' && (
         <UpdateModalClient
-          title={updateModalTitle}
-          endpoint={updateModalOpened ? updateEndpoint : ''}
+          title={
+            currentOpenedModuleType === 'main'
+              ? updateModalOpened
+                ? updateMainItemModalTitle
+                : ''
+              : updateModalOpened
+                ? updateSubItemModalTitle
+                : ''
+          }
+          endpoint={
+            currentOpenedModuleType === 'main'
+              ? updateModalOpened
+                ? `${updateMainItemBaseEndpoint}/${currentId}`
+                : ''
+              : updateModalOpened
+                ? `${updateSubItemBaseEndpoint}/${currentId}`
+                : ''
+          }
           data={updateModalOpened ? formData : undefined}
           content={currentUpdateModule}
           fullscreen={updateModalFullscreen}
@@ -1044,12 +839,20 @@ const DataTableClient = ({
         />
       )}
 
-      {showDetailsFirst && (
+      {defaultModalOnClick === 'details' && (
         <Modal.Stack>
           <DetailModalClient
             user={user}
             permissions={permissions}
-            title={detailModalTitle}
+            title={
+              currentOpenedModuleType === 'main'
+                ? stack.register('detail-modal').opened
+                  ? detailMainItemModalTitle
+                  : ''
+                : stack.register('detail-modal').opened
+                  ? detailSubItemModalTitle
+                  : ''
+            }
             data={stack.register('detail-modal').opened ? formData : undefined}
             content={currentDetailModule}
             opened={stack.register('detail-modal').opened}
@@ -1059,16 +862,36 @@ const DataTableClient = ({
               setCurrentOpenedModuleType(undefined);
               setFormData(undefined);
               stack.closeAll();
-              setLogEndpoint('');
             }}
             updateTable={handleUpdateTable}
             showPrint={detailModalShowPrint}
             showEdit={detailModalShowEdit}
           />
+
           <PrintModalClient
-            title={printModalTitle}
-            endpoint={stack.register('print-modal').opened ? printEndpoint : ''}
-            defaultValue={printDefaultPaper}
+            title={
+              currentOpenedModuleType === 'main'
+                ? stack.register('print-modal').opened
+                  ? printMainItemModalTitle
+                  : ''
+                : stack.register('print-modal').opened
+                  ? printSubItemModalTitle
+                  : ''
+            }
+            endpoint={
+              currentOpenedModuleType === 'main'
+                ? stack.register('print-modal').opened
+                  ? `${printMainItemBaseEndpoint}/${currentId}`
+                  : ''
+                : stack.register('print-modal').opened
+                  ? `${printSubItemBaseEndpoint}/${currentId}`
+                  : ''
+            }
+            defaultValue={
+              currentOpenedModuleType === 'main'
+                ? printMainItemDefaultPaper
+                : printSubItemDefaultPaper
+            }
             opened={stack.register('print-modal').opened}
             stack={stack}
             close={() => {
@@ -1077,24 +900,52 @@ const DataTableClient = ({
             }}
           />
 
-          {logEndpoint && (
-            <LogModalClient
-              id={currentId ?? ''}
-              title={logModalTitle}
-              endpoint={logEndpoint}
-              opened={stack.register('log-modal').opened}
-              stack={stack}
-              close={() => {
-                stack.register('log-modal').onClose();
-                stack.open('detail-modal');
-              }}
-            />
-          )}
+          <LogModalClient
+            id={currentId ?? ''}
+            title={
+              currentOpenedModuleType === 'main'
+                ? stack.register('log-modal').opened
+                  ? logMainItemModalTitle
+                  : ''
+                : stack.register('log-modal').opened
+                  ? logSubItemModalTitle
+                  : ''
+            }
+            endpoint={
+              currentOpenedModuleType === 'main'
+                ? stack.register('log-modal').opened
+                  ? logMainItemEndpoint
+                  : ''
+                : stack.register('log-modal').opened
+                  ? logSuItemEndpoint
+                  : ''
+            }
+            opened={stack.register('log-modal').opened}
+            stack={stack}
+            close={() => {
+              stack.register('log-modal').onClose();
+              stack.open('detail-modal');
+            }}
+          />
 
           <UpdateModalClient
-            title={updateModalTitle}
+            title={
+              currentOpenedModuleType === 'main'
+                ? updateModalOpened
+                  ? updateMainItemModalTitle
+                  : ''
+                : updateModalOpened
+                  ? updateSubItemModalTitle
+                  : ''
+            }
             endpoint={
-              stack.register('update-modal').opened ? updateEndpoint : ''
+              currentOpenedModuleType === 'main'
+                ? stack.register('update-modal').opened
+                  ? `${updateMainItemBaseEndpoint}/${currentId}`
+                  : ''
+                : stack.register('update-modal').opened
+                  ? `${updateSubItemBaseEndpoint}/${currentId}`
+                  : ''
             }
             data={stack.register('update-modal').opened ? formData : undefined}
             content={currentUpdateModule}

@@ -111,6 +111,8 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
   const [columnSort, setColumnSort] = useState('pr_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
+  const [documentType] = useState<SignatoryDocumentType>('pr');
+  const [subDocumentType] = useState<SignatoryDocumentType>('rfq');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
@@ -149,20 +151,11 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: PurchaseRequestType) => {
-      const {
-        section,
-        funding_source,
-        requestor,
-        signatory_cash_available,
-        signatory_approval,
-        rfqs,
-        items,
-        ..._data
-      } = body;
+    const prData = data?.data?.map((body: PurchaseRequestType) => {
+      const { section, funding_source, requestor, rfqs, ...prData } = body;
 
       return {
-        ..._data,
+        ...prData,
         pr_date_formatted: dayjs(body.pr_date).format('MM/DD/YYYY'),
         status_formatted: (
           <PurchaseRequestStatusClient
@@ -170,34 +163,21 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
             status={body.status}
           />
         ),
-        section_name: section?.section_name ?? '-',
         funding_source_title: funding_source?.title ?? '-',
         requestor_fullname: body.requestor?.fullname ?? '-',
-        cash_available_fullname: signatory_cash_available?.user?.fullname,
-        approval_fullname: signatory_approval?.user?.fullname,
         purpose_formatted: Helper.shortenText(
           body.purpose ?? '-',
           lgScreenAndBelow ? 80 : 150
         ),
-        rfqs,
-        items,
         sub_body:
           rfqs?.map((subBody: RequestQuotationType) => {
             return {
               ...subBody,
-              pr_no: body?.pr_no ?? '-',
-              funding_source_title: funding_source?.title ?? '-',
-              funding_source_location:
-                funding_source?.location?.location_name ?? '-',
               rfq_date_formatted: dayjs(subBody.rfq_date).format('MM/DD/YYYY'),
               signed_type_formatted: subBody.signed_type
                 ? subBody.signed_type.toUpperCase()
                 : '-',
               supplier_name: subBody.supplier?.supplier_name ?? '-',
-              supplier_address: subBody.supplier?.address ?? '-',
-              canvasser_names: subBody.canvassers?.map(
-                (canvasser, i) => canvasser.user?.fullname
-              ),
               canvasser_names_formatted: (
                 <>
                   {subBody?.canvassers && subBody?.canvassers?.length > 0 ? (
@@ -223,8 +203,6 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
                   status={subBody.status}
                 />
               ),
-              purpose: body.purpose ?? '-',
-              approval_fullname: subBody.signatory_approval?.user?.fullname,
             };
           }) || [],
       };
@@ -232,7 +210,7 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
 
     setTableData((prevState) => ({
       ...prevState,
-      body: _data ?? [],
+      body: prData ?? [],
     }));
   }, [data, lgScreenAndBelow]);
 
@@ -245,6 +223,31 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      defaultModalOnClick={'details'}
+      showCreateSubItem
+      subItemsClickable
+      createMainItemModalTitle={'Create Purchase Request'}
+      createMainItemEndpoint={'/purchase-requests'}
+      createSubItemModalTitle={'Create Request for Quotation'}
+      createSubItemEndpoint={'/request-quotations'}
+      createModalFullscreen
+      updateMainItemModalTitle={'Update Purchase Request'}
+      updateMainItemBaseEndpoint={'/purchase-requests'}
+      updateSubItemModalTitle={'Update Request for Quotation'}
+      updateSubItemBaseEndpoint={'/request-quotations'}
+      updateModalFullscreen
+      detailMainItemModalTitle={'Purchase Request Details'}
+      detailMainItemBaseEndpoint={'/purchase-requests'}
+      detailSubItemModalTitle={'Request for Quotation Details'}
+      detailSubItemBaseEndpoint={'/request-quotations'}
+      printMainItemModalTitle={'Print Purchase Request'}
+      printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
+      printSubItemModalTitle={'Print Request for Quotation'}
+      printSubItemBaseEndpoint={`/documents/${subDocumentType}/prints`}
+      logMainItemModalTitle={'Purchase Request Logs'}
+      logSubItemModalTitle={'Request for Quotation Logs'}
+      subButtonLabel={'RFQs'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -253,7 +256,7 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -261,11 +264,6 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showDetailsFirst
-      autoCollapseSubItems={'all'}
-      enableCreateSubItem
-      enableUpdateSubItem
     />
   );
 };

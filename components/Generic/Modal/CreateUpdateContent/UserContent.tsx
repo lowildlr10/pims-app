@@ -10,7 +10,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import DynamicAutocomplete from '../../DynamicAutocomplete';
 import { IMaskInput } from 'react-imask';
 import { Switch } from '@mantine/core';
@@ -20,9 +20,9 @@ import SingleImageUploadClient from '../../SingleImageUpload';
 
 const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
-    const form = useForm({
-      mode: 'controlled',
-      initialValues: {
+    const [currentData, setCurrentData] = useState(data);
+    const currentForm = useMemo(
+      () => ({
         employee_id: data?.employee_id ?? '',
         firstname: data?.firstname ?? '',
         middlename: data?.middlename ?? '',
@@ -37,18 +37,25 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
         restricted: data?.restricted ?? false,
         password: '',
         roles: data?.roles?.map((role) => role.id) ?? [],
-      },
-
-      // validate: {
-      //   email: (value) => (/^\S+@\S+$/.test(value) ? 'null' : 'Invalid email'),
-      // },
+      }),
+      [currentData]
+    );
+    const form = useForm({
+      mode: 'controlled',
+      initialValues: currentForm,
     });
 
     useEffect(() => {
-      setPayload({
-        ...form.values,
-        roles: JSON.stringify(form.values.roles),
-      });
+      setCurrentData(data);
+    }, [data]);
+
+    useEffect(() => {
+      form.reset();
+      form.setValues(currentForm);
+    }, [currentForm]);
+
+    useEffect(() => {
+      setPayload(form.values);
     }, [form.values]);
 
     return (
@@ -96,7 +103,7 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           <TextInput
             size={'sm'}
             label='Middle Name'
-            placeholder=''
+            placeholder='Middle Name'
             value={form.values.middlename}
             onChange={(event) =>
               form.setFieldValue('middlename', event.currentTarget.value)
@@ -106,7 +113,7 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           <TextInput
             size={'sm'}
             label='Last Name'
-            placeholder=''
+            placeholder='Last Name'
             value={form.values.lastname}
             onChange={(event) =>
               form.setFieldValue('lastname', event.currentTarget.value)
@@ -117,6 +124,7 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           <Select
             size={'sm'}
             label='Sex'
+            placeholder='Sex'
             data={[
               { label: 'Male', value: 'male' },
               { label: 'Female', value: 'female' },
@@ -137,6 +145,16 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
             }}
             column={'division_section'}
             label='Section'
+            defaultData={
+              currentData?.section_id
+                ? [
+                    {
+                      value: currentData?.section_id ?? '',
+                      label: currentData?.section?.section_name ?? '',
+                    },
+                  ]
+                : undefined
+            }
             value={form.values.section_id}
             size={'sm'}
             onChange={(value) => form.setFieldValue('section_id', value)}
@@ -187,7 +205,7 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           <TextInput
             size={'sm'}
             label='Username'
-            placeholder=''
+            placeholder='Username'
             value={form.values.username}
             onChange={(event) =>
               form.setFieldValue('username', event.currentTarget.value)

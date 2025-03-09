@@ -1,14 +1,14 @@
 import { Stack, Switch, Textarea, TextInput } from '@mantine/core';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 
 const SupplierContentClient = forwardRef<
   HTMLFormElement,
   ModalSupplierContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
-  const form = useForm({
-    mode: 'controlled',
-    initialValues: {
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
       supplier_name: data?.supplier_name ?? '',
       address: data?.address ?? '',
       tin_no: data?.tin_no ?? '',
@@ -17,8 +17,22 @@ const SupplierContentClient = forwardRef<
       vat_no: data?.vat_no ?? '',
       contact_person: data?.contact_person ?? '',
       active: data?.active ?? false,
-    },
+    }),
+    [currentData]
+  );
+  const form = useForm({
+    mode: 'controlled',
+    initialValues: currentForm,
   });
+
+  useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
 
   useEffect(() => {
     setPayload(form.values);

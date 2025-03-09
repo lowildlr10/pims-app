@@ -1,5 +1,5 @@
 import { Divider, Paper, Stack, Switch, Text, TextInput } from '@mantine/core';
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
 import DynamicSelect from '../../DynamicSelect';
@@ -9,14 +9,20 @@ const SignatoryContentClient = forwardRef<
   HTMLFormElement,
   ModalSignatoryContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
-  const form = useForm({
-    mode: 'controlled',
-    initialValues: {
+  const [currentData, setCurrentData] = useState(data);
+  const currentForm = useMemo(
+    () => ({
       user_id: data?.user_id ?? '',
       details: JSON.stringify(data?.details ?? []),
       active: data?.active ?? false,
-    },
+    }),
+    [currentData]
+  );
+  const form = useForm({
+    mode: 'controlled',
+    initialValues: currentForm,
   });
+
   const [detailFields, handlers] = useListState<SignatoryDetailsFieldType>([
     {
       document: 'pr',
@@ -207,6 +213,15 @@ const SignatoryContentClient = forwardRef<
   }, [data]);
 
   useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  useEffect(() => {
+    form.reset();
+    form.setValues(currentForm);
+  }, [currentForm]);
+
+  useEffect(() => {
     setPayload(form.values);
   }, [form.values]);
 
@@ -216,47 +231,54 @@ const SignatoryContentClient = forwardRef<
       onSubmit={form.onSubmit(() => handleCreateUpdate && handleCreateUpdate())}
     >
       <Stack>
-        {!data?.user_id ? (
-          <DynamicSelect
-            endpoint={'/accounts/users'}
-            endpointParams={{
-              paginated: false,
-              show_all: true,
-              show_inactive: true,
-            }}
-            column={'fullname'}
-            label='User'
-            value={form.values.user_id}
-            size={'sm'}
-            onChange={(value) => form.setFieldValue('user_id', value)}
-            required
-          />
-        ) : (
-          <TextInput
-            label={'User'}
-            placeholder={data?.fullname_plain ?? 'None'}
-            value={data?.fullname_plain ?? ''}
-            size={'sm'}
-            flex={1}
-            readOnly
-          />
-        )}
+        <Paper shadow={'xs'} p={'lg'} withBorder>
+          <Stack gap={'sm'}>
+            <Text fw={500}>Signatory</Text>
+            <Divider />
 
-        <Switch
-          label={'Status'}
-          mb={20}
-          onLabel='Active'
-          offLabel='Inactive'
-          color={'var(--mantine-color-secondary-9)'}
-          checked={form.values.active}
-          labelPosition={'left'}
-          fw={500}
-          size={'sm'}
-          sx={{ cursor: 'pointer' }}
-          onChange={(event) =>
-            form.setFieldValue('active', event.currentTarget.checked)
-          }
-        />
+            {!data?.user_id ? (
+              <DynamicSelect
+                endpoint={'/accounts/users'}
+                endpointParams={{
+                  paginated: false,
+                  show_all: true,
+                  show_inactive: true,
+                }}
+                column={'fullname'}
+                label='Name'
+                value={form.values.user_id}
+                size={'sm'}
+                onChange={(value) => form.setFieldValue('user_id', value)}
+                required
+              />
+            ) : (
+              <TextInput
+                label={'Name'}
+                placeholder={'None'}
+                value={currentData?.user?.fullname ?? ''}
+                size={'sm'}
+                flex={1}
+                readOnly
+              />
+            )}
+
+            <Switch
+              label={'Status'}
+              mb={20}
+              onLabel='Active'
+              offLabel='Inactive'
+              color={'var(--mantine-color-secondary-9)'}
+              checked={form.values.active}
+              labelPosition={'left'}
+              fw={500}
+              size={'sm'}
+              sx={{ cursor: 'pointer' }}
+              onChange={(event) =>
+                form.setFieldValue('active', event.currentTarget.checked)
+              }
+            />
+          </Stack>
+        </Paper>
 
         {detailFields.map((detail) => (
           <Paper key={detail.document} shadow={'xs'} p={'lg'} withBorder>

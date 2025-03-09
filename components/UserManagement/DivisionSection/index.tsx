@@ -145,6 +145,21 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      showCreate
+      showCreateSubItem
+      subItemsClickable
+      createMainItemModalTitle={'Create Division'}
+      createMainItemEndpoint={'/accounts/divisions'}
+      createSubItemModalTitle={'Create Section'}
+      createSubItemEndpoint={'/accounts/sections'}
+      updateMainItemModalTitle={'Update Division'}
+      updateMainItemBaseEndpoint={'/accounts/divisions'}
+      updateSubItemModalTitle={'Update Section'}
+      updateSubItemBaseEndpoint={'/accounts/sections'}
+      detailMainItemBaseEndpoint={'/accounts/divisions'}
+      detailSubItemBaseEndpoint={'/accounts/sections'}
+      subButtonLabel={'Sections'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -153,7 +168,7 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -161,10 +176,6 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
-      enableCreateSubItem
-      enableUpdateSubItem
     />
   );
 };

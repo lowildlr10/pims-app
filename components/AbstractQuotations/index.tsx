@@ -63,7 +63,7 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'solicitation_date',
+      id: 'solicitation_date_formatted',
       label: 'Solicitation Date',
       width: '10%',
       sortable: true,
@@ -81,9 +81,15 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
+      id: 'procurement_mode_name',
+      label: 'Mode of Procurement',
+      width: '14%',
+      sortable: false,
+    },
+    {
       id: 'bac_action_formatted',
       label: 'BAC Action',
-      width: '44%',
+      width: '30%',
       sortable: false,
     },
     {
@@ -104,6 +110,8 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
   const [columnSort, setColumnSort] = useState('pr_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
+  const [documentType] = useState<SignatoryDocumentType>('pr');
+  const [subDocumentType] = useState<SignatoryDocumentType>('aoq');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
@@ -142,20 +150,11 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: PurchaseRequestType) => {
-      const {
-        section,
-        funding_source,
-        requestor,
-        signatory_cash_available,
-        signatory_approval,
-        aoqs,
-        items,
-        ..._data
-      } = body;
+    const prData = data?.data?.map((body: PurchaseRequestType) => {
+      const { section, funding_source, requestor, aoqs, ...prData } = body;
 
       return {
-        ..._data,
+        ...prData,
         pr_date_formatted: dayjs(body.pr_date).format('MM/DD/YYYY'),
         status_formatted: (
           <PurchaseRequestStatusClient
@@ -163,23 +162,18 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
             status={body.status}
           />
         ),
-        section_name: section?.section_name ?? '-',
         funding_source_title: funding_source?.title ?? '-',
         requestor_fullname: body.requestor?.fullname ?? '-',
-        cash_available_fullname: signatory_cash_available?.user?.fullname,
-        approval_fullname: signatory_approval?.user?.fullname,
         purpose_formatted: Helper.shortenText(
           body.purpose ?? '-',
           lgScreenAndBelow ? 80 : 150
         ),
-        aoqs,
-        items,
         sub_body:
           aoqs?.map((subBody: AbstractQuotationType) => {
             return {
               ...subBody,
-              bids_awards_committee_name:
-                subBody.bids_awards_committee?.committee_name ?? '-',
+              // bids_awards_committee_name:
+              //   subBody.bids_awards_committee?.committee_name ?? '-',
               procurement_mode_name: subBody.mode_procurement?.mode_name ?? '-',
               solicitation_date_formatted: dayjs(
                 subBody.solicitation_date
@@ -197,23 +191,23 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
                   status={subBody.status}
                 />
               ),
-              purpose: body.purpose ?? '-',
-              twg_chairperson_fullname:
-                subBody.signatory_twg_chairperson?.user?.fullname ?? '-',
-              twg_member_1_fullname:
-                subBody.signatory_twg_member_1?.user?.fullname ?? '-',
-              twg_member_2_fullname:
-                subBody.signatory_twg_member_2?.user?.fullname ?? '-',
-              chairman_fullname:
-                subBody.signatory_chairman?.user?.fullname ?? '-',
-              vice_chairman_fullname:
-                subBody.signatory_vice_chairman?.user?.fullname ?? '-',
-              member_1_fullname:
-                subBody.signatory_member_1?.user?.fullname ?? '-',
-              member_2_fullname:
-                subBody.signatory_member_2?.user?.fullname ?? '-',
-              member_3_fullname:
-                subBody.signatory_member_2?.user?.fullname ?? '-',
+              // purpose: body.purpose ?? '-',
+              // twg_chairperson_fullname:
+              //   subBody.signatory_twg_chairperson?.user?.fullname ?? '-',
+              // twg_member_1_fullname:
+              //   subBody.signatory_twg_member_1?.user?.fullname ?? '-',
+              // twg_member_2_fullname:
+              //   subBody.signatory_twg_member_2?.user?.fullname ?? '-',
+              // chairman_fullname:
+              //   subBody.signatory_chairman?.user?.fullname ?? '-',
+              // vice_chairman_fullname:
+              //   subBody.signatory_vice_chairman?.user?.fullname ?? '-',
+              // member_1_fullname:
+              //   subBody.signatory_member_1?.user?.fullname ?? '-',
+              // member_2_fullname:
+              //   subBody.signatory_member_2?.user?.fullname ?? '-',
+              // member_3_fullname:
+              //   subBody.signatory_member_2?.user?.fullname ?? '-',
             };
           }) || [],
       };
@@ -221,7 +215,7 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
 
     setTableData((prevState) => ({
       ...prevState,
-      body: _data ?? [],
+      body: prData ?? [],
     }));
   }, [data, lgScreenAndBelow]);
 
@@ -234,6 +228,30 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      defaultModalOnClick={'details'}
+      subItemsClickable
+      createMainItemModalTitle={'Create Purchase Request'}
+      createMainItemEndpoint={'/purchase-requests'}
+      createSubItemModalTitle={'Create Abstract of Bids and Quotation'}
+      createSubItemEndpoint={'/abstract-quotations'}
+      createModalFullscreen
+      updateMainItemModalTitle={'Update Purchase Request'}
+      updateMainItemBaseEndpoint={'/purchase-requests'}
+      updateSubItemModalTitle={'Update Abstract of Bids and Quotation'}
+      updateSubItemBaseEndpoint={'/abstract-quotations'}
+      updateModalFullscreen
+      detailMainItemModalTitle={'Purchase Request Details'}
+      detailMainItemBaseEndpoint={'/purchase-requests'}
+      detailSubItemModalTitle={'Abstract of Bids and Quotation Details'}
+      detailSubItemBaseEndpoint={'/abstract-quotations'}
+      printMainItemModalTitle={'Print Purchase Request'}
+      printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
+      printSubItemModalTitle={'Print Abstract of Bids and Quotation'}
+      printSubItemBaseEndpoint={`/documents/${subDocumentType}/prints`}
+      logMainItemModalTitle={'Purchase Request Logs'}
+      logSubItemModalTitle={'Abstract of Bids and Quotation Logs'}
+      subButtonLabel={'Abstracts'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -242,7 +260,7 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -250,10 +268,6 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showDetailsFirst
-      autoCollapseSubItems={'all'}
-      enableUpdateSubItem
     />
   );
 };

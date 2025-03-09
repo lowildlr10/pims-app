@@ -123,13 +123,39 @@ type DataTableProps = {
   sortDirection?: string;
 
   search?: string;
-  enableCreateSubItem?: boolean;
-  enableUpdateSubItem?: boolean;
-  itemsClickable?: boolean;
   showSearch?: boolean;
   showCreate?: boolean;
-  showDetailsFirst?: boolean;
+  defaultModalOnClick?: 'update' | 'details';
+  showCreateSubItem?: boolean;
+  mainItemsClickable?: boolean;
+  subItemsClickable?: boolean;
   autoCollapseSubItems?: 'all' | 'first' | 'none';
+
+  createMainItemModalTitle?: string;
+  createMainItemEndpoint?: string;
+  createSubItemModalTitle?: string;
+  createSubItemEndpoint?: string;
+  createModalFullscreen?: boolean;
+  updateMainItemModalTitle?: string;
+  updateMainItemBaseEndpoint?: string;
+  updateSubItemModalTitle?: string;
+  updateSubItemBaseEndpoint?: string;
+  updateModalFullscreen?: boolean;
+  detailMainItemModalTitle?: string;
+  detailMainItemBaseEndpoint?: string;
+  detailSubItemModalTitle?: string;
+  detailSubItemBaseEndpoint?: string;
+  printMainItemModalTitle?: string;
+  printSubItemModalTitle?: string;
+  printMainItemBaseEndpoint?: string;
+  printSubItemBaseEndpoint?: string;
+  printMainItemDefaultPaper?: string;
+  printSubItemDefaultPaper?: string;
+  logMainItemModalTitle?: string;
+  logMainItemEndpoint?: string;
+  logSubItemModalTitle?: string;
+  logSuItemEndpoint?: string;
+  subButtonLabel?: string;
 
   data: TableDataType;
   perPage: number;
@@ -142,7 +168,7 @@ type DataTableProps = {
   to: number | string;
   total: number | string;
 
-  refreshData?: (param: any) => void;
+  refreshData?: () => void;
 
   onChange?: (
     _search?: string,
@@ -191,7 +217,7 @@ type DetailActionProps = {
   hasStatus?: boolean;
   status?: string;
   stack?: ModalStackReturnType;
-  updateTable?: (id: string | null, payload: any) => void;
+  updateTable?: (id: string | null) => void;
 };
 
 type DetailModalProps = {
@@ -206,7 +232,7 @@ type DetailModalProps = {
   showEdit?: boolean;
   stack?: ModalStackReturnType;
   close: () => void;
-  updateTable?: (id: string | null, payload: any) => void;
+  updateTable?: (id: string | null) => void;
 };
 
 type ActionModalProps = {
@@ -220,7 +246,7 @@ type ActionModalProps = {
   opened: boolean;
   close: () => void;
   stack?: ModalStackReturnType;
-  updateTable?: (id: string | null, payload: any) => void;
+  updateTable?: (id: string | null) => void;
 };
 
 type PrintModalProps = {
@@ -257,7 +283,7 @@ type CreateModalProps = {
   fullscreen?: boolean;
   stack?: ModalStackReturnType;
   close: () => void;
-  updateTable?: (id: string | null, payload: any) => void;
+  updateTable?: (id: string | null) => void;
 };
 
 type UpdateModalProps = {
@@ -269,7 +295,7 @@ type UpdateModalProps = {
   fullscreen?: boolean;
   stack?: ModalStackReturnType;
   close: () => void;
-  updateTable?: (id: string | null, payload: any, isSubBody?: boolean) => void;
+  updateTable?: (id: string | null) => void;
 };
 
 type ModalDivisionContentProps = {
@@ -282,6 +308,7 @@ type ModalSectionContentProps = {
   data: SectionType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+  isCreate?: boolean | undefined;
 };
 
 type ModalRoleContentProps = {

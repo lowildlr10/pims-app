@@ -472,7 +472,7 @@ const PurchaseRequestContentClient = forwardRef<
                         ? [
                             {
                               value: currentData?.section_id ?? '',
-                              label: currentData?.section_name ?? '',
+                              label: currentData?.section?.section_name ?? '',
                             },
                           ]
                         : undefined
@@ -487,7 +487,7 @@ const PurchaseRequestContentClient = forwardRef<
                   <TextInput
                     variant={'unstyled'}
                     placeholder={'None'}
-                    value={currentData?.section_name ?? '-'}
+                    value={currentData?.section?.section_name ?? '-'}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     flex={1}
                     readOnly
@@ -793,7 +793,7 @@ const PurchaseRequestContentClient = forwardRef<
                   ? [
                       {
                         value: currentData?.funding_source_id ?? '',
-                        label: currentData?.funding_source_title ?? '',
+                        label: currentData?.funding_source?.title ?? '',
                       },
                     ]
                   : undefined
@@ -807,7 +807,7 @@ const PurchaseRequestContentClient = forwardRef<
               label={'Funding Source / Project'}
               variant={'unstyled'}
               placeholder={'None'}
-              value={currentData?.funding_source_title ?? '-'}
+              value={currentData?.funding_source?.title ?? '-'}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               flex={1}
               readOnly
@@ -836,7 +836,7 @@ const PurchaseRequestContentClient = forwardRef<
                     ? [
                         {
                           value: currentData?.requested_by_id ?? '',
-                          label: currentData?.requestor_fullname ?? '',
+                          label: currentData?.requestor?.fullname ?? '',
                         },
                       ]
                     : undefined
@@ -851,7 +851,7 @@ const PurchaseRequestContentClient = forwardRef<
                 label={'Requested By'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                value={currentData?.requestor_fullname ?? '-'}
+                value={currentData?.requestor?.fullname ?? '-'}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
@@ -879,7 +879,9 @@ const PurchaseRequestContentClient = forwardRef<
                     ? [
                         {
                           value: currentData?.sig_cash_availability_id ?? '',
-                          label: currentData?.cash_available_fullname ?? '',
+                          label:
+                            currentData?.signatory_cash_available?.user
+                              ?.fullname ?? '',
                         },
                       ]
                     : undefined
@@ -896,7 +898,9 @@ const PurchaseRequestContentClient = forwardRef<
                 label={'Cash Availability'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                value={currentData?.cash_available_fullname ?? '-'}
+                value={
+                  currentData?.signatory_cash_available?.user?.fullname ?? '-'
+                }
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly
@@ -926,7 +930,9 @@ const PurchaseRequestContentClient = forwardRef<
                     ? [
                         {
                           value: currentData?.sig_approved_by_id ?? '',
-                          label: currentData?.approval_fullname ?? '',
+                          label:
+                            currentData?.signatory_approval?.user?.fullname ??
+                            '',
                         },
                       ]
                     : undefined
@@ -941,7 +947,7 @@ const PurchaseRequestContentClient = forwardRef<
                 label={'Approved By'}
                 variant={'unstyled'}
                 placeholder={'None'}
-                value={currentData?.approval_fullname ?? '-'}
+                value={currentData?.signatory_approval?.user?.fullname ?? '-'}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
                 readOnly

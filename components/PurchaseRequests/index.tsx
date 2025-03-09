@@ -33,7 +33,7 @@ const defaultTableData: TableDataType = {
     {
       id: 'purpose_formatted',
       label: 'Purpose',
-      width: '31%',
+      width: '33%',
       sortable: true,
     },
     {
@@ -48,43 +48,6 @@ const defaultTableData: TableDataType = {
       width: '16%',
       sortable: true,
     },
-    {
-      id: 'show-items',
-      label: '',
-      width: '2%',
-    },
-  ],
-  subHead: [
-    {
-      id: 'quantity_formatted',
-      label: 'Quantity',
-      width: '10%',
-    },
-    {
-      id: 'unit_issue_formatted',
-      label: 'Unit of Issue',
-      width: '10%',
-    },
-    {
-      id: 'description',
-      label: 'Description',
-      width: '40%',
-    },
-    {
-      id: 'stock_no_formatted',
-      label: 'Stock No',
-      width: '10%',
-    },
-    {
-      id: 'estimated_unit_cost_formatted',
-      label: 'Estimated Unit Cost',
-      width: '15%',
-    },
-    {
-      id: 'estimated_cost_formatted',
-      label: 'Estimated Cost',
-      width: '15%',
-    },
   ],
   body: [],
 };
@@ -97,6 +60,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
   const [columnSort, setColumnSort] = useState('pr_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
+  const [documentType] = useState<SignatoryDocumentType>('pr');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
@@ -135,19 +99,11 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: PurchaseRequestType) => {
-      const {
-        section,
-        funding_source,
-        requestor,
-        signatory_cash_available,
-        signatory_approval,
-        items,
-        ..._data
-      } = body;
+    const prData = data?.data?.map((body: PurchaseRequestType) => {
+      const { section, funding_source, requestor, ...prData } = body;
 
       return {
-        ..._data,
+        ...prData,
         pr_date_formatted: dayjs(body.pr_date).format('MM/DD/YYYY'),
         status_formatted: (
           <StatusClient
@@ -155,43 +111,43 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
             status={body.status}
           />
         ),
-        section_name: section?.section_name ?? '-',
         funding_source_title: funding_source?.title ?? '-',
         requestor_fullname: body.requestor?.fullname ?? '-',
-        cash_available_fullname: signatory_cash_available?.user?.fullname,
-        approval_fullname: signatory_approval?.user?.fullname,
         purpose_formatted: Helper.shortenText(
           body.purpose ?? '-',
           lgScreenAndBelow ? 80 : 150
         ),
-        items,
-        sub_body:
-          items?.map((subBody: PurchaseRequestItemType) => {
-            return {
-              ...subBody,
-              quantity_formatted: String(subBody.quantity),
-              stock_no_formatted: String(subBody.stock_no),
-              unit_issue_formatted: subBody.unit_issue?.unit_name ?? '-',
-            };
-          }) || [],
       };
     });
 
     setTableData((prevState) => ({
       ...prevState,
-      body: _data ?? [],
+      body: prData ?? [],
     }));
   }, [data, lgScreenAndBelow]);
 
   return (
     <DataTableClient
       mainModule={'pr'}
-      subModule={'pr-item'}
       user={user}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      showCreate
+      defaultModalOnClick={'details'}
+      createMainItemModalTitle={'Create Purchase Request'}
+      createMainItemEndpoint={'/purchase-requests'}
+      createModalFullscreen
+      updateMainItemModalTitle={'Update Purchase Request'}
+      updateMainItemBaseEndpoint={'/purchase-requests'}
+      updateModalFullscreen
+      detailMainItemModalTitle={'Purchase Request Details'}
+      detailMainItemBaseEndpoint={'/purchase-requests'}
+      printMainItemModalTitle={'Print Purchase Request'}
+      printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
+      logMainItemModalTitle={'Purchase Request Logs'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -200,7 +156,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -208,10 +164,6 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
-      showDetailsFirst
-      autoCollapseSubItems={'none'}
     />
   );
 };

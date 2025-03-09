@@ -77,7 +77,7 @@ const UpdateModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(data?.id ?? null, payload);
+        if (updateTable) updateTable(data?.id ?? null);
 
         setPayload({});
         setLoading(false);

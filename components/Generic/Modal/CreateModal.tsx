@@ -75,7 +75,7 @@ const CreateModalClient = ({
           color: 'green',
         });
 
-        if (updateTable) updateTable(null, payload);
+        if (updateTable) updateTable(null);
 
         setPayload({});
         setLoading(false);
@@ -132,6 +132,7 @@ const CreateModalClient = ({
             data={data}
             handleCreateUpdate={handleCreate}
             setPayload={setPayload}
+            isCreate
           />
         )}
 

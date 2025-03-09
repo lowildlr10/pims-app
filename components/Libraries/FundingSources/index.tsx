@@ -35,7 +35,7 @@ const defaultTableData: TableDataType = {
 const FundingSourcesClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('title');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
@@ -111,6 +111,13 @@ const FundingSourcesClient = ({ permissions }: LibraryProps) => {
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
+      showSearch
+      showCreate
+      createMainItemModalTitle={'Create Funding Source/Project'}
+      createMainItemEndpoint={'/libraries/funding-sources'}
+      updateMainItemModalTitle={'Update Funding Source/Project'}
+      updateMainItemBaseEndpoint={'/libraries/funding-sources'}
+      detailMainItemBaseEndpoint={'/libraries/funding-sources'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -119,7 +126,7 @@ const FundingSourcesClient = ({ permissions }: LibraryProps) => {
       from={data?.from ?? 0}
       to={data?.to ?? 0}
       total={data?.total ?? 0}
-      refreshData={(params) => mutate(params)}
+      refreshData={mutate}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);
@@ -127,8 +134,6 @@ const FundingSourcesClient = ({ permissions }: LibraryProps) => {
         setColumnSort(_columnSort ?? columnSort);
         setSortDirection(_sortDirection ?? 'desc');
       }}
-      showSearch
-      showCreate
     />
   );
 };
