@@ -73,6 +73,8 @@ const DataTableClient = ({
   printSubItemBaseEndpoint = '',
   printMainItemDefaultPaper = 'A4',
   printSubItemDefaultPaper = 'A4',
+  printMainItemDefaultOrientation = 'P',
+  printSubItemDefaultOrientation = 'L',
   logMainItemModalTitle = 'Logs',
   logMainItemEndpoint = '/logs',
   logSubItemModalTitle = 'Logs',
@@ -887,10 +889,15 @@ const DataTableClient = ({
                   ? `${printSubItemBaseEndpoint}/${currentId}`
                   : ''
             }
-            defaultValue={
+            defaultPaper={
               currentOpenedModuleType === 'main'
                 ? printMainItemDefaultPaper
                 : printSubItemDefaultPaper
+            }
+            defaultOrientation={
+              currentOpenedModuleType === 'main'
+                ? printMainItemDefaultOrientation
+                : printSubItemDefaultOrientation
             }
             opened={stack.register('print-modal').opened}
             stack={stack}

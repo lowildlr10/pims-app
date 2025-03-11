@@ -71,7 +71,7 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
   },
   {
     id: 'include_checkbox',
-    label: 'Included?',
+    label: 'Unawarded',
     width: '2%',
   },
 ];
@@ -104,11 +104,12 @@ const RequestQuotionContentClient = forwardRef<
               unit_cost: item?.unit_cost ?? undefined,
               total_cost: item?.total_cost ?? undefined,
               included:
-                item.pr_item?.awarded_to_id === undefined ||
+                item?.included ??
+                (item.pr_item?.awarded_to_id === undefined ||
                 item.pr_item?.awarded_to_id === null ||
                 !!item.pr_item.awarded_to_id === false
                   ? true
-                  : false,
+                  : false),
             }))
           : [],
       vat_registered:
@@ -184,7 +185,7 @@ const RequestQuotionContentClient = forwardRef<
   useEffect(() => {
     API.get('/companies')
       .then((res) => {
-        const company: CompanyType = res?.currentData?.company;
+        const company: CompanyType = res?.data?.company;
 
         setMunicipality(company?.municipality?.toUpperCase() ?? '');
       })
@@ -267,8 +268,14 @@ const RequestQuotionContentClient = forwardRef<
             <Textarea
               key={form.key(`items.${index}.brand_model`)}
               {...form.getInputProps(`items.${index}.brand_model`)}
-              variant={isCreate || !item.included ? 'filled' : 'unstyled'}
-              placeholder={isCreate ? 'To be quoted' : 'Brand/Model'}
+              variant={
+                (isCreate || !item.included) && !readOnly
+                  ? 'filled'
+                  : 'unstyled'
+              }
+              placeholder={
+                isCreate ? 'To be quoted' : readOnly ? '' : 'Brand/Model'
+              }
               defaultValue={item?.brand_model}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
@@ -284,8 +291,14 @@ const RequestQuotionContentClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.unit_cost`)}
               {...form.getInputProps(`items.${index}.unit_cost`)}
-              variant={isCreate || !item.included ? 'filled' : 'unstyled'}
-              placeholder={isCreate ? 'To be quoted' : 'Unit Cost'}
+              variant={
+                (isCreate || !item.included) && !readOnly
+                  ? 'filled'
+                  : 'unstyled'
+              }
+              placeholder={
+                isCreate ? 'To be quoted' : readOnly ? '' : 'Unit Cost'
+              }
               defaultValue={item?.unit_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -308,7 +321,7 @@ const RequestQuotionContentClient = forwardRef<
               defaultValue={item?.total_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
-              clampBehavior={'strict'}
+              // clampBehavior={'strict'}
               decimalScale={2}
               fixedDecimalScale
               thousandSeparator={','}

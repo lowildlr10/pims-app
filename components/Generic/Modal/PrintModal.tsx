@@ -26,7 +26,8 @@ import { useMediaQuery } from '@mantine/hooks';
 const PrintModalClient = ({
   title,
   endpoint,
-  defaultValue,
+  defaultPaper,
+  defaultOrientation,
   opened,
   close,
 }: PrintModalProps) => {
@@ -35,7 +36,9 @@ const PrintModalClient = ({
   const [filename, setFilename] = useState<string>('');
   const [base64File, setBase64File] = useState<string>();
   const [paperId, setPaperId] = useState<string>('');
-  const [pageOrientation, setPageOrientation] = useState<string>('P');
+  const [pageOrientation, setPageOrientation] = useState<string>(
+    defaultOrientation ?? 'P'
+  );
   const [showSignatures, setShowSignatures] = useState<boolean>(true);
 
   useEffect(() => {
@@ -44,8 +47,13 @@ const PrintModalClient = ({
   }, [paperId, pageOrientation, showSignatures]);
 
   useEffect(() => {
-    if (!opened) setPaperId('');
-  }, [opened]);
+    if (!opened) {
+      setPaperId('');
+      setPageOrientation('P');
+    } else {
+      if (defaultOrientation) setPageOrientation(defaultOrientation);
+    }
+  }, [opened, defaultOrientation]);
 
   const handleFetchData = () => {
     setLoading(true);
@@ -169,7 +177,7 @@ const PrintModalClient = ({
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   endpoint={'/libraries/paper-sizes'}
                   column={'paper_type'}
-                  defaultValue={defaultValue}
+                  defaultValue={defaultPaper}
                   value={paperId}
                   onChange={(value) => setPaperId(value)}
                   hasPresetValue
@@ -190,6 +198,7 @@ const PrintModalClient = ({
                       label: 'Landscape',
                     },
                   ]}
+                  defaultValue={defaultOrientation}
                   value={pageOrientation}
                   onChange={(value) => setPageOrientation(value)}
                   hasPresetValue

@@ -249,6 +249,8 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
       printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
       printSubItemModalTitle={'Print Abstract of Bids and Quotation'}
       printSubItemBaseEndpoint={`/documents/${subDocumentType}/prints`}
+      printSubItemDefaultPaper={'long'}
+      printSubItemDefaultOrientation={'L'}
       logMainItemModalTitle={'Purchase Request Logs'}
       logSubItemModalTitle={'Abstract of Bids and Quotation Logs'}
       subButtonLabel={'Abstracts'}

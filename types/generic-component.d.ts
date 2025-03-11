@@ -152,6 +152,8 @@ type DataTableProps = {
   printSubItemBaseEndpoint?: string;
   printMainItemDefaultPaper?: string;
   printSubItemDefaultPaper?: string;
+  printMainItemDefaultOrientation?: 'P' | 'L';
+  printSubItemDefaultOrientation?: 'P' | 'L';
   logMainItemModalTitle?: string;
   logMainItemEndpoint?: string;
   logSubItemModalTitle?: string;
@@ -254,7 +256,8 @@ type PrintModalProps = {
   title: string;
   endpoint: string;
   opened: boolean;
-  defaultValue?: string;
+  defaultPaper?: string;
+  defaultOrientation?: 'P' | 'L';
   stack?: ModalStackReturnType;
   close: () => void;
 };

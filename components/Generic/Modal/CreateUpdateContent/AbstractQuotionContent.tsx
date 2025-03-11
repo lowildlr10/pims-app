@@ -23,20 +23,9 @@ import React, {
 import DynamicSelect from '../../DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
-import {
-  IconAsterisk,
-  IconCalendar,
-  IconCalendarClock,
-} from '@tabler/icons-react';
-import { DateInput, DateTimePicker } from '@mantine/dates';
+import { IconAsterisk, IconCalendar } from '@tabler/icons-react';
+import { DateInput } from '@mantine/dates';
 import dayjs from 'dayjs';
-import API from '@/libs/API';
-import { getErrors } from '@/libs/Errors';
-import { notify } from '@/libs/Notification';
-import { Select } from '@mantine/core';
-import { List } from '@mantine/core';
-import DynamicMultiselect from '../../DynamicMultiselect';
-import { Radio } from '@mantine/core';
 import { Tooltip } from '@mantine/core';
 import { NumberFormatter } from '@mantine/core';
 
@@ -112,13 +101,14 @@ const AbstractQuotionContentClient = forwardRef<
                     : (detail?.total_cost ?? 0),
               })),
               awardee_id: item?.awardee_id ?? '',
-              awardee_name: item.awardee?.supplier_name ?? 'No awardee',
+              awardee_name: item.awardee?.supplier_name ?? '',
               included:
-                item.pr_item?.awarded_to_id === undefined ||
+                item?.included ??
+                (item.pr_item?.awarded_to_id === undefined ||
                 item.pr_item?.awarded_to_id === null ||
                 !!item.pr_item.awarded_to_id === false
                   ? true
-                  : false,
+                  : false),
             }))
           : [],
     }),
@@ -183,7 +173,7 @@ const AbstractQuotionContentClient = forwardRef<
       },
       {
         id: 'include_checkbox',
-        label: 'Included?',
+        label: 'Unawarded',
         width: '3px',
       },
     ]);
@@ -295,7 +285,13 @@ const AbstractQuotionContentClient = forwardRef<
                     `items.${index}.details.${detalIndex}.brand_model`
                   )}
                   variant={isCreate || !item.included ? 'filled' : 'unstyled'}
-                  placeholder={isCreate ? 'To be quoted' : 'Brand/Model'}
+                  placeholder={
+                    isCreate
+                      ? 'To be quoted'
+                      : readOnly
+                        ? 'None'
+                        : 'Brand/Model'
+                  }
                   defaultValue={detail?.brand_model}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   autosize

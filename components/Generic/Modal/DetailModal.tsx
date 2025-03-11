@@ -263,6 +263,16 @@ const DetailModalClient = ({
         }
         break;
 
+      case 'aoq':
+        isEditable = ['draft', 'pending'].includes(currentData?.status ?? '');
+
+        if (showEdit && isEditable) {
+          setShowEditButton(true);
+        } else {
+          setShowEditButton(false);
+        }
+        break;
+
       default:
         setShowEditButton(true);
         break;
