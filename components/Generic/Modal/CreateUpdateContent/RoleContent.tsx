@@ -72,7 +72,7 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
           },
           {
             label: 'Award',
-            value: 'award',
+            value: 'award-aoq',
             checked: false,
           },
           {

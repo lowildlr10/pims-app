@@ -53,7 +53,8 @@ type ActionType =
   | 'canvass_complete'
   | 'approve_rfq'
   | 'pending_abstract'
-  | 'approve_abstract';
+  | 'approve_abstract'
+  | 'award_aoq';
 
 type CompanyType = {
   id?: string;

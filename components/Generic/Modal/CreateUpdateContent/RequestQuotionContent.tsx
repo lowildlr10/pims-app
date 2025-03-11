@@ -144,6 +144,12 @@ const RequestQuotionContentClient = forwardRef<
           items: resData?.items?.map((item) => ({
             ...item,
             pr_item_id: item.id,
+            pr_item: {
+              stock_no: item?.stock_no,
+              quantity: item?.quantity,
+              description: item?.description,
+              awarded_to_id: item?.awarded_to_id,
+            },
           })),
           pr_no: resData?.pr_no,
           funding_source_title: resData?.funding_source?.title,

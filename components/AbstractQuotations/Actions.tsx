@@ -9,11 +9,11 @@ const ActionsClient = ({
   id,
   status,
   handleOpenActionModal,
-}: RequestQuotationActionProps) => {
+}: AbstractQuotationActionProps) => {
   return (
     <>
       {status === 'draft' &&
-        ['supply:*', ...getAllowedPermissions('rfq', 'issue')].some(
+        ['supply:*', ...getAllowedPermissions('aoq', 'pending')].some(
           (permission) => permissions?.includes(permission)
         ) && (
           <Menu.Item
@@ -23,20 +23,20 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'issue_canvassing',
-                'Issue for Canvassing',
-                'Are you sure you want to issue this Request for Quotation for canvassing?',
+                'pending_abstract',
+                'Pending Abstract',
+                'Are you sure you want to set this Abstract of Bids and Quotation to pending?',
                 'var(--mantine-color-gray-7)',
-                'Issue',
-                `/request-quotations/${id}/issue-canvassing`
+                'Set to Pending',
+                `/abstract-quotations/${id}/pending`
               )
             }
           >
-            Issue for Canvassing
+            Set to Pending
           </Menu.Item>
         )}
 
-      {status === 'canvassing' &&
+      {status === 'pending' &&
         ['supply:*', ...getAllowedPermissions('rfq', 'complete')].some(
           (permission) => permissions?.includes(permission)
         ) && (
@@ -51,49 +51,20 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'canvass_complete',
-                'Canvass Complete',
-                'Are you sure you want to set this Request for Quotation to completed?',
+                'approve_abstract',
+                'Approve Abstract',
+                'Are you sure you want to set this Abstract of Bids and Quotation to approved?',
                 'var(--mantine-color-green-7)',
-                'Complete',
-                `/request-quotations/${id}/canvass-complete`
+                'Approve',
+                `/abstract-quotations/${id}/approve`
               )
             }
           >
-            Completed
+            Approve
           </Menu.Item>
         )}
 
-      {status !== 'cancelled' &&
-        status !== 'completed' &&
-        ['supply:*', ...getAllowedPermissions('rfq', 'cancel')].some(
-          (permission) => permissions?.includes(permission)
-        ) && (
-          <Menu.Item
-            leftSection={
-              <IconCancel
-                color={'var(--mantine-color-red-7)'}
-                size={18}
-                stroke={1.5}
-              />
-            }
-            onClick={() =>
-              handleOpenActionModal &&
-              handleOpenActionModal(
-                'cancel',
-                'Cancel',
-                'Are you sure you want to cancel this Request for Quotation?',
-                'var(--mantine-color-red-7)',
-                'Cancel',
-                `/request-quotations/${id}/cancel`
-              )
-            }
-          >
-            Cancel RFQ
-          </Menu.Item>
-        )}
-
-      {(status === 'cancelled' || status === 'completed') && (
+      {status === 'approved' && (
         <Menu.Item color={'var(--mantine-color-gray-5)'}>
           No available action
         </Menu.Item>
