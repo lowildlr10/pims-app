@@ -1,6 +1,11 @@
 import Helper from '@/utils/Helpers';
 import { Badge, Loader, Tooltip } from '@mantine/core';
-import { IconCancel, IconCheck, IconFileIsr } from '@tabler/icons-react';
+import {
+  IconAwardFilled,
+  IconCancel,
+  IconCheck,
+  IconFileIsr,
+} from '@tabler/icons-react';
 import React from 'react';
 
 const StatusClient = ({
@@ -59,7 +64,7 @@ const StatusClient = ({
             size={size}
             color={'var(--mantine-color-green-9)'}
             variant={'light'}
-            leftSection={<IconCheck size={18} stroke={1.5} />}
+            leftSection={<IconAwardFilled size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>

@@ -481,7 +481,10 @@ const AbstractQuotionContentClient = forwardRef<
                   },
                 }}
                 endpoint={'/libraries/bids-awards-committees'}
-                endpointParams={{ paginated: false }}
+                endpointParams={{
+                  paginated: false,
+                  show_all: true,
+                }}
                 column={'committee_name'}
                 defaultData={
                   currentData?.bids_awards_committee_id
@@ -543,7 +546,10 @@ const AbstractQuotionContentClient = forwardRef<
                   },
                 }}
                 endpoint={'/libraries/procurement-modes'}
-                endpointParams={{ paginated: false }}
+                endpointParams={{
+                  paginated: false,
+                  show_all: true,
+                }}
                 column={'mode_name'}
                 defaultData={
                   currentData?.mode_procurement_id

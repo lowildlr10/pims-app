@@ -465,7 +465,7 @@ const PurchaseRequestContentClient = forwardRef<
                     {...form.getInputProps('section_id')}
                     variant={'unstyled'}
                     endpoint={'/accounts/sections'}
-                    endpointParams={{ paginated: false }}
+                    endpointParams={{ paginated: false, show_all: true }}
                     column={'section_name'}
                     defaultData={
                       currentData?.section_id

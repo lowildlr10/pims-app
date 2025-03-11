@@ -620,7 +620,7 @@ const RequestQuotionContentClient = forwardRef<
                         },
                       }}
                       endpoint={'/libraries/suppliers'}
-                      endpointParams={{ paginated: false }}
+                      endpointParams={{ paginated: false, show_all: true }}
                       column={'supplier_name'}
                       defaultData={
                         currentData?.supplier_id
