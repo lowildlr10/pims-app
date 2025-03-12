@@ -1,6 +1,6 @@
 import { Loader } from '@mantine/core';
 import { Menu } from '@mantine/core';
-import { IconCancel, IconCheck } from '@tabler/icons-react';
+import { IconCheck } from '@tabler/icons-react';
 import React from 'react';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 

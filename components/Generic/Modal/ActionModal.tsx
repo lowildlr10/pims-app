@@ -12,6 +12,7 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
+  IconAwardFilled,
   IconCancel,
   IconCheck,
   IconChecklist,
@@ -127,6 +128,27 @@ const ActionModalClient = ({
         return (
           <IconChecklist
             color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'pending_abstract':
+        return <Loader size={18} color={'var(--mantine-color-gray-3)'} />;
+
+      case 'approve_abstract':
+        return (
+          <IconCheck
+            color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'award_aoq':
+        return (
+          <IconAwardFilled
+            color={'var(--mantine-color-lime-3)'}
             size={18}
             stroke={1.5}
           />

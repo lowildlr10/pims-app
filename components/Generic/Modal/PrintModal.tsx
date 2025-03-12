@@ -51,7 +51,7 @@ const PrintModalClient = ({
       setPaperId('');
       setPageOrientation('P');
     } else {
-      if (defaultOrientation) setPageOrientation(defaultOrientation);
+      if (defaultOrientation) setPageOrientation(defaultOrientation ?? 'P');
     }
   }, [opened, defaultOrientation]);
 
