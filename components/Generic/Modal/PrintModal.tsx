@@ -61,7 +61,7 @@ const PrintModalClient = ({
     setFilename('');
     setBase64File('');
 
-    API.get(endpoint, {
+    API.post(endpoint, {
       paper_id: paperId,
       page_orientation: pageOrientation,
       show_signatures: showSignatures,
