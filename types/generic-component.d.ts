@@ -495,3 +495,13 @@ type AbstractQuotationItemsFieldType = {
   awardee_name?: string;
   included?: boolean;
 };
+
+type PurchaseOrderItemsFieldType = {
+  key: string;
+  stock_no?: number;
+  unit_issue?: string;
+  description?: string;
+  quantity?: number;
+  unit_cost?: number;
+  total_cost?: number;
+};

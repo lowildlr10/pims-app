@@ -27,7 +27,10 @@ import RequestQuotationStatusClient from '@/components/RequestQuotations/Status'
 import RequestQuotationActionsClient from '@/components/RequestQuotations/Actions';
 import AbstractQuotationStatusClient from '@/components/AbstractQuotations/Status';
 import AbstractQuotationActionsClient from '@/components/AbstractQuotations/Actions';
-import AbstractQuotionContentClient from '../../AbstractQuotations/AbstractQuotionContent';
+import PurchaseOrderStatusClient from '@/components/PurchaseOrders/Status';
+import PurchaseOrderActionsClient from '@/components/PurchaseOrders/Actions';
+import AbstractQuotionContentClient from '../../AbstractQuotations/Form';
+import PurchaseOrderContentClient from '@/components/PurchaseOrders/Form';
 
 const DetailActionsClient = ({
   permissions,
@@ -99,6 +102,13 @@ const DetailActionsClient = ({
             status={(currentStatus as AbstractQuotationStatus) ?? ''}
           />
         );
+      case 'po':
+        return (
+          <PurchaseOrderStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as PurchaseOrderStatus) ?? ''}
+          />
+        );
       default:
         return <>-</>;
     }
@@ -139,6 +149,15 @@ const DetailActionsClient = ({
 
           {content === 'aoq' && (
             <AbstractQuotationActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'po' && (
+            <PurchaseOrderActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
@@ -328,6 +347,10 @@ const DetailModalClient = ({
 
           {opened && content === 'aoq' && (
             <AbstractQuotionContentClient data={currentData} readOnly />
+          )}
+
+          {opened && content === 'po' && (
+            <PurchaseOrderContentClient data={currentData} readOnly />
           )}
         </Paper>
       </Stack>

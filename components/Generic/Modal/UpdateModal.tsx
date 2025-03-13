@@ -30,7 +30,7 @@ import ResponsibilityCenterContentClient from '../../Libraries/ResposibilityCent
 import PurchaseRequestContentClient from '../../PurchaseRequests/Form';
 import { useMediaQuery } from '@mantine/hooks';
 import RequestQuotionContentClient from '../../RequestQuotations/Form';
-import AbstractQuotionContentClient from '../../AbstractQuotations/AbstractQuotionContent';
+import AbstractQuotionContentClient from '../../AbstractQuotations/Form';
 
 const UpdateModalClient = ({
   title,
