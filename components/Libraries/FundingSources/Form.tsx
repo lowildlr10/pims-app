@@ -1,7 +1,7 @@
 import { NumberInput, Stack, Switch, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
-import DynamicAutocomplete from '../../DynamicAutocomplete';
+import DynamicAutocomplete from '../../Generic/DynamicAutocomplete';
 
 const FundingSourceContentClient = forwardRef<
   HTMLFormElement,

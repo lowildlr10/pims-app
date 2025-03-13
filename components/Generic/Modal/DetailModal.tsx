@@ -10,7 +10,7 @@ import {
   Text,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
+import PurchaseRequestContentClient from '../../PurchaseRequests/Form';
 import {
   IconActivity,
   IconHandFinger,
@@ -22,12 +22,12 @@ import PurchaseRequestStatusClient from '@/components/PurchaseRequests/Status';
 import PurchaseRequestActionsClient from '@/components/PurchaseRequests/Actions';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import ActionModalClient from './ActionModal';
-import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
+import RequestQuotionContentClient from '../../RequestQuotations/Form';
 import RequestQuotationStatusClient from '@/components/RequestQuotations/Status';
 import RequestQuotationActionsClient from '@/components/RequestQuotations/Actions';
 import AbstractQuotationStatusClient from '@/components/AbstractQuotations/Status';
 import AbstractQuotationActionsClient from '@/components/AbstractQuotations/Actions';
-import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
+import AbstractQuotionContentClient from '../../AbstractQuotations/AbstractQuotionContent';
 
 const DetailActionsClient = ({
   permissions,

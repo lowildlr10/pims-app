@@ -20,7 +20,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import DynamicSelect from '../../DynamicSelect';
+import DynamicSelect from '../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
 import {
@@ -35,7 +35,7 @@ import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import { Select } from '@mantine/core';
 import { List } from '@mantine/core';
-import DynamicMultiselect from '../../DynamicMultiselect';
+import DynamicMultiselect from '../Generic/DynamicMultiselect';
 import { Radio } from '@mantine/core';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [

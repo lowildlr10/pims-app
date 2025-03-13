@@ -7,30 +7,30 @@ import {
   Stack,
 } from '@mantine/core';
 import React, { useRef, useState } from 'react';
-import DivisionContentClient from './CreateUpdateContent/DivisionContent';
-import SectionContentClient from './CreateUpdateContent/SectionContent';
+import DivisionContentClient from '../../UserManagement/DivisionSection/DivisionForm';
+import SectionContentClient from '../../UserManagement/DivisionSection/SectionForm';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
-import RoleContentClient from './CreateUpdateContent/RoleContent';
+import RoleContentClient from '../../UserManagement/Roles/Form';
 import { IconCancel, IconPencil } from '@tabler/icons-react';
-import UserContentClient from './CreateUpdateContent/UserContent';
-import FundingSourceContentClient from './CreateUpdateContent/FundingSourceContent';
-import ItemClassificationContentClient from './CreateUpdateContent/ItemClassificationContent';
-import MfoPapContentClient from './CreateUpdateContent/MfoPapContent';
-import ProcurementModeContentClient from './CreateUpdateContent/ProcurementModeContent';
-import PaperSizeContentClient from './CreateUpdateContent/PaperSizeContent';
-import SupplierContentClient from './CreateUpdateContent/SupplierContent';
-import UacsCodeClassificationContentClient from './CreateUpdateContent/UacsCodeClassificationContent';
-import UacsCodeContentClient from './CreateUpdateContent/UacsCodeContent';
-import UnitIssueContentClient from './CreateUpdateContent/UnitIssueContent';
-import SignatoryContentClient from './CreateUpdateContent/SignatoryContent';
-import BidsAwardsCommitteeContentClient from './CreateUpdateContent/BidsAwardsCommitteeContent';
-import ResponsibilityCenterContentClient from './CreateUpdateContent/ResponsibilityCenterContent';
-import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
+import UserContentClient from '../../UserManagement/Users/Form';
+import FundingSourceContentClient from '../../Libraries/FundingSources/Form';
+import ItemClassificationContentClient from '../../Libraries/ItemClassifications/Form';
+import MfoPapContentClient from '../../Libraries/MfoPaps/Form';
+import ProcurementModeContentClient from '../../Libraries/ProcurementModes/Form';
+import PaperSizeContentClient from '../../Libraries/PaperSizes/Form';
+import SupplierContentClient from '../../Libraries/Suppliers/Form';
+import UacsCodeClassificationContentClient from '../../Libraries/UacsClassifications/Form';
+import UacsCodeContentClient from '../../Libraries/UacsCodes/Form';
+import UnitIssueContentClient from '../../Libraries/UnitIssues/Form';
+import SignatoryContentClient from '../../Libraries/Signatories/Form';
+import BidsAwardsCommitteeContentClient from '../../Libraries/BidsAwardsCommittees/Form';
+import ResponsibilityCenterContentClient from '../../Libraries/ResposibilityCenters/Form';
+import PurchaseRequestContentClient from '../../PurchaseRequests/Form';
 import { useMediaQuery } from '@mantine/hooks';
-import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
-import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
+import RequestQuotionContentClient from '../../RequestQuotations/Form';
+import AbstractQuotionContentClient from '../../AbstractQuotations/AbstractQuotionContent';
 
 const UpdateModalClient = ({
   title,

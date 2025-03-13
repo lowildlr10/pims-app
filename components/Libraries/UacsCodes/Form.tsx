@@ -1,7 +1,7 @@
 import { Stack, Switch, Textarea, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
-import DynamicSelect from '../../DynamicSelect';
+import DynamicSelect from '../../Generic/DynamicSelect';
 
 const UacsCodeContentClient = forwardRef<
   HTMLFormElement,

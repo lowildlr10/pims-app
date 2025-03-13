@@ -20,7 +20,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import DynamicSelect from '../../DynamicSelect';
+import DynamicSelect from '../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
 import { IconAsterisk, IconCalendar } from '@tabler/icons-react';
