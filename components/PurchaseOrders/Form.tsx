@@ -3,13 +3,7 @@ import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import { Card, Flex, Group, Text } from '@mantine/core';
 import { Select } from '@mantine/core';
-import {
-  NumberFormatter,
-  Stack,
-  Table,
-  Textarea,
-  TextInput,
-} from '@mantine/core';
+import { NumberInput, Stack, Table, Textarea, TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
@@ -22,6 +16,9 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { ToWords } from 'to-words';
+import DynamicAutocomplete from '../Generic/DynamicAutocomplete';
+import DynamicSelect from '../Generic/DynamicSelect';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -63,15 +60,40 @@ const PurchaseOrderContentClient = forwardRef<
 >(({ data, readOnly, handleCreateUpdate }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [currentData, setCurrentData] = useState(data);
-  const currentForm = useMemo(
-    () => ({
-      document_type: currentData?.document_type ?? 'po',
+  const currentForm = useMemo(() => {
+    const handleConvertAmountToWords = (amount: number) => {
+      const toWords = new ToWords({
+        localeCode: 'en-PH',
+        converterOptions: {
+          currency: true,
+          ignoreDecimal: false,
+          ignoreZeroCurrency: false,
+          doNotAddOnly: false,
+          currencyOptions: {
+            name: 'Peso',
+            plural: 'Pesos',
+            symbol: '₱',
+            fractionalUnit: {
+              name: 'Centavo',
+              plural: 'Centavos',
+              symbol: '',
+            },
+          },
+        },
+      });
+
+      return amount > 0 ? toWords.convert(amount).toUpperCase() : '';
+    };
+
+    return {
       po_date: currentData?.po_date ?? dayjs().format('YYYY-MM-DD'),
       place_delivery: currentData?.place_delivery?.location_name ?? '',
       delivery_date: currentData?.delivery_date ?? '',
       delivery_term: currentData?.delivery_term?.term_name ?? '',
       payment_term: currentData?.payment_term?.term_name ?? '',
-      total_amount_words: currentData?.total_amount_words ?? '',
+      total_amount_words:
+        currentData?.total_amount_words ??
+        handleConvertAmountToWords(currentData?.total_amount ?? 0),
       sig_approval_id: currentData?.sig_approval_id ?? '',
       items:
         currentData?.items &&
@@ -88,9 +110,8 @@ const PurchaseOrderContentClient = forwardRef<
               total_cost: item?.total_cost ?? 0,
             }))
           : [],
-    }),
-    [currentData]
-  );
+    };
+  }, [currentData]);
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: currentForm,
@@ -102,12 +123,11 @@ const PurchaseOrderContentClient = forwardRef<
   );
 
   useEffect(() => {
+    setDocumentType(data?.document_type ?? 'po');
     setCurrentData(data);
   }, [data]);
 
   useEffect(() => {
-    setDocumentType(currentForm.document_type);
-
     form.reset();
     form.setValues(currentForm);
   }, [currentForm]);
@@ -141,8 +161,13 @@ const PurchaseOrderContentClient = forwardRef<
     switch (id) {
       case 'stock_no':
         return (
-          <Table.Td fz={lgScreenAndBelow ? 'sm' : 'md'} align={'center'}>
-            <NumberFormatter value={item?.stock_no} />
+          <Table.Td>
+            <NumberInput
+              size={lgScreenAndBelow ? 'sm' : 'md'}
+              variant={readOnly ? 'unstyled' : 'filled'}
+              value={item?.stock_no}
+              readOnly
+            />
           </Table.Td>
         );
 
@@ -150,7 +175,7 @@ const PurchaseOrderContentClient = forwardRef<
         return (
           <Table.Td align={'center'}>
             <TextInput
-              variant={'unstyled'}
+              variant={readOnly ? 'unstyled' : 'filled'}
               placeholder={'None'}
               defaultValue={item.unit_issue}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -166,9 +191,10 @@ const PurchaseOrderContentClient = forwardRef<
             <Textarea
               key={form.key(`items.${index}.description`)}
               {...form.getInputProps(`items.${index}.description`)}
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={readOnly ? 'unstyled' : 'default'}
               placeholder={'Description'}
-              defaultValue={item?.description}
+              defaultValue={readOnly ? undefined : item.description}
+              value={readOnly ? item.description : undefined}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
               readOnly={readOnly}
@@ -178,31 +204,42 @@ const PurchaseOrderContentClient = forwardRef<
 
       case 'quantity':
         return (
-          <Table.Td fz={lgScreenAndBelow ? 'sm' : 'md'} align={'center'}>
-            <NumberFormatter value={item?.quantity} />
+          <Table.Td>
+            <NumberInput
+              size={lgScreenAndBelow ? 'sm' : 'md'}
+              variant={readOnly ? 'unstyled' : 'filled'}
+              value={item?.quantity}
+              readOnly
+            />
           </Table.Td>
         );
 
       case 'unit_cost':
         return (
-          <Table.Td fz={lgScreenAndBelow ? 'sm' : 'md'} align={'right'}>
-            <NumberFormatter
+          <Table.Td colSpan={readOnly ? 1 : 2}>
+            <NumberInput
+              size={lgScreenAndBelow ? 'sm' : 'md'}
+              variant={readOnly ? 'unstyled' : 'filled'}
               value={item?.unit_cost}
               decimalScale={2}
               fixedDecimalScale
               thousandSeparator={','}
+              readOnly
             />
           </Table.Td>
         );
 
       case 'total_cost':
         return (
-          <Table.Td fz={lgScreenAndBelow ? 'sm' : 'md'} align={'right'}>
-            <NumberFormatter
+          <Table.Td>
+            <NumberInput
+              size={lgScreenAndBelow ? 'sm' : 'md'}
+              variant={readOnly ? 'unstyled' : 'filled'}
               value={item?.total_cost}
               decimalScale={2}
               fixedDecimalScale
               thousandSeparator={','}
+              readOnly
             />
           </Table.Td>
         );
@@ -227,12 +264,13 @@ const PurchaseOrderContentClient = forwardRef<
               ? dayjs(values.delivery_date).format('YYYY-MM-DD')
               : '',
             document_type: documentType,
+            items: JSON.stringify(values.items),
           });
         }
       })}
     >
       <Stack p={'md'} justify={'center'}>
-        <Card
+        {/* <Card
           shadow={'xs'}
           padding={lgScreenAndBelow ? 'md' : 'lg'}
           radius={'xs'}
@@ -259,7 +297,7 @@ const PurchaseOrderContentClient = forwardRef<
               readOnly={readOnly}
             />
           </Stack>
-        </Card>
+        </Card> */}
 
         <Card
           shadow={'xs'}
@@ -325,13 +363,13 @@ const PurchaseOrderContentClient = forwardRef<
                 <Stack
                   p={'sm'}
                   flex={1}
-                  gap={1}
+                  gap={readOnly ? 1 : undefined}
                   bd={'1px solid var(--mantine-color-gray-7)'}
                 >
                   <Group sx={{ flexWrap: 'nowrap' }}>
                     <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Number:</Text>
                     <TextInput
-                      variant={'unstyled'}
+                      variant={readOnly ? 'unstyled' : 'filled'}
                       placeholder={'None'}
                       value={currentData?.po_no ?? '-'}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -417,7 +455,7 @@ const PurchaseOrderContentClient = forwardRef<
                   <Group sx={{ flexWrap: 'nowrap' }}>
                     <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Supplier</Text>
                     <TextInput
-                      variant={'unstyled'}
+                      variant={readOnly ? 'unstyled' : 'filled'}
                       placeholder={'None'}
                       value={currentData?.supplier?.supplier_name ?? '-'}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -457,13 +495,13 @@ const PurchaseOrderContentClient = forwardRef<
                   py={'xs'}
                   justify={'center'}
                   flex={1}
-                  gap={1}
+                  gap={readOnly ? 1 : undefined}
                   bd={'1px solid var(--mantine-color-gray-7)'}
                 >
                   <Group sx={{ flexWrap: 'nowrap' }}>
                     <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Address</Text>
                     <TextInput
-                      variant={'unstyled'}
+                      variant={readOnly ? 'unstyled' : 'filled'}
                       placeholder={'None'}
                       value={currentData?.supplier?.address ?? '-'}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -481,7 +519,7 @@ const PurchaseOrderContentClient = forwardRef<
                   <Group sx={{ flexWrap: 'nowrap' }}>
                     <Text size={lgScreenAndBelow ? 'sm' : 'md'}>TIN</Text>
                     <TextInput
-                      variant={'unstyled'}
+                      variant={readOnly ? 'unstyled' : 'filled'}
                       placeholder={'None'}
                       value={currentData?.supplier?.tin_no ?? '-'}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -545,30 +583,66 @@ const PurchaseOrderContentClient = forwardRef<
                   py={'xs'}
                   justify={'center'}
                   flex={1}
-                  gap={1}
+                  gap={readOnly ? 1 : undefined}
                   bd={'1px solid var(--mantine-color-gray-7)'}
                 >
                   <Group sx={{ flexWrap: 'nowrap' }}>
-                    <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-                      Place of Delivery:
-                    </Text>
-                    <TextInput
-                      variant={'unstyled'}
-                      placeholder={'None'}
-                      defaultValue={
-                        currentData?.place_delivery?.location_name ?? ''
-                      }
-                      size={lgScreenAndBelow ? 'sm' : 'md'}
-                      flex={1}
-                      sx={{
-                        borderBottom: '2px solid var(--mantine-color-gray-5)',
-                        input: {
-                          minHeight: '30px',
-                          height: '30px',
-                        },
-                      }}
-                      readOnly
-                    />
+                    <Flex sx={{ flexBasis: 'auto' }}>
+                      <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                        Place of Delivery:
+                      </Text>
+                      {!readOnly && (
+                        <Stack>
+                          <IconAsterisk
+                            size={7}
+                            color={'var(--mantine-color-red-8)'}
+                            stroke={2}
+                          />
+                        </Stack>
+                      )}
+                    </Flex>
+
+                    {!readOnly ? (
+                      <DynamicAutocomplete
+                        key={form.key('place_delivery')}
+                        {...form.getInputProps('place_delivery')}
+                        variant={'unstyled'}
+                        endpoint={'/libraries/locations'}
+                        endpointParams={{ paginated: false }}
+                        column={'location_name'}
+                        placeholder={'Enter place of delivery here...'}
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        value={form.values.place_delivery}
+                        required={!readOnly}
+                        readOnly={readOnly}
+                        sx={{
+                          flex: 1,
+                          borderBottom: '2px solid var(--mantine-color-gray-5)',
+                          input: {
+                            minHeight: '30px',
+                            height: '30px',
+                          },
+                        }}
+                      />
+                    ) : (
+                      <TextInput
+                        variant={'unstyled'}
+                        placeholder={'None'}
+                        defaultValue={
+                          currentData?.place_delivery?.location_name ?? ''
+                        }
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        flex={1}
+                        sx={{
+                          borderBottom: '2px solid var(--mantine-color-gray-5)',
+                          input: {
+                            minHeight: '30px',
+                            height: '30px',
+                          },
+                        }}
+                        readOnly
+                      />
+                    )}
                   </Group>
                   <Group sx={{ flexWrap: 'nowrap' }}>
                     <Flex sx={{ flexBasis: 'auto' }}>
@@ -632,49 +706,125 @@ const PurchaseOrderContentClient = forwardRef<
                   py={'xs'}
                   justify={'center'}
                   flex={1}
-                  gap={1}
+                  gap={readOnly ? 1 : undefined}
                   bd={'1px solid var(--mantine-color-gray-7)'}
                 >
                   <Group sx={{ flexWrap: 'nowrap' }}>
-                    <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-                      Delivery Term:
-                    </Text>
-                    <TextInput
-                      variant={'unstyled'}
-                      placeholder={'None'}
-                      defaultValue={currentData?.delivery_term?.term_name ?? ''}
-                      size={lgScreenAndBelow ? 'sm' : 'md'}
-                      flex={1}
-                      sx={{
-                        borderBottom: '2px solid var(--mantine-color-gray-5)',
-                        input: {
-                          minHeight: '30px',
-                          height: '30px',
-                        },
-                      }}
-                      readOnly
-                    />
+                    <Flex sx={{ flexBasis: 'auto' }}>
+                      <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                        Delivery Term:
+                      </Text>
+                      {!readOnly && (
+                        <Stack>
+                          <IconAsterisk
+                            size={7}
+                            color={'var(--mantine-color-red-8)'}
+                            stroke={2}
+                          />
+                        </Stack>
+                      )}
+                    </Flex>
+
+                    {!readOnly ? (
+                      <DynamicAutocomplete
+                        key={form.key('delivery_term')}
+                        {...form.getInputProps('delivery_term')}
+                        variant={'unstyled'}
+                        endpoint={'/libraries/delivery-terms'}
+                        endpointParams={{ paginated: false }}
+                        column={'term_name'}
+                        placeholder={'Enter delivery term here...'}
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        value={form.values.delivery_term}
+                        required={!readOnly}
+                        readOnly={readOnly}
+                        sx={{
+                          flex: 1,
+                          borderBottom: '2px solid var(--mantine-color-gray-5)',
+                          input: {
+                            minHeight: '30px',
+                            height: '30px',
+                          },
+                        }}
+                      />
+                    ) : (
+                      <TextInput
+                        variant={'unstyled'}
+                        placeholder={'None'}
+                        defaultValue={
+                          currentData?.delivery_term?.term_name ?? ''
+                        }
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        flex={1}
+                        sx={{
+                          borderBottom: '2px solid var(--mantine-color-gray-5)',
+                          input: {
+                            minHeight: '30px',
+                            height: '30px',
+                          },
+                        }}
+                        readOnly
+                      />
+                    )}
                   </Group>
 
                   <Group sx={{ flexWrap: 'nowrap' }}>
-                    <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-                      Payment Term:
-                    </Text>
-                    <TextInput
-                      variant={'unstyled'}
-                      placeholder={'None'}
-                      defaultValue={currentData?.payment_term?.term_name ?? ''}
-                      size={lgScreenAndBelow ? 'sm' : 'md'}
-                      flex={1}
-                      sx={{
-                        borderBottom: '2px solid var(--mantine-color-gray-5)',
-                        input: {
-                          minHeight: '30px',
-                          height: '30px',
-                        },
-                      }}
-                      readOnly
-                    />
+                    <Flex sx={{ flexBasis: 'auto' }}>
+                      <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                        Payment Term:
+                      </Text>
+                      {!readOnly && (
+                        <Stack>
+                          <IconAsterisk
+                            size={7}
+                            color={'var(--mantine-color-red-8)'}
+                            stroke={2}
+                          />
+                        </Stack>
+                      )}
+                    </Flex>
+
+                    {!readOnly ? (
+                      <DynamicAutocomplete
+                        key={form.key('payment_term')}
+                        {...form.getInputProps('payment_term')}
+                        variant={'unstyled'}
+                        endpoint={'/libraries/payment-terms'}
+                        endpointParams={{ paginated: false }}
+                        column={'term_name'}
+                        placeholder={'Enter payment term here...'}
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        value={form.values.payment_term}
+                        required={!readOnly}
+                        readOnly={readOnly}
+                        sx={{
+                          flex: 1,
+                          borderBottom: '2px solid var(--mantine-color-gray-5)',
+                          input: {
+                            minHeight: '30px',
+                            height: '30px',
+                          },
+                        }}
+                      />
+                    ) : (
+                      <TextInput
+                        variant={'unstyled'}
+                        placeholder={'None'}
+                        defaultValue={
+                          currentData?.payment_term?.term_name ?? ''
+                        }
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        flex={1}
+                        sx={{
+                          borderBottom: '2px solid var(--mantine-color-gray-5)',
+                          input: {
+                            minHeight: '30px',
+                            height: '30px',
+                          },
+                        }}
+                        readOnly
+                      />
+                    )}
                   </Group>
                 </Stack>
               </Flex>
@@ -762,20 +912,44 @@ const PurchaseOrderContentClient = forwardRef<
 
                     <Table.Tr>
                       <Table.Td colSpan={2}>
-                        <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-                          Total (Amount in words)
-                        </Text>
+                        <Flex sx={{ flexBasis: 'auto' }}>
+                          <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                            Total (Amount in words)
+                          </Text>
+                          {!readOnly && (
+                            <Stack>
+                              <IconAsterisk
+                                size={7}
+                                color={'var(--mantine-color-red-8)'}
+                                stroke={2}
+                              />
+                            </Stack>
+                          )}
+                        </Flex>
                       </Table.Td>
                       <Table.Td colSpan={3}>
                         <Textarea
-                          variant={readOnly ? 'unstyled' : 'filled'}
+                          key={form.key('total_amount_words')}
+                          {...form.getInputProps('total_amount_words')}
+                          variant={readOnly ? 'unstyled' : 'default'}
+                          placeholder={
+                            readOnly
+                              ? 'None'
+                              : 'Enter total amount words here...'
+                          }
+                          defaultValue={
+                            readOnly
+                              ? undefined
+                              : form.values.total_amount_words
+                          }
                           value={
-                            currentData?.total_amount_words?.toUpperCase() ?? ''
+                            readOnly
+                              ? currentData?.total_amount_words
+                              : undefined
                           }
                           size={lgScreenAndBelow ? 'sm' : 'md'}
                           autosize
-                          autoCapitalize={'sentences'}
-                          readOnly
+                          readOnly={readOnly}
                           sx={{ fontWeight: 600 }}
                         />
                       </Table.Td>
@@ -784,16 +958,84 @@ const PurchaseOrderContentClient = forwardRef<
                         fz={lgScreenAndBelow ? 'sm' : 'md'}
                         align={'right'}
                       >
-                        <NumberFormatter
+                        <NumberInput
+                          variant={readOnly ? 'unstyled' : 'filled'}
                           value={currentData?.total_amount}
                           thousandSeparator
                           decimalScale={2}
                           fixedDecimalScale={true}
+                          readOnly
                         />
                       </Table.Td>
                     </Table.Tr>
                   </Table.Tbody>
                 </Table>
+              </Stack>
+
+              <Stack
+                w={'100%'}
+                px={'xl'}
+                py={'xs'}
+                justify={'flex-start'}
+                bd={'1px solid var(--mantine-color-gray-7)'}
+              >
+                <Text size={lgScreenAndBelow ? 'sm' : 'md'} fs={'italic'}>
+                  In case of failure to make the full delivery within the time
+                  specified above, a penalty of one-tenth (1/10) of one percent
+                  for every day of delay shall be imposed.
+                </Text>
+
+                {!readOnly ? (
+                  <DynamicSelect
+                    key={form.key('sig_approval_id')}
+                    {...form.getInputProps('sig_approval_id')}
+                    variant={'unstyled'}
+                    label={'Very truly yours,'}
+                    placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                    endpoint={'/libraries/signatories'}
+                    endpointParams={{
+                      paginated: false,
+                      show_all: true,
+                      document: 'po',
+                      signatory_type: 'authorized_official',
+                    }}
+                    defaultData={
+                      currentData?.sig_approval_id
+                        ? [
+                            {
+                              value: currentData?.sig_approval_id ?? '',
+                              label:
+                                currentData?.signatory_approval?.user
+                                  ?.fullname ?? '',
+                            },
+                          ]
+                        : undefined
+                    }
+                    valueColumn={'signatory_id'}
+                    column={'fullname_designation'}
+                    value={form.values.sig_approval_id}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    }}
+                    required={!readOnly}
+                    readOnly={readOnly}
+                  />
+                ) : (
+                  <TextInput
+                    label={'Municipal Mayor'}
+                    variant={'unstyled'}
+                    placeholder={'None'}
+                    value={
+                      currentData?.signatory_approval?.user?.fullname ?? '-'
+                    }
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    }}
+                    readOnly
+                  />
+                )}
               </Stack>
             </Stack>
           </Stack>

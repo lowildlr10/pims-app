@@ -28,6 +28,7 @@ import { DateInput } from '@mantine/dates';
 import dayjs from 'dayjs';
 import { Tooltip } from '@mantine/core';
 import { NumberFormatter } from '@mantine/core';
+import { Select } from '@mantine/core';
 
 const defaultItemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -102,6 +103,7 @@ const AbstractQuotionContentClient = forwardRef<
               })),
               awardee_id: item?.awardee_id ?? '',
               awardee_name: item.awardee?.supplier_name ?? '',
+              document_type: item?.document_type ?? undefined,
               included:
                 item?.included ??
                 (item.pr_item?.awarded_to_id === undefined ||
@@ -384,6 +386,7 @@ const AbstractQuotionContentClient = forwardRef<
                   key={form.key(`items.${index}.awardee_id`)}
                   {...form.getInputProps(`items.${index}.awardee_id`)}
                   variant={'unstyled'}
+                  label={'Awardee'}
                   placeholder={'Select an awardee here...'}
                   defaultData={
                     supplierHeaders &&
@@ -400,6 +403,7 @@ const AbstractQuotionContentClient = forwardRef<
               </Tooltip>
             ) : (
               <TextInput
+                label={'Awardee'}
                 variant={'unstyled'}
                 placeholder={'None'}
                 defaultValue={item.awardee_name}
@@ -408,6 +412,23 @@ const AbstractQuotionContentClient = forwardRef<
                 readOnly
               />
             )}
+
+            <Select
+              key={form.key(`items.${index}.document_type`)}
+              {...form.getInputProps(`items.${index}.document_type`)}
+              variant={'unstyled'}
+              placeholder={readOnly ? 'None' : 'Select a document type here...'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
+              label={'Document Type'}
+              data={[
+                { label: 'Purchase Order', value: 'po' },
+                { label: 'Job Order', value: 'jo' },
+              ]}
+              value={item.document_type}
+              mt={'md'}
+              searchable
+              readOnly={readOnly}
+            />
           </Table.Td>
         );
 
@@ -424,6 +445,7 @@ const AbstractQuotionContentClient = forwardRef<
           const items = values.items.map((item) => ({
             pr_item_id: item.pr_item_id,
             awardee_id: item.awardee_id,
+            document_type: item.document_type,
             included: item.included,
             details: JSON.stringify(
               item.details?.map((detail) => ({

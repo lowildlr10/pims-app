@@ -322,6 +322,20 @@ const DataTableClient = ({
           )
         );
         break;
+
+      case 'po':
+        setDetailModalShowPrint(
+          ['supply:*', ...getAllowedPermissions('po', 'print')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('po', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+        break;
       default:
         break;
     }

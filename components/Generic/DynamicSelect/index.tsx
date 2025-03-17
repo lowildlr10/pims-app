@@ -1,4 +1,4 @@
-import { Loader, Select } from '@mantine/core';
+import { ComboboxData, Loader, Select } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
@@ -29,9 +29,7 @@ const DynamicSelect = ({
   preLoading,
 }: DynamicSelectProps) => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<{ label: string; value: string }[]>(
-    defaultData ?? []
-  );
+  const [data, setData] = useState<ComboboxData | undefined>(defaultData ?? []);
   const [inputValue, setInputValue] = useState<string | undefined>(value);
   const [isPresetValueSet, setIsPresetValueSet] = useState(false);
   const [presetValue, setPresetValue] = useState<string | undefined>();
@@ -77,7 +75,7 @@ const DynamicSelect = ({
                 value: item[valueColumn],
                 label: item[column],
               }))
-            : [{ label: 'No data.', value: '' }]
+            : [{ label: 'No data.', value: '-', disabled: true }]
         );
 
         if (res?.data?.length > 0 && hasPresetValue && !isPresetValueSet) {

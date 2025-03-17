@@ -485,6 +485,7 @@ type AbstractQuotationItemType = {
   pr_item?: PurchaseRequestItemType;
   awardee_id?: string;
   awardee?: SupplierType;
+  document_type?: 'po' | 'jo' | '';
   included?: boolean;
   details?: AbstractQuotationDetailType[];
 };
@@ -583,7 +584,7 @@ type PurchaseOrderType = {
   total_amount_words?: string;
   total_amount?: number;
   sig_approval_id?: string;
-  sig_approval: SignatoryType;
+  signatory_approval: SignatoryType;
   document_type?: 'po' | 'jo';
   status?: PurchaseOrderStatus;
   pending_at?: string;

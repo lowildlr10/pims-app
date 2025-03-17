@@ -77,6 +77,7 @@ type DynamicMultiselectProps = {
   endpointParams?: any;
   column?: string;
   label?: string;
+  placeholder?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   variant?: 'unstyled' | 'filled' | 'default';
   value?: string[];
@@ -88,15 +89,19 @@ type DynamicMultiselectProps = {
 };
 
 type DynamicAutocompleteProps = {
+  name?: string;
   endpoint: string;
   endpointParams?: any;
   column?: string;
   label?: string;
+  placeholder?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'unstyled' | 'filled' | 'default';
   value?: string;
   limit?: number;
   readOnly?: boolean;
   required?: boolean;
+  sx?: EmotionSx;
   onChange?: (value: string) => void;
 };
 
@@ -493,6 +498,7 @@ type AbstractQuotationItemsFieldType = {
   }[];
   awardee_id?: string;
   awardee_name?: string;
+  document_type?: 'po' | 'jo' | '';
   included?: boolean;
 };
 
