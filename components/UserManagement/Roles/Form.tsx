@@ -189,6 +189,36 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
             checked: false,
           },
           {
+            label: 'Update',
+            value: 'update',
+            checked: false,
+          },
+          {
+            label: 'Set to Pending',
+            value: 'pending',
+            checked: false,
+          },
+          {
+            label: 'Approve',
+            value: 'approve',
+            checked: false,
+          },
+          {
+            label: 'Receive',
+            value: 'receive',
+            checked: false,
+          },
+          {
+            label: 'Set to For Delivery',
+            value: 'for-delivery',
+            checked: false,
+          },
+          {
+            label: 'Set to For Inspection',
+            value: 'for-inspection',
+            checked: false,
+          },
+          {
             label: 'Print',
             value: 'print',
             checked: false,

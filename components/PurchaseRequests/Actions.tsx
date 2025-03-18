@@ -198,7 +198,7 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'submit_approval',
+                'pending',
                 'Submit for Approval',
                 'Are you sure you want to submit this Purchase Request for approval?',
                 'var(--mantine-color-gray-7)',
@@ -318,7 +318,7 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'approve_rfq',
+                'approve',
                 'Approve RFQs',
                 `Are you sure you want to approve the 
                 ${status === 'for_canvassing' ? 'RFQs' : 'new RFQs'} 
@@ -349,7 +349,7 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'award_aoq',
+                'award',
                 'Award Abstract',
                 `Are you sure you want to proceed with awarding the approved Abstract of Quotation?`,
                 'var(--mantine-color-green-7)',

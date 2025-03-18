@@ -44,17 +44,19 @@ type ModuleType =
   | 'user';
 
 type ActionType =
-  | 'submit_approval'
+  | 'pending'
   | 'approve_cash_available'
   | 'approve'
   | 'disapprove'
   | 'cancel'
-  | 'issue_canvassing'
-  | 'canvass_complete'
-  | 'approve_rfq'
-  | 'pending_abstract'
-  | 'approve_abstract'
-  | 'award_aoq';
+  | 'issue'
+  | 'complete'
+  | 'award'
+  | 'issue'
+  | 'receive'
+  | 'for_delivery'
+  | 'delivered'
+  | 'inspect';
 
 type CompanyType = {
   id?: string;
@@ -362,7 +364,8 @@ type PurchaseOrderStatus =
   | 'pending'
   | 'approved'
   | 'issued'
-  | 'received'
+  | 'for_delivery'
+  | 'delivered'
   | 'for_inspection'
   | 'for_obligation'
   | 'for_disbursement'

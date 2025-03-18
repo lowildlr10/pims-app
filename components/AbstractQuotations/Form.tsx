@@ -29,6 +29,7 @@ import dayjs from 'dayjs';
 import { Tooltip } from '@mantine/core';
 import { NumberFormatter } from '@mantine/core';
 import { Select } from '@mantine/core';
+import { Skeleton } from '@mantine/core';
 
 const defaultItemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -743,6 +744,15 @@ const AbstractQuotionContentClient = forwardRef<
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
                         and opened on:
                       </Text>
+                      {!readOnly && (
+                        <Stack>
+                          <IconAsterisk
+                            size={7}
+                            color={'var(--mantine-color-red-8)'}
+                            stroke={2}
+                          />
+                        </Stack>
+                      )}
                     </Flex>
                     <DateInput
                       key={form.key('opened_on')}
@@ -779,6 +789,7 @@ const AbstractQuotionContentClient = forwardRef<
                       }
                       clearable
                       readOnly={readOnly}
+                      required={!readOnly}
                     />
                   </Group>
                 </Stack>
@@ -941,6 +952,15 @@ const AbstractQuotionContentClient = forwardRef<
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
+                    {form.getValues().items.length === 0 &&
+                      Array.from({ length: 5 }).map((_, i) => (
+                        <Table.Tr key={i}>
+                          <Table.Td colSpan={supplierHeaders.length * 3 + 5}>
+                            <Skeleton height={30} radius='sm' />
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+
                     {form.getValues().items.map((item, index) => (
                       <Table.Tr
                         key={`item-${item.key}`}
@@ -1069,6 +1089,7 @@ const AbstractQuotionContentClient = forwardRef<
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         autosize
                         readOnly={readOnly}
+                        required={!readOnly}
                       />
                     </Table.Td>
                   </Table.Tr>

@@ -1,6 +1,6 @@
 import { Loader } from '@mantine/core';
 import { Menu } from '@mantine/core';
-import { IconCheck } from '@tabler/icons-react';
+import { IconThumbUpFilled } from '@tabler/icons-react';
 import React from 'react';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
@@ -23,7 +23,7 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'pending_abstract',
+                'pending',
                 'Pending Abstract',
                 'Are you sure you want to set this Abstract of Bids and Quotation to pending?',
                 'var(--mantine-color-gray-7)',
@@ -42,7 +42,7 @@ const ActionsClient = ({
         ) && (
           <Menu.Item
             leftSection={
-              <IconCheck
+              <IconThumbUpFilled
                 color={'var(--mantine-color-green-9)'}
                 size={18}
                 stroke={1.5}
@@ -51,7 +51,7 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'approve_abstract',
+                'approve',
                 'Approve Abstract',
                 'Are you sure you want to set this Abstract of Bids and Quotation to approved?',
                 'var(--mantine-color-green-7)',
