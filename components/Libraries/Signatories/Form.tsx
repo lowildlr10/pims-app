@@ -2,8 +2,8 @@ import { Divider, Paper, Stack, Switch, Text, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
-import DynamicSelect from '../../DynamicSelect';
-import DynamicAutocomplete from '../../DynamicAutocomplete';
+import DynamicSelect from '../../Generic/DynamicSelect';
+import DynamicAutocomplete from '../../Generic/DynamicAutocomplete';
 
 const SignatoryContentClient = forwardRef<
   HTMLFormElement,

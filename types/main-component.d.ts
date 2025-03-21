@@ -154,3 +154,56 @@ type AbstractQuotationSupplierHeaderType = {
   unit_cost: number;
   total_cost: number;
 };
+
+type PurchaseOrdersResponse = {
+  data: PurchaseRequestType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type PurchaseOrderStatusProps = {
+  size?: string;
+  status?: PurchaseOrderStatus;
+};
+
+type PurchaseOrderActionProps = {
+  permissions?: string[];
+  id: string;
+  status: PurchaseOrderStatus;
+  canvassingAt?: string;
+  completedAt?: string;
+  cancelledAt?: string;
+  handleOpenActionModal?: (
+    actionType: ActionType,
+    title: string,
+    message: string,
+    color: string,
+    buttonLabel: string,
+    endpoint: string
+  ) => void;
+};
+
+type PurchaseOrderActionProps = {
+  permissions?: string[];
+  id: string;
+  status: PurchaseOrderStatus;
+  handleOpenActionModal?: (
+    actionType: ActionType,
+    title: string,
+    message: string,
+    color: string,
+    buttonLabel: string,
+    endpoint: string
+  ) => void;
+};
+
+type ModalPurchaseOrderContentProps = {
+  data: PurchaseOrderType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
+};

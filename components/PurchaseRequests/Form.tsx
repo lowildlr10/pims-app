@@ -15,7 +15,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import DynamicSelect from '../../DynamicSelect';
+import DynamicSelect from '../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
 import { Button } from '@mantine/core';
@@ -465,7 +465,7 @@ const PurchaseRequestContentClient = forwardRef<
                     {...form.getInputProps('section_id')}
                     variant={'unstyled'}
                     endpoint={'/accounts/sections'}
-                    endpointParams={{ paginated: false }}
+                    endpointParams={{ paginated: false, show_all: true }}
                     column={'section_name'}
                     defaultData={
                       currentData?.section_id

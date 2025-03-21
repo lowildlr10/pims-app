@@ -1,6 +1,5 @@
-import { Loader } from '@mantine/core';
 import { Menu } from '@mantine/core';
-import { IconCancel, IconCheck } from '@tabler/icons-react';
+import { IconArrowForward, IconCancel, IconCheck } from '@tabler/icons-react';
 import React from 'react';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
@@ -18,15 +17,19 @@ const ActionsClient = ({
         ) && (
           <Menu.Item
             leftSection={
-              <Loader size={12} color={'var(--mantine-color-gray-7)'} />
+              <IconArrowForward
+                color={'var(--mantine-color-yellow-3)'}
+                size={18}
+                stroke={1.5}
+              />
             }
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'issue_canvassing',
+                'issue',
                 'Issue for Canvassing',
                 'Are you sure you want to issue this Request for Quotation for canvassing?',
-                'var(--mantine-color-gray-7)',
+                'var(--mantine-color-yellow-7)',
                 'Issue',
                 `/request-quotations/${id}/issue-canvassing`
               )
@@ -51,7 +54,7 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'canvass_complete',
+                'complete',
                 'Canvass Complete',
                 'Are you sure you want to set this Request for Quotation to completed?',
                 'var(--mantine-color-green-7)',

@@ -73,6 +73,8 @@ const DataTableClient = ({
   printSubItemBaseEndpoint = '',
   printMainItemDefaultPaper = 'A4',
   printSubItemDefaultPaper = 'A4',
+  printMainItemDefaultOrientation = 'P',
+  printSubItemDefaultOrientation = 'P',
   logMainItemModalTitle = 'Logs',
   logMainItemEndpoint = '/logs',
   logSubItemModalTitle = 'Logs',
@@ -316,6 +318,20 @@ const DataTableClient = ({
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('aoq', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+        break;
+
+      case 'po':
+        setDetailModalShowPrint(
+          ['supply:*', ...getAllowedPermissions('po', 'print')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('po', 'update')].some(
             (permission) => permissions?.includes(permission)
           )
         );
@@ -887,10 +903,15 @@ const DataTableClient = ({
                   ? `${printSubItemBaseEndpoint}/${currentId}`
                   : ''
             }
-            defaultValue={
+            defaultPaper={
               currentOpenedModuleType === 'main'
                 ? printMainItemDefaultPaper
                 : printSubItemDefaultPaper
+            }
+            defaultOrientation={
+              currentOpenedModuleType === 'main'
+                ? printMainItemDefaultOrientation
+                : printSubItemDefaultOrientation
             }
             opened={stack.register('print-modal').opened}
             stack={stack}

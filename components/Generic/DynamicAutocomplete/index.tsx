@@ -1,4 +1,4 @@
-import { Autocomplete, Loader } from '@mantine/core';
+import { Autocomplete, ComboboxStringData, Loader } from '@mantine/core';
 import { useDebounce } from 'use-debounce';
 import React, { useEffect, useState } from 'react';
 import API from '@/libs/API';
@@ -6,19 +6,28 @@ import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 
 const DynamicAutocomplete = ({
+  name,
   endpoint,
   endpointParams = {},
   column,
   size,
+  variant,
   label,
+  placeholder,
   limit,
   value,
   onChange,
   readOnly,
   required,
+  sx,
 }: DynamicAutocompleteProps) => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<string[]>(['Loading...']);
+  const [data, setData] = useState<ComboboxStringData | undefined>([
+    {
+      value: 'Loading...',
+      disabled: true,
+    },
+  ]);
   const [inputValue, setInputValue] = useState<string | undefined>(value);
 
   const [debouncedValue] = useDebounce(inputValue, 500);
@@ -35,7 +44,12 @@ const DynamicAutocomplete = ({
 
   const handleFetchData = () => {
     setLoading(true);
-    setData(['Loading...']);
+    setData([
+      {
+        value: 'Loading...',
+        disabled: true,
+      },
+    ]);
 
     API.get(endpoint, {
       ...endpointParams,
@@ -45,8 +59,10 @@ const DynamicAutocomplete = ({
       .then((res) => {
         setData(
           res?.data?.length > 0
-            ? res?.data?.map((item: any) => item[column ?? 'column'])
-            : ['No data.']
+            ? res?.data?.map((item: any) => ({
+                value: item[column ?? 'column'],
+              }))
+            : [{ value: 'No suggestion found.', disabled: true }]
         );
         setLoading(false);
       })
@@ -67,8 +83,11 @@ const DynamicAutocomplete = ({
 
   return (
     <Autocomplete
+      name={name}
       size={size}
+      variant={variant ?? 'default'}
       label={label}
+      placeholder={placeholder ?? label}
       data={data}
       limit={limit}
       value={inputValue}
@@ -78,6 +97,7 @@ const DynamicAutocomplete = ({
       rightSection={loading && <Loader color='blue' size='xs' />}
       readOnly={readOnly}
       required={required}
+      sx={sx}
     />
   );
 };

@@ -10,7 +10,7 @@ import {
   Text,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import PurchaseRequestContentClient from './CreateUpdateContent/PurchaseRequestContent';
+import PurchaseRequestContentClient from '../../PurchaseRequests/Form';
 import {
   IconActivity,
   IconHandFinger,
@@ -22,12 +22,15 @@ import PurchaseRequestStatusClient from '@/components/PurchaseRequests/Status';
 import PurchaseRequestActionsClient from '@/components/PurchaseRequests/Actions';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import ActionModalClient from './ActionModal';
-import RequestQuotionContentClient from './CreateUpdateContent/RequestQuotionContent';
+import RequestQuotionContentClient from '../../RequestQuotations/Form';
 import RequestQuotationStatusClient from '@/components/RequestQuotations/Status';
 import RequestQuotationActionsClient from '@/components/RequestQuotations/Actions';
 import AbstractQuotationStatusClient from '@/components/AbstractQuotations/Status';
 import AbstractQuotationActionsClient from '@/components/AbstractQuotations/Actions';
-import AbstractQuotionContentClient from './CreateUpdateContent/AbstractQuotionContent';
+import PurchaseOrderStatusClient from '@/components/PurchaseOrders/Status';
+import PurchaseOrderActionsClient from '@/components/PurchaseOrders/Actions';
+import AbstractQuotionContentClient from '../../AbstractQuotations/Form';
+import PurchaseOrderContentClient from '@/components/PurchaseOrders/Form';
 
 const DetailActionsClient = ({
   permissions,
@@ -99,6 +102,13 @@ const DetailActionsClient = ({
             status={(currentStatus as AbstractQuotationStatus) ?? ''}
           />
         );
+      case 'po':
+        return (
+          <PurchaseOrderStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as PurchaseOrderStatus) ?? ''}
+          />
+        );
       default:
         return <>-</>;
     }
@@ -139,6 +149,15 @@ const DetailActionsClient = ({
 
           {content === 'aoq' && (
             <AbstractQuotationActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'po' && (
+            <PurchaseOrderActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
@@ -263,6 +282,16 @@ const DetailModalClient = ({
         }
         break;
 
+      case 'aoq':
+        isEditable = ['draft', 'pending'].includes(currentData?.status ?? '');
+
+        if (showEdit && isEditable) {
+          setShowEditButton(true);
+        } else {
+          setShowEditButton(false);
+        }
+        break;
+
       default:
         setShowEditButton(true);
         break;
@@ -318,6 +347,10 @@ const DetailModalClient = ({
 
           {opened && content === 'aoq' && (
             <AbstractQuotionContentClient data={currentData} readOnly />
+          )}
+
+          {opened && content === 'po' && (
+            <PurchaseOrderContentClient data={currentData} readOnly />
           )}
         </Paper>
       </Stack>

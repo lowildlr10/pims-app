@@ -70,13 +70,15 @@ const LogModalClient = ({
   close,
 }: LogModalProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
-  const [logId] = useState(id ?? '');
+  const [logId, setLogId] = useState(id ?? '');
   const [page, setPage] = useState(1);
   const [perPage] = useState(10);
   const [paginated] = useState(true);
 
   const { data, isLoading, mutate } = useSWR<SystemLogResponse>(
-    opened ? [endpoint ?? null, logId, page, perPage, paginated] : null,
+    opened && logId
+      ? [endpoint ?? null, logId, page, perPage, paginated]
+      : null,
     ([url, logId, page, perPage, paginated]: GeneralResponse) =>
       API.get(url, {
         page,
@@ -98,6 +100,10 @@ const LogModalClient = ({
 
     mutate();
   }, [opened]);
+
+  useEffect(() => {
+    setLogId(id);
+  }, [id]);
 
   return (
     <Modal
