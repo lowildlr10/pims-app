@@ -10,6 +10,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
 import PurchaseRequestStatusClient from '../PurchaseRequests/Status';
 import StatusClient from './Status';
+import { NumberFormatter } from '@mantine/core';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -57,39 +58,33 @@ const defaultTableData: TableDataType = {
   ],
   subHead: [
     {
-      id: 'solicitation_no',
-      label: 'Solicitation No',
-      width: '10%',
+      id: 'po_no',
+      label: 'PO/JO No',
+      width: '12%',
       sortable: true,
     },
     {
-      id: 'solicitation_date_formatted',
-      label: 'Solicitation Date',
-      width: '10%',
-      sortable: true,
-    },
-    {
-      id: 'abstract_no',
-      label: 'Abstract No',
-      width: '10%',
-      sortable: true,
-    },
-    {
-      id: 'opened_on_formatted',
-      label: 'Opened On',
+      id: 'po_date_formatted',
+      label: 'Date',
       width: '10%',
       sortable: true,
     },
     {
       id: 'procurement_mode_name',
       label: 'Mode of Procurement',
-      width: '14%',
-      sortable: false,
+      width: '18%',
+      sortable: true,
     },
     {
-      id: 'bac_action_formatted',
-      label: 'BAC Action',
+      id: 'supplier_name',
+      label: 'Supplier',
       width: '30%',
+      sortable: true,
+    },
+    {
+      id: 'total_amount_format',
+      label: 'Total Amount',
+      width: '14%',
       sortable: false,
     },
     {
@@ -102,7 +97,7 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
+const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -111,14 +106,14 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
   const [documentType] = useState<SignatoryDocumentType>('pr');
-  const [subDocumentType] = useState<SignatoryDocumentType>('aoq');
+  const [subDocumentType] = useState<SignatoryDocumentType>('po');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<AbstractQuotationsResponse>(
+  const { data, isLoading, mutate } = useSWR<PurchaseOrdersResponse>(
     [
-      `/abstract-quotations`,
+      `/purchase-orders`,
       search,
       page,
       perPage,
@@ -151,7 +146,7 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
 
   useEffect(() => {
     const prData = data?.data?.map((body: PurchaseRequestType) => {
-      const { section, funding_source, requestor, aoqs, ...prData } = body;
+      const { section, funding_source, requestor, pos, ...prData } = body;
 
       return {
         ...prData,
@@ -169,21 +164,21 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
           lgScreenAndBelow ? 80 : 150
         ),
         sub_body:
-          aoqs?.map((subBody: AbstractQuotationType) => {
+          pos?.map((subBody: PurchaseOrderType) => {
             return {
               ...subBody,
-              // bids_awards_committee_name:
-              //   subBody.bids_awards_committee?.committee_name ?? '-',
-              procurement_mode_name: subBody.mode_procurement?.mode_name ?? '-',
-              solicitation_date_formatted: dayjs(
-                subBody.solicitation_date
-              ).format('MM/DD/YYYY'),
-              opened_on_formatted: subBody.opened_on
-                ? dayjs(subBody.opened_on).format('MM/DD/YYYY')
+              po_date_formatted: subBody.po_date
+                ? dayjs(subBody.po_date).format('MM/DD/YYYY')
                 : '-',
-              bac_action_formatted: Helper.shortenText(
-                subBody.bac_action ?? '-',
-                lgScreenAndBelow ? 80 : 150
+              procurement_mode_name: subBody.mode_procurement?.mode_name ?? '-',
+              supplier_name: subBody.supplier?.supplier_name ?? '-',
+              total_amount_format: (
+                <NumberFormatter
+                  prefix={'P'}
+                  value={subBody.total_amount}
+                  thousandSeparator
+                  decimalScale={2}
+                />
               ),
               status_formatted: (
                 <StatusClient
@@ -191,23 +186,6 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
                   status={subBody.status}
                 />
               ),
-              // purpose: body.purpose ?? '-',
-              // twg_chairperson_fullname:
-              //   subBody.signatory_twg_chairperson?.user?.fullname ?? '-',
-              // twg_member_1_fullname:
-              //   subBody.signatory_twg_member_1?.user?.fullname ?? '-',
-              // twg_member_2_fullname:
-              //   subBody.signatory_twg_member_2?.user?.fullname ?? '-',
-              // chairman_fullname:
-              //   subBody.signatory_chairman?.user?.fullname ?? '-',
-              // vice_chairman_fullname:
-              //   subBody.signatory_vice_chairman?.user?.fullname ?? '-',
-              // member_1_fullname:
-              //   subBody.signatory_member_1?.user?.fullname ?? '-',
-              // member_2_fullname:
-              //   subBody.signatory_member_2?.user?.fullname ?? '-',
-              // member_3_fullname:
-              //   subBody.signatory_member_2?.user?.fullname ?? '-',
             };
           }) || [],
       };
@@ -222,7 +200,7 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
   return (
     <DataTableClient
       mainModule={'pr'}
-      subModule={'aoq'}
+      subModule={'po'}
       user={user}
       permissions={permissions}
       columnSort={columnSort}
@@ -233,27 +211,26 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
       subItemsClickable
       createMainItemModalTitle={'Create Purchase Request'}
       createMainItemEndpoint={'/purchase-requests'}
-      createSubItemModalTitle={'Create Abstract of Bids and Quotation'}
-      createSubItemEndpoint={'/abstract-quotations'}
+      createSubItemModalTitle={'Create Purchase/Job Order'}
+      createSubItemEndpoint={'/purchase-orders'}
       createModalFullscreen
       updateMainItemModalTitle={'Update Purchase Request'}
       updateMainItemBaseEndpoint={'/purchase-requests'}
-      updateSubItemModalTitle={'Update Abstract of Bids and Quotation'}
-      updateSubItemBaseEndpoint={'/abstract-quotations'}
+      updateSubItemModalTitle={'Update Purchase/Job Order'}
+      updateSubItemBaseEndpoint={'/purchase-orders'}
       updateModalFullscreen
       detailMainItemModalTitle={'Purchase Request Details'}
       detailMainItemBaseEndpoint={'/purchase-requests'}
-      detailSubItemModalTitle={'Abstract of Bids and Quotation Details'}
-      detailSubItemBaseEndpoint={'/abstract-quotations'}
+      detailSubItemModalTitle={'Purchase/Job Order Details'}
+      detailSubItemBaseEndpoint={'/purchase-orders'}
       printMainItemModalTitle={'Print Purchase Request'}
       printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-      printSubItemModalTitle={'Print Abstract of Bids and Quotation'}
+      printSubItemModalTitle={'Print Purchase/Job Order'}
       printSubItemBaseEndpoint={`/documents/${subDocumentType}/prints`}
-      printSubItemDefaultPaper={'long'}
-      printSubItemDefaultOrientation={'L'}
+      printSubItemDefaultPaper={'A4'}
       logMainItemModalTitle={'Purchase Request Logs'}
-      logSubItemModalTitle={'Abstract of Bids and Quotation Logs'}
-      subButtonLabel={'Abstracts'}
+      logSubItemModalTitle={'Purchase/Job Order Logs'}
+      subButtonLabel={'PO/JOs'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -274,4 +251,4 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
   );
 };
 
-export default AbstractQuotationsClient;
+export default PurchaseOrdersClient;

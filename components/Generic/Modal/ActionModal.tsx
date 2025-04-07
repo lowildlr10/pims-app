@@ -12,12 +12,16 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
+  IconArrowBack,
+  IconArrowForward,
+  IconAwardFilled,
   IconCancel,
   IconCheck,
-  IconChecklist,
   IconDiscountCheckFilled,
+  IconPackageImport,
   IconThumbDownFilled,
   IconThumbUpFilled,
+  IconTruckDelivery,
 } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -78,7 +82,7 @@ const ActionModalClient = ({
 
   const dynamicButtonIcon = (actionType?: ActionType) => {
     switch (actionType) {
-      case 'submit_approval':
+      case 'pending':
         return <Loader size={18} color={'var(--mantine-color-gray-3)'} />;
 
       case 'approve_cash_available':
@@ -111,10 +115,25 @@ const ActionModalClient = ({
           />
         );
 
-      case 'issue_canvassing':
-        return <Loader size={18} color={'var(--mantine-color-gray-3)'} />;
+      case 'issue':
+        return (
+          <IconArrowForward
+            color={'var(--mantine-color-yellow-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
 
-      case 'canvass_complete':
+      case 'receive':
+        return (
+          <IconArrowBack
+            color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'complete':
         return (
           <IconCheck
             color={'var(--mantine-color-green-3)'}
@@ -123,9 +142,36 @@ const ActionModalClient = ({
           />
         );
 
-      case 'approve_rfq':
+      case 'award':
         return (
-          <IconChecklist
+          <IconAwardFilled
+            color={'var(--mantine-color-lime-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'receive':
+        return (
+          <IconArrowBack
+            color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'for_delivery':
+        return (
+          <IconTruckDelivery
+            color={'var(--mantine-color-yellow-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'delivered':
+        return (
+          <IconPackageImport
             color={'var(--mantine-color-green-3)'}
             size={18}
             stroke={1.5}

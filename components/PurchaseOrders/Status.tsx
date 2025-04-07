@@ -1,16 +1,15 @@
 import Helper from '@/utils/Helpers';
 import { Badge, Loader, Tooltip } from '@mantine/core';
 import {
-  IconAwardFilled,
+  IconArrowForward,
   IconFileIsr,
+  IconPackageImport,
   IconThumbUpFilled,
+  IconTruckDelivery,
 } from '@tabler/icons-react';
 import React from 'react';
 
-const StatusClient = ({
-  size = 'md',
-  status,
-}: AbstractQuotationStatusProps) => {
+const StatusClient = ({ size = 'md', status }: PurchaseOrderStatusProps) => {
   switch (status) {
     case 'draft':
       return (
@@ -56,14 +55,42 @@ const StatusClient = ({
         </Tooltip>
       );
 
-    case 'awarded':
+    case 'issued':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-yellow-9)'}
+            variant={'light'}
+            leftSection={<IconArrowForward size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'for_delivery':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-yellow-9)'}
+            variant={'light'}
+            leftSection={<IconTruckDelivery size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'delivered':
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
             size={size}
             color={'var(--mantine-color-green-9)'}
             variant={'light'}
-            leftSection={<IconAwardFilled size={18} stroke={1.5} />}
+            leftSection={<IconPackageImport size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>

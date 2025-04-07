@@ -3,6 +3,7 @@ import { Menu } from '@mantine/core';
 import {
   IconArrowLeftDashed,
   IconArrowRightDashed,
+  IconAwardFilled,
   IconCancel,
   IconChecklist,
   IconDiscountCheckFilled,
@@ -197,7 +198,7 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'submit_approval',
+                'pending',
                 'Submit for Approval',
                 'Are you sure you want to submit this Purchase Request for approval?',
                 'var(--mantine-color-gray-7)',
@@ -303,7 +304,7 @@ const ActionsClient = ({
       )}
 
       {['for_canvassing', 'for_recanvassing'].includes(status) &&
-        ['supply:*', ...getAllowedPermissions('pr', 'approve_rfq')].some(
+        ['supply:*', ...getAllowedPermissions('pr', 'approve-rfq')].some(
           (permission) => permissions?.includes(permission)
         ) && (
           <Menu.Item
@@ -317,7 +318,7 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'approve_rfq',
+                'approve',
                 'Approve RFQs',
                 `Are you sure you want to approve the 
                 ${status === 'for_canvassing' ? 'RFQs' : 'new RFQs'} 
@@ -330,6 +331,34 @@ const ActionsClient = ({
           >
             {status === 'for_canvassing' && 'Approve RFQs'}
             {status === 'for_recanvassing' && 'Approve New RFQs'}
+          </Menu.Item>
+        )}
+
+      {['for_abstract', 'partially_awarded'].includes(status) &&
+        ['supply:*', ...getAllowedPermissions('pr', 'award-aoq')].some(
+          (permission) => permissions?.includes(permission)
+        ) && (
+          <Menu.Item
+            leftSection={
+              <IconAwardFilled
+                color={'var(--mantine-color-lime-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            onClick={() =>
+              handleOpenActionModal &&
+              handleOpenActionModal(
+                'award',
+                'Award Abstract',
+                `Are you sure you want to proceed with awarding the approved Abstract of Quotation?`,
+                'var(--mantine-color-green-7)',
+                'Award',
+                `/purchase-requests/${id}/award-abstract-quotations`
+              )
+            }
+          >
+            Award Abstract
           </Menu.Item>
         )}
 

@@ -77,6 +77,7 @@ type DynamicMultiselectProps = {
   endpointParams?: any;
   column?: string;
   label?: string;
+  placeholder?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   variant?: 'unstyled' | 'filled' | 'default';
   value?: string[];
@@ -88,15 +89,19 @@ type DynamicMultiselectProps = {
 };
 
 type DynamicAutocompleteProps = {
+  name?: string;
   endpoint: string;
   endpointParams?: any;
   column?: string;
   label?: string;
+  placeholder?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'unstyled' | 'filled' | 'default';
   value?: string;
   limit?: number;
   readOnly?: boolean;
   required?: boolean;
+  sx?: EmotionSx;
   onChange?: (value: string) => void;
 };
 
@@ -152,6 +157,8 @@ type DataTableProps = {
   printSubItemBaseEndpoint?: string;
   printMainItemDefaultPaper?: string;
   printSubItemDefaultPaper?: string;
+  printMainItemDefaultOrientation?: 'P' | 'L';
+  printSubItemDefaultOrientation?: 'P' | 'L';
   logMainItemModalTitle?: string;
   logMainItemEndpoint?: string;
   logSubItemModalTitle?: string;
@@ -254,7 +261,8 @@ type PrintModalProps = {
   title: string;
   endpoint: string;
   opened: boolean;
-  defaultValue?: string;
+  defaultPaper?: string;
+  defaultOrientation?: 'P' | 'L';
   stack?: ModalStackReturnType;
   close: () => void;
 };
@@ -490,5 +498,16 @@ type AbstractQuotationItemsFieldType = {
   }[];
   awardee_id?: string;
   awardee_name?: string;
+  document_type?: 'po' | 'jo' | '';
   included?: boolean;
+};
+
+type PurchaseOrderItemsFieldType = {
+  key: string;
+  stock_no?: number;
+  unit_issue?: string;
+  description?: string;
+  quantity?: number;
+  unit_cost?: number;
+  total_cost?: number;
 };

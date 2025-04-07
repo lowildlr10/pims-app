@@ -20,25 +20,16 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import DynamicSelect from '../../DynamicSelect';
+import DynamicSelect from '../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
-import {
-  IconAsterisk,
-  IconCalendar,
-  IconCalendarClock,
-} from '@tabler/icons-react';
-import { DateInput, DateTimePicker } from '@mantine/dates';
+import { IconAsterisk, IconCalendar } from '@tabler/icons-react';
+import { DateInput } from '@mantine/dates';
 import dayjs from 'dayjs';
-import API from '@/libs/API';
-import { getErrors } from '@/libs/Errors';
-import { notify } from '@/libs/Notification';
-import { Select } from '@mantine/core';
-import { List } from '@mantine/core';
-import DynamicMultiselect from '../../DynamicMultiselect';
-import { Radio } from '@mantine/core';
 import { Tooltip } from '@mantine/core';
 import { NumberFormatter } from '@mantine/core';
+import { Select } from '@mantine/core';
+import { Skeleton } from '@mantine/core';
 
 const defaultItemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -112,13 +103,15 @@ const AbstractQuotionContentClient = forwardRef<
                     : (detail?.total_cost ?? 0),
               })),
               awardee_id: item?.awardee_id ?? '',
-              awardee_name: item.awardee?.supplier_name ?? 'No awardee',
+              awardee_name: item.awardee?.supplier_name ?? '',
+              document_type: item?.document_type ?? undefined,
               included:
-                item.pr_item?.awarded_to_id === undefined ||
+                item?.included ??
+                (item.pr_item?.awarded_to_id === undefined ||
                 item.pr_item?.awarded_to_id === null ||
                 !!item.pr_item.awarded_to_id === false
                   ? true
-                  : false,
+                  : false),
             }))
           : [],
     }),
@@ -183,7 +176,7 @@ const AbstractQuotionContentClient = forwardRef<
       },
       {
         id: 'include_checkbox',
-        label: 'Included?',
+        label: 'Unawarded',
         width: '3px',
       },
     ]);
@@ -295,7 +288,13 @@ const AbstractQuotionContentClient = forwardRef<
                     `items.${index}.details.${detalIndex}.brand_model`
                   )}
                   variant={isCreate || !item.included ? 'filled' : 'unstyled'}
-                  placeholder={isCreate ? 'To be quoted' : 'Brand/Model'}
+                  placeholder={
+                    isCreate
+                      ? 'To be quoted'
+                      : readOnly
+                        ? 'None'
+                        : 'Brand/Model'
+                  }
                   defaultValue={detail?.brand_model}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   autosize
@@ -388,6 +387,7 @@ const AbstractQuotionContentClient = forwardRef<
                   key={form.key(`items.${index}.awardee_id`)}
                   {...form.getInputProps(`items.${index}.awardee_id`)}
                   variant={'unstyled'}
+                  label={'Awardee'}
                   placeholder={'Select an awardee here...'}
                   defaultData={
                     supplierHeaders &&
@@ -404,6 +404,7 @@ const AbstractQuotionContentClient = forwardRef<
               </Tooltip>
             ) : (
               <TextInput
+                label={'Awardee'}
                 variant={'unstyled'}
                 placeholder={'None'}
                 defaultValue={item.awardee_name}
@@ -412,6 +413,23 @@ const AbstractQuotionContentClient = forwardRef<
                 readOnly
               />
             )}
+
+            <Select
+              key={form.key(`items.${index}.document_type`)}
+              {...form.getInputProps(`items.${index}.document_type`)}
+              variant={'unstyled'}
+              placeholder={readOnly ? 'None' : 'Select a document type here...'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
+              label={'Document Type'}
+              data={[
+                { label: 'Purchase Order', value: 'po' },
+                { label: 'Job Order', value: 'jo' },
+              ]}
+              value={item.document_type}
+              mt={'md'}
+              searchable
+              readOnly={readOnly}
+            />
           </Table.Td>
         );
 
@@ -428,6 +446,7 @@ const AbstractQuotionContentClient = forwardRef<
           const items = values.items.map((item) => ({
             pr_item_id: item.pr_item_id,
             awardee_id: item.awardee_id,
+            document_type: item.document_type,
             included: item.included,
             details: JSON.stringify(
               item.details?.map((detail) => ({
@@ -481,7 +500,10 @@ const AbstractQuotionContentClient = forwardRef<
                   },
                 }}
                 endpoint={'/libraries/bids-awards-committees'}
-                endpointParams={{ paginated: false }}
+                endpointParams={{
+                  paginated: false,
+                  show_all: true,
+                }}
                 column={'committee_name'}
                 defaultData={
                   currentData?.bids_awards_committee_id
@@ -543,7 +565,10 @@ const AbstractQuotionContentClient = forwardRef<
                   },
                 }}
                 endpoint={'/libraries/procurement-modes'}
-                endpointParams={{ paginated: false }}
+                endpointParams={{
+                  paginated: false,
+                  show_all: true,
+                }}
                 column={'mode_name'}
                 defaultData={
                   currentData?.mode_procurement_id
@@ -719,6 +744,15 @@ const AbstractQuotionContentClient = forwardRef<
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
                         and opened on:
                       </Text>
+                      {!readOnly && (
+                        <Stack>
+                          <IconAsterisk
+                            size={7}
+                            color={'var(--mantine-color-red-8)'}
+                            stroke={2}
+                          />
+                        </Stack>
+                      )}
                     </Flex>
                     <DateInput
                       key={form.key('opened_on')}
@@ -755,6 +789,7 @@ const AbstractQuotionContentClient = forwardRef<
                       }
                       clearable
                       readOnly={readOnly}
+                      required={!readOnly}
                     />
                   </Group>
                 </Stack>
@@ -917,6 +952,15 @@ const AbstractQuotionContentClient = forwardRef<
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
+                    {form.getValues().items.length === 0 &&
+                      Array.from({ length: 5 }).map((_, i) => (
+                        <Table.Tr key={i}>
+                          <Table.Td colSpan={supplierHeaders.length * 3 + 5}>
+                            <Skeleton height={30} radius='sm' />
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+
                     {form.getValues().items.map((item, index) => (
                       <Table.Tr
                         key={`item-${item.key}`}
@@ -1045,6 +1089,7 @@ const AbstractQuotionContentClient = forwardRef<
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         autosize
                         readOnly={readOnly}
+                        required={!readOnly}
                       />
                     </Table.Td>
                   </Table.Tr>

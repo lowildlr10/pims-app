@@ -11,12 +11,12 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { forwardRef, useEffect, useMemo, useState } from 'react';
-import DynamicAutocomplete from '../../DynamicAutocomplete';
+import DynamicAutocomplete from '../../Generic/DynamicAutocomplete';
 import { IMaskInput } from 'react-imask';
 import { Switch } from '@mantine/core';
-import DynamicSelect from '../../DynamicSelect';
-import DynamicMultiselect from '../../DynamicMultiselect';
-import SingleImageUploadClient from '../../SingleImageUpload';
+import DynamicSelect from '../../Generic/DynamicSelect';
+import DynamicMultiselect from '../../Generic/DynamicMultiselect';
+import SingleImageUploadClient from '../../Generic/SingleImageUpload';
 
 const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {

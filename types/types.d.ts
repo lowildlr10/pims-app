@@ -44,16 +44,19 @@ type ModuleType =
   | 'user';
 
 type ActionType =
-  | 'submit_approval'
+  | 'pending'
   | 'approve_cash_available'
   | 'approve'
   | 'disapprove'
   | 'cancel'
-  | 'issue_canvassing'
-  | 'canvass_complete'
-  | 'approve_rfq'
-  | 'pending_abstract'
-  | 'approve_abstract';
+  | 'issue'
+  | 'complete'
+  | 'award'
+  | 'issue'
+  | 'receive'
+  | 'for_delivery'
+  | 'delivered'
+  | 'inspect';
 
 type CompanyType = {
   id?: string;
@@ -356,6 +359,19 @@ type RequestQuotationStatus =
 
 type AbstractQuotationStatus = 'draft' | 'pending' | 'approved' | 'awarded';
 
+type PurchaseOrderStatus =
+  | 'draft'
+  | 'pending'
+  | 'approved'
+  | 'issued'
+  | 'for_delivery'
+  | 'delivered'
+  | 'for_inspection'
+  | 'for_obligation'
+  | 'for_disbursement'
+  | 'for_payment'
+  | 'completed';
+
 type PurchaseRequestType = {
   id?: string;
   section_id?: string;
@@ -379,6 +395,7 @@ type PurchaseRequestType = {
   items?: PurchaseRequestItemType[];
   rfqs?: RequestQuotationType[];
   aoqs?: AbstractQuotationType[];
+  pos?: PurchaseOrderType[];
   total_estimated_cost?: number;
   total_estimated_cost_formatted?: string;
   section_name?: string;
@@ -471,6 +488,7 @@ type AbstractQuotationItemType = {
   pr_item?: PurchaseRequestItemType;
   awardee_id?: string;
   awardee?: SupplierType;
+  document_type?: 'po' | 'jo' | '';
   included?: boolean;
   details?: AbstractQuotationDetailType[];
 };
@@ -521,4 +539,62 @@ type AbstractQuotationType = {
   created_at?: string;
   updated_at?: string;
   items?: AbstractQuotationItemType[];
+};
+
+type DeliveryTerm = {
+  id?: string;
+  term_name?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type PaymentTerm = {
+  id?: string;
+  term_name?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type PurchaseOrderItemType = {
+  id?: string;
+  purchase_order_id?: string;
+  puchase_order?: PurchaseOrderType;
+  pr_item_id?: string;
+  pr_item?: PurchaseRequestItemType;
+  description?: string;
+  brand_model?: string;
+  unit_cost?: number;
+  total_cost?: number;
+};
+
+type PurchaseOrderType = {
+  id?: string;
+  purchase_request_id?: string;
+  purchase_request?: PurchaseRequestType;
+  po_no?: string;
+  po_date?: string;
+  mode_procurement_id?: string;
+  mode_procurement?: ProcurementModeType;
+  supplier_id?: string;
+  supplier?: SupplierType;
+  place_delivery_id?: string;
+  place_delivery?: LocationType;
+  delivery_date?: string;
+  delivery_term_id?: string;
+  delivery_term?: DeliveryTerm;
+  payment_term_id?: string;
+  payment_term?: PaymentTerm;
+  total_amount_words?: string;
+  total_amount?: number;
+  sig_approval_id?: string;
+  signatory_approval: SignatoryType;
+  document_type?: 'po' | 'jo';
+  status?: PurchaseOrderStatus;
+  pending_at?: string;
+  approved_at?: string;
+  issued_at?: string;
+  received_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  items?: PurchaseOrderItemType[];
 };
