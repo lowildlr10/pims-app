@@ -395,6 +395,7 @@ const DataTableClient = ({
                   key={head.id}
                   w={head.width ?? undefined}
                   p={head.sortable ? 0 : undefined}
+                  bg={'var(--mantine-color-primary-9)'}
                 >
                   {head.sortable ? (
                     <Button

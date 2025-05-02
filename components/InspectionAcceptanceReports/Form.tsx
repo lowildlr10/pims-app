@@ -1,7 +1,7 @@
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
-import { Card, Flex, Group, Text } from '@mantine/core';
+import { Card, Checkbox, Flex, Group, Radio, Text } from '@mantine/core';
 import { NumberInput, Stack, Table, Textarea, TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
@@ -15,8 +15,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { ToWords } from 'to-words';
-import DynamicAutocomplete from '../Generic/DynamicAutocomplete';
 import DynamicSelect from '../Generic/DynamicSelect';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
@@ -57,8 +55,13 @@ const InspectionAcceptanceReportClient = forwardRef<
       inspected_date: currentData?.inspected_date ?? '',
       inspected_by: currentData?.sig_inspection_id ?? '',
       received_date: currentData?.received_date ?? '',
-      acceptance_complete: currentData?.acceptance_complete ?? false,
-      acceptance_partial: currentData?.acceptance_partial ?? false,
+      inspected: currentData?.inspected ?? false,
+      sig_inspection_id: currentData?.sig_inspection_id ?? '',
+      acceptance_status: currentData?.acceptance_complete
+        ? 'complete'
+        : currentData?.acceptance_partial
+          ? 'partial'
+          : 'none',
       sig_acceptance_id: currentData?.sig_acceptance_id ?? '',
       items:
         currentData?.items &&
@@ -644,7 +647,137 @@ const InspectionAcceptanceReportClient = forwardRef<
               gap={0}
               justify={'center'}
               bd={'1px solid var(--mantine-color-gray-7)'}
-            ></Stack>
+            >
+              <Stack w={'100%'} px={'sm'} mb={'sm'}>
+                <Text fz={lgScreenAndBelow ? 'h5' : 'h4'} fw={600}>
+                  INSPECTION
+                </Text>
+
+                <Stack px={'sm'}>
+                  <Group sx={{ flexWrap: 'nowrap' }}>
+                    <Flex sx={{ flexBasis: 'auto' }}>
+                      <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
+                        Date Inspected:
+                      </Text>
+                    </Flex>
+                    <DateInput
+                      key={form.key('inspected_date')}
+                      {...form.getInputProps('inspected_date')}
+                      variant={'unstyled'}
+                      valueFormat={'YYYY-MM-DD'}
+                      defaultValue={
+                        readOnly
+                          ? undefined
+                          : form.values.inspected_date
+                            ? new Date(form.values.inspected_date)
+                            : undefined
+                      }
+                      value={
+                        readOnly
+                          ? form.values?.inspected_date
+                            ? new Date(form.values?.inspected_date)
+                            : undefined
+                          : undefined
+                      }
+                      placeholder={
+                        readOnly ? 'None' : 'Enter the inspected date here...'
+                      }
+                      error={form.errors.inspected_date && ''}
+                      sx={{
+                        flexBasis: '60%',
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      leftSection={
+                        !readOnly ? <IconCalendar size={18} /> : undefined
+                      }
+                      clearable
+                      readOnly={readOnly}
+                    />
+                  </Group>
+                </Stack>
+              </Stack>
+
+              <Flex
+                w={'100%'}
+                justify={'space-between'}
+                direction={lgScreenAndBelow ? 'column' : 'row'}
+                p={'md'}
+              >
+                <Stack w={'100%'} px={'sm'}>
+                  <Checkbox
+                    key={form.key('inspected')}
+                    {...form.getInputProps('inspected')}
+                    label={
+                      'Inspected, verified and found OK as to quantity and specifications'
+                    }
+                    variant={'outline'}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    radius={'xs'}
+                    defaultChecked={form.values.inspected}
+                    readOnly={readOnly}
+                  />
+                </Stack>
+
+                <Stack w={'100%'} px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_inspection_id')}
+                      {...form.getInputProps('sig_inspection_id')}
+                      variant={'unstyled'}
+                      label={'Inspected By'}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'iar',
+                        signatory_type: 'inspection',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_inspection_id
+                          ? [
+                              {
+                                value: currentData?.sig_inspection_id ?? '',
+                                label:
+                                  currentData?.signatory_inspection?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_inspection_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      }}
+                      readOnly={readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'Inspected By'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={
+                        currentData?.signatory_inspection?.user?.fullname ?? ''
+                      }
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      }}
+                      flex={1}
+                      readOnly
+                    />
+                  )}
+                </Stack>
+              </Flex>
+            </Stack>
 
             <Stack
               align={'center'}
@@ -653,7 +786,137 @@ const InspectionAcceptanceReportClient = forwardRef<
               gap={0}
               justify={'center'}
               bd={'1px solid var(--mantine-color-gray-7)'}
-            ></Stack>
+            >
+              <Stack w={'100%'} px={'sm'}>
+                <Text fz={lgScreenAndBelow ? 'h5' : 'h4'} fw={600}>
+                  ACCEPTANCE
+                </Text>
+
+                <Stack px={'sm'}>
+                  <Group sx={{ flexWrap: 'nowrap' }}>
+                    <Flex sx={{ flexBasis: 'auto' }}>
+                      <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
+                        Date Received:
+                      </Text>
+                    </Flex>
+                    <DateInput
+                      key={form.key('received_date')}
+                      {...form.getInputProps('received_date')}
+                      variant={'unstyled'}
+                      valueFormat={'YYYY-MM-DD'}
+                      defaultValue={
+                        readOnly
+                          ? undefined
+                          : form.values.received_date
+                            ? new Date(form.values.received_date)
+                            : undefined
+                      }
+                      value={
+                        readOnly
+                          ? form.values?.received_date
+                            ? new Date(form.values?.received_date)
+                            : undefined
+                          : undefined
+                      }
+                      placeholder={
+                        readOnly ? 'None' : 'Enter the received date here...'
+                      }
+                      error={form.errors.received_date && ''}
+                      sx={{
+                        flexBasis: '60%',
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                        input: {
+                          minHeight: '30px',
+                          height: '30px',
+                        },
+                      }}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      leftSection={
+                        !readOnly ? <IconCalendar size={18} /> : undefined
+                      }
+                      clearable
+                      readOnly={readOnly}
+                    />
+                  </Group>
+                </Stack>
+              </Stack>
+
+              <Flex
+                w={'100%'}
+                justify={'space-between'}
+                direction={lgScreenAndBelow ? 'column' : 'row'}
+                p={'md'}
+              >
+                <Stack w={'100%'} px={'sm'}>
+                  <Radio.Group
+                    key={form.key('acceptance_status')}
+                    {...form.getInputProps('acceptance_status')}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    defaultValue={form.values.acceptance_status}
+                    readOnly={readOnly}
+                  >
+                    <Stack mt={'xs'} mb={'md'}>
+                      <Radio value={'complete'} label={'Complete'} />
+                      <Radio value={'partial'} label={'Partial'} />
+                    </Stack>
+                  </Radio.Group>
+                </Stack>
+
+                <Stack w={'100%'} px={'sm'}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      key={form.key('sig_acceptance_id')}
+                      {...form.getInputProps('sig_acceptance_id')}
+                      variant={'unstyled'}
+                      label={'Accepted By'}
+                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                      endpoint={'/libraries/signatories'}
+                      endpointParams={{
+                        paginated: false,
+                        show_all: true,
+                        document: 'iar',
+                        signatory_type: 'acceptance',
+                      }}
+                      valueColumn={'signatory_id'}
+                      column={'fullname_designation'}
+                      defaultData={
+                        currentData?.sig_acceptance_id
+                          ? [
+                              {
+                                value: currentData?.sig_acceptance_id ?? '',
+                                label:
+                                  currentData?.signatory_inspection?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={form.values.sig_acceptance_id}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      }}
+                      readOnly={readOnly}
+                    />
+                  ) : (
+                    <TextInput
+                      label={'Accepted By'}
+                      variant={'unstyled'}
+                      placeholder={'None'}
+                      value={
+                        currentData?.signatory_inspection?.user?.fullname ?? ''
+                      }
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      }}
+                      flex={1}
+                      readOnly
+                    />
+                  )}
+                </Stack>
+              </Flex>
+            </Stack>
           </Stack>
         </Card>
       </Stack>

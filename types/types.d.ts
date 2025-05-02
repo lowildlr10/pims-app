@@ -630,11 +630,11 @@ type InspectionAcceptanceReportType = {
   invoice_no?: string;
   invoice_date?: string;
   inspected_date?: string;
-  inspected?: string;
+  inspected?: boolean;
   sig_inspection_id?: string;
   signatory_inspection: SignatoryType;
   received_date?: string;
-  acceptance_complete?: boolean;
+  acceptance_complete?: 'complete' | 'partial';
   acceptance_partial?: boolean;
   sig_acceptance_id?: string;
   signatory_acceptance: SignatoryType;
