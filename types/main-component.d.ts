@@ -207,3 +207,56 @@ type ModalPurchaseOrderContentProps = {
   readOnly?: boolean;
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
+
+type InspectionAcceptanceReportResponse = {
+  data: InspectionAcceptanceReportType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type InspectionAcceptanceReportStatusProps = {
+  size?: string;
+  status?: InspectionAcceptanceReportStatus;
+};
+
+type InspectionAcceptanceReportActionProps = {
+  permissions?: string[];
+  id: string;
+  status: InspectionAcceptanceReportStatus;
+  canvassingAt?: string;
+  completedAt?: string;
+  cancelledAt?: string;
+  handleOpenActionModal?: (
+    actionType: ActionType,
+    title: string,
+    message: string,
+    color: string,
+    buttonLabel: string,
+    endpoint: string
+  ) => void;
+};
+
+type InspectionAcceptanceReportActionProps = {
+  permissions?: string[];
+  id: string;
+  status: InspectionAcceptanceReportStatus;
+  handleOpenActionModal?: (
+    actionType: ActionType,
+    title: string,
+    message: string,
+    color: string,
+    buttonLabel: string,
+    endpoint: string
+  ) => void;
+};
+
+type ModalInspectionAcceptanceReportContentProps = {
+  data: InspectionAcceptanceReportType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
+};

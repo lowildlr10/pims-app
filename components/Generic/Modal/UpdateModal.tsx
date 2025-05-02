@@ -32,6 +32,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import RequestQuotionContentClient from '../../RequestQuotations/Form';
 import AbstractQuotionContentClient from '../../AbstractQuotations/Form';
 import PurchaseOrderContentClient from '@/components/PurchaseOrders/Form';
+import InspectionAcceptanceReportContentClient from '@/components/InspectionAcceptanceReports/Form';
 
 const UpdateModalClient = ({
   title,
@@ -296,6 +297,14 @@ const UpdateModalClient = ({
 
         {opened && content === 'po' && (
           <PurchaseOrderContentClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleUpdate}
+          />
+        )}
+
+        {opened && content === 'iar' && (
+          <InspectionAcceptanceReportContentClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}

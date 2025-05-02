@@ -372,6 +372,13 @@ type PurchaseOrderStatus =
   | 'for_payment'
   | 'completed';
 
+type InspectionAcceptanceReportStatus =
+  | 'draft'
+  | 'pending'
+  | 'inspected'
+  | 'partially_accepted'
+  | 'accepted';
+
 type PurchaseRequestType = {
   id?: string;
   section_id?: string;
@@ -597,4 +604,43 @@ type PurchaseOrderType = {
   created_at?: string;
   updated_at?: string;
   items?: PurchaseOrderItemType[];
+};
+
+type InspectionAcceptanceReportItemType = {
+  id?: string;
+  inspection_acceptance_report_id?: string;
+  inspection_acceptance_report?: InspectionAcceptanceReportType;
+  pr_item_id?: string;
+  pr_item?: PurchaseRequestItemType;
+  po_item_id?: string;
+  po_item?: PurchaseOrderItemType;
+  accepted?: boolean;
+};
+
+type InspectionAcceptanceReportType = {
+  id?: string;
+  purchase_request_id?: string;
+  purchase_request?: PurchaseRequestType;
+  purchase_order_id?: string;
+  purchase_order?: PurchaseOrderType;
+  supplier_id?: string;
+  supplier?: SupplierType;
+  iar_no?: string;
+  iar_date?: string;
+  invoice_no?: string;
+  invoice_date?: string;
+  inspected_date?: string;
+  inspected?: string;
+  sig_inspection_id?: string;
+  signatory_inspection: SignatoryType;
+  received_date?: string;
+  acceptance_complete?: boolean;
+  acceptance_partial?: boolean;
+  sig_acceptance_id?: string;
+  signatory_acceptance: SignatoryType;
+  status?: InspectionAcceptanceReportStatus;
+  pending_at?: string;
+  inspected_at?: string;
+  accepted_at?: string;
+  items?: InspectionAcceptanceReportItemType[];
 };

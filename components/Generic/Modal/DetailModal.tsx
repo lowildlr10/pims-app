@@ -31,6 +31,8 @@ import PurchaseOrderStatusClient from '@/components/PurchaseOrders/Status';
 import PurchaseOrderActionsClient from '@/components/PurchaseOrders/Actions';
 import AbstractQuotionContentClient from '../../AbstractQuotations/Form';
 import PurchaseOrderContentClient from '@/components/PurchaseOrders/Form';
+import InspectionAcceptanceReportContentClient from '@/components/InspectionAcceptanceReports/Form';
+import InspectionAcceptanceReportActionsClient from '@/components/InspectionAcceptanceReports/Actions';
 
 const DetailActionsClient = ({
   permissions,
@@ -158,6 +160,15 @@ const DetailActionsClient = ({
 
           {content === 'po' && (
             <PurchaseOrderActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'iar' && (
+            <InspectionAcceptanceReportActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
@@ -351,6 +362,13 @@ const DetailModalClient = ({
 
           {opened && content === 'po' && (
             <PurchaseOrderContentClient data={currentData} readOnly />
+          )}
+
+          {opened && content === 'iar' && (
+            <InspectionAcceptanceReportContentClient
+              data={currentData}
+              readOnly
+            />
           )}
         </Paper>
       </Stack>

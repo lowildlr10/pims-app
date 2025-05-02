@@ -717,7 +717,11 @@ const AbstractQuotionContentClient = forwardRef<
                             : undefined
                           : undefined
                       }
-                      placeholder={'Enter the solicitation date here...'}
+                      placeholder={
+                        readOnly
+                          ? 'None'
+                          : 'Enter the solicitation date here...'
+                      }
                       error={form.errors.solicitation_date && ''}
                       sx={{
                         flexBasis: '74%',

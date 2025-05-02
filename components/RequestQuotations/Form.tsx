@@ -84,6 +84,7 @@ const RequestQuotionContentClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
+      copies: 1,
       signed_type: currentData?.signed_type ?? 'lce',
       rfq_date: currentData?.rfq_date ?? dayjs().format('YYYY-MM-DD'),
       rfq_no: currentData?.rfq_no ?? '',
@@ -375,25 +376,51 @@ const RequestQuotionContentClient = forwardRef<
           radius={'xs'}
           withBorder
         >
-          <Select
-            key={form.key('signed_type')}
-            {...form.getInputProps('signed_type')}
-            variant={'unstyled'}
-            size={lgScreenAndBelow ? 'sm' : 'md'}
-            label={'Signed Type'}
-            sx={{ borderBottom: '2px solid var(--mantine-color-gray-5)' }}
-            data={[
-              { label: 'Signed LCE', value: 'lce' },
-              { label: 'Signed BAC Chairman', value: 'bac' },
-            ]}
-            value={signedType}
-            onChange={(_value, option) =>
-              setSignedType((option.value as 'lce' | 'bac') ?? 'lce')
-            }
-            searchable
-            required={!readOnly}
-            readOnly={readOnly}
-          />
+          <Flex
+            w={'100%'}
+            direction={lgScreenAndBelow ? 'column' : 'row'}
+            gap={'sm'}
+          >
+            {isCreate && (
+              <NumberInput
+                key={form.key('copies')}
+                {...form.getInputProps('copies')}
+                variant={'unstyled'}
+                label={'Copies'}
+                placeholder={'Copies'}
+                defaultValue={1}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                w={lgScreenAndBelow ? 'auto' : '100%'}
+                min={1}
+                max={10}
+                clampBehavior={'strict'}
+                allowDecimal={false}
+                sx={{ borderBottom: '2px solid var(--mantine-color-gray-5)' }}
+                required
+              />
+            )}
+
+            <Select
+              key={form.key('signed_type')}
+              {...form.getInputProps('signed_type')}
+              variant={'unstyled'}
+              size={lgScreenAndBelow ? 'sm' : 'md'}
+              label={'Signed Type'}
+              sx={{ borderBottom: '2px solid var(--mantine-color-gray-5)' }}
+              data={[
+                { label: 'Signed LCE', value: 'lce' },
+                { label: 'Signed BAC Chairman', value: 'bac' },
+              ]}
+              value={signedType}
+              onChange={(_value, option) =>
+                setSignedType((option.value as 'lce' | 'bac') ?? 'lce')
+              }
+              w={lgScreenAndBelow ? 'auto' : '100%'}
+              searchable
+              required={!readOnly}
+              readOnly={readOnly}
+            />
+          </Flex>
         </Card>
 
         <Card

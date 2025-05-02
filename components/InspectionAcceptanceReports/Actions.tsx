@@ -3,6 +3,7 @@ import { Menu } from '@mantine/core';
 import {
   IconArrowBack,
   IconArrowForward,
+  IconArrowLeftDashed,
   IconArrowRightDashed,
   IconPackageImport,
   IconThumbUpFilled,
@@ -25,7 +26,21 @@ const NavigationMenus = ({
 
   return (
     <>
-      {['supply:*', ...getAllowedPermissions('iar', 'view')].some(
+      <Menu.Item
+        leftSection={
+          <IconArrowLeftDashed
+            color={'var(--mantine-color-primary-9)'}
+            size={18}
+            stroke={1.5}
+          />
+        }
+        component={Link}
+        href={`/procurement/iar?search=${id}`}
+      >
+        Navigate to PO/JO
+      </Menu.Item>
+
+      {/* {['supply:*', ...getAllowedPermissions('iar', 'view')].some(
         (permission) => permissions?.includes(permission)
       ) &&
         [
@@ -39,7 +54,7 @@ const NavigationMenus = ({
         pathname === '/procurement/po' && (
           <Menu.Item
             leftSection={
-              <IconArrowRightDashed
+              <IconArrowLeftDashed
                 color={'var(--mantine-color-primary-9)'}
                 size={18}
                 stroke={1.5}
@@ -48,9 +63,9 @@ const NavigationMenus = ({
             component={Link}
             href={`/procurement/iar?search=${id}`}
           >
-            Navigate to IAR
+            Navigate to PO/JO
           </Menu.Item>
-        )}
+        )} */}
     </>
   );
 };
