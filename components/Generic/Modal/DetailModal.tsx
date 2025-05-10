@@ -33,6 +33,7 @@ import AbstractQuotionContentClient from '../../AbstractQuotations/Form';
 import PurchaseOrderContentClient from '@/components/PurchaseOrders/Form';
 import InspectionAcceptanceReportContentClient from '@/components/InspectionAcceptanceReports/Form';
 import InspectionAcceptanceReportActionsClient from '@/components/InspectionAcceptanceReports/Actions';
+import InspectionAcceptanceReportStatusClient from '@/components/InspectionAcceptanceReports/Status';
 
 const DetailActionsClient = ({
   permissions,
@@ -111,6 +112,13 @@ const DetailActionsClient = ({
             status={(currentStatus as PurchaseOrderStatus) ?? ''}
           />
         );
+      case 'iar':
+        return (
+          <InspectionAcceptanceReportStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as InspectionAcceptanceReportStatus) ?? ''}
+          />
+        );
       default:
         return <>-</>;
     }
@@ -123,7 +131,7 @@ const DetailActionsClient = ({
           <Button
             size={lgScreenAndBelow ? 'xs' : 'sm'}
             color={'var(--mantine-color-secondary-9)'}
-            rightSection={<IconHandFinger size={18} stroke={1.5} />}
+            rightSection={<IconHandFinger size={18} />}
           >
             Actions
           </Button>

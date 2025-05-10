@@ -2,15 +2,15 @@
 
 import {
   AppShell,
+  Avatar,
   Burger,
   Group,
-  Image,
   Loader,
   Overlay,
   ScrollArea,
 } from '@mantine/core';
-import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
-import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+// import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
+import { useDisclosure, useHeadroom, useMediaQuery } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
   IconArrowBack,
@@ -31,6 +31,7 @@ import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { Text } from '@mantine/core';
 import NotificationMenuButtonClient from '../NotificationMenuButton';
+import { NavigationProgress } from '@mantine/nprogress';
 import { keyframes } from '@emotion/react';
 
 const defaultMenu: LinksGroupProps[] = [
@@ -390,6 +391,7 @@ export function LayoutSidebarClient({
   ));
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
+  const pinned = useHeadroom({ fixedAt: 120 });
   const [opened, { open, close }] = useDisclosure(false);
 
   useEffect(() => {
@@ -414,7 +416,10 @@ export function LayoutSidebarClient({
       navbar={{
         width: 300,
         breakpoint: 'md',
-        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+        collapsed: {
+          mobile: !mobileOpened && pinned,
+          desktop: !desktopOpened && pinned,
+        },
       }}
       mih={{ base: 'auto', lg: '100vh' }}
       padding='md'
@@ -438,10 +443,11 @@ export function LayoutSidebarClient({
               visibleFrom={'md'}
               size={lgScreenAndBelow ? 'xs' : 'sm'}
             />
-            <Group>
-              <Image
-                width={lgScreenAndBelow ? 20 : 30}
-                height={lgScreenAndBelow ? 20 : 30}
+            <Group px={'xs'} gap={'xs'}>
+              <Avatar
+                variant={'filled'}
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+                radius={'xs'}
                 src={company?.company_logo ?? '/images/logo-fallback.png'}
                 alt={company?.company_name ?? 'Company'}
               />
@@ -486,7 +492,7 @@ export function LayoutSidebarClient({
           <UserButtonClient user={user} handleOpen={open} />
         </AppShell.Section>
       </AppShell.Navbar>
-      <AppShell.Main bg={'var(--mantine-color-gray-1)'}>
+      <AppShell.Main bg={'var(--mantine-color-gray-4)'}>
         <Overlay
           color={'var(--mantine-color-black-7)'}
           backgroundOpacity={0.6}
@@ -509,11 +515,9 @@ export function LayoutSidebarClient({
           }}
         />
         {children}
-        <ProgressBar
-          height={'2.5px'}
-          color={'var(--mantine-color-secondary-3)'}
-          options={{ showSpinner: false }}
-          shallowRouting
+        <NavigationProgress
+          color={'var(--mantine-color-secondary-2)'}
+          stepInterval={150}
         />
         <UserModalClient
           title={user.fullname ?? 'User'}

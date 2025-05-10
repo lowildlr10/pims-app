@@ -366,10 +366,10 @@ type PurchaseOrderStatus =
   | 'issued'
   | 'for_delivery'
   | 'delivered'
-  | 'for_inspection'
-  | 'for_obligation'
-  | 'for_disbursement'
-  | 'for_payment'
+  | 'inspection'
+  | 'obligation'
+  | 'disbursement'
+  | 'payment'
   | 'completed';
 
 type InspectionAcceptanceReportStatus =
@@ -634,8 +634,7 @@ type InspectionAcceptanceReportType = {
   sig_inspection_id?: string;
   signatory_inspection: SignatoryType;
   received_date?: string;
-  acceptance_complete?: 'complete' | 'partial';
-  acceptance_partial?: boolean;
+  acceptance_completed?: boolean;
   sig_acceptance_id?: string;
   signatory_acceptance: SignatoryType;
   status?: InspectionAcceptanceReportStatus;

@@ -17,7 +17,7 @@ const DataTablePaginationClient = ({
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
 
   return (
-    <Paper p={'md'}>
+    <Paper p={'md'} bg={'var(--mantine-color-gray-1)'}>
       <Group justify={'space-between'}>
         <Group>
           <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>Result Per Page</Text>
@@ -27,9 +27,10 @@ const DataTablePaginationClient = ({
             placeholder='Per Page'
             value={perPage.toString()}
             data={['10', '20', '50', '100']}
-            onChange={(_value, option) =>
-              setPerPage && setPerPage(parseInt(_value ?? '10'))
-            }
+            onChange={(_value, option) => {
+              if (setPerPage) setPerPage(parseInt(_value ?? '10'));
+              if (setPage) setPage(1);
+            }}
           />
           <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>
             {from.toString() ?? '0'} - {to.toString() ?? '0'} of{' '}

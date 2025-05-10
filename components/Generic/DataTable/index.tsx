@@ -336,6 +336,21 @@ const DataTableClient = ({
           )
         );
         break;
+
+      case 'iar':
+        setDetailModalShowPrint(
+          ['supply:*', ...getAllowedPermissions('iar', 'print')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('iar', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          )
+        );
+        break;
+
       default:
         break;
     }
@@ -380,6 +395,7 @@ const DataTableClient = ({
       <ScrollArea
         h={{ md: '100%', lg: 'calc(100vh - 22.5em)' }}
         sx={{ borderRadius: 5 }}
+        bg={'var(--mantine-color-gray-0)'}
       >
         <Table
           verticalSpacing={'sm'}

@@ -83,7 +83,7 @@ const SearchModalClient = ({
           <Button
             size={lgScreenAndBelow ? 'xs' : 'sm'}
             variant={'outline'}
-            color={'var(--mantine-color-tertiary-9)'}
+            color={'var(--mantine-color-gray-7)'}
             onClick={handleClearSearch}
             fullWidth
           >

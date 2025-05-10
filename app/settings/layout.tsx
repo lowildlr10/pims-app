@@ -8,16 +8,18 @@ import '@fontsource/poppins/600.css';
 import '@fontsource/poppins/700.css';
 import '@fontsource/poppins/800.css';
 import '@fontsource/poppins/900.css';
+import '@mantine/core/styles/baseline.css';
+import '@mantine/core/styles/default-css-variables.css';
 import '@mantine/core/styles/global.css';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import '@mantine/nprogress/styles.css';
 
 import {
   ColorSchemeScript,
   MantineProvider,
   mantineHtmlProps,
 } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion';
 
@@ -36,10 +38,7 @@ export default async function SettingsLayout({
           stylesTransform={emotionTransform}
           defaultColorScheme={'light'}
         >
-          <MantineEmotionProvider>
-            <Notifications />
-            {children}
-          </MantineEmotionProvider>
+          <MantineEmotionProvider>{children}</MantineEmotionProvider>
         </MantineProvider>
       </body>
     </html>

@@ -7,7 +7,6 @@ import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
 import { IconAsterisk, IconCalendar } from '@tabler/icons-react';
-import dayjs from 'dayjs';
 import React, {
   forwardRef,
   ReactNode,
@@ -16,6 +15,7 @@ import React, {
   useState,
 } from 'react';
 import DynamicSelect from '../Generic/DynamicSelect';
+import dayjs from 'dayjs';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -49,19 +49,20 @@ const InspectionAcceptanceReportClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(() => {
     return {
-      iar_date: currentData?.iar_date ?? '',
+      iar_date: currentData?.iar_date ?? null,
       invoice_no: currentData?.invoice_no ?? '',
-      invoice_date: currentData?.invoice_date ?? '',
-      inspected_date: currentData?.inspected_date ?? '',
-      inspected_by: currentData?.sig_inspection_id ?? '',
-      received_date: currentData?.received_date ?? '',
+      invoice_date: currentData?.invoice_date ?? null,
+      inspected_date: currentData?.inspected_date ?? null,
+      received_date: currentData?.received_date ?? null,
       inspected: currentData?.inspected ?? false,
       sig_inspection_id: currentData?.sig_inspection_id ?? '',
-      acceptance_status: currentData?.acceptance_complete
-        ? 'complete'
-        : currentData?.acceptance_partial
-          ? 'partial'
-          : 'none',
+      acceptance_completed:
+        currentData?.acceptance_completed === undefined ||
+        currentData?.acceptance_completed === null
+          ? ''
+          : currentData?.acceptance_completed === true
+            ? '1'
+            : '0',
       sig_acceptance_id: currentData?.sig_acceptance_id ?? '',
       items:
         currentData?.items &&
@@ -186,22 +187,32 @@ const InspectionAcceptanceReportClient = forwardRef<
     <form
       ref={ref}
       onSubmit={form.onSubmit((values) => {
-        console.log(values);
+        let acceptanceCompleted = '';
 
-        // if (handleCreateUpdate) {
-        //   handleCreateUpdate({
-        //     ...values,
-        //     purchase_request_id: currentData?.purchase_request_id,
-        //     po_date: values.po_date
-        //       ? dayjs(values.po_date).format('YYYY-MM-DD')
-        //       : '',
-        //     delivery_date: values.delivery_date
-        //       ? dayjs(values.delivery_date).format('YYYY-MM-DD')
-        //       : '',
-        //     document_type: documentType,
-        //     items: JSON.stringify(values.items),
-        //   });
-        // }
+        if (values.acceptance_completed === '1') {
+          acceptanceCompleted = 'true';
+        } else if (values.acceptance_completed === '0') {
+          acceptanceCompleted = 'false';
+        }
+
+        if (handleCreateUpdate) {
+          handleCreateUpdate({
+            ...values,
+            iar_date: values.iar_date
+              ? dayjs(values.iar_date).format('YYYY-MM-DD')
+              : '',
+            invoice_date: values.invoice_date
+              ? dayjs(values.invoice_date).format('YYYY-MM-DD')
+              : '',
+            inspected_date: values.inspected_date
+              ? dayjs(values.inspected_date).format('YYYY-MM-DD')
+              : '',
+            received_date: values.received_date
+              ? dayjs(values.received_date).format('YYYY-MM-DD')
+              : '',
+            acceptance_completed: acceptanceCompleted,
+          });
+        }
       })}
     >
       <Stack p={'md'} justify={'center'}>
@@ -249,7 +260,7 @@ const InspectionAcceptanceReportClient = forwardRef<
                       </Text>
                     </Flex>
                     <TextInput
-                      variant={'filled'}
+                      variant={readOnly ? 'unstyled' : 'filled'}
                       placeholder={'None'}
                       defaultValue={
                         readOnly
@@ -283,7 +294,7 @@ const InspectionAcceptanceReportClient = forwardRef<
                       </Text>
                     </Flex>
                     <TextInput
-                      variant={'filled'}
+                      variant={readOnly ? 'unstyled' : 'filled'}
                       placeholder={'None'}
                       defaultValue={readOnly ? undefined : currentData?.iar_no}
                       value={readOnly ? currentData?.iar_no : undefined}
@@ -373,7 +384,7 @@ const InspectionAcceptanceReportClient = forwardRef<
                       </Text>
                     </Flex>
                     <TextInput
-                      variant={'filled'}
+                      variant={readOnly ? 'unstyled' : 'filled'}
                       placeholder={'None'}
                       defaultValue={
                         readOnly
@@ -407,7 +418,7 @@ const InspectionAcceptanceReportClient = forwardRef<
                       </Text>
                     </Flex>
                     <DateInput
-                      variant={'filled'}
+                      variant={readOnly ? 'unstyled' : 'filled'}
                       valueFormat={'YYYY-MM-DD'}
                       defaultValue={
                         readOnly
@@ -551,7 +562,7 @@ const InspectionAcceptanceReportClient = forwardRef<
                       Requesting Office/Dept.
                     </Text>
                     <TextInput
-                      variant={'filled'}
+                      variant={readOnly ? 'unstyled' : 'filled'}
                       placeholder={'None'}
                       defaultValue={
                         readOnly
@@ -715,11 +726,10 @@ const InspectionAcceptanceReportClient = forwardRef<
                     label={
                       'Inspected, verified and found OK as to quantity and specifications'
                     }
-                    variant={'outline'}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     radius={'xs'}
                     defaultChecked={form.values.inspected}
-                    readOnly={readOnly}
+                    disabled={readOnly}
                   />
                 </Stack>
 
@@ -849,15 +859,16 @@ const InspectionAcceptanceReportClient = forwardRef<
               >
                 <Stack w={'100%'} px={'sm'}>
                   <Radio.Group
-                    key={form.key('acceptance_status')}
-                    {...form.getInputProps('acceptance_status')}
+                    key={form.key('acceptance_completed')}
+                    {...form.getInputProps('acceptance_completed')}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
-                    defaultValue={form.values.acceptance_status}
+                    defaultValue={form.values.acceptance_completed}
                     readOnly={readOnly}
                   >
                     <Stack mt={'xs'} mb={'md'}>
-                      <Radio value={'complete'} label={'Complete'} />
-                      <Radio value={'partial'} label={'Partial'} />
+                      <Radio value={''} label={'-- Not Set --'} />
+                      <Radio value={'1'} label={'Complete'} />
+                      <Radio value={'0'} label={'Partial'} />
                     </Stack>
                   </Radio.Group>
                 </Stack>

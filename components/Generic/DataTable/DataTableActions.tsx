@@ -30,7 +30,7 @@ const DataTableActionsClient = ({
   }, [search]);
 
   return (
-    <Paper p={'sm'} shadow={'sm'}>
+    <Paper p={'sm'} shadow={'sm'} bg={'var(--mantine-color-gray-0)'}>
       <Group justify={'space-between'}>
         {showCreate &&
         getAllowedPermissions(mainModule, 'create')?.some((permission) =>

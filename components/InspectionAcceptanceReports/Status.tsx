@@ -3,7 +3,7 @@ import { Badge, Loader, Tooltip } from '@mantine/core';
 import {
   IconArrowForward,
   IconFileIsr,
-  IconPackageImport,
+  IconShoppingCartCopy,
   IconThumbUpFilled,
   IconTruckDelivery,
 } from '@tabler/icons-react';
@@ -51,7 +51,7 @@ const StatusClient = ({
             size={size}
             color={'var(--mantine-color-green-9)'}
             variant={'light'}
-            leftSection={<IconThumbUpFilled size={18} stroke={1.5} />}
+            leftSection={<IconShoppingCartCopy size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>

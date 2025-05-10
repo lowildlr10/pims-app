@@ -6,6 +6,7 @@ import {
   IconArrowLeftDashed,
   IconArrowRightDashed,
   IconPackageImport,
+  IconShoppingCartSearch,
   IconThumbUpFilled,
 } from '@tabler/icons-react';
 import React from 'react';
@@ -20,7 +21,7 @@ const NavigationMenus = ({
 }: {
   id: string;
   permissions?: string[];
-  status: PurchaseOrderStatus;
+  status: InspectionAcceptanceReportStatus;
 }) => {
   const pathname = usePathname();
 
@@ -40,32 +41,25 @@ const NavigationMenus = ({
         Navigate to PO/JO
       </Menu.Item>
 
-      {/* {['supply:*', ...getAllowedPermissions('iar', 'view')].some(
+      {['supply:*', ...getAllowedPermissions('ors', 'view')].some(
         (permission) => permissions?.includes(permission)
       ) &&
-        [
-          'delivered',
-          'for_inspection',
-          'for_obligation',
-          'for_disbursement',
-          'for_payment',
-          'completed',
-        ].includes(status) &&
-        pathname === '/procurement/po' && (
+        ['inspected', 'partially_completed', 'completed'].includes(status) &&
+        pathname === '/procurement/iar' && (
           <Menu.Item
             leftSection={
-              <IconArrowLeftDashed
+              <IconArrowRightDashed
                 color={'var(--mantine-color-primary-9)'}
                 size={18}
                 stroke={1.5}
               />
             }
             component={Link}
-            href={`/procurement/iar?search=${id}`}
+            href={`/procurement/ors?search=${id}`}
           >
-            Navigate to PO/JO
+            Navigate to ORS
           </Menu.Item>
-        )} */}
+        )}
     </>
   );
 };
@@ -75,11 +69,11 @@ const ActionsClient = ({
   id,
   status,
   handleOpenActionModal,
-}: PurchaseOrderActionProps) => {
+}: InspectionAcceptanceReportActionProps) => {
   return (
     <>
       {status === 'draft' &&
-        ['supply:*', ...getAllowedPermissions('po', 'pending')].some(
+        ['supply:*', ...getAllowedPermissions('iar', 'pending')].some(
           (permission) => permissions?.includes(permission)
         ) && (
           <Menu.Item
@@ -90,15 +84,15 @@ const ActionsClient = ({
               handleOpenActionModal &&
               handleOpenActionModal(
                 'pending',
-                'Pending PO/JO',
-                'Are you sure you want to set this Purchase/Job Order to pending?',
+                'Pending IAR',
+                'Are you sure you want to set this Inspection and Acceptance Report to pending?',
                 'var(--mantine-color-gray-7)',
                 'Set to Pending',
-                `/purchase-orders/${id}/pending`
+                `/inspection-acceptance-reports/${id}/pending`
               )
             }
           >
-            Pending for Approval
+            Pending for Inspection
           </Menu.Item>
         )}
 
@@ -108,7 +102,7 @@ const ActionsClient = ({
         ) && (
           <Menu.Item
             leftSection={
-              <IconThumbUpFilled
+              <IconShoppingCartSearch
                 color={'var(--mantine-color-green-9)'}
                 size={18}
                 stroke={1.5}
@@ -117,21 +111,21 @@ const ActionsClient = ({
             onClick={() =>
               handleOpenActionModal &&
               handleOpenActionModal(
-                'approve',
-                'Approve PO/JO',
-                'Are you sure you want to approve this Purchase/Job?',
+                'inspect',
+                'Inspect IAR',
+                'Are you sure you want to set this Inpection & Acceptance Report to inspected?',
                 'var(--mantine-color-green-7)',
-                'Approve',
-                `/purchase-orders/${id}/approve`
+                'Inspect',
+                `/inspection-acceptance-reports/${id}/inspect`
               )
             }
           >
-            Approve
+            Inspect
           </Menu.Item>
         )}
 
-      {status === 'approved' &&
-        ['supply:*', ...getAllowedPermissions('po', 'issue')].some(
+      {/* {status === 'inspected' &&
+        ['supply:*', ...getAllowedPermissions('iar', 'issue')].some(
           (permission) => permissions?.includes(permission)
         ) && (
           <Menu.Item
@@ -156,72 +150,9 @@ const ActionsClient = ({
           >
             Issue to Supplier
           </Menu.Item>
-        )}
+        )} */}
 
-      {status === 'issued' &&
-        ['supply:*', ...getAllowedPermissions('po', 'receive')].some(
-          (permission) => permissions?.includes(permission)
-        ) && (
-          <Menu.Item
-            leftSection={
-              <IconArrowBack
-                color={'var(--mantine-color-green-9)'}
-                size={18}
-                stroke={1.5}
-              />
-            }
-            onClick={() =>
-              handleOpenActionModal &&
-              handleOpenActionModal(
-                'receive',
-                'Receive Back PO/JO',
-                'Are you sure you want to receive this Purchase/Job from supplier and set to "For Delivery"?',
-                'var(--mantine-color-green-7)',
-                'Receive',
-                `/purchase-orders/${id}/receive`
-              )
-            }
-          >
-            Receive
-          </Menu.Item>
-        )}
-
-      {status === 'for_delivery' &&
-        ['supply:*', ...getAllowedPermissions('po', 'for-inspection')].some(
-          (permission) => permissions?.includes(permission)
-        ) && (
-          <Menu.Item
-            leftSection={
-              <IconPackageImport
-                color={'var(--mantine-color-green-9)'}
-                size={18}
-                stroke={1.5}
-              />
-            }
-            onClick={() =>
-              handleOpenActionModal &&
-              handleOpenActionModal(
-                'delivered',
-                'PO/JO Delivered',
-                'Are you sure you want to set this Purchase/Job to "Delivered"?',
-                'var(--mantine-color-green-7)',
-                'Delivered',
-                `/purchase-orders/${id}/delivered`
-              )
-            }
-          >
-            Delivered
-          </Menu.Item>
-        )}
-
-      {[
-        'delivered',
-        'for_inspection',
-        'for_obligation',
-        'for_disbursement',
-        'for_payment',
-        'completed',
-      ].includes(status) && (
+      {['inspected'].includes(status) && (
         <>
           <Menu.Item color={'var(--mantine-color-gray-5)'}>
             No available action
