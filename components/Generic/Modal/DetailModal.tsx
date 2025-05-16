@@ -340,7 +340,7 @@ const DetailModalClient = ({
           left={0}
           p={15}
           align={'end'}
-          sx={{ zIndex: 1002 }}
+          sx={{ zIndex: 1001 }}
         >
           <DetailActionsClient
             permissions={permissions ?? []}

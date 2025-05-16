@@ -19,6 +19,7 @@ import {
   IconCheck,
   IconDiscountCheckFilled,
   IconPackageImport,
+  IconShoppingCartSearch,
   IconThumbDownFilled,
   IconThumbUpFilled,
   IconTruckDelivery,
@@ -172,6 +173,15 @@ const ActionModalClient = ({
       case 'delivered':
         return (
           <IconPackageImport
+            color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'inspect':
+        return (
+          <IconShoppingCartSearch
             color={'var(--mantine-color-green-3)'}
             size={18}
             stroke={1.5}

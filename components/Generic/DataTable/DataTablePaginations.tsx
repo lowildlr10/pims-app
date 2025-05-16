@@ -17,7 +17,7 @@ const DataTablePaginationClient = ({
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
 
   return (
-    <Paper p={'md'} bg={'var(--mantine-color-gray-1)'}>
+    <Paper p={'md'} bg={'var(--mantine-color-gray-0)'}>
       <Group justify={'space-between'}>
         <Group>
           <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>Result Per Page</Text>
