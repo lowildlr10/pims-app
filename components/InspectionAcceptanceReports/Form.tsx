@@ -63,7 +63,7 @@ const InspectionAcceptanceReportClient = forwardRef<
           : currentData?.acceptance_completed === true
             ? '1'
             : '0',
-      sig_acceptance_id: currentData?.sig_acceptance_id ?? '',
+      acceptance_id: currentData?.acceptance_id ?? '',
       items:
         currentData?.items &&
         typeof currentData?.items !== undefined &&
@@ -876,33 +876,30 @@ const InspectionAcceptanceReportClient = forwardRef<
                 <Stack w={'100%'} px={'sm'}>
                   {!readOnly ? (
                     <DynamicSelect
-                      key={form.key('sig_acceptance_id')}
-                      {...form.getInputProps('sig_acceptance_id')}
+                      key={form.key('acceptance_id')}
+                      {...form.getInputProps('acceptance_id')}
                       variant={'unstyled'}
                       label={'Accepted By'}
-                      placeholder={!readOnly ? 'Select a signatory...' : 'None'}
-                      endpoint={'/libraries/signatories'}
+                      placeholder={!readOnly ? 'Select a accepted by...' : 'None'}
+                      endpoint={'/accounts/users'}
                       endpointParams={{
                         paginated: false,
                         show_all: true,
                         document: 'iar',
-                        signatory_type: 'acceptance',
                       }}
-                      valueColumn={'signatory_id'}
-                      column={'fullname_designation'}
+                      column={'fullname'}
                       defaultData={
-                        currentData?.sig_acceptance_id
+                        currentData?.acceptance_id
                           ? [
                               {
-                                value: currentData?.sig_acceptance_id ?? '',
+                                value: currentData?.acceptance_id ?? '',
                                 label:
-                                  currentData?.signatory_inspection?.user
-                                    ?.fullname ?? '',
+                                  currentData?.acceptance?.fullname ?? '',
                               },
                             ]
                           : undefined
                       }
-                      value={form.values.sig_acceptance_id}
+                      value={form.values.acceptance_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -915,7 +912,7 @@ const InspectionAcceptanceReportClient = forwardRef<
                       variant={'unstyled'}
                       placeholder={'None'}
                       value={
-                        currentData?.signatory_inspection?.user?.fullname ?? ''
+                        currentData?.acceptance?.fullname ?? ''
                       }
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{

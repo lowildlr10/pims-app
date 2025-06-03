@@ -25,29 +25,50 @@ import {
   IconTruckDelivery,
 } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ActionModalClient = ({
   title,
-  message,
+  body,
   color,
   actionType,
   buttonLabel,
   endpoint,
   redirect,
+  size = 'md',
+  fullScreen,
   opened,
   close,
   stack,
   updateTable,
+  requiresPayload = false,
+  formRef,
+  payload
 }: ActionModalProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const { push } = useRouter();
   const [loading, setLoading] = useState(false);
+  const [modalFullScreen, setModalFullScreen] = useState(fullScreen);
 
-  const handleAction = () => {
-    setLoading(true);
+  useEffect(() => {
+    if ((!fullScreen && lgScreenAndBelow) || fullScreen) setModalFullScreen(true);
 
-    API.put(endpoint)
+    if (!fullScreen && !lgScreenAndBelow) setModalFullScreen(false);
+  }, [fullScreen, lgScreenAndBelow]);
+
+  useEffect(() => {
+    // console.log(payload);
+
+    if (loading && requiresPayload && !payload) {
+      setLoading(false);
+      return;
+    }
+
+    if (!loading) {
+      return;
+    }
+
+    API.put(endpoint, payload ?? {})
       .then((res) => {
         notify({
           title: 'Success!',
@@ -79,6 +100,14 @@ const ActionModalClient = ({
 
         setLoading(false);
       });
+  }, [loading, requiresPayload, payload]);
+
+  const handleAction = () => {
+    if (typeof formRef !== undefined && formRef?.current) {
+      formRef?.current.requestSubmit();
+    }
+    
+    setLoading(true);
   };
 
   const dynamicButtonIcon = (actionType?: ActionType) => {
@@ -202,7 +231,8 @@ const ActionModalClient = ({
       opened={opened}
       onClose={close}
       title={title}
-      size={'md'}
+      size={size}
+      fullScreen={modalFullScreen}
       centered
     >
       <LoadingOverlay
@@ -212,7 +242,11 @@ const ActionModalClient = ({
       />
 
       <Stack mb={70} px={'sm'}>
-        <Text>{message}</Text>
+        {typeof body === 'string' ? (
+          <Text>{body}</Text>
+        ) : (
+          <>{body}</>
+        )}
       </Stack>
 
       <Stack

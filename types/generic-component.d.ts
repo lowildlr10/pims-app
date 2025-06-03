@@ -243,18 +243,40 @@ type DetailModalProps = {
   updateTable?: (id: string | null) => void;
 };
 
+type OpenActionModalActionType = (
+  actionType: ActionType,
+  title: string,
+  body: string | React.ReactNode,
+  color: string,
+  buttonLabel: string,
+  endpoint: string,
+  redirect?: string,
+
+  requiresPayload?: boolean,
+  formRef?: React.RefObject<HTMLFormElement | null>,
+  payload?: object,
+  
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
+  fullScreen?: boolean
+) => void;
+
 type ActionModalProps = {
   title: string;
-  message: string;
+  body: string | React.ReactNode;
   color?: string;
   actionType?: ActionType;
   buttonLabel: string;
   endpoint: string;
   redirect?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  fullScreen?: boolean;
   opened: boolean;
   close: () => void;
   stack?: ModalStackReturnType;
   updateTable?: (id: string | null) => void;
+  requiresPayload?: boolean;
+  formRef?: React.RefObject<HTMLFormElement | null>;
+  payload?: object;
 };
 
 type PrintModalProps = {

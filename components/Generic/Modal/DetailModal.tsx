@@ -51,12 +51,17 @@ const DetailActionsClient = ({
   ] = useDisclosure(false);
   const [actionType, setActionType] = useState<ActionType>();
   const [title, setTitle] = useState('');
-  const [message, setMessage] = useState('');
+  const [body, setBody] = useState<string | React.ReactNode>('');
   const [color, setColor] = useState('var(--mantine-color-primary-9)');
   const [buttonLabel, setButtonLabel] = useState('');
   const [endpoint, setEndpoint] = useState('');
   const [redirect, setRedirect] = useState<string>();
   const [currentStatus, setCurrentStatus] = useState(status);
+  const [size, setSize] = useState<'xs' | 'sm' | 'md' | 'lg' | 'xl'>();
+  const [fullScreen, setFullScreen] = useState<boolean>();
+  const [requiresPayload, setRequiresPayload] = useState<boolean>();
+  const [formRef, setFormRef] = useState<React.RefObject<HTMLFormElement | null>>();
+  const [payload, setPayload] = useState<object>();
 
   useEffect(() => {
     setCurrentStatus(status);
@@ -65,19 +70,29 @@ const DetailActionsClient = ({
   const handleOpenActionModal = (
     actionType: ActionType,
     title: string,
-    message: string,
+    body: string | React.ReactNode,
     color: string,
     buttonLabel: string,
     endpoint: string,
-    redirect?: string
+    redirect?: string,
+    requiresPayload?: boolean,
+    formRef?: React.RefObject<HTMLFormElement | null>,
+    payload?: object,
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
+    fullScreen?: boolean
   ) => {
     setActionType(actionType);
     setTitle(title);
-    setMessage(message);
+    setBody(body);
     setColor(color);
     setButtonLabel(buttonLabel);
     setEndpoint(endpoint);
     setRedirect(redirect);
+    setRequiresPayload(requiresPayload);
+    setFormRef(formRef);
+    setPayload(payload);
+    setSize(size);
+    setFullScreen(fullScreen);
 
     openActionModal();
   };
@@ -224,16 +239,21 @@ const DetailActionsClient = ({
 
           <ActionModalClient
             title={title}
-            message={message}
+            body={body}
             color={color}
             actionType={actionType}
             buttonLabel={buttonLabel}
             endpoint={endpoint}
             redirect={redirect}
+            size={size}
+            fullScreen={fullScreen}
             opened={actionModalOpened}
             close={closeActionModal}
             stack={stack}
             updateTable={updateTable}
+            requiresPayload={requiresPayload}
+            formRef={formRef}
+            payload={payload}
           />
         </Stack>
       </Group>

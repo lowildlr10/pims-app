@@ -1,18 +1,15 @@
 import { Loader } from '@mantine/core';
 import { Menu } from '@mantine/core';
 import {
-  IconArrowBack,
-  IconArrowForward,
   IconArrowLeftDashed,
   IconArrowRightDashed,
-  IconPackageImport,
   IconShoppingCartSearch,
-  IconThumbUpFilled,
 } from '@tabler/icons-react';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { InspectContent } from './ActionModalContents';
 
 const NavigationMenus = ({
   id,
@@ -70,6 +67,16 @@ const ActionsClient = ({
   status,
   handleOpenActionModal,
 }: InspectionAcceptanceReportActionProps) => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [payload, setPayload] = useState<object>();
+
+  useEffect(() => console.log(payload), [payload]);
+  
+  const handlePayload = (payload: object) => {
+    console.log(payload);
+    setPayload(payload);
+  }
+
   return (
     <>
       {status === 'draft' &&
@@ -112,45 +119,27 @@ const ActionsClient = ({
               handleOpenActionModal &&
               handleOpenActionModal(
                 'inspect',
-                'Inspect IAR',
-                'Are you sure you want to set this Inpection & Acceptance Report to inspected?',
+                'IAR Inspection & Store to Supplies',
+                <InspectContent 
+                  ref={formRef}
+                  id={id} 
+                  handlePayload={handlePayload}
+                />,
                 'var(--mantine-color-green-7)',
                 'Inspect',
-                `/inspection-acceptance-reports/${id}/inspect`
+                `/inspection-acceptance-reports/${id}/inspect`,
+                undefined,
+                true,
+                formRef,
+                payload,
+                undefined,
+                true,
               )
             }
           >
-            Inspect
+            Inspect & Store
           </Menu.Item>
         )}
-
-      {/* {status === 'inspected' &&
-        ['supply:*', ...getAllowedPermissions('iar', 'issue')].some(
-          (permission) => permissions?.includes(permission)
-        ) && (
-          <Menu.Item
-            leftSection={
-              <IconArrowForward
-                color={'var(--mantine-color-yellow-9)'}
-                size={18}
-                stroke={1.5}
-              />
-            }
-            onClick={() =>
-              handleOpenActionModal &&
-              handleOpenActionModal(
-                'issue',
-                'Issue PO/JO',
-                'Are you sure you want to issue this Purchase/Job to supplier?',
-                'var(--mantine-color-yellow-7)',
-                'Issue',
-                `/purchase-orders/${id}/issue`
-              )
-            }
-          >
-            Issue to Supplier
-          </Menu.Item>
-        )} */}
 
       {['inspected'].includes(status) && (
         <>

@@ -9,7 +9,7 @@ import {
   Overlay,
   ScrollArea,
 } from '@mantine/core';
-// import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
+import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { useDisclosure, useHeadroom, useMediaQuery } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
@@ -33,6 +33,7 @@ import { Text } from '@mantine/core';
 import NotificationMenuButtonClient from '../NotificationMenuButton';
 import { NavigationProgress } from '@mantine/nprogress';
 import { keyframes } from '@emotion/react';
+import { NProgressClient } from '../NProgress';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -515,10 +516,7 @@ export function LayoutSidebarClient({
           }}
         />
         {children}
-        <NavigationProgress
-          color={'var(--mantine-color-secondary-2)'}
-          stepInterval={150}
-        />
+        <NProgressClient />
         <UserModalClient
           title={user.fullname ?? 'User'}
           open={opened}

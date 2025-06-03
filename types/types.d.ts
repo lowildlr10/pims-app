@@ -615,6 +615,7 @@ type InspectionAcceptanceReportItemType = {
   po_item_id?: string;
   po_item?: PurchaseOrderItemType;
   accepted?: boolean;
+  item_classification_id?: string;
 };
 
 type InspectionAcceptanceReportType = {
@@ -635,8 +636,8 @@ type InspectionAcceptanceReportType = {
   signatory_inspection: SignatoryType;
   received_date?: string;
   acceptance_completed?: boolean;
-  sig_acceptance_id?: string;
-  signatory_acceptance: SignatoryType;
+  acceptance_id?: string;
+  acceptance: UserType;
   status?: InspectionAcceptanceReportStatus;
   pending_at?: string;
   inspected_at?: string;

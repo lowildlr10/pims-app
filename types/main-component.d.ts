@@ -25,15 +25,7 @@ type PurchaseRequestActionProps = {
   permissions?: string[];
   id: string;
   status: PurchaseRequestStatus;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string,
-    redirect?: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type ModalPurchaseRequestContentProps = {
@@ -64,28 +56,14 @@ type RequestQuotationActionProps = {
   canvassingAt?: string;
   completedAt?: string;
   cancelledAt?: string;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type RequestQuotationActionProps = {
   permissions?: string[];
   id: string;
   status: RequestQuotationStatus;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type ModalRequestQuotationContentProps = {
@@ -117,28 +95,14 @@ type AbstractQuotationActionProps = {
   canvassingAt?: string;
   completedAt?: string;
   cancelledAt?: string;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type AbstractQuotationActionProps = {
   permissions?: string[];
   id: string;
   status: AbstractQuotationStatus;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type ModalAbstractQuotationContentProps = {
@@ -177,28 +141,14 @@ type PurchaseOrderActionProps = {
   canvassingAt?: string;
   completedAt?: string;
   cancelledAt?: string;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type PurchaseOrderActionProps = {
   permissions?: string[];
   id: string;
   status: PurchaseOrderStatus;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type ModalPurchaseOrderContentProps = {
@@ -230,28 +180,14 @@ type InspectionAcceptanceReportActionProps = {
   canvassingAt?: string;
   completedAt?: string;
   cancelledAt?: string;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type InspectionAcceptanceReportActionProps = {
   permissions?: string[];
   id: string;
   status: InspectionAcceptanceReportStatus;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type ModalInspectionAcceptanceReportContentProps = {
