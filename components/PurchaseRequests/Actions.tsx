@@ -1,6 +1,7 @@
 import { Loader } from '@mantine/core';
 import { Menu } from '@mantine/core';
 import {
+  IconArrowForward,
   IconArrowLeftDashed,
   IconArrowRightDashed,
   IconAwardFilled,
@@ -179,7 +180,7 @@ const NavigationMenus = ({
   );
 };
 
-const ActionsClient = ({
+const PrActionsClient = ({
   permissions,
   id,
   status,
@@ -302,7 +303,18 @@ const ActionsClient = ({
           )}
         </>
       )}
+    </>
+  );
+};
 
+const RfqActionsClient = ({
+  permissions,
+  id,
+  status,
+  handleOpenActionModal,
+}: PurchaseRequestActionProps) => {
+  return (
+    <>
       {['for_canvassing', 'for_recanvassing'].includes(status) &&
         ['supply:*', ...getAllowedPermissions('pr', 'approve-rfq')].some(
           (permission) => permissions?.includes(permission)
@@ -334,6 +346,45 @@ const ActionsClient = ({
           </Menu.Item>
         )}
 
+      {['approved', 'for_canvassing', 'for_recanvassing'].includes(status) &&
+        ['supply:*', ...getAllowedPermissions('rfq', 'issue')].some(
+          (permission) => permissions?.includes(permission)
+        ) && (
+          <Menu.Item
+            leftSection={
+              <IconArrowForward
+                color={'var(--mantine-color-yellow-3)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            onClick={() =>
+              handleOpenActionModal &&
+              handleOpenActionModal(
+                'issue',
+                'Issue All draft RFQ for Canvassing',
+                'Are you sure you want to issue all draft Request for Quotation to "for canvassing"?',
+                'var(--mantine-color-yellow-7)',
+                'Issue',
+                `/purchase-requests/${id}/issue-all-request-quotations`
+              )
+            }
+          >
+            Issue All RFQ for Canvassing
+          </Menu.Item>
+        )}
+    </>
+  );
+};
+
+const AoqActionsClient = ({
+  permissions,
+  id,
+  status,
+  handleOpenActionModal,
+}: PurchaseRequestActionProps) => {
+  return (
+    <>
       {['for_abstract', 'partially_awarded'].includes(status) &&
         ['supply:*', ...getAllowedPermissions('pr', 'award-aoq')].some(
           (permission) => permissions?.includes(permission)
@@ -361,6 +412,46 @@ const ActionsClient = ({
             Award Abstract
           </Menu.Item>
         )}
+    </>
+  );
+};
+
+const ActionsClient = ({
+  permissions,
+  id,
+  status,
+  handleOpenActionModal,
+}: PurchaseRequestActionProps) => {
+  const pathname = usePathname();
+
+  return (
+    <>
+      {pathname === '/procurement/pr' && (
+        <PrActionsClient
+          permissions={permissions}
+          id={id}
+          status={status}
+          handleOpenActionModal={handleOpenActionModal}
+        />
+      )}
+
+      {pathname === '/procurement/rfq' && (
+        <RfqActionsClient
+          permissions={permissions}
+          id={id}
+          status={status}
+          handleOpenActionModal={handleOpenActionModal}
+        />
+      )}
+
+      {pathname === '/procurement/aoq' && (
+        <AoqActionsClient
+          permissions={permissions}
+          id={id}
+          status={status}
+          handleOpenActionModal={handleOpenActionModal}
+        />
+      )}
 
       {status !== 'cancelled' &&
         ['supply:*', ...getAllowedPermissions('pr', 'cancel')].some(

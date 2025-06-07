@@ -60,7 +60,8 @@ const DetailActionsClient = ({
   const [size, setSize] = useState<'xs' | 'sm' | 'md' | 'lg' | 'xl'>();
   const [fullScreen, setFullScreen] = useState<boolean>();
   const [requiresPayload, setRequiresPayload] = useState<boolean>();
-  const [formRef, setFormRef] = useState<React.RefObject<HTMLFormElement | null>>();
+  const [formRef, setFormRef] =
+    useState<React.RefObject<ActionFormImperativeHandleType | null>>();
   const [payload, setPayload] = useState<object>();
 
   useEffect(() => {
@@ -76,7 +77,7 @@ const DetailActionsClient = ({
     endpoint: string,
     redirect?: string,
     requiresPayload?: boolean,
-    formRef?: React.RefObject<HTMLFormElement | null>,
+    formRef?: React.RefObject<ActionFormImperativeHandleType | null>,
     payload?: object,
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
     fullScreen?: boolean
@@ -253,7 +254,6 @@ const DetailActionsClient = ({
             updateTable={updateTable}
             requiresPayload={requiresPayload}
             formRef={formRef}
-            payload={payload}
           />
         </Stack>
       </Group>

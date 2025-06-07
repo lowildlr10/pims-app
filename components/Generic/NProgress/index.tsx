@@ -18,10 +18,5 @@ export function NProgressClient() {
     return () => clearTimeout(timeout);
   }, [pathname, searchParams]);
 
-  return (
-    <NavigationProgress
-      color={'var(--mantine-color-secondary-2)'}
-    />
-  );
+  return <NavigationProgress color={'var(--mantine-color-secondary-2)'} />;
 }
-

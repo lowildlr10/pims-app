@@ -880,7 +880,9 @@ const InspectionAcceptanceReportClient = forwardRef<
                       {...form.getInputProps('acceptance_id')}
                       variant={'unstyled'}
                       label={'Accepted By'}
-                      placeholder={!readOnly ? 'Select a accepted by...' : 'None'}
+                      placeholder={
+                        !readOnly ? 'Select a accepted by...' : 'None'
+                      }
                       endpoint={'/accounts/users'}
                       endpointParams={{
                         paginated: false,
@@ -893,8 +895,7 @@ const InspectionAcceptanceReportClient = forwardRef<
                           ? [
                               {
                                 value: currentData?.acceptance_id ?? '',
-                                label:
-                                  currentData?.acceptance?.fullname ?? '',
+                                label: currentData?.acceptance?.fullname ?? '',
                               },
                             ]
                           : undefined
@@ -911,9 +912,7 @@ const InspectionAcceptanceReportClient = forwardRef<
                       label={'Accepted By'}
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={
-                        currentData?.acceptance?.fullname ?? ''
-                      }
+                      value={currentData?.acceptance?.fullname ?? ''}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',

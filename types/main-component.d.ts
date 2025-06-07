@@ -196,3 +196,8 @@ type ModalInspectionAcceptanceReportContentProps = {
   readOnly?: boolean;
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
+
+type ActionFormImperativeHandleType = {
+  validate: () => void;
+  getValues: () => any;
+};

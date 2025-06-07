@@ -264,7 +264,7 @@ const PurchaseOrderContentClient = forwardRef<
               ? dayjs(values.delivery_date).format('YYYY-MM-DD')
               : '',
             document_type: documentType,
-            items: JSON.stringify(values.items),
+            items: values.items ?? [],
           });
         }
       })}

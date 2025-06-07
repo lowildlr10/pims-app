@@ -9,7 +9,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { InspectContent } from './ActionModalContents';
+import InspectContent from './ActionModalContents/InspectContent';
 
 const NavigationMenus = ({
   id,
@@ -67,15 +67,7 @@ const ActionsClient = ({
   status,
   handleOpenActionModal,
 }: InspectionAcceptanceReportActionProps) => {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [payload, setPayload] = useState<object>();
-
-  useEffect(() => console.log(payload), [payload]);
-  
-  const handlePayload = (payload: object) => {
-    console.log(payload);
-    setPayload(payload);
-  }
+  const formRef = useRef<ActionFormImperativeHandleType>(null);
 
   return (
     <>
@@ -120,20 +112,16 @@ const ActionsClient = ({
               handleOpenActionModal(
                 'inspect',
                 'IAR Inspection & Store to Supplies',
-                <InspectContent 
-                  ref={formRef}
-                  id={id} 
-                  handlePayload={handlePayload}
-                />,
+                <InspectContent ref={formRef} id={id} />,
                 'var(--mantine-color-green-7)',
                 'Inspect',
                 `/inspection-acceptance-reports/${id}/inspect`,
                 undefined,
                 true,
                 formRef,
-                payload,
                 undefined,
-                true,
+                undefined,
+                true
               )
             }
           >

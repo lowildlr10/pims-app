@@ -30,4 +30,18 @@ export default class Helper {
     }
     return text;
   }
+
+  static empty(value: any) {
+    return (
+      value === undefined ||
+      value === null ||
+      value === false ||
+      value === 0 ||
+      value === '' ||
+      (Array.isArray(value) && value.length === 0) ||
+      (typeof value === 'object' &&
+        value !== null &&
+        Object.keys(value).length === 0)
+    );
+  }
 }

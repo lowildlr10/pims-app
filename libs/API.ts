@@ -10,42 +10,36 @@ export default class API {
     baseURL: API.API_BASE_URL,
     headers: {
       Authorization: `Bearer ${API.ACCESS_TOKEN}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
   });
 
-  static get = (url: string, params?: any, version = '1') => {
-    const paramsString = new URLSearchParams(params).toString();
+  static get = async (url: string, params?: object, version = '1') => {
     const apiVersion = `/api/v${version}/`;
     const apiEndpoint = Helper.sanitizeUrl(`${apiVersion}${url}`);
 
-    return this.API.get(`${apiEndpoint}?${paramsString}`).then(
-      (res) => res.data
-    );
+    return this.API.get(apiEndpoint, { params }).then((res) => res.data);
   };
 
-  static post = (url: string, params?: any, version = '1') => {
-    const paramsString = new URLSearchParams(params).toString();
+  static post = async (url: string, params?: object, version = '1') => {
     const apiVersion = `/api/v${version}/`;
     const apiEndpoint = Helper.sanitizeUrl(`${apiVersion}${url}`);
 
-    return this.API.post(apiEndpoint, paramsString).then((res) => res.data);
+    return this.API.post(apiEndpoint, params).then((res) => res.data);
   };
 
-  static put = (url: string, params?: any, version = '1') => {
-    const paramsString = new URLSearchParams(params).toString();
+  static put = async (url: string, params?: object, version = '1') => {
     const apiVersion = `/api/v${version}/`;
     const apiEndpoint = Helper.sanitizeUrl(`${apiVersion}${url}`);
 
-    return this.API.put(apiEndpoint, paramsString).then((res) => res.data);
+    return this.API.put(apiEndpoint, params).then((res) => res.data);
   };
 
-  static delete = (url: string, params?: any, version = '1') => {
-    const paramsString = new URLSearchParams(params).toString();
+  static delete = async (url: string, params?: object, version = '1') => {
     const apiVersion = `/api/v${version}/`;
     const apiEndpoint = Helper.sanitizeUrl(`${apiVersion}${url}`);
 
-    return this.API.delete(`${apiEndpoint}?${paramsString}`).then(
-      (res) => res.data
-    );
+    return this.API.delete(apiEndpoint, { params }).then((res) => res.data);
   };
 }

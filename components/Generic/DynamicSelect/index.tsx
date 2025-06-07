@@ -27,9 +27,10 @@ const DynamicSelect = ({
   hasPresetValue,
   isLoading,
   preLoading,
+  error,
 }: DynamicSelectProps) => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<ComboboxData | undefined>(defaultData ?? []);
+  const [data, setData] = useState<ComboboxData | undefined>();
   const [inputValue, setInputValue] = useState<string | undefined>(value);
   const [isPresetValueSet, setIsPresetValueSet] = useState(false);
   const [presetValue, setPresetValue] = useState<string | undefined>();
@@ -39,6 +40,16 @@ const DynamicSelect = ({
   }, [preLoading]);
 
   useEffect(() => {
+    if (
+      defaultData === undefined ||
+      (typeof defaultData === 'object' && defaultData.length === 0) ||
+      (typeof defaultData === 'object' &&
+        defaultData.some(
+          (dat) => dat.value === undefined || dat.label === undefined
+        )) ||
+      typeof defaultData !== 'object'
+    )
+      return;
     setData(defaultData ?? []);
   }, [defaultData]);
 
@@ -69,7 +80,7 @@ const DynamicSelect = ({
       sort_direction: 'asc',
     })
       .then((res) => {
-        setData(
+        setData((prev) =>
           res?.data?.length > 0
             ? res.data.map((item: any) => ({
                 value: item[valueColumn],
@@ -117,7 +128,7 @@ const DynamicSelect = ({
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       data={data}
       defaultValue={!hasPresetValue ? defaultValue : undefined}
-      value={inputValue}
+      value={inputValue ?? defaultValue}
       onChange={(_value, option) => setInputValue(option?.value ?? null)}
       nothingFoundMessage={'Nothing found...'}
       leftSection={
@@ -131,6 +142,7 @@ const DynamicSelect = ({
       searchable
       clearable
       maxDropdownHeight={limit ? undefined : 200}
+      error={error}
       required={required}
       readOnly={readOnly}
     />

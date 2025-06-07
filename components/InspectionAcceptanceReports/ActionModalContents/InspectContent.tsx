@@ -1,18 +1,19 @@
-import DynamicSelect from "@/components/Generic/DynamicSelect";
-import API from "@/libs/API";
-import { LoadingOverlay, NumberInput, Textarea } from "@mantine/core";
-import { Table } from "@mantine/core";
-import { Select } from "@mantine/core";
-import { TextInput } from "@mantine/core";
-import { Stack } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useMediaQuery } from "@mantine/hooks";
-import { forwardRef, useEffect, useState } from "react";
+import DynamicSelect from '@/components/Generic/DynamicSelect';
+import API from '@/libs/API';
+import Helper from '@/utils/Helpers';
+import { LoadingOverlay, NumberInput, Textarea } from '@mantine/core';
+import { Table } from '@mantine/core';
+import { Select } from '@mantine/core';
+import { TextInput } from '@mantine/core';
+import { Stack } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { useMediaQuery } from '@mantine/hooks';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
-export const InspectContent = forwardRef<
-  HTMLFormElement,
-  {id: string, handlePayload: (payload: object) => void}
->(({ id, handlePayload }, ref) => {
+const InspectContent = forwardRef<
+  ActionFormImperativeHandleType,
+  { id: string }
+>(({ id }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<InspectionAcceptanceReportType>();
@@ -24,16 +25,24 @@ export const InspectContent = forwardRef<
   >();
   const form = useForm({
     mode: 'uncontrolled',
-    initialValues: { 
-      items: data?.items?.map(item => ({
+    initialValues: {
+      items: data?.items?.map((item) => ({
         id: item.id,
         stock_no: item.pr_item?.stock_no,
         description: item.po_item?.description,
         unit: item.pr_item?.unit_issue?.unit_name,
         quantity: item.pr_item?.quantity,
         item_classification_id: '',
-        required_document: ''
-      })) 
+        required_document: '',
+      })),
+    },
+    validate: {
+      items: {
+        item_classification_id: (value) =>
+          Helper.empty(value) ? 'Item classification field is required' : null,
+        required_document: (value) =>
+          Helper.empty(value) ? 'Required document field is required' : null,
+      },
     },
   });
 
@@ -43,7 +52,11 @@ export const InspectContent = forwardRef<
     let retries = 3;
 
     const fetch = () => {
-      API.get('/libraries/item-classifications', { paginated: false, show_all: true, sort_direction: 'asc' })
+      API.get('/libraries/item-classifications', {
+        paginated: false,
+        show_all: true,
+        sort_direction: 'asc',
+      })
         .then((res) => {
           setClassificationData(
             res?.data?.length > 0
@@ -59,12 +72,12 @@ export const InspectContent = forwardRef<
             retries -= 1;
             fetch();
           } else {
-            console.error("Failed after multiple retries");
+            console.error('Failed after multiple retries');
           }
         })
         .finally(() => setLoading(false));
-    }
-    
+    };
+
     fetch();
   }, []);
 
@@ -83,35 +96,37 @@ export const InspectContent = forwardRef<
             retries -= 1;
             fetch();
           } else {
-            console.error("Failed after multiple retries");
+            console.error('Failed after multiple retries');
           }
         })
         .finally(() => setLoading(false));
-    }
-    
+    };
+
     fetch();
   }, [id]);
 
   useEffect(() => {
     form.reset();
-    form.setInitialValues({ 
-      items: data?.items?.map(item => ({
+    form.setInitialValues({
+      items: data?.items?.map((item) => ({
         id: item.id,
         stock_no: item.pr_item?.stock_no,
         description: item.po_item?.description,
         unit: item.pr_item?.unit_issue?.unit_name,
         quantity: item.pr_item?.quantity,
         item_classification_id: '',
-        required_document: ''
-      })) 
+        required_document: '',
+      })),
     });
   }, [data]);
 
+  useImperativeHandle(ref, () => ({
+    validate: () => form.validate(),
+    getValues: () => form.getValues(),
+  }));
+
   return (
-    <form
-      ref={ref}
-      onSubmit={form.onSubmit((values) => handlePayload(values))}
-    >
+    <form onSubmit={form.onSubmit((values) => console.log(values))}>
       <Stack>
         <LoadingOverlay
           visible={loading || data?.items?.length === 0}
@@ -129,54 +144,31 @@ export const InspectContent = forwardRef<
             borderColor={'var(--mantine-color-gray-8)'}
           >
             <Table.Thead>
-            <Table.Tr
-              sx={{ verticalAlign: 'top' }}
-            >
-              <Table.Th
-                w={'12%'}
-                fz={lgScreenAndBelow ? 'sm' : 'md'}
-              >
-                Item No.
-              </Table.Th>
-              <Table.Th
-                w={'14%'}
-                fz={lgScreenAndBelow ? 'sm' : 'md'}
-              >
-                Unit
-              </Table.Th>
-              <Table.Th
-                w={'30%'}
-                fz={lgScreenAndBelow ? 'sm' : 'md'}
-              >
-                Description
-              </Table.Th>
-              <Table.Th
-                w={'12%'}
-                fz={lgScreenAndBelow ? 'sm' : 'md'}
-              >
-                Quantity
-              </Table.Th>
-              <Table.Th
-                w={'17%'}
-                fz={lgScreenAndBelow ? 'sm' : 'md'}
-              >
-                Item Classification
-              </Table.Th>
-              <Table.Th
-                w={'15%'}
-                fz={lgScreenAndBelow ? 'sm' : 'md'}
-              >
-                Required Inventory Document
-              </Table.Th>
-            </Table.Tr>
+              <Table.Tr sx={{ verticalAlign: 'top' }}>
+                <Table.Th w={'12%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
+                  Item No.
+                </Table.Th>
+                <Table.Th w={'14%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
+                  Unit
+                </Table.Th>
+                <Table.Th w={'30%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
+                  Description
+                </Table.Th>
+                <Table.Th w={'12%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
+                  Quantity
+                </Table.Th>
+                <Table.Th w={'17%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
+                  Item Classification
+                </Table.Th>
+                <Table.Th w={'15%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
+                  Required Inventory Document
+                </Table.Th>
+              </Table.Tr>
             </Table.Thead>
 
             <Table.Tbody>
               {form.getValues()?.items?.map((item, index) => (
-                <Table.Tr
-                  key={`item-${item.id}`}
-                  sx={{ verticalAlign: 'top' }}
-                >
+                <Table.Tr key={`item-${item.id}`} sx={{ verticalAlign: 'top' }}>
                   <Table.Td>
                     <NumberInput
                       size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -216,13 +208,20 @@ export const InspectContent = forwardRef<
                   <Table.Td>
                     <DynamicSelect
                       key={form.key(`items.${index}.item_classification_id`)}
-                      {...form.getInputProps(`items.${index}.item_classification_id`)}
+                      {...form.getInputProps(
+                        `items.${index}.item_classification_id`
+                      )}
                       placeholder={'Item Classification'}
                       endpoint={'/libraries/item-classifications'}
                       endpointParams={{ paginated: false, show_all: true }}
                       column={'classification_name'}
                       defaultData={classificationData}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
+                      error={
+                        form.getInputProps(
+                          `items.${index}.item_classification_id`
+                        )?.error
+                      }
                       required
                       disableFetch
                       isLoading={loading}
@@ -231,15 +230,21 @@ export const InspectContent = forwardRef<
                   <Table.Td>
                     <Select
                       key={form.key(`items.${index}.required_document`)}
-                      {...form.getInputProps(`items.${index}.required_document`)}
+                      {...form.getInputProps(
+                        `items.${index}.required_document`
+                      )}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       data={[
-                        { label: 'Acknowledgment Receipt for Equipment', value: 'are' },
+                        {
+                          label: 'Acknowledgment Receipt for Equipment',
+                          value: 'are',
+                        },
                         { label: 'Inventory Custodian Slip', value: 'ics' },
                         { label: 'Requisition and Issue Slip', value: 'ris' },
                       ]}
                       placeholder={'Required Inventory Document'}
                       searchable
+                      clearable
                       required
                     />
                   </Table.Td>
@@ -254,3 +259,5 @@ export const InspectContent = forwardRef<
 });
 
 InspectContent.displayName = 'InspectContent';
+
+export default InspectContent;

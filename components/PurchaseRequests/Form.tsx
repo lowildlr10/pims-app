@@ -222,12 +222,8 @@ const PurchaseRequestContentClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.quantity`)}
               {...form.getInputProps(`items.${index}.quantity`)}
-              variant={'unstyled'}
-              placeholder={`Quantity ${
-                item?.quantity?.toString() !== ''
-                  ? `: ${item?.quantity?.toString()}`
-                  : ''
-              }`}
+              variant={readOnly ? 'unstyled' : 'default'}
+              placeholder={`Quantity`}
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -246,7 +242,7 @@ const PurchaseRequestContentClient = forwardRef<
               <DynamicSelect
                 key={form.key(`items.${index}.unit_issue_id`)}
                 {...form.getInputProps(`items.${index}.unit_issue_id`)}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 placeholder={'Unit of Issue'}
                 endpoint={'/libraries/unit-issues'}
                 endpointParams={{ paginated: false, show_all: true }}
@@ -288,7 +284,7 @@ const PurchaseRequestContentClient = forwardRef<
             <Textarea
               key={form.key(`items.${index}.description`)}
               {...form.getInputProps(`items.${index}.description`)}
-              variant={'unstyled'}
+              variant={readOnly ? 'unstyled' : 'default'}
               placeholder={
                 item?.description?.trim() === '' || !item?.description?.trim()
                   ? 'Description'
@@ -309,7 +305,7 @@ const PurchaseRequestContentClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.stock_no`)}
               {...form.getInputProps(`items.${index}.stock_no`)}
-              variant={'unstyled'}
+              variant={readOnly ? 'unstyled' : 'default'}
               placeholder={`Stock No ${
                 item?.stock_no?.toString() !== ''
                   ? `: ${item?.stock_no?.toString()}`
@@ -332,12 +328,8 @@ const PurchaseRequestContentClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.estimated_unit_cost`)}
               {...form.getInputProps(`items.${index}.estimated_unit_cost`)}
-              variant={'unstyled'}
-              placeholder={`Estimated Unit Cost ${
-                item?.estimated_unit_cost?.toString() !== ''
-                  ? `: ${item?.estimated_unit_cost?.toString()}`
-                  : ''
-              }`}
+              variant={readOnly ? 'unstyled' : 'default'}
+              placeholder={`Estimated Unit Cost`}
               defaultValue={item?.estimated_unit_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -357,12 +349,8 @@ const PurchaseRequestContentClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.estimated_cost`)}
               {...form.getInputProps(`items.${index}.estimated_cost`)}
-              variant={'unstyled'}
-              placeholder={`Estimated Cost ${
-                item?.estimated_cost?.toString() !== ''
-                  ? `: ${item?.estimated_cost?.toString()}`
-                  : ''
-              }`}
+              variant={readOnly ? 'unstyled' : 'default'}
+              placeholder={`Estimated Cost`}
               defaultValue={item?.estimated_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -397,7 +385,7 @@ const PurchaseRequestContentClient = forwardRef<
             alobs_date: values.alobs_date
               ? dayjs(values.alobs_date).format('YYYY-MM-DD')
               : '',
-            items: JSON.stringify(values.items),
+            items: values.items ?? [],
           });
         }
       })}
@@ -436,7 +424,7 @@ const PurchaseRequestContentClient = forwardRef<
             <Group>
               <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Department:</Text>
               <TextInput
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'filled'}
                 placeholder={'Loading...'}
                 value={department}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -463,7 +451,7 @@ const PurchaseRequestContentClient = forwardRef<
                   <DynamicSelect
                     key={form.key('section_id')}
                     {...form.getInputProps('section_id')}
-                    variant={'unstyled'}
+                    variant={readOnly ? 'unstyled' : 'default'}
                     endpoint={'/accounts/sections'}
                     endpointParams={{ paginated: false, show_all: true }}
                     column={'section_name'}
@@ -505,7 +493,7 @@ const PurchaseRequestContentClient = forwardRef<
             <Group>
               <Text size={lgScreenAndBelow ? 'sm' : 'md'}>PR No.</Text>
               <TextInput
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'filled'}
                 placeholder={'Autogenerated'}
                 defaultValue={readOnly ? undefined : currentData?.pr_no}
                 value={readOnly ? currentData?.pr_no : undefined}
@@ -528,7 +516,7 @@ const PurchaseRequestContentClient = forwardRef<
               <DateInput
                 key={form.key('pr_date')}
                 {...form.getInputProps('pr_date')}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 valueFormat={'YYYY-MM-DD'}
                 defaultValue={
                   form.values.pr_date
@@ -549,7 +537,7 @@ const PurchaseRequestContentClient = forwardRef<
               <TextInput
                 key={form.key('sai_no')}
                 {...form.getInputProps('sai_no')}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 placeholder={
                   !readOnly ? 'Enter the SAI number here...' : 'None'
                 }
@@ -564,7 +552,7 @@ const PurchaseRequestContentClient = forwardRef<
               <DateInput
                 key={form.key('sai_date')}
                 {...form.getInputProps('sai_date')}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 valueFormat={'YYYY-MM-DD'}
                 defaultValue={
                   readOnly
@@ -593,7 +581,7 @@ const PurchaseRequestContentClient = forwardRef<
               <TextInput
                 key={form.key('alobs_no')}
                 {...form.getInputProps('alobs_no')}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 placeholder={
                   !readOnly ? 'Enter the ALOBS number here...' : 'None'
                 }
@@ -608,7 +596,7 @@ const PurchaseRequestContentClient = forwardRef<
               <DateInput
                 key={form.key('alobs_date')}
                 {...form.getInputProps('alobs_date')}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 valueFormat={'YYYY-MM-DD'}
                 defaultValue={
                   readOnly
@@ -763,7 +751,7 @@ const PurchaseRequestContentClient = forwardRef<
           <Textarea
             key={form.key('purpose')}
             {...form.getInputProps('purpose')}
-            variant={'unstyled'}
+            variant={readOnly ? 'unstyled' : 'default'}
             label={'Purpose'}
             placeholder={'Enter the purpose here...'}
             defaultValue={readOnly ? undefined : form.values.purpose}
@@ -780,7 +768,7 @@ const PurchaseRequestContentClient = forwardRef<
             <DynamicSelect
               key={form.key('funding_source_id')}
               {...form.getInputProps('funding_source_id')}
-              variant={'unstyled'}
+              variant={readOnly ? 'unstyled' : 'default'}
               label={'Funding Source / Project'}
               placeholder={
                 !readOnly ? 'Select a funding source or project...' : 'None'
@@ -824,7 +812,7 @@ const PurchaseRequestContentClient = forwardRef<
               <DynamicSelect
                 key={form.key('requested_by_id')}
                 {...form.getInputProps('requested_by_id')}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 label={'Requested By'}
                 placeholder={'Select a requestor...'}
                 endpoint={'/accounts/users'}
@@ -867,7 +855,7 @@ const PurchaseRequestContentClient = forwardRef<
               <DynamicSelect
                 key={form.key('sig_cash_availability_id')}
                 {...form.getInputProps('sig_cash_availability_id')}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 label={'Cash Availability'}
                 placeholder={!readOnly ? 'Select a signatory...' : 'None'}
                 endpoint={'/libraries/signatories'}
@@ -916,7 +904,7 @@ const PurchaseRequestContentClient = forwardRef<
               <DynamicSelect
                 key={form.key('sig_approved_by_id')}
                 {...form.getInputProps('sig_approved_by_id')}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 label={'Approved By'}
                 placeholder={!readOnly ? 'Select a signatory...' : 'None'}
                 endpoint={'/libraries/signatories'}

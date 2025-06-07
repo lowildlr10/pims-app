@@ -69,6 +69,7 @@ type DynamicSelectProps = {
   hasPresetValue?: boolean;
   isLoading?: boolean;
   preLoading?: boolean;
+  error?: React.ReactNode;
   onChange?: (value: string) => void;
 };
 
@@ -253,9 +254,9 @@ type OpenActionModalActionType = (
   redirect?: string,
 
   requiresPayload?: boolean,
-  formRef?: React.RefObject<HTMLFormElement | null>,
+  formRef?: React.RefObject<ActionFormImperativeHandleType | null>,
   payload?: object,
-  
+
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
   fullScreen?: boolean
 ) => void;
@@ -275,8 +276,7 @@ type ActionModalProps = {
   stack?: ModalStackReturnType;
   updateTable?: (id: string | null) => void;
   requiresPayload?: boolean;
-  formRef?: React.RefObject<HTMLFormElement | null>;
-  payload?: object;
+  formRef?: React.RefObject<ActionFormImperativeHandleType | null>;
 };
 
 type PrintModalProps = {

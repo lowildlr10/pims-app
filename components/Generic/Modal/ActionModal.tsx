@@ -43,22 +43,21 @@ const ActionModalClient = ({
   updateTable,
   requiresPayload = false,
   formRef,
-  payload
 }: ActionModalProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const { push } = useRouter();
   const [loading, setLoading] = useState(false);
   const [modalFullScreen, setModalFullScreen] = useState(fullScreen);
+  const [payload, setPayload] = useState<any>();
 
   useEffect(() => {
-    if ((!fullScreen && lgScreenAndBelow) || fullScreen) setModalFullScreen(true);
+    if ((!fullScreen && lgScreenAndBelow) || fullScreen)
+      setModalFullScreen(true);
 
     if (!fullScreen && !lgScreenAndBelow) setModalFullScreen(false);
   }, [fullScreen, lgScreenAndBelow]);
 
   useEffect(() => {
-    // console.log(payload);
-
     if (loading && requiresPayload && !payload) {
       setLoading(false);
       return;
@@ -104,9 +103,17 @@ const ActionModalClient = ({
 
   const handleAction = () => {
     if (typeof formRef !== undefined && formRef?.current) {
-      formRef?.current.requestSubmit();
+      const validation: any = formRef.current.validate();
+
+      if (!validation?.hasErrors) {
+        setPayload(formRef.current.getValues());
+        setLoading(true);
+      } else {
+        setLoading(false);
+      }
+      return;
     }
-    
+
     setLoading(true);
   };
 
@@ -242,11 +249,7 @@ const ActionModalClient = ({
       />
 
       <Stack mb={70} px={'sm'}>
-        {typeof body === 'string' ? (
-          <Text>{body}</Text>
-        ) : (
-          <>{body}</>
-        )}
+        {typeof body === 'string' ? <Text>{body}</Text> : <>{body}</>}
       </Stack>
 
       <Stack

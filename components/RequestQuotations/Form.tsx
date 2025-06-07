@@ -272,7 +272,9 @@ const RequestQuotionContentClient = forwardRef<
               variant={
                 (isCreate || !item.included) && !readOnly
                   ? 'filled'
-                  : 'unstyled'
+                  : !readOnly
+                    ? 'default'
+                    : 'unstyled'
               }
               placeholder={
                 isCreate ? 'To be quoted' : readOnly ? '' : 'Brand/Model'
@@ -295,7 +297,9 @@ const RequestQuotionContentClient = forwardRef<
               variant={
                 (isCreate || !item.included) && !readOnly
                   ? 'filled'
-                  : 'unstyled'
+                  : !readOnly
+                    ? 'default'
+                    : 'unstyled'
               }
               placeholder={
                 isCreate ? 'To be quoted' : readOnly ? '' : 'Unit Cost'
@@ -359,11 +363,8 @@ const RequestQuotionContentClient = forwardRef<
             opening_dt: values.opening_dt
               ? dayjs(values.opening_dt).format('YYYY-MM-DD HH:mm')
               : '',
-            items: JSON.stringify(values.items),
-            canvassers:
-              values.canvassers.length > 0
-                ? JSON.stringify(values.canvassers)
-                : '',
+            items: values.items ?? [],
+            canvassers: values.canvassers ?? [],
             vat_registered: vatRegistered,
           });
         }
@@ -385,7 +386,7 @@ const RequestQuotionContentClient = forwardRef<
               <NumberInput
                 key={form.key('copies')}
                 {...form.getInputProps('copies')}
-                variant={'unstyled'}
+                variant={readOnly ? 'unstyled' : 'default'}
                 label={'Copies'}
                 placeholder={'Copies'}
                 defaultValue={1}
@@ -395,7 +396,6 @@ const RequestQuotionContentClient = forwardRef<
                 max={10}
                 clampBehavior={'strict'}
                 allowDecimal={false}
-                sx={{ borderBottom: '2px solid var(--mantine-color-gray-5)' }}
                 required
               />
             )}
@@ -403,10 +403,9 @@ const RequestQuotionContentClient = forwardRef<
             <Select
               key={form.key('signed_type')}
               {...form.getInputProps('signed_type')}
-              variant={'unstyled'}
+              variant={readOnly ? 'unstyled' : 'default'}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               label={'Signed Type'}
-              sx={{ borderBottom: '2px solid var(--mantine-color-gray-5)' }}
               data={[
                 { label: 'Signed LCE', value: 'lce' },
                 { label: 'Signed BAC Chairman', value: 'bac' },
