@@ -1,5 +1,10 @@
 'use client';
 
+import {
+  INVENTORY_LINKS,
+  PAYMENT_LINKS,
+  PROCUREMENT_LINKS,
+} from '@/config/menus';
 import { Breadcrumbs, Anchor } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconCaretRightFilled } from '@tabler/icons-react';
@@ -11,43 +16,9 @@ type MenuLinkProps = Link & {
   allowed: boolean;
 };
 
-const procurementLinks = [
-  {
-    label: 'Purchase Requests',
-    allowedPermissions: ['super:*', 'head:*', 'pr:*', 'pr:view'],
-    link: '/procurement/pr',
-  },
-  {
-    label: 'Request for Quotations',
-    allowedPermissions: ['super:*', 'head:*', 'rfq:*', 'rfq:view'],
-    link: '/procurement/rfq',
-  },
-  {
-    label: 'Abstract of Quotations',
-    allowedPermissions: ['super:*', 'head:*', 'aoq:*', 'aoq:view'],
-    link: '/procurement/aoq',
-  },
-  {
-    label: 'Purchase/Job Orders',
-    allowedPermissions: ['super:*', 'head:*', 'po:*', 'po:view'],
-    link: '/procurement/po',
-  },
-  {
-    label: 'Inspection and Acceptance Report',
-    allowedPermissions: ['super:*', 'head:*', 'iar:*', 'iar:view'],
-    link: '/procurement/iar',
-  },
-  {
-    label: 'Obligation Request and Status',
-    allowedPermissions: ['super:*', 'head:*', 'ors:*', 'ors:view'],
-    link: '/procurement/ors',
-  },
-  {
-    label: 'Disbursement Voucher',
-    allowedPermissions: ['super:*', 'head:*', 'dv:*', 'dv:view'],
-    link: '/procurement/dv',
-  },
-];
+const procurementLinks = PROCUREMENT_LINKS;
+const inventoryLinks = INVENTORY_LINKS;
+const paymentLinks = PAYMENT_LINKS;
 
 const MenuLink = ({ label, link, pathname, allowed }: MenuLinkProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
@@ -94,6 +65,42 @@ export function DirectoryPathClient({ permissions }: DirectoryPathProps) {
       );
     });
 
+  const renderInventoryMenuContent =
+    /^\/inventories\/[^/]+$/.test(pathname) &&
+    inventoryLinks.map((item) => {
+      const allowed = item.allowedPermissions?.some((permission) =>
+        permissions?.includes(permission)
+      );
+
+      return (
+        <MenuLink
+          key={item.link}
+          label={item.label}
+          link={item.link}
+          allowed={allowed}
+          pathname={pathname}
+        />
+      );
+    });
+
+  const renderPaymentMenuContent =
+    /^\/payments\/[^/]+$/.test(pathname) &&
+    paymentLinks.map((item) => {
+      const allowed = item.allowedPermissions?.some((permission) =>
+        permissions?.includes(permission)
+      );
+
+      return (
+        <MenuLink
+          key={item.link}
+          label={item.label}
+          link={item.link}
+          allowed={allowed}
+          pathname={pathname}
+        />
+      );
+    });
+
   return (
     <>
       <Breadcrumbs
@@ -104,6 +111,8 @@ export function DirectoryPathClient({ permissions }: DirectoryPathProps) {
         mt={'xs'}
       >
         {renderProcurementMenuContent}
+        {renderInventoryMenuContent}
+        {renderPaymentMenuContent}
       </Breadcrumbs>
     </>
   );
