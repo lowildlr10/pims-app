@@ -5,16 +5,19 @@ import { Stack } from '@mantine/core';
 import { Paper } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import React from 'react';
+import { DirectoryPathClient } from '../DirectoryPath';
 
 const MainContainerClient = ({
   secondaryTtile,
   title,
   children,
+  permissions,
 }: MainContainerProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
 
   return (
-    <Paper shadow='sm' p='xl' h={{ base: '100%', lg: 'calc(100vh - 6em)' }}>
+    // <Paper shadow='sm' p='xl' h={{ base: '100%', lg: 'calc(100vh - 6em)' }}>
+    <Paper shadow='sm' p='xl'>
       <Group>
         <Stack gap={0}>
           {secondaryTtile && (
@@ -37,6 +40,7 @@ const MainContainerClient = ({
           >
             {title}
           </Title>
+          <DirectoryPathClient permissions={permissions} />
         </Stack>
       </Group>
 

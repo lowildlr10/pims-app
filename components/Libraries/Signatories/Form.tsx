@@ -248,7 +248,7 @@ const SignatoryContentClient = forwardRef<
                 label='Name'
                 value={form.values.user_id}
                 size={'sm'}
-                onChange={(value) => form.setFieldValue('user_id', value)}
+                onChange={(value) => form.setFieldValue('user_id', value ?? '')}
                 required
               />
             ) : (

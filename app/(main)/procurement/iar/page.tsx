@@ -27,6 +27,7 @@ const InspectionAcceptanceReportPage = async () => {
     >
       <MainContainerClient
         title={'Procurement - Inspection and Acceptance Report'}
+        permissions={permissions}
       >
         <InspectionAcceptanceReportsClient
           user={user}

@@ -68,7 +68,9 @@ const DivisionContentClient = forwardRef<
           }
           value={form.values.division_head_id}
           size={'sm'}
-          onChange={(value) => form.setFieldValue('division_head_id', value)}
+          onChange={(value) =>
+            form.setFieldValue('division_head_id', value ?? '')
+          }
         />
         <Switch
           label={'Status'}

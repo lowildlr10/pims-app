@@ -422,8 +422,8 @@ export function LayoutSidebarClient({
           desktop: !desktopOpened && pinned,
         },
       }}
-      mih={{ base: 'auto', lg: '100vh' }}
-      padding='md'
+      // mih={{ base: 'auto', lg: '100vh' }}
+      padding={'sm'}
       transitionDuration={300}
       transitionTimingFunction='ease'
     >
@@ -480,6 +480,7 @@ export function LayoutSidebarClient({
           },
         })}
       >
+        {/* <AppShell.Section>LGU-ATOK</AppShell.Section> */}
         <AppShell.Section
           className={classes.links}
           grow
@@ -493,7 +494,7 @@ export function LayoutSidebarClient({
           <UserButtonClient user={user} handleOpen={open} />
         </AppShell.Section>
       </AppShell.Navbar>
-      <AppShell.Main bg={'var(--mantine-color-gray-4)'}>
+      <AppShell.Main bg={'var(--mantine-color-gray-4)'} pl={'sm'}>
         <Overlay
           color={'var(--mantine-color-black-7)'}
           backgroundOpacity={0.6}
@@ -513,6 +514,7 @@ export function LayoutSidebarClient({
                 100%,0% { opacity: 1 }
                 9% { opacity: 0 }
               `} 0.3s linear`,
+            position: 'fixed',
           }}
         />
         {children}

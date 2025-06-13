@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Divider, Flex, ScrollArea, Stack } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IconSignature, IconUserCog } from '@tabler/icons-react';
 import UserProfileFormClient from './UserProfileForm';
 import SignatureFormClient from './SignatureForm';
@@ -10,7 +10,7 @@ import SingleImageUploadClient from '../Generic/SingleImageUpload';
 import { useViewportSize } from '@mantine/hooks';
 
 const UserProfileClient = ({ user }: UserProfileProps) => {
-  const { height, width } = useViewportSize();
+  const { width } = useViewportSize();
   const [activeTab, setActiveTab] = useState<string | null>('information');
 
   return (

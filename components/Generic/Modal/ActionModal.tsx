@@ -1,3 +1,5 @@
+'use client';
+
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
@@ -25,11 +27,18 @@ import {
   IconTruckDelivery,
 } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, {
+  cloneElement,
+  isValidElement,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 const ActionModalClient = ({
   title,
-  body,
+  children,
   color,
   actionType,
   buttonLabel,
@@ -42,13 +51,13 @@ const ActionModalClient = ({
   stack,
   updateTable,
   requiresPayload = false,
-  formRef,
 }: ActionModalProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const { push } = useRouter();
   const [loading, setLoading] = useState(false);
   const [modalFullScreen, setModalFullScreen] = useState(fullScreen);
   const [payload, setPayload] = useState<any>();
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if ((!fullScreen && lgScreenAndBelow) || fullScreen)
@@ -57,17 +66,72 @@ const ActionModalClient = ({
     if (!fullScreen && !lgScreenAndBelow) setModalFullScreen(false);
   }, [fullScreen, lgScreenAndBelow]);
 
-  useEffect(() => {
-    if (loading && requiresPayload && !payload) {
-      setLoading(false);
-      return;
-    }
+  // useEffect(() => {
+  //   if (loading && requiresPayload && !payload) {
+  //     setLoading(false);
+  //     return;
+  //   }
 
-    if (!loading) {
-      return;
-    }
+  //   if (!loading) {
+  //     return;
+  //   }
 
-    API.put(endpoint, payload ?? {})
+  //   API.put(endpoint, payload ?? {})
+  //     .then((res) => {
+  //       notify({
+  //         title: 'Success!',
+  //         message: res?.data?.message,
+  //         color: 'green',
+  //       });
+
+  //       if (updateTable) updateTable(null);
+
+  //       setLoading(false);
+
+  //       close();
+
+  //       if (redirect) {
+  //         setLoading(true);
+  //         push(redirect);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       const errors = getErrors(err);
+
+  //       errors.forEach((error) => {
+  //         notify({
+  //           title: 'Failed',
+  //           message: error,
+  //           color: 'red',
+  //         });
+  //       });
+
+  //       setLoading(false);
+  //     });
+  // }, [loading, requiresPayload, payload]);
+
+  // const handleAction = () => {
+  //   if (formRef?.current) {
+  //     const validation: any = formRef.current.validate();
+
+  //     if (!validation?.hasErrors) {
+  //       setPayload(formRef.current.getValues());
+  //       setLoading(true);
+  //     } else {
+  //       setLoading(false);
+  //     }
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  // };
+
+  const handleAction = (uncontrolledPayload?: object) => {
+    setLoading(true);
+
+    console.log(uncontrolledPayload);
+
+    API.put(endpoint, uncontrolledPayload ?? {})
       .then((res) => {
         notify({
           title: 'Success!',
@@ -99,22 +163,6 @@ const ActionModalClient = ({
 
         setLoading(false);
       });
-  }, [loading, requiresPayload, payload]);
-
-  const handleAction = () => {
-    if (typeof formRef !== undefined && formRef?.current) {
-      const validation: any = formRef.current.validate();
-
-      if (!validation?.hasErrors) {
-        setPayload(formRef.current.getValues());
-        setLoading(true);
-      } else {
-        setLoading(false);
-      }
-      return;
-    }
-
-    setLoading(true);
   };
 
   const dynamicButtonIcon = (actionType?: ActionType) => {
@@ -248,9 +296,19 @@ const ActionModalClient = ({
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
 
-      <Stack mb={70} px={'sm'}>
-        {typeof body === 'string' ? <Text>{body}</Text> : <>{body}</>}
-      </Stack>
+      {opened && (
+        <Stack mb={70} px={'sm'}>
+          {isValidElement(children) && formRef
+            ? cloneElement(
+                children as ReactElement<any> & { ref?: React.Ref<any> },
+                {
+                  ref: formRef,
+                  handleAction,
+                }
+              )
+            : children}
+        </Stack>
+      )}
 
       <Stack
         w={'100%'}
@@ -270,7 +328,11 @@ const ActionModalClient = ({
             leftSection={dynamicButtonIcon(actionType)}
             loading={loading}
             loaderProps={{ type: 'dots' }}
-            onClick={handleAction}
+            onClick={() =>
+              requiresPayload && formRef?.current
+                ? formRef?.current.requestSubmit()
+                : handleAction()
+            }
           >
             {buttonLabel}
           </Button>

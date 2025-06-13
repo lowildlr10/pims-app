@@ -64,7 +64,7 @@ const SectionContentClient = forwardRef<
             }
             value={form.values.division_id}
             size={'sm'}
-            onChange={(value) => form.setFieldValue('division_id', value)}
+            onChange={(value) => form.setFieldValue('division_id', value ?? '')}
             required
           />
         )}
@@ -97,7 +97,9 @@ const SectionContentClient = forwardRef<
               : undefined
           }
           value={form.values.section_head_id}
-          onChange={(value) => form.setFieldValue('section_head_id', value)}
+          onChange={(value) =>
+            form.setFieldValue('section_head_id', value ?? '')
+          }
         />
         <Switch
           label={'Status'}

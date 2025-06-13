@@ -64,7 +64,9 @@ const UacsCodeContentClient = forwardRef<
           }
           value={form.values.classification_id}
           size={'sm'}
-          onChange={(value) => form.setFieldValue('classification_id', value)}
+          onChange={(value) =>
+            form.setFieldValue('classification_id', value ?? '')
+          }
           required
         />
         <TextInput

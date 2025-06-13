@@ -25,7 +25,10 @@ const PurchaseOrderPage = async () => {
       permissions={permissions}
       type={'main'}
     >
-      <MainContainerClient title={'Procurement - Purchase/Job Order'}>
+      <MainContainerClient
+        title={'Procurement - Purchase/Job Order'}
+        permissions={permissions}
+      >
         <PurchaseOrdersClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

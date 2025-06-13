@@ -242,7 +242,7 @@ const CompanyProfileClient = ({
                       size={'md'}
                       value={form.values.company_head_id}
                       onChange={(value) =>
-                        form.setFieldValue('company_head_id', value)
+                        form.setFieldValue('company_head_id', value ?? '')
                       }
                     />
 

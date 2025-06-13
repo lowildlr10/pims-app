@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PurchaseRequestContentClient from '../../PurchaseRequests/Form';
 import {
   IconActivity,
@@ -51,7 +51,7 @@ const DetailActionsClient = ({
   ] = useDisclosure(false);
   const [actionType, setActionType] = useState<ActionType>();
   const [title, setTitle] = useState('');
-  const [body, setBody] = useState<string | React.ReactNode>('');
+  const [children, setChildren] = useState<React.ReactNode>();
   const [color, setColor] = useState('var(--mantine-color-primary-9)');
   const [buttonLabel, setButtonLabel] = useState('');
   const [endpoint, setEndpoint] = useState('');
@@ -60,9 +60,6 @@ const DetailActionsClient = ({
   const [size, setSize] = useState<'xs' | 'sm' | 'md' | 'lg' | 'xl'>();
   const [fullScreen, setFullScreen] = useState<boolean>();
   const [requiresPayload, setRequiresPayload] = useState<boolean>();
-  const [formRef, setFormRef] =
-    useState<React.RefObject<ActionFormImperativeHandleType | null>>();
-  const [payload, setPayload] = useState<object>();
 
   useEffect(() => {
     setCurrentStatus(status);
@@ -71,27 +68,23 @@ const DetailActionsClient = ({
   const handleOpenActionModal = (
     actionType: ActionType,
     title: string,
-    body: string | React.ReactNode,
+    children: React.ReactNode,
     color: string,
     buttonLabel: string,
     endpoint: string,
     redirect?: string,
     requiresPayload?: boolean,
-    formRef?: React.RefObject<ActionFormImperativeHandleType | null>,
-    payload?: object,
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
     fullScreen?: boolean
   ) => {
     setActionType(actionType);
     setTitle(title);
-    setBody(body);
+    setChildren(children);
     setColor(color);
     setButtonLabel(buttonLabel);
     setEndpoint(endpoint);
     setRedirect(redirect);
     setRequiresPayload(requiresPayload);
-    setFormRef(formRef);
-    setPayload(payload);
     setSize(size);
     setFullScreen(fullScreen);
 
@@ -240,7 +233,6 @@ const DetailActionsClient = ({
 
           <ActionModalClient
             title={title}
-            body={body}
             color={color}
             actionType={actionType}
             buttonLabel={buttonLabel}
@@ -253,8 +245,9 @@ const DetailActionsClient = ({
             stack={stack}
             updateTable={updateTable}
             requiresPayload={requiresPayload}
-            formRef={formRef}
-          />
+          >
+            {children}
+          </ActionModalClient>
         </Stack>
       </Group>
     </Paper>

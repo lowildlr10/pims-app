@@ -5,7 +5,7 @@ import {
   IconArrowRightDashed,
   IconShoppingCartSearch,
 } from '@tabler/icons-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -67,8 +67,6 @@ const ActionsClient = ({
   status,
   handleOpenActionModal,
 }: InspectionAcceptanceReportActionProps) => {
-  const formRef = useRef<ActionFormImperativeHandleType>(null);
-
   return (
     <>
       {status === 'draft' &&
@@ -112,14 +110,12 @@ const ActionsClient = ({
               handleOpenActionModal(
                 'inspect',
                 'IAR Inspection & Store to Supplies',
-                <InspectContent ref={formRef} id={id} />,
+                <InspectContent id={id} />,
                 'var(--mantine-color-green-7)',
                 'Inspect',
                 `/inspection-acceptance-reports/${id}/inspect`,
                 undefined,
                 true,
-                formRef,
-                undefined,
                 undefined,
                 true
               )

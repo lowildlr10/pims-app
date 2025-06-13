@@ -45,6 +45,11 @@ type MainContainerProps = {
   secondaryTtile?: string;
   title: string;
   children: React.ReactNode;
+  permissions?: string[];
+};
+
+type DirectoryPathProps = {
+  permissions?: string[];
 };
 
 type DynamicSelectProps = {
@@ -70,7 +75,7 @@ type DynamicSelectProps = {
   isLoading?: boolean;
   preLoading?: boolean;
   error?: React.ReactNode;
-  onChange?: (value: string) => void;
+  onChange?: (value: string | null) => void;
 };
 
 type DynamicMultiselectProps = {
@@ -247,15 +252,13 @@ type DetailModalProps = {
 type OpenActionModalActionType = (
   actionType: ActionType,
   title: string,
-  body: string | React.ReactNode,
+  children: React.ReactNode,
   color: string,
   buttonLabel: string,
   endpoint: string,
   redirect?: string,
 
   requiresPayload?: boolean,
-  formRef?: React.RefObject<ActionFormImperativeHandleType | null>,
-  payload?: object,
 
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
   fullScreen?: boolean
@@ -263,7 +266,7 @@ type OpenActionModalActionType = (
 
 type ActionModalProps = {
   title: string;
-  body: string | React.ReactNode;
+  children: React.ReactNode;
   color?: string;
   actionType?: ActionType;
   buttonLabel: string;
@@ -276,7 +279,6 @@ type ActionModalProps = {
   stack?: ModalStackReturnType;
   updateTable?: (id: string | null) => void;
   requiresPayload?: boolean;
-  formRef?: React.RefObject<ActionFormImperativeHandleType | null>;
 };
 
 type PrintModalProps = {
