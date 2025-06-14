@@ -269,7 +269,8 @@ const DetailModalClient = ({
 }: DetailModalProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [currentData, setCurrentData] = useState(data);
-  const [showEditButton, setShowEditButton] = useState(false);
+  const [showPrintButton, setShowPrintButton] = useState(showPrint);
+  const [showEditButton, setShowEditButton] = useState(showEdit);
 
   useEffect(() => {
     setCurrentData(data);
@@ -325,7 +326,8 @@ const DetailModalClient = ({
         break;
 
       default:
-        setShowEditButton(true);
+        setShowPrintButton(showPrint);
+        setShowEditButton(showEdit);
         break;
     }
   }, [content, currentData]);
@@ -405,7 +407,7 @@ const DetailModalClient = ({
         sx={{ zIndex: 1001 }}
       >
         <Group>
-          {showPrint && (
+          {showPrintButton && (
             <Button
               type={'button'}
               color={'var(--mantine-color-primary-9)'}

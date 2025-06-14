@@ -48,7 +48,7 @@ export function DirectoryPathClient({ permissions }: DirectoryPathProps) {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
 
   const renderProcurementMenuContent =
-    /^\/procurement\/[^/]+$/.test(pathname) &&
+    /^\/procurements\/[^/]+$/.test(pathname) &&
     procurementLinks.map((item) => {
       const allowed = item.allowedPermissions?.some((permission) =>
         permissions?.includes(permission)

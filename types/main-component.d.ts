@@ -53,16 +53,6 @@ type RequestQuotationActionProps = {
   permissions?: string[];
   id: string;
   status: RequestQuotationStatus;
-  canvassingAt?: string;
-  completedAt?: string;
-  cancelledAt?: string;
-  handleOpenActionModal?: OpenActionModalActionType;
-};
-
-type RequestQuotationActionProps = {
-  permissions?: string[];
-  id: string;
-  status: RequestQuotationStatus;
   handleOpenActionModal?: OpenActionModalActionType;
 };
 
@@ -86,16 +76,6 @@ type AbstractQuotationsResponse = {
 type AbstractQuotationStatusProps = {
   size?: string;
   status?: AbstractQuotationStatus;
-};
-
-type AbstractQuotationActionProps = {
-  permissions?: string[];
-  id: string;
-  status: AbstractQuotationStatus;
-  canvassingAt?: string;
-  completedAt?: string;
-  cancelledAt?: string;
-  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type AbstractQuotationActionProps = {
@@ -138,16 +118,6 @@ type PurchaseOrderActionProps = {
   permissions?: string[];
   id: string;
   status: PurchaseOrderStatus;
-  canvassingAt?: string;
-  completedAt?: string;
-  cancelledAt?: string;
-  handleOpenActionModal?: OpenActionModalActionType;
-};
-
-type PurchaseOrderActionProps = {
-  permissions?: string[];
-  id: string;
-  status: PurchaseOrderStatus;
   handleOpenActionModal?: OpenActionModalActionType;
 };
 
@@ -177,16 +147,6 @@ type InspectionAcceptanceReportActionProps = {
   permissions?: string[];
   id: string;
   status: InspectionAcceptanceReportStatus;
-  canvassingAt?: string;
-  completedAt?: string;
-  cancelledAt?: string;
-  handleOpenActionModal?: OpenActionModalActionType;
-};
-
-type InspectionAcceptanceReportActionProps = {
-  permissions?: string[];
-  id: string;
-  status: InspectionAcceptanceReportStatus;
   handleOpenActionModal?: OpenActionModalActionType;
 };
 
@@ -197,7 +157,12 @@ type ModalInspectionAcceptanceReportContentProps = {
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
-type ActionFormImperativeHandleType = {
-  validate: () => void;
-  getValues: () => any;
+type SuppliesResponse = {
+  data: PurchaseOrderType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
 };

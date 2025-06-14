@@ -19,7 +19,8 @@ type ModuleType =
   | 'iar'
   | 'ors'
   | 'dv'
-  | 'inventory'
+  | 'inv-supply'
+  | 'inv-issuance'
   | 'payment'
   | 'lib-bid-committee'
   | 'lib-fund-source'
@@ -379,6 +380,8 @@ type InspectionAcceptanceReportStatus =
   | 'partially_accepted'
   | 'accepted';
 
+type InventoryIssuanceType = 'ris' | 'ics' | 'are';
+
 type PurchaseRequestType = {
   id?: string;
   section_id?: string;
@@ -398,7 +401,6 @@ type PurchaseRequestType = {
   signatory_cash_available?: SignatoryType;
   sig_approved_by_id?: string;
   signatory_approval?: SignatoryType;
-  status?: PurchaseRequestStatus;
   items?: PurchaseRequestItemType[];
   rfqs?: RequestQuotationType[];
   aoqs?: AbstractQuotationType[];
@@ -411,11 +413,18 @@ type PurchaseRequestType = {
   requestor_fullname?: string;
   cash_available_fullname?: string;
   approval_fullname?: string;
-  submitted_at?: string;
-  approved_cash_available_at?: string;
-  approved_at?: string;
-  disapproved_at?: string;
-  cancelled_at?: string;
+  status?: PurchaseRequestStatus;
+  status_timestamps: {
+    pending_at?: string;
+    approved_cash_available_at?: string;
+    approved_at?: string;
+    disapproved_at?: string;
+    cancelled_at?: string;
+    canvassing_at?: string;
+    approved_rfq_at?: string;
+    partially_awarded_at?: string;
+    awarded_at?: string;
+  };
   created_at?: string;
   updated_at?: string;
 };
@@ -461,15 +470,17 @@ type RequestQuotationType = {
   vat_registered?: boolean;
   canvassers?: RequestQuotationCanvasserType[];
   items?: RequestQuotationItemType[];
-  status?: RequestQuotationStatus;
   pr_no?: string;
   funding_source?: FundingSourceType;
   funding_source_title?: string;
   funding_source_location?: string;
   purpose?: string;
-  canvassing_at?: string;
-  completed_at?: string;
-  cancelled_at?: string;
+  status?: RequestQuotationStatus;
+  status_timestamps: {
+    canvassing_at?: string;
+    completed_at?: string;
+    cancelled_at?: string;
+  };
   created_at?: string;
   updated_at?: string;
 };
@@ -540,9 +551,11 @@ type AbstractQuotationType = {
   member_3_fullname?: string;
   signatory_member_3?: SignatoryType;
   status?: AbstractQuotationStatus;
-  pending_at?: string;
-  approved_at?: string;
-  awarded_at?: string;
+  status_timestamps: {
+    pending_at?: string;
+    approved_at?: string;
+    awarded_at?: string;
+  };
   created_at?: string;
   updated_at?: string;
   items?: AbstractQuotationItemType[];
@@ -597,13 +610,18 @@ type PurchaseOrderType = {
   signatory_approval: SignatoryType;
   document_type?: 'po' | 'jo';
   status?: PurchaseOrderStatus;
-  pending_at?: string;
-  approved_at?: string;
-  issued_at?: string;
-  received_at?: string;
+  status_timestamps: {
+    pending_at?: string;
+    approved_at?: string;
+    issued_at?: string;
+    for_delivery_at?: string;
+    delivered_at?: string;
+    inspection_at?: string;
+  };
   created_at?: string;
   updated_at?: string;
   items?: PurchaseOrderItemType[];
+  supplies?: SupplyType[];
 };
 
 type InspectionAcceptanceReportItemType = {
@@ -639,8 +657,33 @@ type InspectionAcceptanceReportType = {
   acceptance_id?: string;
   acceptance: UserType;
   status?: InspectionAcceptanceReportStatus;
-  pending_at?: string;
-  inspected_at?: string;
-  accepted_at?: string;
+  status_timestamps: {
+    pending_at?: string;
+    inspected_at?: string;
+    accepted_at?: string;
+  };
+  created_at?: string;
+  updated_at?: string;
   items?: InspectionAcceptanceReportItemType[];
+};
+
+type SupplyType = {
+  id?: string;
+  purchase_order_id?: string;
+  purchase_order?: PurchaseOrderType;
+  sku?: string;
+  upc?: string;
+  name?: string;
+  description?: string;
+  item_classification_id?: string;
+  item_classification?: ItemClassificationType;
+  unit_issue_id?: string;
+  unit_issue?: UnitIssueType;
+  quantity?: number;
+  available?: number;
+  unit_cost?: number;
+  total_cost?: number;
+  required_document?: InventoryIssuanceType;
+  created_at?: string;
+  updated_at?: string;
 };

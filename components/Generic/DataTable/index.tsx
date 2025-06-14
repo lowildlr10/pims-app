@@ -62,6 +62,8 @@ const DataTableClient = ({
   updateMainItemBaseEndpoint = '',
   updateSubItemModalTitle = 'Update',
   updateSubItemBaseEndpoint = '',
+  updateMainItemEnable = true,
+  updateSubItemEnable = true,
   updateModalFullscreen,
   detailMainItemModalTitle = 'Details',
   detailMainItemBaseEndpoint = '',
@@ -75,6 +77,8 @@ const DataTableClient = ({
   printSubItemDefaultPaper = 'A4',
   printMainItemDefaultOrientation = 'P',
   printSubItemDefaultOrientation = 'P',
+  printMainItemEnable = true,
+  printSubItemEnable = true,
   logMainItemModalTitle = 'Logs',
   logMainItemEndpoint = '/logs',
   logSubItemModalTitle = 'Logs',
@@ -278,7 +282,11 @@ const DataTableClient = ({
     openUpdateModal();
   };
 
-  const handleOpenDetailModal = (id: string, moduleType: ModuleType | null) => {
+  const handleOpenDetailModal = (
+    id: string,
+    moduleType: ModuleType | null,
+    isMainModuleOpened = true
+  ) => {
     setCurrentDetailModule(moduleType ?? undefined);
     setCurrentUpdateModule(moduleType ?? undefined);
 
@@ -287,39 +295,51 @@ const DataTableClient = ({
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('pr', 'print')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
         );
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('pr', 'update')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
         );
         break;
       case 'rfq':
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('rfq', 'print')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
         );
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('rfq', 'update')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
         );
         break;
       case 'aoq':
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('aoq', 'print')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
         );
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('aoq', 'update')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
         );
         break;
 
@@ -327,13 +347,17 @@ const DataTableClient = ({
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('po', 'print')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
         );
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('po', 'update')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
         );
         break;
 
@@ -341,13 +365,29 @@ const DataTableClient = ({
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('iar', 'print')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
         );
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('iar', 'update')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
+        );
+        break;
+
+      case 'inv-supply':
+        setDetailModalShowPrint(false);
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('inv-supply', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
         );
         break;
 
@@ -554,7 +594,8 @@ const DataTableClient = ({
                                 setCurrentOpenedModuleType('main');
                                 handleOpenDetailModal(
                                   body.id,
-                                  mainModule ?? null
+                                  mainModule ?? null,
+                                  true
                                 );
                               }
                             }}
@@ -716,7 +757,8 @@ const DataTableClient = ({
                                               setCurrentOpenedModuleType('sub');
                                               handleOpenDetailModal(
                                                 subBody.id,
-                                                subModule ?? null
+                                                subModule ?? null,
+                                                true
                                               );
                                             }
                                           }}
@@ -789,6 +831,7 @@ const DataTableClient = ({
         visible={detailLoading}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
+        pos={'fixed'}
       />
 
       <CreateModalClient

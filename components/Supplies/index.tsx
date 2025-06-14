@@ -6,24 +6,18 @@ import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
 import dayjs from 'dayjs';
-import { useMediaQuery } from '@mantine/hooks';
+import { randomId, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
 import PurchaseRequestStatusClient from '../PurchaseRequests/Status';
 import StatusClient from './Status';
-import { NumberFormatter } from '@mantine/core';
+import { NumberFormatter, Text } from '@mantine/core';
 
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'pr_no',
-      label: 'PR No',
-      width: '10%',
-      sortable: true,
-    },
-    {
-      id: 'pr_date_formatted',
-      label: 'PR Date',
-      width: '10%',
+      id: 'po_no',
+      label: 'PO No',
+      width: '12%',
       sortable: true,
     },
     {
@@ -33,87 +27,86 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'purpose_formatted',
-      label: 'Purpose',
-      width: '31%',
+      id: 'supplier_name',
+      label: 'Supplier',
+      width: '57%',
       sortable: true,
     },
     {
-      id: 'requestor_fullname',
-      label: 'Requested By',
-      width: '16%',
+      id: 'delivery_date',
+      label: 'Delivery Date',
+      width: '14%',
       sortable: true,
     },
     {
-      id: 'status_formatted',
-      label: 'Status',
-      width: '16%',
-      sortable: true,
-    },
-    {
-      id: 'show-items',
+      id: 'show-supplies',
       label: '',
       width: '2%',
     },
   ],
   subHead: [
     {
-      id: 'po_no',
-      label: 'PO/JO No',
-      width: '12%',
+      id: 'created_date',
+      label: 'Creation Date',
+      width: '14%',
       sortable: true,
     },
     {
-      id: 'po_date_formatted',
-      label: 'Date',
+      id: 'description_formatted',
+      label: 'Title',
+      width: '22%',
+      sortable: true,
+    },
+    {
+      id: 'unit_issue_name',
+      label: 'Unit',
       width: '10%',
       sortable: true,
     },
     {
-      id: 'procurement_mode_name',
-      label: 'Mode of Procurement',
-      width: '18%',
+      id: 'item_classification_name',
+      label: 'Classification',
+      width: '15%',
       sortable: true,
     },
     {
-      id: 'supplier_name',
-      label: 'Supplier',
-      width: '30%',
+      id: 'required_document_formatted',
+      label: 'Required Document',
+      width: '15%',
       sortable: true,
     },
     {
-      id: 'total_amount_format',
-      label: 'Total Amount',
-      width: '14%',
+      id: 'quantity',
+      label: 'Quantity',
+      width: '12%',
       sortable: false,
     },
     {
-      id: 'status_formatted',
-      label: 'Status',
-      width: '16%',
-      sortable: true,
+      id: 'available',
+      label: 'Available',
+      width: '12%',
+      sortable: false,
     },
   ],
   body: [],
 };
 
-const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
+const SuppliesClient = ({ user, permissions }: MainProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
-  const [columnSort, setColumnSort] = useState('pr_no');
+  const [columnSort, setColumnSort] = useState('po_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
-  const [documentType] = useState<SignatoryDocumentType>('pr');
-  const [subDocumentType] = useState<SignatoryDocumentType>('po');
+  const [documentType] = useState<SignatoryDocumentType>('po');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<PurchaseOrdersResponse>(
+  const { data, isLoading, mutate } = useSWR<SuppliesResponse>(
     [
-      `/purchase-orders`,
+      `/inventories/supplies`,
       search,
       page,
       perPage,
@@ -145,62 +138,51 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
   );
 
   useEffect(() => {
-    const prData = data?.data?.map((body: PurchaseRequestType) => {
-      const { section, funding_source, requestor, pos, ...prData } = body;
+    const poData = data?.data?.map((body: PurchaseOrderType) => {
+      const { supplies, supplier, purchase_request, ...poData } = body;
 
       return {
-        ...prData,
-        pr_date_formatted: dayjs(body.pr_date).format('MM/DD/YYYY'),
-        status_formatted: (
-          <PurchaseRequestStatusClient
-            size={lgScreenAndBelow ? 'xs' : 'md'}
-            status={body.status}
-          />
+        ...poData,
+        funding_source_title: purchase_request?.funding_source?.title ?? '-',
+        supplier_name: supplier?.supplier_name ?? '-',
+        delivery_date: dayjs(poData.status_timestamps.delivered_at).format(
+          'MM/DD/YYYY'
         ),
-        funding_source_title: funding_source?.title ?? '-',
-        requestor_fullname: body.requestor?.fullname ?? '-',
-        purpose_formatted: Helper.shortenText(
-          body.purpose ?? '-',
-          lgScreenAndBelow ? 80 : 150
-        ),
-        sub_body:
-          pos?.map((subBody: PurchaseOrderType) => {
-            return {
-              ...subBody,
-              po_date_formatted: subBody.po_date
-                ? dayjs(subBody.po_date).format('MM/DD/YYYY')
-                : '-',
-              procurement_mode_name: subBody.mode_procurement?.mode_name ?? '-',
-              supplier_name: subBody.supplier?.supplier_name ?? '-',
-              total_amount_format: (
-                <NumberFormatter
-                  prefix={'P'}
-                  value={subBody.total_amount}
-                  thousandSeparator
-                  decimalScale={2}
-                />
-              ),
-              status_formatted: (
-                <StatusClient
-                  size={lgScreenAndBelow ? 'xs' : 'md'}
-                  status={subBody.status}
-                />
-              ),
-            };
-          }) || [],
+        sub_body: supplies?.map((subBody: SupplyType) => {
+          const description = Helper.formatTextWithWhitespace(
+            subBody?.description ?? '-'
+          ).map((line, i) => (
+            <React.Fragment key={randomId()}>
+              {line.replace(/\t/g, '\u00a0\u00a0\u00a0\u00a0')}
+              <br />
+            </React.Fragment>
+          ));
+
+          return {
+            ...subBody,
+            description_formatted: <>{description}</>,
+            unit_issue_name: subBody.unit_issue?.unit_name ?? '-',
+            item_classification_name:
+              subBody.item_classification?.classification_name ?? '-',
+            required_document_formatted: Helper.mapInventoryIssuanceType(
+              subBody.required_document
+            ),
+            created_date: dayjs(subBody.created_at).format('MM/DD/YYYY'),
+          };
+        }),
       };
     });
 
     setTableData((prevState) => ({
       ...prevState,
-      body: prData ?? [],
+      body: poData ?? [],
     }));
   }, [data, lgScreenAndBelow]);
 
   return (
     <DataTableClient
-      mainModule={'pr'}
-      subModule={'po'}
+      mainModule={'po'}
+      subModule={'inv-supply'}
       user={user}
       permissions={permissions}
       columnSort={columnSort}
@@ -209,28 +191,21 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
       showSearch
       defaultModalOnClick={'details'}
       subItemsClickable
-      createMainItemModalTitle={'Create Purchase Request'}
-      createMainItemEndpoint={'/purchase-requests'}
-      createSubItemModalTitle={'Create Purchase/Job Order'}
-      createSubItemEndpoint={'/purchase-orders'}
-      createModalFullscreen
-      updateMainItemModalTitle={'Update Purchase Request'}
-      updateMainItemBaseEndpoint={'/purchase-requests'}
-      updateSubItemModalTitle={'Update Purchase/Job Order'}
-      updateSubItemBaseEndpoint={'/purchase-orders'}
+      updateSubItemModalTitle={'Update Inventory Supply'}
+      updateSubItemBaseEndpoint={'/inventories/supplies'}
+      updateMainItemEnable={false}
       updateModalFullscreen
-      detailMainItemModalTitle={'Purchase Request Details'}
-      detailMainItemBaseEndpoint={'/purchase-requests'}
-      detailSubItemModalTitle={'Purchase/Job Order Details'}
-      detailSubItemBaseEndpoint={'/purchase-orders'}
-      printMainItemModalTitle={'Print Purchase Request'}
+      detailMainItemModalTitle={'Purchase Order Details'}
+      detailMainItemBaseEndpoint={'/purchase-orders'}
+      detailSubItemModalTitle={'Inventory Supply Details'}
+      detailSubItemBaseEndpoint={'/inventories/supplies'}
+      printMainItemModalTitle={'Print Purchase Order'}
       printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-      printSubItemModalTitle={'Print Purchase/Job Order'}
-      printSubItemBaseEndpoint={`/documents/${subDocumentType}/prints`}
-      printSubItemDefaultPaper={'A4'}
-      logMainItemModalTitle={'Purchase Request Logs'}
-      logSubItemModalTitle={'Purchase/Job Order Logs'}
-      subButtonLabel={'PO/JOs'}
+      printMainItemEnable={false}
+      printSubItemEnable={false}
+      logMainItemModalTitle={'Purchase/Job Order Logs'}
+      logSubItemModalTitle={'Inventory Supply Logs'}
+      subButtonLabel={'Supplies'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -251,4 +226,4 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
   );
 };
 
-export default PurchaseOrdersClient;
+export default SuppliesClient;

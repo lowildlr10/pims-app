@@ -4,14 +4,14 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import PurchaseOrdersClient from '@/components/PurchaseOrders';
+import SuppliesClient from '@/components/Supplies';
 
 export const metadata = {
-  title: 'Procurement System - Purchase/Job Order',
-  description: 'Procurement System - Purchase/Job Order',
+  title: 'Inventory System - Supply',
+  description: 'Inventory System - Supply',
 };
 
-const PurchaseOrderPage = async () => {
+const SupplyPage = async () => {
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
@@ -26,13 +26,13 @@ const PurchaseOrderPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Procurement - Purchase/Job Order'}
+        title={'Inventory System - Supply'}
         permissions={permissions}
       >
-        <PurchaseOrdersClient user={user} permissions={permissions} />
+        <SuppliesClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default PurchaseOrderPage;
+export default SupplyPage;

@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default class Helper {
   static sanitizeUrl = (url: string) => {
     return url.replace(/\/+/g, '/').replace(/^\/|\/$/g, '');
@@ -43,5 +45,22 @@ export default class Helper {
         value !== null &&
         Object.keys(value).length === 0)
     );
+  }
+
+  static formatTextWithWhitespace(text: string) {
+    return text.split(/\r?\n/);
+  }
+
+  static mapInventoryIssuanceType(issuanceType?: InventoryIssuanceType) {
+    switch (issuanceType) {
+      case 'ris':
+        return 'Requisition and Issue Slip (RIS)';
+      case 'ics':
+        return 'Inventory Custodian Slip (ICS)';
+      case 'are':
+        return 'Acceptance and Receipt of Equipment (ARE)';
+      default:
+        return '-';
+    }
   }
 }

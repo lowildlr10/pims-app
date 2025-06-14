@@ -152,6 +152,8 @@ type DataTableProps = {
   updateMainItemBaseEndpoint?: string;
   updateSubItemModalTitle?: string;
   updateSubItemBaseEndpoint?: string;
+  updateMainItemEnable?: boolean;
+  updateSubItemEnable?: boolean;
   updateModalFullscreen?: boolean;
   detailMainItemModalTitle?: string;
   detailMainItemBaseEndpoint?: string;
@@ -165,6 +167,8 @@ type DataTableProps = {
   printSubItemDefaultPaper?: string;
   printMainItemDefaultOrientation?: 'P' | 'L';
   printSubItemDefaultOrientation?: 'P' | 'L';
+  printMainItemEnable?: boolean;
+  printSubItemEnable?: boolean;
   logMainItemModalTitle?: string;
   logMainItemEndpoint?: string;
   logSubItemModalTitle?: string;
