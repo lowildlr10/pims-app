@@ -2,7 +2,7 @@ import { Stack, Switch, Textarea, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 
-const ResponsibilityCenterContentClient = forwardRef<
+const FormClient = forwardRef<
   HTMLFormElement,
   ModalResposibilityCenterContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
@@ -80,7 +80,6 @@ const ResponsibilityCenterContentClient = forwardRef<
   );
 });
 
-ResponsibilityCenterContentClient.displayName =
-  'ResponsibilityCenterContentClient';
+FormClient.displayName = 'FormClient';
 
-export default ResponsibilityCenterContentClient;
+export default FormClient;

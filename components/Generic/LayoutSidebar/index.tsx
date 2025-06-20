@@ -76,11 +76,11 @@ const defaultMainMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: PAYMENT_LINKS,
   },
-  { label: 'Settings', icon: IconSettings2, link: '/settings' },
+  { label: 'Settings', icon: IconSettings2, link: '/settings/user-profile' },
 ];
 
 const defaultSettingsMenus: LinksGroupProps[] = [
-  { label: 'User Profile', icon: IconUser, link: '/settings' },
+  { label: 'User Profile', icon: IconUser, link: '/settings/user-profile' },
   {
     label: 'Company Profile',
     allowedPermissions: COMPANY_PROFILE_ALLOWED_PERMISSIONS,
@@ -176,7 +176,7 @@ export function LayoutSidebarClient({
               visibleFrom={'md'}
               size={lgScreenAndBelow ? 'xs' : 'sm'}
             />
-            <Group px={'xs'} gap={'xs'}>
+            <Group px={'xs'} gap={'xs'} align={'center'}>
               <Avatar
                 variant={'filled'}
                 size={lgScreenAndBelow ? 'xs' : 'sm'}
@@ -184,8 +184,8 @@ export function LayoutSidebarClient({
                 src={company?.company_logo ?? '/images/logo-fallback.png'}
                 alt={company?.company_name ?? 'Company'}
               />
-              <Text size={lgScreenAndBelow ? 'md' : 'lg'} fw={400}>
-                Procurement System
+              <Text size={lgScreenAndBelow ? 'lg' : 'xl'} fw={500}>
+                PIMS
               </Text>
             </Group>
           </Group>

@@ -76,7 +76,7 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
   },
 ];
 
-const RequestQuotionContentClient = forwardRef<
+const FormClient = forwardRef<
   HTMLFormElement,
   ModalRequestQuotationContentProps
 >(({ data, isCreate, readOnly, handleCreateUpdate }, ref) => {
@@ -1065,6 +1065,6 @@ const RequestQuotionContentClient = forwardRef<
   );
 });
 
-RequestQuotionContentClient.displayName = 'RequestQuotionContentClient';
+FormClient.displayName = 'FormClient';
 
-export default RequestQuotionContentClient;
+export default FormClient;

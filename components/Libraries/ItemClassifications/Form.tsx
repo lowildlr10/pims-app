@@ -2,7 +2,7 @@ import { Stack, Switch, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 
-const ItemClassificationContentClient = forwardRef<
+const FormClient = forwardRef<
   HTMLFormElement,
   ModalItemClassificationContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
@@ -69,6 +69,6 @@ const ItemClassificationContentClient = forwardRef<
   );
 });
 
-ItemClassificationContentClient.displayName = 'ItemClassificationContentClient';
+FormClient.displayName = 'FormClient';
 
-export default ItemClassificationContentClient;
+export default FormClient;

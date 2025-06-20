@@ -94,37 +94,37 @@ export const PROCUREMENT_LINKS = [
   {
     label: 'Purchase Requests',
     allowedPermissions: ['super:*', 'head:*', 'pr:*', 'pr:view'],
-    link: '/procurements/pr',
+    link: '/procurement/pr',
   },
   {
     label: 'Request for Quotations',
     allowedPermissions: ['super:*', 'head:*', 'rfq:*', 'rfq:view'],
-    link: '/procurements/rfq',
+    link: '/procurement/rfq',
   },
   {
     label: 'Abstract of Quotations',
     allowedPermissions: ['super:*', 'head:*', 'aoq:*', 'aoq:view'],
-    link: '/procurements/aoq',
+    link: '/procurement/aoq',
   },
   {
     label: 'Purchase/Job Orders',
     allowedPermissions: ['super:*', 'head:*', 'po:*', 'po:view'],
-    link: '/procurements/po',
+    link: '/procurement/po',
   },
   {
     label: 'Inspection and Acceptance Report',
     allowedPermissions: ['super:*', 'head:*', 'iar:*', 'iar:view'],
-    link: '/procurements/iar',
+    link: '/procurement/iar',
   },
   {
     label: 'Obligation Request and Status',
     allowedPermissions: ['super:*', 'head:*', 'ors:*', 'ors:view'],
-    link: '/procurements/ors',
+    link: '/procurement/ors',
   },
   {
     label: 'Disbursement Voucher',
     allowedPermissions: ['super:*', 'head:*', 'dv:*', 'dv:view'],
-    link: '/procurements/dv',
+    link: '/procurement/dv',
   },
 ];
 

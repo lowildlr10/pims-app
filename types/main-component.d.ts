@@ -147,6 +147,7 @@ type InspectionAcceptanceReportActionProps = {
   permissions?: string[];
   id: string;
   status: InspectionAcceptanceReportStatus;
+  documentType: 'po' | 'jo';
   handleOpenActionModal?: OpenActionModalActionType;
 };
 
@@ -157,7 +158,7 @@ type ModalInspectionAcceptanceReportContentProps = {
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
-type SuppliesResponse = {
+type InventorySuppliesResponse = {
   data: PurchaseOrderType[];
   from: number;
   to: number;
@@ -165,4 +166,23 @@ type SuppliesResponse = {
   per_page: number;
   last_page: number;
   current_page: number;
+};
+
+type InventorySuppliesStatusProps = {
+  size?: string;
+  status?: InventorySupplyStatus;
+};
+
+type InventorySupplyActionProps = {
+  permissions?: string[];
+  id: string;
+  status: InventorySupplyStatus;
+  handleOpenActionModal?: OpenActionModalActionType;
+};
+
+type ModalInventorySupplyContentProps = {
+  data: InventorySupplyType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };

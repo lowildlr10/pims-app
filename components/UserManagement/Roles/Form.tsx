@@ -12,7 +12,7 @@ import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
 import { PERMISSIONS_CONFIG } from '@/config/permissions';
 
-const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
+const FormClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
     const [currentData, setCurrentData] = useState(data);
     const currentForm = useMemo(
@@ -236,6 +236,6 @@ const RoleContentClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
   }
 );
 
-RoleContentClient.displayName = 'RoleContentClient';
+FormClient.displayName = 'FormClient';
 
-export default RoleContentClient;
+export default FormClient;

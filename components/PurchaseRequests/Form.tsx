@@ -70,7 +70,7 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
   },
 ];
 
-const PurchaseRequestContentClient = forwardRef<
+const FormClient = forwardRef<
   HTMLFormElement,
   ModalPurchaseRequestContentProps
 >(({ data, readOnly, handleCreateUpdate }, ref) => {
@@ -951,6 +951,6 @@ const PurchaseRequestContentClient = forwardRef<
   );
 });
 
-PurchaseRequestContentClient.displayName = 'PurchaseRequestContentClient';
+FormClient.displayName = 'FormClient';
 
-export default PurchaseRequestContentClient;
+export default FormClient;

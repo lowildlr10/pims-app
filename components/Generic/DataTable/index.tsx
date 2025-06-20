@@ -758,7 +758,7 @@ const DataTableClient = ({
                                               handleOpenDetailModal(
                                                 subBody.id,
                                                 subModule ?? null,
-                                                true
+                                                false
                                               );
                                             }
                                           }}
@@ -839,10 +839,10 @@ const DataTableClient = ({
           currentOpenedModuleType === 'main'
             ? createModalOpened
               ? createMainItemModalTitle
-              : ''
+              : 'Create'
             : createModalOpened
               ? createSubItemModalTitle
-              : ''
+              : 'Create'
         }
         endpoint={
           currentOpenedModuleType === 'main'
@@ -997,10 +997,10 @@ const DataTableClient = ({
           <UpdateModalClient
             title={
               currentOpenedModuleType === 'main'
-                ? updateModalOpened
+                ? stack.register('update-modal').opened
                   ? updateMainItemModalTitle
                   : ''
-                : updateModalOpened
+                : stack.register('update-modal').opened
                   ? updateSubItemModalTitle
                   : ''
             }

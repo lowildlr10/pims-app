@@ -60,7 +60,7 @@ export default class Helper {
       case 'are':
         return 'Acceptance and Receipt of Equipment (ARE)';
       default:
-        return '-';
+        return '';
     }
   }
 }

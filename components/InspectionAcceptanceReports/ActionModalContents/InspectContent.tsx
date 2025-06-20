@@ -5,17 +5,23 @@ import { notify } from '@/libs/Notification';
 import Helper from '@/utils/Helpers';
 import { LoadingOverlay, NumberInput, Skeleton, Textarea } from '@mantine/core';
 import { Table } from '@mantine/core';
+import { Group } from '@mantine/core';
 import { Select } from '@mantine/core';
 import { TextInput } from '@mantine/core';
 import { Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMediaQuery } from '@mantine/hooks';
+import { IconAsterisk } from '@tabler/icons-react';
 import { forwardRef, useEffect, useMemo, useState } from 'react';
 
 const InspectContent = forwardRef<
   HTMLFormElement,
-  { id: string; handleAction?: (uncontrolledPayload?: object) => void }
->(({ id, handleAction }, ref) => {
+  {
+    id: string;
+    documentType: 'po' | 'jo';
+    handleAction?: (uncontrolledPayload?: object) => void;
+  }
+>(({ id, documentType, handleAction }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<
@@ -24,6 +30,7 @@ const InspectContent = forwardRef<
       purchase_order_id: string;
       po_item_id: string;
       stock_no: number;
+      name: string;
       description: string;
       unit_issue_id: string;
       unit: string;
@@ -47,6 +54,7 @@ const InspectContent = forwardRef<
         purchase_order_id: item.purchase_order_id,
         po_item_id: item.po_item_id,
         stock_no: item.stock_no,
+        name: item.name,
         description: item.description,
         unit_issue_id: item.unit_issue_id,
         unit: item.unit,
@@ -128,6 +136,7 @@ const InspectContent = forwardRef<
                 purchase_order_id: item.po_item?.purchase_order_id,
                 po_item_id: item.po_item?.id,
                 stock_no: item.pr_item?.stock_no,
+                name: null,
                 description: item.po_item?.description,
                 unit_issue_id: item.pr_item?.unit_issue_id,
                 unit: item.pr_item?.unit_issue?.unit_name,
@@ -164,28 +173,6 @@ const InspectContent = forwardRef<
     form.setValues(currentForm);
   }, [currentForm]);
 
-  // useEffect(() => {
-  //   if (Helper.empty(items)) return;
-
-  //   form.reset();
-  //   form.setInitialValues({
-  //     items: items?.map((item) => ({
-  //       id: item.id,
-  //       purchase_order_id: item.purchase_order_id,
-  //       po_item_id: item.po_item_id,
-  //       stock_no: item.stock_no,
-  //       description: item.description,
-  //       unit_issue_id: item.unit_issue_id,
-  //       unit: item.unit,
-  //       quantity: item.quantity,
-  //       unit_cost: item.unit_cost,
-  //       total_cost: item.total_cost,
-  //       item_classification_id: null,
-  //       required_document: null,
-  //     })),
-  //   });
-  // }, [items]);
-
   return (
     <form
       ref={ref}
@@ -196,6 +183,7 @@ const InspectContent = forwardRef<
               purchase_order_id: item.purchase_order_id,
               po_item_id: item.po_item_id,
               stock_no: item.stock_no,
+              name: item.name,
               description: item.description,
               unit_issue_id: item.unit_issue_id,
               quantity: item.quantity,
@@ -233,16 +221,43 @@ const InspectContent = forwardRef<
                   Unit
                 </Table.Th>
                 <Table.Th w={'30%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
-                  Description
+                  <Group gap={1} align={'flex-start'}>
+                    Name & Description
+                    <Stack>
+                      <IconAsterisk
+                        size={7}
+                        color={'var(--mantine-color-red-8)'}
+                        stroke={2}
+                      />
+                    </Stack>
+                  </Group>
                 </Table.Th>
                 <Table.Th w={'12%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
                   Quantity
                 </Table.Th>
                 <Table.Th w={'17%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
-                  Item Classification
+                  <Group gap={1} align={'flex-start'}>
+                    Item Classification
+                    <Stack>
+                      <IconAsterisk
+                        size={7}
+                        color={'var(--mantine-color-red-8)'}
+                        stroke={2}
+                      />
+                    </Stack>
+                  </Group>
                 </Table.Th>
                 <Table.Th w={'15%'} fz={lgScreenAndBelow ? 'sm' : 'md'}>
-                  Required Inventory Document
+                  <Group gap={1} align={'flex-start'}>
+                    Required Inventory Document
+                    <Stack>
+                      <IconAsterisk
+                        size={7}
+                        color={'var(--mantine-color-red-8)'}
+                        stroke={2}
+                      />
+                    </Stack>
+                  </Group>
                 </Table.Th>
               </Table.Tr>
             </Table.Thead>
@@ -283,6 +298,15 @@ const InspectContent = forwardRef<
                       />
                     </Table.Td>
                     <Table.Td>
+                      <TextInput
+                        key={form.key(`items.${index}.name`)}
+                        {...form.getInputProps(`items.${index}.name`)}
+                        placeholder={'Enter supply name here...'}
+                        defaultValue={item.name}
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        mb={lgScreenAndBelow ? 'sm' : 'md'}
+                        required
+                      />
                       <Textarea
                         variant={'unstyled'}
                         placeholder={'Description'}

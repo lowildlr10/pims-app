@@ -4,7 +4,6 @@ import {
   IconArrowForward,
   IconFileIsr,
   IconShoppingCartCopy,
-  IconThumbUpFilled,
   IconTruckDelivery,
 } from '@tabler/icons-react';
 import React from 'react';

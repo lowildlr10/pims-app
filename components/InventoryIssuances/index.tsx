@@ -10,7 +10,7 @@ import { randomId, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
 import PurchaseRequestStatusClient from '../PurchaseRequests/Status';
 import StatusClient from './Status';
-import { NumberFormatter, Text } from '@mantine/core';
+import { Divider, NumberFormatter, Stack, Text } from '@mantine/core';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -46,38 +46,32 @@ const defaultTableData: TableDataType = {
   ],
   subHead: [
     {
-      id: 'created_date',
-      label: 'Creation Date',
-      width: '14%',
-      sortable: true,
-    },
-    {
-      id: 'description_formatted',
-      label: 'Title',
-      width: '22%',
-      sortable: true,
-    },
-    {
       id: 'unit_issue_name',
       label: 'Unit',
       width: '10%',
       sortable: true,
     },
     {
+      id: 'description_formatted',
+      label: 'Name',
+      width: '28%',
+      sortable: true,
+    },
+    {
       id: 'item_classification_name',
       label: 'Classification',
-      width: '15%',
+      width: '12%',
       sortable: true,
     },
     {
       id: 'required_document_formatted',
       label: 'Required Document',
-      width: '15%',
+      width: '12%',
       sortable: true,
     },
     {
       id: 'quantity',
-      label: 'Quantity',
+      label: 'Inventory',
       width: '12%',
       sortable: false,
     },
@@ -87,11 +81,17 @@ const defaultTableData: TableDataType = {
       width: '12%',
       sortable: false,
     },
+    {
+      id: 'status_formatted',
+      label: 'Status',
+      width: '14%',
+      sortable: true,
+    },
   ],
   body: [],
 };
 
-const SuppliesClient = ({ user, permissions }: MainProps) => {
+const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -104,7 +104,7 @@ const SuppliesClient = ({ user, permissions }: MainProps) => {
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<SuppliesResponse>(
+  const { data, isLoading, mutate } = useSWR<InventorySuppliesResponse>(
     [
       `/inventories/supplies`,
       search,
@@ -148,7 +148,7 @@ const SuppliesClient = ({ user, permissions }: MainProps) => {
         delivery_date: dayjs(poData.status_timestamps.delivered_at).format(
           'MM/DD/YYYY'
         ),
-        sub_body: supplies?.map((subBody: SupplyType) => {
+        sub_body: supplies?.map((subBody: InventorySupplyType) => {
           const description = Helper.formatTextWithWhitespace(
             subBody?.description ?? '-'
           ).map((line, i) => (
@@ -160,14 +160,33 @@ const SuppliesClient = ({ user, permissions }: MainProps) => {
 
           return {
             ...subBody,
-            description_formatted: <>{description}</>,
+            description_formatted: (
+              <Stack gap={2}>
+                <>
+                  <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>
+                    {subBody.name ?? 'Unnamed'}
+                  </Text>
+                  <Text
+                    size={lgScreenAndBelow ? 'xs' : 'sm'}
+                    fs={'italic'}
+                    c='dimmed'
+                  >
+                    {description}
+                  </Text>
+                </>
+              </Stack>
+            ),
             unit_issue_name: subBody.unit_issue?.unit_name ?? '-',
             item_classification_name:
               subBody.item_classification?.classification_name ?? '-',
-            required_document_formatted: Helper.mapInventoryIssuanceType(
-              subBody.required_document
+            required_document_formatted:
+              Helper.mapInventoryIssuanceType(subBody.required_document) ?? '-',
+            status_formatted: (
+              <StatusClient
+                size={lgScreenAndBelow ? 'xs' : 'md'}
+                status={subBody.status}
+              />
             ),
-            created_date: dayjs(subBody.created_at).format('MM/DD/YYYY'),
           };
         }),
       };
@@ -226,4 +245,4 @@ const SuppliesClient = ({ user, permissions }: MainProps) => {
   );
 };
 
-export default SuppliesClient;
+export default InventoryIssuancesClient;

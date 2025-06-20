@@ -4,14 +4,14 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import SuppliesClient from '@/components/Supplies';
+import InventorySuppliesClient from '@/components/InventorySupplies';
 
 export const metadata = {
   title: 'Inventory System - Supply',
   description: 'Inventory System - Supply',
 };
 
-const SupplyPage = async () => {
+const InventorySupplyPage = async () => {
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
@@ -29,10 +29,10 @@ const SupplyPage = async () => {
         title={'Inventory System - Supply'}
         permissions={permissions}
       >
-        <SuppliesClient user={user} permissions={permissions} />
+        <InventorySuppliesClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default SupplyPage;
+export default InventorySupplyPage;

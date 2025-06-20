@@ -2,7 +2,7 @@ import { Stack, Switch, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 
-const ProcurementModeContentClient = forwardRef<
+const FormClient = forwardRef<
   HTMLFormElement,
   ModalProcurementModeContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
@@ -69,6 +69,6 @@ const ProcurementModeContentClient = forwardRef<
   );
 });
 
-ProcurementModeContentClient.displayName = 'ProcurementModeContentClient';
+FormClient.displayName = 'FormClient';
 
-export default ProcurementModeContentClient;
+export default FormClient;

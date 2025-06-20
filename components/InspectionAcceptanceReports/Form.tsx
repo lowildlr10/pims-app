@@ -41,7 +41,7 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
   },
 ];
 
-const InspectionAcceptanceReportClient = forwardRef<
+const FormClient = forwardRef<
   HTMLFormElement,
   ModalInspectionAcceptanceReportContentProps
 >(({ data, readOnly, handleCreateUpdate }, ref) => {
@@ -931,7 +931,6 @@ const InspectionAcceptanceReportClient = forwardRef<
   );
 });
 
-InspectionAcceptanceReportClient.displayName =
-  'InspectionAcceptanceReportClient';
+FormClient.displayName = 'FormClient';
 
-export default InspectionAcceptanceReportClient;
+export default FormClient;

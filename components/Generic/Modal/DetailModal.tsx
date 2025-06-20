@@ -9,8 +9,7 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
-import React, { useEffect, useRef, useState } from 'react';
-import PurchaseRequestContentClient from '../../PurchaseRequests/Form';
+import React, { useEffect, useState } from 'react';
 import {
   IconActivity,
   IconHandFinger,
@@ -18,22 +17,26 @@ import {
   IconPrinter,
   IconX,
 } from '@tabler/icons-react';
+import PurchaseRequestFormClient from '../../PurchaseRequests/Form';
 import PurchaseRequestStatusClient from '@/components/PurchaseRequests/Status';
 import PurchaseRequestActionsClient from '@/components/PurchaseRequests/Actions';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import ActionModalClient from './ActionModal';
-import RequestQuotionContentClient from '../../RequestQuotations/Form';
+import RequestQuotionFormClient from '../../RequestQuotations/Form';
 import RequestQuotationStatusClient from '@/components/RequestQuotations/Status';
 import RequestQuotationActionsClient from '@/components/RequestQuotations/Actions';
 import AbstractQuotationStatusClient from '@/components/AbstractQuotations/Status';
 import AbstractQuotationActionsClient from '@/components/AbstractQuotations/Actions';
 import PurchaseOrderStatusClient from '@/components/PurchaseOrders/Status';
 import PurchaseOrderActionsClient from '@/components/PurchaseOrders/Actions';
-import AbstractQuotionContentClient from '../../AbstractQuotations/Form';
-import PurchaseOrderContentClient from '@/components/PurchaseOrders/Form';
-import InspectionAcceptanceReportContentClient from '@/components/InspectionAcceptanceReports/Form';
+import AbstractQuotionFormClient from '../../AbstractQuotations/Form';
+import PurchaseOrderFormClient from '@/components/PurchaseOrders/Form';
+import InspectionAcceptanceReportFormClient from '@/components/InspectionAcceptanceReports/Form';
 import InspectionAcceptanceReportActionsClient from '@/components/InspectionAcceptanceReports/Actions';
 import InspectionAcceptanceReportStatusClient from '@/components/InspectionAcceptanceReports/Status';
+import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
+import InventorySupplyStatusClient from '@/components/InventorySupplies/Status';
+import InventorySupplyActionsClient from '@/components/InventorySupplies/Actions';
 
 const DetailActionsClient = ({
   permissions,
@@ -128,6 +131,13 @@ const DetailActionsClient = ({
             status={(currentStatus as InspectionAcceptanceReportStatus) ?? ''}
           />
         );
+      case 'inv-supply':
+        return (
+          <InventorySupplyStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as InventorySupplyStatus) ?? ''}
+          />
+        );
       default:
         return <>-</>;
     }
@@ -135,7 +145,7 @@ const DetailActionsClient = ({
 
   const dynamicActions = (content?: ModuleType) => {
     return (
-      <Menu offset={6} shadow={'md'} width={300} withArrow>
+      <Menu offset={6} shadow={'md'} width={400} withArrow>
         <Menu.Target>
           <Button
             size={lgScreenAndBelow ? 'xs' : 'sm'}
@@ -189,6 +199,16 @@ const DetailActionsClient = ({
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
+              documentType={data?.purchase_order?.document_type ?? 'po'}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'inv-supply' && (
+            <InventorySupplyActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -203,7 +223,7 @@ const DetailActionsClient = ({
               stack.open('log-modal');
             }}
           >
-            Document Logs
+            Audit Logs
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
@@ -372,26 +392,27 @@ const DetailModalClient = ({
       <Stack p={'md'} my={70}>
         <Paper shadow={'lg'} p={0}>
           {opened && content === 'pr' && (
-            <PurchaseRequestContentClient data={currentData} readOnly />
+            <PurchaseRequestFormClient data={currentData} readOnly />
           )}
 
           {opened && content === 'rfq' && (
-            <RequestQuotionContentClient data={currentData} readOnly />
+            <RequestQuotionFormClient data={currentData} readOnly />
           )}
 
           {opened && content === 'aoq' && (
-            <AbstractQuotionContentClient data={currentData} readOnly />
+            <AbstractQuotionFormClient data={currentData} readOnly />
           )}
 
           {opened && content === 'po' && (
-            <PurchaseOrderContentClient data={currentData} readOnly />
+            <PurchaseOrderFormClient data={currentData} readOnly />
           )}
 
           {opened && content === 'iar' && (
-            <InspectionAcceptanceReportContentClient
-              data={currentData}
-              readOnly
-            />
+            <InspectionAcceptanceReportFormClient data={currentData} readOnly />
+          )}
+
+          {opened && content === 'inv-supply' && (
+            <InventorySupplyFormClient data={currentData} readOnly />
           )}
         </Paper>
       </Stack>

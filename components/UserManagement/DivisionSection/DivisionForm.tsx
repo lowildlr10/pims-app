@@ -3,7 +3,7 @@ import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import DynamicSelect from '../../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 
-const DivisionContentClient = forwardRef<
+const DivisionFormClient = forwardRef<
   HTMLFormElement,
   ModalDivisionContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
@@ -92,6 +92,6 @@ const DivisionContentClient = forwardRef<
   );
 });
 
-DivisionContentClient.displayName = 'DivisionContentClient';
+DivisionFormClient.displayName = 'DivisionFormClient';
 
-export default DivisionContentClient;
+export default DivisionFormClient;

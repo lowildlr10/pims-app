@@ -380,6 +380,8 @@ type InspectionAcceptanceReportStatus =
   | 'partially_accepted'
   | 'accepted';
 
+type InventorySupplyStatus = 'in-stock' | 'out-of-stock';
+
 type InventoryIssuanceType = 'ris' | 'ics' | 'are';
 
 type PurchaseRequestType = {
@@ -667,7 +669,7 @@ type InspectionAcceptanceReportType = {
   items?: InspectionAcceptanceReportItemType[];
 };
 
-type SupplyType = {
+type InventorySupplyType = {
   id?: string;
   purchase_order_id?: string;
   purchase_order?: PurchaseOrderType;
@@ -684,6 +686,7 @@ type SupplyType = {
   unit_cost?: number;
   total_cost?: number;
   required_document?: InventoryIssuanceType;
+  status?: SupplyStatus;
   created_at?: string;
   updated_at?: string;
 };

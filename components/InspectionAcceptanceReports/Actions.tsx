@@ -33,7 +33,7 @@ const NavigationMenus = ({
           />
         }
         component={Link}
-        href={`/procurement/iar?search=${id}`}
+        href={`/procurement/po?search=${id}`}
       >
         Navigate to PO/JO
       </Menu.Item>
@@ -57,6 +57,25 @@ const NavigationMenus = ({
             Navigate to ORS
           </Menu.Item>
         )}
+      {['supply:*', ...getAllowedPermissions('ors', 'view')].some(
+        (permission) => permissions?.includes(permission)
+      ) &&
+        ['inspected', 'partially_completed', 'completed'].includes(status) &&
+        pathname === '/procurement/iar' && (
+          <Menu.Item
+            leftSection={
+              <IconArrowRightDashed
+                color={'var(--mantine-color-primary-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            component={Link}
+            href={`/inventories/supplies?search=${id}`}
+          >
+            Navigate to Inventory Supply
+          </Menu.Item>
+        )}
     </>
   );
 };
@@ -65,6 +84,7 @@ const ActionsClient = ({
   permissions,
   id,
   status,
+  documentType,
   handleOpenActionModal,
 }: InspectionAcceptanceReportActionProps) => {
   return (
@@ -94,7 +114,7 @@ const ActionsClient = ({
         )}
 
       {status === 'pending' &&
-        ['supply:*', ...getAllowedPermissions('po', 'approve')].some(
+        ['supply:*', ...getAllowedPermissions('iar', 'inspect')].some(
           (permission) => permissions?.includes(permission)
         ) && (
           <Menu.Item
@@ -109,19 +129,21 @@ const ActionsClient = ({
               handleOpenActionModal &&
               handleOpenActionModal(
                 'inspect',
-                'IAR Inspection & Store to Supplies',
-                <InspectContent id={id} />,
+                documentType === 'po'
+                  ? 'IAR Inspection & Create Supplies'
+                  : 'IAR Inspection',
+                <InspectContent id={id} documentType={documentType} />,
                 'var(--mantine-color-green-7)',
                 'Inspect',
                 `/inspection-acceptance-reports/${id}/inspect`,
                 undefined,
-                true,
+                documentType === 'po',
                 undefined,
-                true
+                documentType === 'po'
               )
             }
           >
-            Inspect & Store
+            Inspect
           </Menu.Item>
         )}
 
@@ -130,12 +152,12 @@ const ActionsClient = ({
           <Menu.Item color={'var(--mantine-color-gray-5)'}>
             No available action
           </Menu.Item>
-
-          <Menu.Divider />
-          <Menu.Label>Navigation</Menu.Label>
-          <NavigationMenus id={id} permissions={permissions} status={status} />
         </>
       )}
+
+      <Menu.Divider />
+      <Menu.Label>Navigation</Menu.Label>
+      <NavigationMenus id={id} permissions={permissions} status={status} />
     </>
   );
 };

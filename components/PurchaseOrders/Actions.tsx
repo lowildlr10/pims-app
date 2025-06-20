@@ -3,8 +3,10 @@ import { Menu } from '@mantine/core';
 import {
   IconArrowBack,
   IconArrowForward,
+  IconArrowLeftDashed,
   IconArrowRightDashed,
   IconPackageImport,
+  IconTableShare,
   IconThumbUpFilled,
 } from '@tabler/icons-react';
 import React from 'react';
@@ -51,11 +53,49 @@ const NavigationMenus = ({
             Navigate to IAR
           </Menu.Item>
         )}
+
+      {['supply:*', ...getAllowedPermissions('iar', 'view')].some(
+        (permission) => permissions?.includes(permission)
+      ) &&
+        pathname === '/inventories/supplies' && (
+          <Menu.Item
+            leftSection={
+              <IconArrowLeftDashed
+                color={'var(--mantine-color-primary-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            component={Link}
+            href={`/procurement/iar?search=${id}`}
+          >
+            Navigate to IAR
+          </Menu.Item>
+        )}
+
+      {['supply:*', ...getAllowedPermissions('inv-issuance', 'view')].some(
+        (permission) => permissions?.includes(permission)
+      ) &&
+        pathname === '/inventories/supplies' && (
+          <Menu.Item
+            leftSection={
+              <IconArrowRightDashed
+                color={'var(--mantine-color-primary-9)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            component={Link}
+            href={`/inventories/issuances?search=${id}`}
+          >
+            Navigate to Issuances
+          </Menu.Item>
+        )}
     </>
   );
 };
 
-const ActionsClient = ({
+const PoActionsClient = ({
   permissions,
   id,
   status,
@@ -216,6 +256,74 @@ const ActionsClient = ({
           <Menu.Label>Navigation</Menu.Label>
           <NavigationMenus id={id} permissions={permissions} status={status} />
         </>
+      )}
+    </>
+  );
+};
+
+const IssuanceActionsClient = ({
+  permissions,
+  id,
+  status,
+  handleOpenActionModal,
+}: PurchaseOrderActionProps) => {
+  return (
+    <>
+      {['supply:*', ...getAllowedPermissions('inv-issuance', 'create')].some(
+        (permission) => permissions?.includes(permission)
+      ) ? (
+        <Menu.Item
+          component={Link}
+          href={'/inventories/issuances'}
+          leftSection={
+            <IconTableShare
+              color={'var(--mantine-color-primary-9)'}
+              size={18}
+              stroke={1.5}
+            />
+          }
+        >
+          Create Issuance
+        </Menu.Item>
+      ) : (
+        <Menu.Item color={'var(--mantine-color-gray-5)'}>
+          No available action
+        </Menu.Item>
+      )}
+
+      <Menu.Divider />
+      <Menu.Label>Navigation</Menu.Label>
+      <NavigationMenus id={id} permissions={permissions} status={status} />
+    </>
+  );
+};
+
+const ActionsClient = ({
+  permissions,
+  id,
+  status,
+  handleOpenActionModal,
+}: PurchaseOrderActionProps) => {
+  const pathname = usePathname();
+
+  return (
+    <>
+      {pathname === '/procurement/po' && (
+        <PoActionsClient
+          permissions={permissions}
+          id={id}
+          status={status}
+          handleOpenActionModal={handleOpenActionModal}
+        />
+      )}
+
+      {pathname === '/inventories/supplies' && (
+        <IssuanceActionsClient
+          permissions={permissions}
+          id={id}
+          status={status}
+          handleOpenActionModal={handleOpenActionModal}
+        />
       )}
     </>
   );
