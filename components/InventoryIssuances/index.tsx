@@ -10,7 +10,7 @@ import { randomId, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
 import PurchaseRequestStatusClient from '../PurchaseRequests/Status';
 import StatusClient from './Status';
-import { Divider, NumberFormatter, Stack, Text } from '@mantine/core';
+import { Stack, Text } from '@mantine/core';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -39,52 +39,34 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'show-supplies',
+      id: 'show-issuances',
       label: '',
       width: '2%',
     },
   ],
   subHead: [
     {
-      id: 'unit_issue_name',
+      id: 'inventory_no',
       label: 'Unit',
-      width: '10%',
+      width: '12%',
       sortable: true,
     },
     {
-      id: 'description_formatted',
+      id: 'document_type_formatted',
       label: 'Name',
-      width: '28%',
+      width: '57%',
       sortable: true,
     },
     {
-      id: 'item_classification_name',
-      label: 'Classification',
-      width: '12%',
+      id: 'received_by_name',
+      label: 'Issued To',
+      width: '15%',
       sortable: true,
-    },
-    {
-      id: 'required_document_formatted',
-      label: 'Required Document',
-      width: '12%',
-      sortable: true,
-    },
-    {
-      id: 'quantity',
-      label: 'Inventory',
-      width: '12%',
-      sortable: false,
-    },
-    {
-      id: 'available',
-      label: 'Available',
-      width: '12%',
-      sortable: false,
     },
     {
       id: 'status_formatted',
       label: 'Status',
-      width: '14%',
+      width: '16%',
       sortable: true,
     },
   ],
@@ -104,9 +86,9 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
     defaultTableData ?? {}
   );
 
-  const { data, isLoading, mutate } = useSWR<InventorySuppliesResponse>(
+  const { data, isLoading, mutate } = useSWR<InventoryIssuanceResponse>(
     [
-      `/inventories/supplies`,
+      `/inventories/issuances`,
       search,
       page,
       perPage,
@@ -148,47 +130,19 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
         delivery_date: dayjs(poData.status_timestamps.delivered_at).format(
           'MM/DD/YYYY'
         ),
-        sub_body: supplies?.map((subBody: InventorySupplyType) => {
-          const description = Helper.formatTextWithWhitespace(
-            subBody?.description ?? '-'
-          ).map((line, i) => (
-            <React.Fragment key={randomId()}>
-              {line.replace(/\t/g, '\u00a0\u00a0\u00a0\u00a0')}
-              <br />
-            </React.Fragment>
-          ));
-
-          return {
-            ...subBody,
-            description_formatted: (
-              <Stack gap={2}>
-                <>
-                  <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>
-                    {subBody.name ?? 'Unnamed'}
-                  </Text>
-                  <Text
-                    size={lgScreenAndBelow ? 'xs' : 'sm'}
-                    fs={'italic'}
-                    c='dimmed'
-                  >
-                    {description}
-                  </Text>
-                </>
-              </Stack>
-            ),
-            unit_issue_name: subBody.unit_issue?.unit_name ?? '-',
-            item_classification_name:
-              subBody.item_classification?.classification_name ?? '-',
-            required_document_formatted:
-              Helper.mapInventoryIssuanceType(subBody.required_document) ?? '-',
-            status_formatted: (
-              <StatusClient
-                size={lgScreenAndBelow ? 'xs' : 'md'}
-                status={subBody.status}
-              />
-            ),
-          };
-        }),
+        sub_body: supplies?.map((subBody: InventoryIssuanceType) => ({
+          ...subBody,
+          document_type_formatted:
+            Helper.mapInventoryIssuanceDocumentType(subBody.document_type) ??
+            '-',
+          received_by_name: subBody.recipient?.fullname ?? '-',
+          status_formatted: (
+            <StatusClient
+              size={lgScreenAndBelow ? 'xs' : 'md'}
+              status={subBody.status}
+            />
+          ),
+        })),
       };
     });
 
@@ -201,7 +155,7 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
   return (
     <DataTableClient
       mainModule={'po'}
-      subModule={'inv-supply'}
+      subModule={'inv-issuance'}
       user={user}
       permissions={permissions}
       columnSort={columnSort}
@@ -209,22 +163,40 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
       search={search}
       showSearch
       defaultModalOnClick={'details'}
+      mainItemsClickable={false}
       subItemsClickable
-      updateSubItemModalTitle={'Update Inventory Supply'}
-      updateSubItemBaseEndpoint={'/inventories/supplies'}
+      showCreate
+      createMenus={[
+        {
+          label: Helper.mapInventoryIssuanceDocumentType('ris'),
+          value: 'ris',
+          moduleType: 'inv-issuance',
+        },
+        {
+          label: Helper.mapInventoryIssuanceDocumentType('ics'),
+          value: 'ics',
+          moduleType: 'inv-issuance',
+        },
+        {
+          label: Helper.mapInventoryIssuanceDocumentType('are'),
+          value: 'are',
+          moduleType: 'inv-issuance',
+        },
+      ]}
+      createMainItemModalTitle={'Create Issuance'}
+      createMainItemEndpoint={'/inventories/issuances'}
+      createModalFullscreen
+      updateSubItemModalTitle={'Update Inventory Issuance'}
+      updateSubItemBaseEndpoint={'/inventories/issuances'}
       updateMainItemEnable={false}
       updateModalFullscreen
-      detailMainItemModalTitle={'Purchase Order Details'}
-      detailMainItemBaseEndpoint={'/purchase-orders'}
-      detailSubItemModalTitle={'Inventory Supply Details'}
-      detailSubItemBaseEndpoint={'/inventories/supplies'}
-      printMainItemModalTitle={'Print Purchase Order'}
-      printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
+      detailSubItemModalTitle={'Inventory Issuance Details'}
+      detailSubItemBaseEndpoint={'/inventories/issuances'}
+      printSubItemModalTitle={'Print Request for Quotation'}
+      printSubItemBaseEndpoint={`/documents/${documentType}/prints`}
       printMainItemEnable={false}
-      printSubItemEnable={false}
-      logMainItemModalTitle={'Purchase/Job Order Logs'}
-      logSubItemModalTitle={'Inventory Supply Logs'}
-      subButtonLabel={'Supplies'}
+      logSubItemModalTitle={'Inventory Issuance Logs'}
+      subButtonLabel={'Issuances'}
       data={tableData}
       perPage={perPage}
       loading={isLoading}

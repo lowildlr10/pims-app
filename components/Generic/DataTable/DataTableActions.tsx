@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ActionIcon, Button, Group, Paper, Tooltip } from '@mantine/core';
+import { ActionIcon, Button, Group, Menu, Paper, Tooltip } from '@mantine/core';
 import { IconPencilPlus, IconRefresh, IconSearch } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import SearchModalClient from '../Modal/SearchModal';
@@ -14,6 +14,7 @@ const DataTableActionsClient = ({
   mainModule,
   showSearch,
   showCreate,
+  createMenus,
   setSearch,
   handleOpenCreateModal,
 }: DataTableActionsProps) => {
@@ -36,18 +37,50 @@ const DataTableActionsClient = ({
         getAllowedPermissions(mainModule, 'create')?.some((permission) =>
           permissions.includes(permission)
         ) ? (
-          <Button
-            size={'xs'}
-            radius='sm'
-            color={'var(--mantine-color-primary-9)'}
-            leftSection={<IconPencilPlus size={14} />}
-            onClick={() =>
-              handleOpenCreateModal &&
-              handleOpenCreateModal(null, mainModule ?? null)
-            }
-          >
-            Create
-          </Button>
+          <>
+            {createMenus && createMenus.length > 0 ? (
+              <Menu width={350} position='bottom-start'>
+                <Menu.Target>
+                  <Button
+                    size={'xs'}
+                    radius={'sm'}
+                    color={'var(--mantine-color-primary-9)'}
+                    leftSection={<IconPencilPlus size={14} />}
+                  >
+                    Create
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {createMenus.map((menu) => (
+                    <Menu.Item
+                      key={menu.label}
+                      onClick={() =>
+                        handleOpenCreateModal &&
+                        handleOpenCreateModal(menu.value, menu.moduleType, {
+                          document_type: menu?.value,
+                        })
+                      }
+                    >
+                      {menu.label}
+                    </Menu.Item>
+                  ))}
+                </Menu.Dropdown>
+              </Menu>
+            ) : (
+              <Button
+                size={'xs'}
+                radius={'sm'}
+                color={'var(--mantine-color-primary-9)'}
+                leftSection={<IconPencilPlus size={14} />}
+                onClick={() =>
+                  handleOpenCreateModal &&
+                  handleOpenCreateModal(null, mainModule ?? null)
+                }
+              >
+                Create
+              </Button>
+            )}
+          </>
         ) : (
           <div></div>
         )}

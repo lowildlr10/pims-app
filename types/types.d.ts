@@ -220,7 +220,7 @@ type ProcurementModeType = {
   updated_at?: string;
 };
 
-type ResposibilityCenterType = {
+type ResponsibilityCenterType = {
   id?: string;
   code?: string;
   description?: string;
@@ -382,7 +382,9 @@ type InspectionAcceptanceReportStatus =
 
 type InventorySupplyStatus = 'in-stock' | 'out-of-stock';
 
-type InventoryIssuanceType = 'ris' | 'ics' | 'are';
+type InventoryIssuanceStatus = 'draft' | 'pending' | 'approved' | 'issued';
+
+type InventoryIssuanceDocumentType = 'ris' | 'ics' | 'are';
 
 type PurchaseRequestType = {
   id?: string;
@@ -653,7 +655,7 @@ type InspectionAcceptanceReportType = {
   inspected_date?: string;
   inspected?: boolean;
   sig_inspection_id?: string;
-  signatory_inspection: SignatoryType;
+  signatory_inspection?: SignatoryType;
   received_date?: string;
   acceptance_completed?: boolean;
   acceptance_id?: string;
@@ -685,8 +687,58 @@ type InventorySupplyType = {
   available?: number;
   unit_cost?: number;
   total_cost?: number;
-  required_document?: InventoryIssuanceType;
-  status?: SupplyStatus;
+  required_document?: InventoryIssuanceDocumentType;
+  status?: InventorySupplyStatus;
   created_at?: string;
   updated_at?: string;
+};
+
+type InventoryIssuanceItemType = {
+  id?: string;
+  inventory_issuance_id?: string;
+  inventory_supply_id?: string;
+  stock_no?: number;
+  supply?: InventorySupplyType;
+  description?: string;
+  inventory_item_no?: string;
+  property_no?: string;
+  quantity?: number;
+  estimated_useful_life?: number;
+  acquired_date?: string;
+  unit_cost?: number;
+  total_cost?: number;
+};
+
+type InventoryIssuanceType = {
+  id?: string;
+  purchase_order_id?: string;
+  purchase_order?: PurchaseOrderType;
+  responsibility_center_id?: string;
+  responsibility_center: ResponsibilityCenterType;
+  inventory_no?: string;
+  inventory_date?: string;
+  sai_no?: string;
+  sai_date?: string;
+  document_type?: InventoryIssuanceDocumentType;
+  requested_by_id?: string;
+  requestor?: UserType;
+  requested_date?: string;
+  sig_approved_by_id?: string;
+  signatory_approval?: SignatoryType;
+  approved_date?: string;
+  sig_issued_by_id?: string;
+  signatory_issuer?: SignatoryType;
+  issued_date?: string;
+  received_by_id?: string;
+  recipient?: UserType;
+  received_date?: string;
+  status?: InventoryIssuanceStatus;
+  status_timestamps: {
+    pending_at?: string;
+    approved_at?: string;
+    issued_at?: string;
+  };
+  created_at?: string;
+  updated_at?: string;
+  items?: InventoryIssuanceItemType[];
 };

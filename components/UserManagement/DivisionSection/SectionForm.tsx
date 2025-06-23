@@ -22,7 +22,6 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
 
     useEffect(() => {
       setCurrentData(data);
-      console.log(data);
     }, [data]);
 
     useEffect(() => {

@@ -4,7 +4,7 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import InventorySuppliesClient from '@/components/InventorySupplies';
+import InventoryIssuancesClient from '@/components/InventoryIssuances';
 
 export const metadata = {
   title: 'Inventory System - Issuance',
@@ -29,7 +29,7 @@ const IssuancePage = async () => {
         title={'Inventory System - Issuance'}
         permissions={permissions}
       >
-        <InventorySuppliesClient user={user} permissions={permissions} />
+        <InventoryIssuancesClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

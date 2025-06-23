@@ -186,3 +186,32 @@ type ModalInventorySupplyContentProps = {
   readOnly?: boolean;
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
+
+type InventoryIssuanceResponse = {
+  data: PurchaseOrderType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type InventoryIssuanceStatusProps = {
+  size?: string;
+  status?: InventoryIssuanceStatus;
+};
+
+type InventoryIssuanceActionProps = {
+  permissions?: string[];
+  id: string;
+  status: InventoryIssuanceStatus;
+  handleOpenActionModal?: OpenActionModalActionType;
+};
+
+type ModalInventoryIssuanceContentProps = {
+  data: InventoryIssuanceType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
+};

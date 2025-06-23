@@ -7,8 +7,8 @@ import { getCompany } from '@/actions/company';
 import InventorySuppliesClient from '@/components/InventorySupplies';
 
 export const metadata = {
-  title: 'Inventory System - Supply',
-  description: 'Inventory System - Supply',
+  title: 'Inventory System - Property/Supply',
+  description: 'Inventory System - Property/Supply',
 };
 
 const InventorySupplyPage = async () => {
@@ -26,7 +26,7 @@ const InventorySupplyPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Inventory System - Supply'}
+        title={'Inventory System - Property/Supply'}
         permissions={permissions}
       >
         <InventorySuppliesClient user={user} permissions={permissions} />

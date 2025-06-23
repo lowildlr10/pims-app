@@ -163,7 +163,7 @@ type PaperSizesResponse = {
 };
 
 type ResposibilityCenterResponse = {
-  data: ResposibilityCenterType[];
+  data: ResponsibilityCenterType[];
   from: number;
   to: number;
   total: number;

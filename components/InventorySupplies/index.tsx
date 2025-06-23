@@ -179,7 +179,9 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
             item_classification_name:
               subBody.item_classification?.classification_name ?? '-',
             required_document_formatted:
-              Helper.mapInventoryIssuanceType(subBody.required_document) ?? '-',
+              Helper.mapInventoryIssuanceDocumentType(
+                subBody.required_document
+              ) ?? '-',
             status_formatted: (
               <StatusClient
                 size={lgScreenAndBelow ? 'xs' : 'md'}

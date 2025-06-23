@@ -2,7 +2,6 @@ import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import { Card, Flex, Group, Text } from '@mantine/core';
-import { Select } from '@mantine/core';
 import { NumberInput, Stack, Table, Textarea, TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';

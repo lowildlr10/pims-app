@@ -129,8 +129,6 @@ const ActionModalClient = ({
   const handleAction = (uncontrolledPayload?: object) => {
     setLoading(true);
 
-    console.log(uncontrolledPayload);
-
     API.put(endpoint, uncontrolledPayload ?? {})
       .then((res) => {
         notify({

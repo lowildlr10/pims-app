@@ -194,6 +194,7 @@ const FormClient = forwardRef<
               value={readOnly ? currentData?.name : undefined}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               label={'Name'}
+              required={!readOnly}
               readOnly={readOnly}
             />
             <Textarea
@@ -303,7 +304,7 @@ const FormClient = forwardRef<
                 <TextInput
                   label={'Required Inventory Document'}
                   placeholder={'None'}
-                  value={Helper.mapInventoryIssuanceType(
+                  value={Helper.mapInventoryIssuanceDocumentType(
                     currentData?.required_document
                   )}
                   size={lgScreenAndBelow ? 'sm' : 'md'}

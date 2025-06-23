@@ -137,6 +137,11 @@ type DataTableProps = {
   search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
+  createMenus?: {
+    label: string;
+    value: SignatoryDocumentType;
+    moduleType: ModuleType;
+  }[];
   defaultModalOnClick?: 'update' | 'details';
   showCreateSubItem?: boolean;
   mainItemsClickable?: boolean;
@@ -214,10 +219,16 @@ type DataTableActionsProps = {
   search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
+  createMenus?: {
+    label: string;
+    value: SignatoryDocumentType;
+    moduleType: ModuleType;
+  }[];
   setSearch?: (value: string) => void;
   handleOpenCreateModal?: (
     parentId: string | null,
-    module_type: ModuleType | null
+    module_type: ModuleType | null,
+    additionalParams?: { [key: string]: any } | null
   ) => void;
 };
 
@@ -397,7 +408,7 @@ type ModalProcurementModeContentProps = {
 };
 
 type ModalResposibilityCenterContentProps = {
-  data: ResposibilityCenterType;
+  data: ResponsibilityCenterType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
@@ -536,6 +547,17 @@ type PurchaseOrderItemsFieldType = {
   unit_issue?: string;
   description?: string;
   quantity?: number;
+  unit_cost?: number;
+  total_cost?: number;
+};
+
+type InventoryIssuanceItemsFieldType = {
+  key: string;
+  stock_no?: number;
+  unit_issue?: string;
+  description?: string;
+  quantity?: number;
+  available?: number;
   unit_cost?: number;
   total_cost?: number;
 };

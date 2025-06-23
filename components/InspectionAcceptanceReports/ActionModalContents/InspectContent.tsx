@@ -308,12 +308,13 @@ const InspectContent = forwardRef<
                         required
                       />
                       <Textarea
-                        variant={'unstyled'}
-                        placeholder={'Description'}
+                        key={form.key(`items.${index}.description`)}
+                        {...form.getInputProps(`items.${index}.description`)}
+                        placeholder={'Enter description here...'}
                         defaultValue={item.description}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         autosize
-                        readOnly
+                        required
                       />
                     </Table.Td>
                     <Table.Td>

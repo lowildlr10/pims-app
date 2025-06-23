@@ -51,7 +51,9 @@ export default class Helper {
     return text.split(/\r?\n/);
   }
 
-  static mapInventoryIssuanceType(issuanceType?: InventoryIssuanceType) {
+  static mapInventoryIssuanceDocumentType(
+    issuanceType?: InventoryIssuanceDocumentType
+  ) {
     switch (issuanceType) {
       case 'ris':
         return 'Requisition and Issue Slip (RIS)';

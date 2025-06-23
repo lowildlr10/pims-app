@@ -47,6 +47,7 @@ const DataTableClient = ({
   search,
   showSearch,
   showCreate,
+  createMenus,
   defaultModalOnClick = 'update',
   showCreateSubItem,
   mainItemsClickable = true,
@@ -250,7 +251,8 @@ const DataTableClient = ({
 
   const handleOpenCreateModal = (
     parentId: string | null,
-    moduleType: ModuleType | null
+    moduleType: ModuleType | null,
+    otherParams?: { [key: string]: any } | null
   ) => {
     setCurrentCreateModule(moduleType ?? undefined);
 
@@ -269,6 +271,8 @@ const DataTableClient = ({
           pr_no: parentBody?.pr_no,
         });
         break;
+      case 'inv-issuance':
+        setFormData({ document_type: otherParams?.document_type });
       default:
         break;
     }
@@ -426,8 +430,9 @@ const DataTableClient = ({
         setSearch={setTableSearch}
         showCreate={showCreate}
         showSearch={showSearch}
-        handleOpenCreateModal={(parentId, moduleType) => {
-          handleOpenCreateModal(parentId, moduleType);
+        createMenus={createMenus}
+        handleOpenCreateModal={(parentId, moduleType, otherParams) => {
+          handleOpenCreateModal(parentId, moduleType, otherParams);
           setCurrentOpenedModuleType('main');
         }}
       />

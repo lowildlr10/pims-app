@@ -30,6 +30,9 @@ import ResponsibilityCenterFormClient from '../../Libraries/ResposibilityCenters
 import PurchaseRequestFormClient from '../../PurchaseRequests/Form';
 import { useMediaQuery } from '@mantine/hooks';
 import RequestQuotionFormClient from '../../RequestQuotations/Form';
+import RisFormClient from '../../InventoryIssuances/Forms/RisForm';
+import IcsFormClient from '../../InventoryIssuances/Forms/IcsForm';
+import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
 
 const CreateModalClient = ({
   title,
@@ -277,6 +280,37 @@ const CreateModalClient = ({
             handleCreateUpdate={handleCreate}
             isCreate
           />
+        )}
+
+        {opened && content === 'inv-issuance' && (
+          <>
+            {data?.document_type === 'ris' && (
+              <RisFormClient
+                ref={formRef}
+                data={data}
+                handleCreateUpdate={handleCreate}
+                isCreate
+              />
+            )}
+
+            {data?.document_type === 'ics' && (
+              <IcsFormClient
+                ref={formRef}
+                data={data}
+                handleCreateUpdate={handleCreate}
+                isCreate
+              />
+            )}
+
+            {data?.document_type === 'are' && (
+              <AreFormClient
+                ref={formRef}
+                data={data}
+                handleCreateUpdate={handleCreate}
+                isCreate
+              />
+            )}
+          </>
         )}
       </Stack>
 

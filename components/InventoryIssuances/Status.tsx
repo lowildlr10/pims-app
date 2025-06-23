@@ -6,9 +6,9 @@ import React from 'react';
 const StatusClient = ({
   size = 'md',
   status,
-}: InventorySuppliesStatusProps) => {
+}: InventoryIssuanceStatusProps) => {
   switch (status) {
-    case 'in-stock':
+    case 'draft':
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
@@ -22,14 +22,42 @@ const StatusClient = ({
         </Tooltip>
       );
 
-    case 'out-of-stock':
+    case 'approved':
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
             size={size}
-            color={'var(--mantine-color-red-7)'}
+            color={'var(--mantine-color-green-9)'}
             variant={'light'}
-            leftSection={<IconPackageOff size={18} stroke={1.5} />}
+            leftSection={<IconPackages size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'pending':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-green-9)'}
+            variant={'light'}
+            leftSection={<IconPackages size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'issued':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-green-9)'}
+            variant={'light'}
+            leftSection={<IconPackages size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>
