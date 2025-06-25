@@ -2,42 +2,53 @@ import { Card, Divider, Flex, Text } from '@mantine/core';
 import { Select } from '@mantine/core';
 import { NumberInput, Stack, Table, Textarea, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useMediaQuery } from '@mantine/hooks';
-import React, { forwardRef, useEffect, useMemo, useState } from 'react';
+import { randomId, useMediaQuery } from '@mantine/hooks';
+import React, {
+  forwardRef,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import DynamicSelect from '../Generic/DynamicSelect';
 import Helper from '@/utils/Helpers';
+import dayjs from 'dayjs';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
   {
-    id: 'stock_no',
-    label: 'Stock No.',
+    id: 'recipient_name',
+    label: 'Name',
+    width: '25%',
+  },
+  {
+    id: 'issuance_no',
+    label: 'RIS No./ICS No./ARE No.',
+    width: '13%',
+  },
+  {
+    id: 'item_no',
+    label: 'Inventory Item No./Property No.',
+    width: '13%',
+  },
+  {
+    id: 'acquired_date',
+    label: 'Date Acquired',
     width: '12%',
   },
   {
-    id: 'unit_issue',
-    label: 'Unit',
-    width: '14%',
-  },
-  {
-    id: 'description',
-    label: 'Item and Description',
-    width: '30%',
-    required: true,
+    id: 'issued_date',
+    label: 'Date Received',
+    width: '12%',
   },
   {
     id: 'quantity',
-    label: 'Qty',
-    width: '12%',
+    label: 'Quantity',
+    width: '11%',
   },
   {
-    id: 'unit_cost',
-    label: 'Unit Cost',
-    width: '16%',
-  },
-  {
-    id: 'total_cost',
-    label: 'Amount',
-    width: '16%',
+    id: 'status',
+    label: 'Status',
+    width: '14%',
   },
 ];
 
@@ -55,6 +66,34 @@ const FormClient = forwardRef<
       description: currentData?.description ?? '',
       item_classification_id: currentData?.item_classification_id ?? '',
       required_document: currentData?.required_document ?? '',
+      recipients: (
+        currentData?.issued_items?.map((item) => ({
+          key: randomId(),
+          recipient_name: item.issuance?.recipient?.fullname ?? '',
+          issuance_no: item.issuance?.inventory_no ?? '-',
+          item_no: item.inventory_item_no ?? item.property_no ?? '-',
+          acquired_date: item.acquired_date
+            ? dayjs(item.acquired_date).format('YYYY-MM-DD')
+            : '-',
+          issued_date: item.issuance?.status_timestamps?.issued_at
+            ? dayjs(item.issuance?.status_timestamps?.issued_at).format(
+                'YYYY-MM-DD'
+              )
+            : '-',
+          quantity: item.quantity ?? 0,
+          status:
+            item.issuance?.status === 'cancelled'
+              ? 'Cancelled'
+              : item.issuance?.status === 'issued'
+                ? 'Issued'
+                : 'Reserved',
+          document_type: item.issuance?.document_type,
+        })) ?? []
+      ).filter(
+        (recipient) =>
+          recipient.status !== 'Cancelled' &&
+          recipient.document_type === currentData.required_document
+      ),
     };
   }, [currentData]);
   const form = useForm({
@@ -71,101 +110,37 @@ const FormClient = forwardRef<
     setCurrentData(data);
   }, [data]);
 
-  // const renderDynamicTdContent = (
-  //   id: string,
-  //   item: PurchaseOrderItemsFieldType,
-  //   index: number
-  // ): ReactNode => {
-  //   switch (id) {
-  //     case 'stock_no':
-  //       return (
-  //         <Table.Td>
-  //           <NumberInput
-  //             size={lgScreenAndBelow ? 'sm' : 'md'}
-  //             variant={readOnly ? 'unstyled' : 'filled'}
-  //             value={item?.stock_no}
-  //             readOnly
-  //           />
-  //         </Table.Td>
-  //       );
+  const renderDynamicTdContent = (
+    id: string,
+    item: InventorySupplyRecipientsFieldType,
+    index: number
+  ): ReactNode => {
+    switch (id) {
+      case 'recipient_name':
+        return <Table.Td>{item?.recipient_name}</Table.Td>;
 
-  //     case 'unit_issue':
-  //       return (
-  //         <Table.Td align={'center'}>
-  //           <TextInput
-  //             variant={readOnly ? 'unstyled' : 'filled'}
-  //             placeholder={'None'}
-  //             defaultValue={item.unit_issue}
-  //             size={lgScreenAndBelow ? 'sm' : 'md'}
-  //             flex={1}
-  //             readOnly
-  //           />
-  //         </Table.Td>
-  //       );
+      case 'issuance_no':
+        return <Table.Td>{item?.issuance_no}</Table.Td>;
 
-  //     case 'description':
-  //       return (
-  //         <Table.Td>
-  //           <Textarea
-  //             key={form.key(`items.${index}.description`)}
-  //             {...form.getInputProps(`items.${index}.description`)}
-  //             variant={readOnly ? 'unstyled' : 'default'}
-  //             placeholder={'Description'}
-  //             defaultValue={readOnly ? undefined : item.description}
-  //             value={readOnly ? item.description : undefined}
-  //             size={lgScreenAndBelow ? 'sm' : 'md'}
-  //             autosize
-  //             readOnly={readOnly}
-  //           />
-  //         </Table.Td>
-  //       );
+      case 'item_no':
+        return <Table.Td>{item?.item_no}</Table.Td>;
 
-  //     case 'quantity':
-  //       return (
-  //         <Table.Td>
-  //           <NumberInput
-  //             size={lgScreenAndBelow ? 'sm' : 'md'}
-  //             variant={readOnly ? 'unstyled' : 'filled'}
-  //             value={item?.quantity}
-  //             readOnly
-  //           />
-  //         </Table.Td>
-  //       );
+      case 'acquired_date':
+        return <Table.Td>{item?.acquired_date}</Table.Td>;
 
-  //     case 'unit_cost':
-  //       return (
-  //         <Table.Td colSpan={readOnly ? 1 : 2}>
-  //           <NumberInput
-  //             size={lgScreenAndBelow ? 'sm' : 'md'}
-  //             variant={readOnly ? 'unstyled' : 'filled'}
-  //             value={item?.unit_cost}
-  //             decimalScale={2}
-  //             fixedDecimalScale
-  //             thousandSeparator={','}
-  //             readOnly
-  //           />
-  //         </Table.Td>
-  //       );
+      case 'issued_date':
+        return <Table.Td>{item?.issued_date}</Table.Td>;
 
-  //     case 'total_cost':
-  //       return (
-  //         <Table.Td>
-  //           <NumberInput
-  //             size={lgScreenAndBelow ? 'sm' : 'md'}
-  //             variant={readOnly ? 'unstyled' : 'filled'}
-  //             value={item?.total_cost}
-  //             decimalScale={2}
-  //             fixedDecimalScale
-  //             thousandSeparator={','}
-  //             readOnly
-  //           />
-  //         </Table.Td>
-  //       );
+      case 'quantity':
+        return <Table.Td>{item?.quantity}</Table.Td>;
 
-  //     default:
-  //       return <></>;
-  //   }
-  // };
+      case 'status':
+        return <Table.Td>{item?.status}</Table.Td>;
+
+      default:
+        return <></>;
+    }
+  };
 
   return (
     <form
@@ -318,16 +293,36 @@ const FormClient = forwardRef<
               <>
                 <Divider />
 
-                <TextInput
-                  variant={readOnly ? 'default' : 'filled'}
-                  placeholder={'None'}
-                  value={
-                    readOnly ? currentData?.unit_issue?.unit_name : undefined
-                  }
-                  size={lgScreenAndBelow ? 'sm' : 'md'}
-                  label={'Unit'}
-                  readOnly
-                />
+                <Flex
+                  w={'100%'}
+                  direction={lgScreenAndBelow ? 'column' : 'row'}
+                  gap={'md'}
+                >
+                  <TextInput
+                    variant={readOnly ? 'default' : 'filled'}
+                    placeholder={'None'}
+                    value={
+                      readOnly ? currentData?.unit_issue?.unit_name : undefined
+                    }
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    label={'Unit'}
+                    flex={1}
+                    readOnly
+                  />
+                  <NumberInput
+                    variant={readOnly ? 'default' : 'filled'}
+                    label={'Unit Cost'}
+                    placeholder={'None'}
+                    value={currentData?.unit_cost}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    min={0}
+                    decimalScale={2}
+                    fixedDecimalScale
+                    thousandSeparator={','}
+                    flex={1}
+                    readOnly
+                  />
+                </Flex>
 
                 <Flex
                   w={'100%'}
@@ -336,9 +331,35 @@ const FormClient = forwardRef<
                 >
                   <NumberInput
                     variant={readOnly ? 'default' : 'filled'}
-                    label={'Inventory'}
+                    label={'Quantity'}
                     placeholder={'None'}
                     value={currentData?.quantity}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    min={0}
+                    clampBehavior={'strict'}
+                    allowDecimal={false}
+                    thousandSeparator={','}
+                    flex={1}
+                    readOnly
+                  />
+                  <NumberInput
+                    variant={readOnly ? 'default' : 'filled'}
+                    label={'Reserved'}
+                    placeholder={'None'}
+                    value={currentData?.reserved}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    min={0}
+                    clampBehavior={'strict'}
+                    allowDecimal={false}
+                    thousandSeparator={','}
+                    flex={1}
+                    readOnly
+                  />
+                  <NumberInput
+                    variant={readOnly ? 'default' : 'filled'}
+                    label={'Issued'}
+                    placeholder={'None'}
+                    value={currentData?.issued}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     min={0}
                     clampBehavior={'strict'}
@@ -361,19 +382,6 @@ const FormClient = forwardRef<
                     readOnly
                   />
                 </Flex>
-                <NumberInput
-                  variant={readOnly ? 'default' : 'filled'}
-                  label={'Unit Cost'}
-                  placeholder={'None'}
-                  value={currentData?.unit_cost}
-                  size={lgScreenAndBelow ? 'sm' : 'md'}
-                  min={0}
-                  decimalScale={2}
-                  fixedDecimalScale
-                  thousandSeparator={','}
-                  flex={1}
-                  readOnly
-                />
               </>
             )}
           </Stack>
@@ -394,216 +402,95 @@ const FormClient = forwardRef<
               <Table.ScrollContainer
                 minWidth={500}
                 w={readOnly ? 'calc(100vw - 8.6em)' : 'calc(100vw - 6.7em)'}
-                h={'calc(100vh - 20em)'}
+                h={'calc(100vh - 25em)'}
               >
-                <Table
-                  withColumnBorders
-                  withRowBorders
-                  verticalSpacing={'sm'}
-                  withTableBorder
-                  m={0}
-                  borderColor={'var(--mantine-color-gray-8)'}
-                  stickyHeader
-                  stickyHeaderOffset={-1}
-                >
+                <Table verticalSpacing={'sm'} highlightOnHover withTableBorder>
                   <Table.Thead>
-                    {/* <Table.Tr
-                      sx={{
-                        backgroundColor: 'var(--mantine-color-gray-2)',
-                        th: {
-                          borderLeft: '1px solid',
-                        },
-                      }}
-                    >
+                    <Table.Tr>
                       {itemHeaders.map((header) => {
-                        const supplierHeader =
-                          header.id === 'supplier'
-                            ? supplierHeaders.find(
-                                (supplier) =>
-                                  supplier.supplier_id === header?.label
-                              )
-                            : undefined;
-
-                        if (readOnly && header.id === 'include_checkbox')
+                        if (
+                          currentData?.required_document === 'ris' &&
+                          (header.id === 'item_no' ||
+                            header.id === 'acquired_date')
+                        )
                           return;
 
                         return (
                           <Table.Th
-                            key={
-                              header.id === 'supplier'
-                                ? header.label
-                                : header.id
-                            }
+                            key={header.id}
                             w={header?.width ?? undefined}
-                            miw={header?.width ?? undefined}
                             fz={lgScreenAndBelow ? 'sm' : 'md'}
-                            rowSpan={header.id === 'supplier' ? 1 : 2}
-                            colSpan={
-                              header.id === 'supplier' ? (readOnly ? 3 : 2) : 1
-                            }
+                            ta={header.align ?? undefined}
                           >
-                            <Group gap={1} align={'center'} justify={'center'}>
-                              {header.id === 'supplier'
-                                ? supplierHeader?.supplier_name
-                                : header.label}{' '}
-                              {header?.required && !readOnly && !isCreate && (
-                                <Stack>
-                                  <IconAsterisk
-                                    size={7}
-                                    color={'var(--mantine-color-red-8)'}
-                                    stroke={2}
-                                  />
-                                </Stack>
+                            {header.id === 'issuance_no' &&
+                              currentData?.required_document === 'ris' && (
+                                <>RIS No.</>
                               )}
-                            </Group>
+
+                            {header.id === 'issuance_no' &&
+                              currentData?.required_document === 'ics' && (
+                                <>ICS No.</>
+                              )}
+
+                            {header.id === 'issuance_no' &&
+                              currentData?.required_document === 'are' && (
+                                <>ARE No.</>
+                              )}
+
+                            {header.id === 'item_no' &&
+                              currentData?.required_document === 'ics' && (
+                                <>Inventory Item No.</>
+                              )}
+
+                            {header.id === 'item_no' &&
+                              currentData?.required_document === 'are' && (
+                                <>Property No.</>
+                              )}
+
+                            {header.id !== 'issuance_no' &&
+                              header.id !== 'item_no' && <>{header.label}</>}
                           </Table.Th>
                         );
                       })}
                     </Table.Tr>
-                    <Table.Tr
-                      sx={{
-                        lineHeight: 0.4,
-                        backgroundColor: 'var(--mantine-color-gray-2)',
-                        th: {
-                          border: '1px solid',
-                        },
-                      }}
-                    >
-                      {itemHeaders.map((header, index) => {
-                        if (header.id !== 'supplier') return;
-
-                        return (
-                          <React.Fragment key={header.label}>
-                            <Table.Th
-                              ta={'center'}
-                              w={'150px'}
-                              miw={'150px'}
-                              fz={lgScreenAndBelow ? 'sm' : 'md'}
-                            >
-                              Brand
-                            </Table.Th>
-                            <Table.Th
-                              ta={'center'}
-                              w={'225px'}
-                              miw={'225px'}
-                              fz={lgScreenAndBelow ? 'sm' : 'md'}
-                            >
-                              Unit Cost
-                            </Table.Th>
-
-                            {readOnly && (
-                              <Table.Th
-                                ta={'center'}
-                                w={'225px'}
-                                miw={'225px'}
-                                fz={lgScreenAndBelow ? 'sm' : 'md'}
-                              >
-                                Total Cost
-                              </Table.Th>
-                            )}
-                          </React.Fragment>
-                        );
-                      })}
-                    </Table.Tr> */}
                   </Table.Thead>
                   <Table.Tbody>
-                    {/* {form.getValues().items.length === 0 &&
-                      Array.from({ length: 5 }).map((_, i) => (
-                        <Table.Tr key={i}>
-                          <Table.Td colSpan={supplierHeaders.length * 3 + 5}>
-                            <Skeleton height={30} radius='sm' />
-                          </Table.Td>
-                        </Table.Tr>
-                      ))}
+                    {Helper.empty(form.getValues()?.recipients) && (
+                      <Table.Tr>
+                        <Table.Td
+                          c={'var(--mantine-color-red-5)'}
+                          ta={'center'}
+                          colSpan={itemHeaders?.length}
+                          fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                        >
+                          No data.
+                        </Table.Td>
+                      </Table.Tr>
+                    )}
 
-                    {form.getValues().items.map((item, index) => (
+                    {form.getValues()?.recipients?.map((item, index) => (
                       <Table.Tr
                         key={`item-${item.key}`}
                         sx={{ verticalAlign: 'top' }}
                       >
                         {itemHeaders.map((header) => {
-                          if (header.id === 'include_checkbox') {
-                            return null;
-                          }
+                          if (
+                            currentData?.required_document === 'ris' &&
+                            (header.id === 'item_no' ||
+                              header.id === 'acquired_date')
+                          )
+                            return;
 
                           return (
                             <React.Fragment
-                              key={`field-${item.key}-${header.id === 'supplier' ? header.label : header.id}`}
+                              key={`field-${item.key}-${header.id}`}
                             >
-                              {renderDynamicTdContent(
-                                header.id,
-                                item,
-                                index,
-                                header.id === 'supplier'
-                                  ? header.label
-                                  : undefined
-                              )}
+                              {renderDynamicTdContent(header.id, item, index)}
                             </React.Fragment>
                           );
                         })}
-
-                        {!readOnly && (
-                          <Table.Td valign={'top'} ta={'center'} pt={'sm'}>
-                            <Checkbox
-                              key={form.key(`items.${index}.included`)}
-                              {...form.getInputProps(`items.${index}.included`)}
-                              w={'100%'}
-                              size={lgScreenAndBelow ? 'sm' : 'md'}
-                              color={'var(--mantine-color-primary-9)'}
-                              defaultChecked={item.included}
-                              sx={{
-                                justifyItems: 'center',
-                              }}
-                              disabled
-                            />
-                            <input
-                              key={form.key(`items.${index}.quantity`)}
-                              {...form.getInputProps(`items.${index}.quantity`)}
-                              type={'hidden'}
-                              value={item.quantity}
-                            />
-                            <input
-                              key={form.key(`items.${index}.pr_item_id`)}
-                              {...form.getInputProps(
-                                `items.${index}.pr_item_id`
-                              )}
-                              type={'hidden'}
-                              value={item.pr_item_id}
-                            />
-                          </Table.Td>
-                        )}
                       </Table.Tr>
                     ))}
-
-                    {readOnly && (
-                      <Table.Tr>
-                        <Table.Td colSpan={4}></Table.Td>
-
-                        {supplierHeaders?.map((supplier) => (
-                          <React.Fragment key={supplier.supplier_id}>
-                            <Table.Td></Table.Td>
-                            <Table.Td></Table.Td>
-                            <Table.Td>
-                              <NumberFormatter
-                                style={{
-                                  fontSize: lgScreenAndBelow
-                                    ? '0.75rem'
-                                    : '0.95rem',
-                                  fontWeight: 600,
-                                }}
-                                prefix={'P '}
-                                value={supplier.total_cost}
-                                decimalScale={2}
-                                fixedDecimalScale
-                                thousandSeparator
-                              />
-                            </Table.Td>
-                          </React.Fragment>
-                        ))}
-
-                        <Table.Td></Table.Td>
-                      </Table.Tr>
-                    )} */}
                   </Table.Tbody>
                 </Table>
               </Table.ScrollContainer>

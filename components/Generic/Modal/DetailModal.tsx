@@ -37,6 +37,10 @@ import InspectionAcceptanceReportStatusClient from '@/components/InspectionAccep
 import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
 import InventorySupplyStatusClient from '@/components/InventorySupplies/Status';
 import InventorySupplyActionsClient from '@/components/InventorySupplies/Actions';
+import RisFormClient from '../../InventoryIssuances/Forms/RisForm';
+import IcsFormClient from '../../InventoryIssuances/Forms/IcsForm';
+import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
+import InventoryIssuanceStatusClient from '@/components/InventoryIssuances/Status';
 
 const DetailActionsClient = ({
   permissions,
@@ -136,6 +140,13 @@ const DetailActionsClient = ({
           <InventorySupplyStatusClient
             size={lgScreenAndBelow ? 'sm' : 'lg'}
             status={(currentStatus as InventorySupplyStatus) ?? ''}
+          />
+        );
+      case 'inv-issuance':
+        return (
+          <InventoryIssuanceStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as InventoryIssuanceStatus) ?? ''}
           />
         );
       default:
@@ -413,6 +424,22 @@ const DetailModalClient = ({
 
           {opened && content === 'inv-supply' && (
             <InventorySupplyFormClient data={currentData} readOnly />
+          )}
+
+          {opened && content === 'inv-issuance' && (
+            <>
+              {data?.document_type === 'ris' && (
+                <RisFormClient data={data} readOnly />
+              )}
+
+              {data?.document_type === 'ics' && (
+                <IcsFormClient data={data} readOnly />
+              )}
+
+              {data?.document_type === 'are' && (
+                <AreFormClient data={data} readOnly />
+              )}
+            </>
           )}
         </Paper>
       </Stack>

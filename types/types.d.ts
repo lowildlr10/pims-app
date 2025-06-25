@@ -382,7 +382,12 @@ type InspectionAcceptanceReportStatus =
 
 type InventorySupplyStatus = 'in-stock' | 'out-of-stock';
 
-type InventoryIssuanceStatus = 'draft' | 'pending' | 'approved' | 'issued';
+type InventoryIssuanceStatus =
+  | 'draft'
+  | 'pending'
+  | 'approved'
+  | 'issued'
+  | 'cancelled';
 
 type InventoryIssuanceDocumentType = 'ris' | 'ics' | 'are';
 
@@ -625,7 +630,8 @@ type PurchaseOrderType = {
   created_at?: string;
   updated_at?: string;
   items?: PurchaseOrderItemType[];
-  supplies?: SupplyType[];
+  supplies?: InventorySupplyType[];
+  issuances?: InventoryIssuanceType[];
 };
 
 type InspectionAcceptanceReportItemType = {
@@ -684,6 +690,8 @@ type InventorySupplyType = {
   unit_issue_id?: string;
   unit_issue?: UnitIssueType;
   quantity?: number;
+  reserved?: number;
+  issued?: number;
   available?: number;
   unit_cost?: number;
   total_cost?: number;
@@ -691,6 +699,7 @@ type InventorySupplyType = {
   status?: InventorySupplyStatus;
   created_at?: string;
   updated_at?: string;
+  issued_items?: InventoryIssuanceItemType[];
 };
 
 type InventoryIssuanceItemType = {
@@ -698,6 +707,7 @@ type InventoryIssuanceItemType = {
   inventory_issuance_id?: string;
   inventory_supply_id?: string;
   stock_no?: number;
+  issuance?: InventoryIssuanceType;
   supply?: InventorySupplyType;
   description?: string;
   inventory_item_no?: string;
@@ -737,6 +747,7 @@ type InventoryIssuanceType = {
     pending_at?: string;
     approved_at?: string;
     issued_at?: string;
+    cancelled_at?: string;
   };
   created_at?: string;
   updated_at?: string;

@@ -115,6 +115,7 @@ type TableHeader = {
   id: string;
   label: string;
   width?: string | number;
+  align?: 'left' | 'center' | 'right';
   sortable?: boolean;
 };
 
@@ -501,6 +502,7 @@ type PurchaseRequestItemHeader = {
   label: string;
   width?: number | string;
   required?: boolean;
+  align?: 'left' | 'center' | 'right';
 };
 
 type PurchaseRequestItemTableProps = {
@@ -549,6 +551,17 @@ type PurchaseOrderItemsFieldType = {
   quantity?: number;
   unit_cost?: number;
   total_cost?: number;
+};
+
+type InventorySupplyRecipientsFieldType = {
+  key: string;
+  recipient_name?: string;
+  issuance_no?: string;
+  item_no?: string;
+  acquired_date?: string;
+  issued_date?: string;
+  quantity?: number;
+  status?: string;
 };
 
 type InventoryIssuanceItemsFieldType = {

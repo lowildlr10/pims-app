@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 import { randomId, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
 import StatusClient from './Status';
-import { Stack, Text } from '@mantine/core';
+import { Badge, Stack, Text } from '@mantine/core';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -45,46 +45,49 @@ const defaultTableData: TableDataType = {
   ],
   subHead: [
     {
-      id: 'unit_issue_name',
-      label: 'Unit',
-      width: '10%',
-      sortable: true,
-    },
-    {
       id: 'description_formatted',
-      label: 'Name',
-      width: '28%',
-      sortable: true,
+      label: 'Name & Description',
+      width: '22%',
     },
     {
       id: 'item_classification_name',
       label: 'Classification',
       width: '12%',
-      sortable: true,
     },
     {
       id: 'required_document_formatted',
       label: 'Required Document',
       width: '12%',
-      sortable: true,
     },
     {
-      id: 'quantity',
-      label: 'Inventory',
-      width: '12%',
-      sortable: false,
+      id: 'quantity_formatted',
+      label: 'Quantity',
+      align: 'center',
+      width: '10%',
     },
     {
-      id: 'available',
+      id: 'reserved_formatted',
+      label: 'Reserved',
+      align: 'center',
+      width: '10%',
+    },
+    {
+      id: 'issued_formatted',
+      label: 'Issued',
+      align: 'center',
+      width: '10%',
+    },
+    {
+      id: 'available_formatted',
       label: 'Available',
-      width: '12%',
-      sortable: false,
+      align: 'center',
+      width: '10%',
     },
     {
       id: 'status_formatted',
       label: 'Status',
+      align: 'center',
       width: '14%',
-      sortable: true,
     },
   ],
   body: [],
@@ -175,18 +178,63 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
                 </>
               </Stack>
             ),
-            unit_issue_name: subBody.unit_issue?.unit_name ?? '-',
             item_classification_name:
               subBody.item_classification?.classification_name ?? '-',
             required_document_formatted:
               Helper.mapInventoryIssuanceDocumentType(
                 subBody.required_document
               ) ?? '-',
+            quantity_formatted: (
+              <Text
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+                ta={'center'}
+                c={'var(--mantine-color-primary-9)'}
+                fw={500}
+              >
+                {subBody.quantity ?? 0}
+              </Text>
+            ),
+            reserved_formatted: (
+              <Text
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+                ta={'center'}
+                fw={500}
+                c={'var(--mantine-color-primary-9)'}
+              >
+                {subBody.reserved ?? 0}
+              </Text>
+            ),
+            issued_formatted: (
+              <Text
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+                ta={'center'}
+                fw={500}
+                c={'var(--mantine-color-primary-9)'}
+              >
+                {subBody.issued ?? 0}
+              </Text>
+            ),
+            available_formatted: (
+              <Text
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+                ta={'center'}
+                fw={500}
+                c={
+                  (subBody?.available ?? 0) > 0
+                    ? 'var(--mantine-color-green-9)'
+                    : 'var(--mantine-color-red-9)'
+                }
+              >
+                {subBody.available ?? 0}
+              </Text>
+            ),
             status_formatted: (
-              <StatusClient
-                size={lgScreenAndBelow ? 'xs' : 'md'}
-                status={subBody.status}
-              />
+              <Stack align={'center'}>
+                <StatusClient
+                  size={lgScreenAndBelow ? 'xs' : 'md'}
+                  status={subBody.status}
+                />
+              </Stack>
             ),
           };
         }),

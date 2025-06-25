@@ -34,6 +34,9 @@ import AbstractQuotionFormClient from '../../AbstractQuotations/Form';
 import PurchaseOrderFormClient from '@/components/PurchaseOrders/Form';
 import InspectionAcceptanceReportFormClient from '@/components/InspectionAcceptanceReports/Form';
 import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
+import RisFormClient from '../../InventoryIssuances/Forms/RisForm';
+import IcsFormClient from '../../InventoryIssuances/Forms/IcsForm';
+import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
 
 const UpdateModalClient = ({
   title,
@@ -318,6 +321,34 @@ const UpdateModalClient = ({
             data={data}
             handleCreateUpdate={handleUpdate}
           />
+        )}
+
+        {opened && content === 'inv-issuance' && (
+          <>
+            {data?.document_type === 'ris' && (
+              <RisFormClient
+                ref={formRef}
+                data={data}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
+
+            {data?.document_type === 'ics' && (
+              <IcsFormClient
+                ref={formRef}
+                data={data}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
+
+            {data?.document_type === 'are' && (
+              <AreFormClient
+                ref={formRef}
+                data={data}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
+          </>
         )}
       </Stack>
 

@@ -395,6 +395,24 @@ const DataTableClient = ({
         );
         break;
 
+      case 'inv-issuance':
+        setDetailModalShowPrint(
+          ['supply:*', ...getAllowedPermissions('inv-issuance', 'print')].some(
+            (permission) => permissions?.includes(permission)
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
+        );
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('inv-issuance', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
+        );
+        break;
+
       default:
         break;
     }
@@ -456,6 +474,7 @@ const DataTableClient = ({
                 key={head.id}
                 w={head.width ?? undefined}
                 p={head.sortable ? 0 : undefined}
+                ta={head.align ?? undefined}
                 bg={'var(--mantine-color-primary-9)'}
               >
                 {head.sortable ? (
@@ -466,6 +485,7 @@ const DataTableClient = ({
                     m={0}
                     h={'auto'}
                     py={'var(--mantine-spacing-sm)'}
+                    ta={head.align ?? undefined}
                     justify={'left'}
                     fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                     rightSection={
@@ -536,7 +556,9 @@ const DataTableClient = ({
             tableBody?.map((body: any) => (
               <React.Fragment key={body.id}>
                 <Table.Tr
-                  sx={{ cursor: mainItemsClickable ? 'pointer' : 'default' }}
+                  sx={{
+                    cursor: mainItemsClickable ? 'pointer' : 'not-allowed',
+                  }}
                 >
                   {data.head?.map(
                     (head, i) =>
@@ -659,6 +681,7 @@ const DataTableClient = ({
                                   key={subHead.id}
                                   w={subHead.width}
                                   fw={500}
+                                  ta={subHead.align ?? undefined}
                                   fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                                 >
                                   {subHead.label}
@@ -687,7 +710,7 @@ const DataTableClient = ({
                                 sx={{
                                   cursor: subItemsClickable
                                     ? 'pointer'
-                                    : 'default',
+                                    : 'not-allowed',
                                 }}
                               >
                                 {data.subHead?.map(

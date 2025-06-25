@@ -2,12 +2,11 @@ import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import {
   ActionIcon,
-  Box,
   Card,
-  Divider,
   Flex,
   Group,
   LoadingOverlay,
+  Skeleton,
   Text,
 } from '@mantine/core';
 import { NumberInput, Stack, Table, Textarea, TextInput } from '@mantine/core';
@@ -84,8 +83,15 @@ const RisFormClient = forwardRef<
       document_type: currentData?.document_type ?? '',
       purchase_order_id: currentData?.purchase_order_id ?? '',
       responsibility_center_id: currentData?.responsibility_center_id ?? '',
-      inventory_date: currentData.inventory_date ?? '',
-      requested_by_id: currentData?.requested_by_id ?? '',
+      inventory_date:
+        currentData.inventory_date ?? dayjs().format('YYYY-MM-DD'),
+      sai_no: currentData.sai_no ?? poData?.purchase_request?.sai_no ?? '',
+      sai_date:
+        currentData.sai_date ?? poData?.purchase_request?.sai_date ?? '',
+      requested_by_id:
+        currentData?.requested_by_id ??
+        poData?.purchase_request?.requested_by_id ??
+        '',
       requested_date: currentData.requested_date ?? '',
       sig_approved_by_id: currentData?.sig_approved_by_id ?? '',
       approved_date: currentData.approved_date ?? '',
@@ -111,8 +117,10 @@ const RisFormClient = forwardRef<
                 stock_no: index + 1,
                 inventory_supply_id: supply.id,
                 unit_issue: supply.unit_issue?.unit_name,
-                description: supply.description,
-                quantity: 0,
+                description: supply.name
+                  ? `${supply.name}\n${supply.description}`
+                  : supply.description,
+                quantity: undefined,
                 available: supply?.available ?? 0,
                 unit_cost: supply.unit_cost,
                 total_cost: 0,
@@ -120,7 +128,7 @@ const RisFormClient = forwardRef<
               .filter((item) => item.available !== 0)
           : [],
     }),
-    [currentData, inventorySupplies]
+    [currentData, inventorySupplies, poData]
   );
   const form = useForm({
     mode: 'uncontrolled',
@@ -209,6 +217,7 @@ const RisFormClient = forwardRef<
         paginated: false,
         show_all: true,
         grouped: false,
+        document_type: currentData?.document_type ?? '',
         search_by_po: true,
         search: poId,
       })
@@ -235,7 +244,7 @@ const RisFormClient = forwardRef<
     fetchCompany();
     fetchPurchaseOrder();
     fetchSupplies();
-  }, [poId]);
+  }, [poId, currentData?.document_type]);
 
   const renderDynamicTdContent = (
     id: string,
@@ -297,15 +306,28 @@ const RisFormClient = forwardRef<
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
-              max={item?.available ?? 0}
+              max={
+                isCreate && !readOnly
+                  ? item?.available
+                  : !isCreate && !readOnly
+                    ? (item?.available ?? 0) + (item?.quantity ?? 0)
+                    : (item?.available ?? 0)
+              }
               clampBehavior={'strict'}
               allowDecimal={false}
               required={!readOnly}
               readOnly={readOnly}
             />
-            <Text size={'xs'} c={'dimmed'} mt={'xs'} fs={'italic'}>
-              Available: {item.available ?? 0}
-            </Text>
+            {!readOnly && (
+              <Text size={'xs'} c={'dimmed'} mt={'xs'} fs={'italic'}>
+                Available:{' '}
+                {isCreate && !readOnly
+                  ? item?.available
+                  : !isCreate && !readOnly
+                    ? (item?.available ?? 0) + (item?.quantity ?? 0)
+                    : (item?.available ?? 0)}
+              </Text>
+            )}
           </Table.Td>
         );
 
@@ -352,6 +374,9 @@ const RisFormClient = forwardRef<
           handleCreateUpdate({
             ...values,
             purchase_order_id: poId,
+            sai_date: values.sai_date
+              ? dayjs(values.sai_date).format('YYYY-MM-DD')
+              : '',
             inventory_date: values.inventory_date
               ? dayjs(values.inventory_date).format('YYYY-MM-DD')
               : '',
@@ -566,8 +591,8 @@ const RisFormClient = forwardRef<
                                       currentData?.responsibility_center_id ??
                                       '',
                                     label:
-                                      currentData?.responsibility_center.code ??
-                                      '',
+                                      currentData?.responsibility_center
+                                        ?.code ?? '',
                                   },
                                 ]
                               : undefined
@@ -585,7 +610,7 @@ const RisFormClient = forwardRef<
                         <TextInput
                           variant={'unstyled'}
                           placeholder={'None'}
-                          value={currentData?.responsibility_center.code ?? '-'}
+                          value={currentData?.responsibility_center?.code ?? ''}
                           size={lgScreenAndBelow ? 'sm' : 'md'}
                           sx={{
                             borderBottom:
@@ -708,9 +733,16 @@ const RisFormClient = forwardRef<
                           SAI No.:
                         </Text>
                         <TextInput
-                          variant={readOnly ? 'unstyled' : 'filled'}
-                          placeholder={'None (Update PR)'}
-                          value={poData?.purchase_request?.sai_no ?? ''}
+                          key={form.key('sai_no')}
+                          {...form.getInputProps('sai_no')}
+                          variant={'unstyled'}
+                          placeholder={
+                            readOnly ? 'None' : 'Enter SAI number here...'
+                          }
+                          defaultValue={
+                            readOnly ? undefined : form.values.sai_no
+                          }
+                          value={readOnly ? currentData?.sai_no : undefined}
                           size={lgScreenAndBelow ? 'sm' : 'md'}
                           flex={1}
                           sx={{
@@ -721,30 +753,34 @@ const RisFormClient = forwardRef<
                               height: '30px',
                             },
                           }}
-                          readOnly
+                          readOnly={readOnly}
                         />
                       </Group>
 
                       <Group sx={{ flexWrap: 'nowrap' }} flex={1}>
                         <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Date:</Text>
                         <DateInput
-                          variant={readOnly ? 'unstyled' : 'filled'}
+                          key={form.key('sai_date')}
+                          {...form.getInputProps('sai_date')}
+                          variant={'unstyled'}
                           valueFormat={'YYYY-MM-DD'}
                           defaultValue={
                             readOnly
                               ? undefined
-                              : poData?.purchase_request?.sai_date
-                                ? new Date(poData?.purchase_request?.sai_date)
+                              : form.values.sai_date
+                                ? new Date(form.values.sai_date)
                                 : undefined
                           }
                           value={
                             readOnly
-                              ? poData?.purchase_request?.sai_date
-                                ? new Date(poData?.purchase_request?.sai_date)
+                              ? currentData?.sai_date
+                                ? new Date(currentData?.sai_date)
                                 : undefined
                               : undefined
                           }
-                          placeholder={'None'}
+                          placeholder={
+                            readOnly ? 'None' : 'Enter SAI date here...'
+                          }
                           flex={1}
                           sx={{
                             borderBottom:
@@ -759,7 +795,7 @@ const RisFormClient = forwardRef<
                             !readOnly ? <IconCalendar size={18} /> : undefined
                           }
                           clearable
-                          readOnly
+                          readOnly={readOnly}
                         />
                       </Group>
                     </Group>
@@ -808,6 +844,28 @@ const RisFormClient = forwardRef<
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
+                  {loading &&
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <Table.Tr key={i}>
+                        <Table.Td colSpan={itemHeaders?.length}>
+                          <Skeleton height={30} radius='sm' />
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+
+                  {Helper.empty(form.getValues()?.items) && !loading && (
+                    <Table.Tr>
+                      <Table.Td
+                        c={'var(--mantine-color-red-5)'}
+                        ta={'center'}
+                        colSpan={itemHeaders?.length}
+                        fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                      >
+                        No property or supply available.
+                      </Table.Td>
+                    </Table.Tr>
+                  )}
+
                   {form.getValues()?.items?.map((item, index) => (
                     <Table.Tr
                       key={`item-${item.key}`}
@@ -909,11 +967,19 @@ const RisFormClient = forwardRef<
                       }}
                       column={'fullname'}
                       defaultData={
-                        currentData?.requested_by_id
+                        currentData?.requested_by_id ||
+                        poData?.purchase_request?.requestor?.id
                           ? [
                               {
-                                value: currentData?.requested_by_id ?? '',
-                                label: currentData?.requestor?.fullname ?? '',
+                                value:
+                                  currentData?.requested_by_id ??
+                                  poData?.purchase_request?.requestor?.id ??
+                                  '',
+                                label:
+                                  currentData?.requestor?.fullname ??
+                                  poData?.purchase_request?.requestor
+                                    ?.fullname ??
+                                  '',
                               },
                             ]
                           : undefined
@@ -945,7 +1011,7 @@ const RisFormClient = forwardRef<
                     key={form.key('requested_date')}
                     {...form.getInputProps('requested_date')}
                     variant={'unstyled'}
-                    label={'Requested Date'}
+                    label={'Date'}
                     valueFormat={'YYYY-MM-DD'}
                     defaultValue={
                       readOnly
@@ -1039,7 +1105,7 @@ const RisFormClient = forwardRef<
                     key={form.key('approved_date')}
                     {...form.getInputProps('approved_date')}
                     variant={'unstyled'}
-                    label={'Approved Date'}
+                    label={'Date'}
                     valueFormat={'YYYY-MM-DD'}
                     defaultValue={
                       readOnly
@@ -1133,7 +1199,7 @@ const RisFormClient = forwardRef<
                     key={form.key('issued_date')}
                     {...form.getInputProps('issued_date')}
                     variant={'unstyled'}
-                    label={'Issued Date'}
+                    label={'Date'}
                     valueFormat={'YYYY-MM-DD'}
                     defaultValue={
                       readOnly
@@ -1173,8 +1239,8 @@ const RisFormClient = forwardRef<
                 >
                   {!readOnly ? (
                     <DynamicSelect
-                      key={form.key('requested_by_id')}
-                      {...form.getInputProps('requested_by_id')}
+                      key={form.key('received_by_id')}
+                      {...form.getInputProps('received_by_id')}
                       variant={'unstyled'}
                       label={'Received by:'}
                       placeholder={'Select a recipient...'}
@@ -1186,10 +1252,10 @@ const RisFormClient = forwardRef<
                       }}
                       column={'fullname'}
                       defaultData={
-                        currentData?.requested_by_id
+                        currentData?.received_by_id
                           ? [
                               {
-                                value: currentData?.requested_by_id ?? '',
+                                value: currentData?.received_by_id ?? '',
                                 label: currentData?.recipient?.fullname ?? '',
                               },
                             ]
@@ -1198,7 +1264,7 @@ const RisFormClient = forwardRef<
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                       }}
-                      value={form.values.requested_by_id}
+                      value={form.values.received_by_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       required={!readOnly}
                       readOnly={readOnly}
@@ -1222,7 +1288,7 @@ const RisFormClient = forwardRef<
                     key={form.key('received_date')}
                     {...form.getInputProps('received_date')}
                     variant={'unstyled'}
-                    label={'Received Date'}
+                    label={'Date'}
                     valueFormat={'YYYY-MM-DD'}
                     defaultValue={
                       readOnly

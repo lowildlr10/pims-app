@@ -47,13 +47,13 @@ const defaultTableData: TableDataType = {
   subHead: [
     {
       id: 'inventory_no',
-      label: 'Unit',
+      label: 'RIS/ICS/ARE No',
       width: '12%',
       sortable: true,
     },
     {
       id: 'document_type_formatted',
-      label: 'Name',
+      label: 'Document Type',
       width: '57%',
       sortable: true,
     },
@@ -121,7 +121,7 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
 
   useEffect(() => {
     const poData = data?.data?.map((body: PurchaseOrderType) => {
-      const { supplies, supplier, purchase_request, ...poData } = body;
+      const { issuances, supplier, purchase_request, ...poData } = body;
 
       return {
         ...poData,
@@ -130,7 +130,7 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
         delivery_date: dayjs(poData.status_timestamps.delivered_at).format(
           'MM/DD/YYYY'
         ),
-        sub_body: supplies?.map((subBody: InventoryIssuanceType) => ({
+        sub_body: issuances?.map((subBody: InventoryIssuanceType) => ({
           ...subBody,
           document_type_formatted:
             Helper.mapInventoryIssuanceDocumentType(subBody.document_type) ??
