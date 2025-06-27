@@ -107,8 +107,14 @@ const RisFormClient = forwardRef<
             unit_issue: item.supply?.unit_issue?.unit_name ?? '',
             description: item.description,
             quantity: item.quantity,
-            available: item.supply?.available ?? 0,
+            available:
+              isCreate && !readOnly
+                ? item?.supply?.available
+                : !isCreate && !readOnly
+                  ? (item?.supply?.available ?? 0) + (item?.quantity ?? 0)
+                  : (item?.supply?.available ?? 0),
             unit_cost: item.unit_cost,
+            total_cost: item.total_cost,
           }))
         : !Helper.empty(inventorySupplies)
           ? inventorySupplies
@@ -306,13 +312,7 @@ const RisFormClient = forwardRef<
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
-              max={
-                isCreate && !readOnly
-                  ? item?.available
-                  : !isCreate && !readOnly
-                    ? (item?.available ?? 0) + (item?.quantity ?? 0)
-                    : (item?.available ?? 0)
-              }
+              max={item?.available}
               clampBehavior={'strict'}
               allowDecimal={false}
               required={!readOnly}
@@ -320,12 +320,7 @@ const RisFormClient = forwardRef<
             />
             {!readOnly && (
               <Text size={'xs'} c={'dimmed'} mt={'xs'} fs={'italic'}>
-                Available:{' '}
-                {isCreate && !readOnly
-                  ? item?.available
-                  : !isCreate && !readOnly
-                    ? (item?.available ?? 0) + (item?.quantity ?? 0)
-                    : (item?.available ?? 0)}
+                Available: {item?.available}
               </Text>
             )}
           </Table.Td>
@@ -412,7 +407,13 @@ const RisFormClient = forwardRef<
         >
           <Stack>
             <TextInput
-              variant={readOnly || !isCreate ? 'default' : 'filled'}
+              variant={
+                !readOnly && isCreate
+                  ? 'filled'
+                  : !readOnly && !isCreate
+                    ? 'filled'
+                    : 'default'
+              }
               label={'Document Type'}
               placeholder={'None'}
               value={Helper.mapInventoryIssuanceDocumentType(
@@ -423,7 +424,7 @@ const RisFormClient = forwardRef<
               readOnly
             />
 
-            {!readOnly ? (
+            {isCreate ? (
               <DynamicSelect
                 variant={readOnly ? 'unstyled' : 'default'}
                 endpoint={'/purchase-orders'}
@@ -431,6 +432,7 @@ const RisFormClient = forwardRef<
                   paginated: false,
                   show_all: true,
                   grouped: false,
+                  has_supplies_only: true,
                 }}
                 column={'po_no'}
                 defaultData={
@@ -456,7 +458,9 @@ const RisFormClient = forwardRef<
               />
             ) : (
               <TextInput
+                label={'Purchase Order'}
                 placeholder={'None'}
+                variant={readOnly ? 'default' : 'filled'}
                 value={currentData?.purchase_order?.po_no ?? '-'}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
@@ -963,7 +967,7 @@ const RisFormClient = forwardRef<
                       endpointParams={{
                         paginated: false,
                         show_all: true,
-                        document: 'pr',
+                        document: 'ris',
                       }}
                       column={'fullname'}
                       defaultData={
@@ -1248,7 +1252,7 @@ const RisFormClient = forwardRef<
                       endpointParams={{
                         paginated: false,
                         show_all: true,
-                        document: 'pr',
+                        document: 'ris',
                       }}
                       column={'fullname'}
                       defaultData={

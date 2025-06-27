@@ -713,7 +713,7 @@ type InventoryIssuanceItemType = {
   inventory_item_no?: string;
   property_no?: string;
   quantity?: number;
-  estimated_useful_life?: number;
+  estimated_useful_life?: string;
   acquired_date?: string;
   unit_cost?: number;
   total_cost?: number;

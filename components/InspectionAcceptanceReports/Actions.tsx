@@ -130,8 +130,8 @@ const ActionsClient = ({
               handleOpenActionModal(
                 'inspect',
                 documentType === 'po'
-                  ? 'IAR Inspection & Create Supplies'
-                  : 'IAR Inspection',
+                  ? 'Inspect and Create Property & Supplies'
+                  : 'Inspect',
                 <InspectContent id={id} documentType={documentType} />,
                 'var(--mantine-color-green-7)',
                 'Inspect',

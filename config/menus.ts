@@ -107,7 +107,7 @@ export const PROCUREMENT_LINKS = [
     link: '/procurement/aoq',
   },
   {
-    label: 'Purchase/Job Orders',
+    label: 'Purchase and Job Orders',
     allowedPermissions: ['super:*', 'head:*', 'po:*', 'po:view'],
     link: '/procurement/po',
   },
@@ -130,7 +130,7 @@ export const PROCUREMENT_LINKS = [
 
 export const INVENTORY_LINKS = [
   {
-    label: 'Supplies',
+    label: 'Property and Supplies',
     allowedPermissions: [
       'super:*',
       'head:*',

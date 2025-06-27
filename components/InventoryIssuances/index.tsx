@@ -77,7 +77,7 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(50);
+  const [perPage, setPerPage] = useState(10);
   const [columnSort, setColumnSort] = useState('po_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);

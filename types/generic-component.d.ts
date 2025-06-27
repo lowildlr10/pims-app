@@ -570,6 +570,10 @@ type InventoryIssuanceItemsFieldType = {
   unit_issue?: string;
   description?: string;
   quantity?: number;
+  inventory_item_no?: string;
+  property_no?: string;
+  estimated_useful_life?: string;
+  acquired_date?: string;
   available?: number;
   unit_cost?: number;
   total_cost?: number;

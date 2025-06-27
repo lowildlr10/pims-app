@@ -41,6 +41,7 @@ import RisFormClient from '../../InventoryIssuances/Forms/RisForm';
 import IcsFormClient from '../../InventoryIssuances/Forms/IcsForm';
 import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
 import InventoryIssuanceStatusClient from '@/components/InventoryIssuances/Status';
+import InventoryIssuanceActionsClient from '@/components/InventoryIssuances/Actions';
 
 const DetailActionsClient = ({
   permissions,
@@ -217,6 +218,15 @@ const DetailActionsClient = ({
 
           {content === 'inv-supply' && (
             <InventorySupplyActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'inv-issuance' && (
+            <InventoryIssuanceActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
               status={data?.status}
