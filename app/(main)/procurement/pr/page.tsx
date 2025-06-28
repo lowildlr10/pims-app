@@ -25,7 +25,10 @@ const PurchaseRequestPage = async () => {
       permissions={permissions}
       type={'main'}
     >
-      <MainContainerClient title={'Procurement - Purchase Request'}>
+      <MainContainerClient
+        title={'Procurement - Purchase Request'}
+        permissions={permissions}
+      >
         <PurchaseRequestsClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

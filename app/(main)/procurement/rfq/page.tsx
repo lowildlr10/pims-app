@@ -25,7 +25,10 @@ const RequestQuotationPage = async () => {
       permissions={permissions}
       type={'main'}
     >
-      <MainContainerClient title={'Procurement - Request Quotations'}>
+      <MainContainerClient
+        title={'Procurement - Request Quotations'}
+        permissions={permissions}
+      >
         <RequestQuotationsClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

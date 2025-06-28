@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default class Helper {
   static sanitizeUrl = (url: string) => {
     return url.replace(/\/+/g, '/').replace(/^\/|\/$/g, '');
@@ -29,5 +31,38 @@ export default class Helper {
       return text.slice(0, length) + '...';
     }
     return text;
+  }
+
+  static empty(value: any) {
+    return (
+      value === undefined ||
+      value === null ||
+      value === false ||
+      value === 0 ||
+      value === '' ||
+      (Array.isArray(value) && value.length === 0) ||
+      (typeof value === 'object' &&
+        value !== null &&
+        Object.keys(value).length === 0)
+    );
+  }
+
+  static formatTextWithWhitespace(text: string) {
+    return text.split(/\r?\n/);
+  }
+
+  static mapInventoryIssuanceDocumentType(
+    issuanceType?: InventoryIssuanceDocumentType
+  ) {
+    switch (issuanceType) {
+      case 'ris':
+        return 'Requisition and Issue Slip (RIS)';
+      case 'ics':
+        return 'Inventory Custodian Slip (ICS)';
+      case 'are':
+        return 'Acceptance and Receipt of Equipment (ARE)';
+      default:
+        return '';
+    }
   }
 }

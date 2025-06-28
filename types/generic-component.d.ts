@@ -45,6 +45,11 @@ type MainContainerProps = {
   secondaryTtile?: string;
   title: string;
   children: React.ReactNode;
+  permissions?: string[];
+};
+
+type DirectoryPathProps = {
+  permissions?: string[];
 };
 
 type DynamicSelectProps = {
@@ -69,7 +74,8 @@ type DynamicSelectProps = {
   hasPresetValue?: boolean;
   isLoading?: boolean;
   preLoading?: boolean;
-  onChange?: (value: string) => void;
+  error?: React.ReactNode;
+  onChange?: (value: string | null) => void;
 };
 
 type DynamicMultiselectProps = {
@@ -109,6 +115,7 @@ type TableHeader = {
   id: string;
   label: string;
   width?: string | number;
+  align?: 'left' | 'center' | 'right';
   sortable?: boolean;
 };
 
@@ -131,6 +138,11 @@ type DataTableProps = {
   search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
+  createMenus?: {
+    label: string;
+    value: SignatoryDocumentType;
+    moduleType: ModuleType;
+  }[];
   defaultModalOnClick?: 'update' | 'details';
   showCreateSubItem?: boolean;
   mainItemsClickable?: boolean;
@@ -146,6 +158,8 @@ type DataTableProps = {
   updateMainItemBaseEndpoint?: string;
   updateSubItemModalTitle?: string;
   updateSubItemBaseEndpoint?: string;
+  updateMainItemEnable?: boolean;
+  updateSubItemEnable?: boolean;
   updateModalFullscreen?: boolean;
   detailMainItemModalTitle?: string;
   detailMainItemBaseEndpoint?: string;
@@ -159,6 +173,8 @@ type DataTableProps = {
   printSubItemDefaultPaper?: string;
   printMainItemDefaultOrientation?: 'P' | 'L';
   printSubItemDefaultOrientation?: 'P' | 'L';
+  printMainItemEnable?: boolean;
+  printSubItemEnable?: boolean;
   logMainItemModalTitle?: string;
   logMainItemEndpoint?: string;
   logSubItemModalTitle?: string;
@@ -204,10 +220,16 @@ type DataTableActionsProps = {
   search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
+  createMenus?: {
+    label: string;
+    value: SignatoryDocumentType;
+    moduleType: ModuleType;
+  }[];
   setSearch?: (value: string) => void;
   handleOpenCreateModal?: (
     parentId: string | null,
-    module_type: ModuleType | null
+    module_type: ModuleType | null,
+    additionalParams?: { [key: string]: any } | null
   ) => void;
 };
 
@@ -243,18 +265,36 @@ type DetailModalProps = {
   updateTable?: (id: string | null) => void;
 };
 
+type OpenActionModalActionType = (
+  actionType: ActionType,
+  title: string,
+  children: React.ReactNode,
+  color: string,
+  buttonLabel: string,
+  endpoint: string,
+  redirect?: string,
+
+  requiresPayload?: boolean,
+
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
+  fullScreen?: boolean
+) => void;
+
 type ActionModalProps = {
   title: string;
-  message: string;
+  children: React.ReactNode;
   color?: string;
   actionType?: ActionType;
   buttonLabel: string;
   endpoint: string;
   redirect?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  fullScreen?: boolean;
   opened: boolean;
   close: () => void;
   stack?: ModalStackReturnType;
   updateTable?: (id: string | null) => void;
+  requiresPayload?: boolean;
 };
 
 type PrintModalProps = {
@@ -369,7 +409,7 @@ type ModalProcurementModeContentProps = {
 };
 
 type ModalResposibilityCenterContentProps = {
-  data: ResposibilityCenterType;
+  data: ResponsibilityCenterType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
@@ -462,6 +502,7 @@ type PurchaseRequestItemHeader = {
   label: string;
   width?: number | string;
   required?: boolean;
+  align?: 'left' | 'center' | 'right';
 };
 
 type PurchaseRequestItemTableProps = {
@@ -508,6 +549,32 @@ type PurchaseOrderItemsFieldType = {
   unit_issue?: string;
   description?: string;
   quantity?: number;
+  unit_cost?: number;
+  total_cost?: number;
+};
+
+type InventorySupplyRecipientsFieldType = {
+  key: string;
+  recipient_name?: string;
+  issuance_no?: string;
+  item_no?: string;
+  acquired_date?: string;
+  issued_date?: string;
+  quantity?: number;
+  status?: string;
+};
+
+type InventoryIssuanceItemsFieldType = {
+  key: string;
+  stock_no?: number;
+  unit_issue?: string;
+  description?: string;
+  quantity?: number;
+  inventory_item_no?: string;
+  property_no?: string;
+  estimated_useful_life?: string;
+  acquired_date?: string;
+  available?: number;
   unit_cost?: number;
   total_cost?: number;
 };

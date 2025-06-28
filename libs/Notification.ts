@@ -5,7 +5,7 @@ export const notify = ({
   message,
   color = 'blue',
   autoClose = 3000,
-  position = 'top-right',
+  position = 'top-left',
 }: NotificationData) => {
   notifications.show({
     title,
@@ -13,5 +13,6 @@ export const notify = ({
     color,
     autoClose,
     position,
+    withBorder: true,
   });
 };

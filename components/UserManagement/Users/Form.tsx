@@ -18,7 +18,7 @@ import DynamicSelect from '../../Generic/DynamicSelect';
 import DynamicMultiselect from '../../Generic/DynamicMultiselect';
 import SingleImageUploadClient from '../../Generic/SingleImageUpload';
 
-const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
+const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
     const [currentData, setCurrentData] = useState(data);
     const currentForm = useMemo(
@@ -277,6 +277,6 @@ const UserContentClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
   }
 );
 
-UserContentClient.displayName = 'UserContentClient';
+FormClient.displayName = 'FormClient';
 
-export default UserContentClient;
+export default FormClient;

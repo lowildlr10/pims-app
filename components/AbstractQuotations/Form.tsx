@@ -54,7 +54,7 @@ const defaultItemHeaders: PurchaseRequestItemHeader[] = [
   },
 ];
 
-const AbstractQuotionContentClient = forwardRef<
+const FormClient = forwardRef<
   HTMLFormElement,
   ModalAbstractQuotationContentProps
 >(({ data, isCreate, readOnly, handleCreateUpdate }, ref) => {
@@ -287,7 +287,7 @@ const AbstractQuotionContentClient = forwardRef<
                   {...form.getInputProps(
                     `items.${index}.details.${detalIndex}.brand_model`
                   )}
-                  variant={isCreate || !item.included ? 'filled' : 'unstyled'}
+                  variant={isCreate || !item.included ? 'filled' : 'default'}
                   placeholder={
                     isCreate
                       ? 'To be quoted'
@@ -329,7 +329,7 @@ const AbstractQuotionContentClient = forwardRef<
                   {...form.getInputProps(
                     `items.${index}.details.${detalIndex}.unit_cost`
                   )}
-                  variant={isCreate || !item.included ? 'filled' : 'unstyled'}
+                  variant={isCreate || !item.included ? 'filled' : 'default'}
                   placeholder={isCreate ? 'To be quoted' : 'Unit Cost'}
                   defaultValue={detail?.unit_cost}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -386,7 +386,7 @@ const AbstractQuotionContentClient = forwardRef<
                 <DynamicSelect
                   key={form.key(`items.${index}.awardee_id`)}
                   {...form.getInputProps(`items.${index}.awardee_id`)}
-                  variant={'unstyled'}
+                  variant={readOnly ? 'unstyled' : 'default'}
                   label={'Awardee'}
                   placeholder={'Select an awardee here...'}
                   defaultData={
@@ -417,7 +417,7 @@ const AbstractQuotionContentClient = forwardRef<
             <Select
               key={form.key(`items.${index}.document_type`)}
               {...form.getInputProps(`items.${index}.document_type`)}
-              variant={'unstyled'}
+              variant={readOnly ? 'unstyled' : 'default'}
               placeholder={readOnly ? 'None' : 'Select a document type here...'}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               label={'Document Type'}
@@ -448,14 +448,12 @@ const AbstractQuotionContentClient = forwardRef<
             awardee_id: item.awardee_id,
             document_type: item.document_type,
             included: item.included,
-            details: JSON.stringify(
-              item.details?.map((detail) => ({
-                supplier_id: detail.supplier_id,
-                brand_model: detail?.brand_model ?? '',
-                quantity: item.quantity,
-                unit_cost: detail.unit_cost,
-              }))
-            ),
+            details: item.details?.map((detail) => ({
+              supplier_id: detail.supplier_id,
+              brand_model: detail?.brand_model ?? '',
+              quantity: item.quantity,
+              unit_cost: detail.unit_cost,
+            })),
           }));
 
           handleCreateUpdate({
@@ -467,7 +465,7 @@ const AbstractQuotionContentClient = forwardRef<
             opened_on: values.opened_on
               ? dayjs(values.opened_on).format('YYYY-MM-DD HH:mm')
               : '',
-            items: JSON.stringify(items),
+            items: items ?? [],
           });
         }
       })}
@@ -490,15 +488,8 @@ const AbstractQuotionContentClient = forwardRef<
                   currentData?.status === 'approved' ||
                   currentData?.status === 'awarded'
                     ? 'filled'
-                    : 'unstyled'
+                    : 'default'
                 }
-                sx={{
-                  borderBottom: '2px solid var(--mantine-color-gray-5)',
-                  input: {
-                    minHeight: '30px',
-                    height: '30px',
-                  },
-                }}
                 endpoint={'/libraries/bids-awards-committees'}
                 endpointParams={{
                   paginated: false,
@@ -555,15 +546,8 @@ const AbstractQuotionContentClient = forwardRef<
                   currentData?.status === 'approved' ||
                   currentData?.status === 'awarded'
                     ? 'filled'
-                    : 'unstyled'
+                    : 'default'
                 }
-                sx={{
-                  borderBottom: '2px solid var(--mantine-color-gray-5)',
-                  input: {
-                    minHeight: '30px',
-                    height: '30px',
-                  },
-                }}
                 endpoint={'/libraries/procurement-modes'}
                 endpointParams={{
                   paginated: false,
@@ -717,7 +701,11 @@ const AbstractQuotionContentClient = forwardRef<
                             : undefined
                           : undefined
                       }
-                      placeholder={'Enter the solicitation date here...'}
+                      placeholder={
+                        readOnly
+                          ? 'None'
+                          : 'Enter the solicitation date here...'
+                      }
                       error={form.errors.solicitation_date && ''}
                       sx={{
                         flexBasis: '74%',
@@ -1080,7 +1068,7 @@ const AbstractQuotionContentClient = forwardRef<
                         key={form.key('bac_action')}
                         {...form.getInputProps('bac_action')}
                         label={'BAC Action'}
-                        variant={'unstyled'}
+                        variant={readOnly ? 'unstyled' : 'default'}
                         placeholder={readOnly ? '' : 'Enter BAC action here...'}
                         defaultValue={
                           readOnly ? undefined : form.values.bac_action
@@ -1155,7 +1143,6 @@ const AbstractQuotionContentClient = forwardRef<
                       value={form.values.sig_twg_chairperson_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       readOnly={readOnly}
-                      required={!readOnly}
                     />
                   ) : (
                     <TextInput
@@ -1224,7 +1211,6 @@ const AbstractQuotionContentClient = forwardRef<
                       value={form.values.sig_twg_member_1_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       readOnly={readOnly}
-                      required={!readOnly}
                     />
                   ) : (
                     <TextInput
@@ -1293,7 +1279,6 @@ const AbstractQuotionContentClient = forwardRef<
                       value={form.values.sig_twg_member_2_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       readOnly={readOnly}
-                      required={!readOnly}
                     />
                   ) : (
                     <TextInput
@@ -1376,7 +1361,6 @@ const AbstractQuotionContentClient = forwardRef<
                       value={form.values.sig_chairman_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       readOnly={readOnly}
-                      required={!readOnly}
                     />
                   ) : (
                     <TextInput
@@ -1444,7 +1428,6 @@ const AbstractQuotionContentClient = forwardRef<
                       value={form.values.sig_vice_chairman_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       readOnly={readOnly}
-                      required={!readOnly}
                     />
                   ) : (
                     <TextInput
@@ -1527,7 +1510,6 @@ const AbstractQuotionContentClient = forwardRef<
                       value={form.values.sig_member_1_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       readOnly={readOnly}
-                      required={!readOnly}
                     />
                   ) : (
                     <TextInput
@@ -1595,7 +1577,6 @@ const AbstractQuotionContentClient = forwardRef<
                       value={form.values.sig_member_2_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       readOnly={readOnly}
-                      required={!readOnly}
                     />
                   ) : (
                     <TextInput
@@ -1663,7 +1644,6 @@ const AbstractQuotionContentClient = forwardRef<
                       value={form.values.sig_member_3_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       readOnly={readOnly}
-                      required={!readOnly}
                     />
                   ) : (
                     <TextInput
@@ -1694,6 +1674,6 @@ const AbstractQuotionContentClient = forwardRef<
   );
 });
 
-AbstractQuotionContentClient.displayName = 'AbstractQuotionContentClient';
+FormClient.displayName = 'FormClient';
 
-export default AbstractQuotionContentClient;
+export default FormClient;

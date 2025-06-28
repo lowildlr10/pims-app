@@ -57,7 +57,7 @@ const UserModalClient = ({ title, open, handleClose }: UserModalProps) => {
           size={lgScreenAndBelow ? 'xs' : 'sm'}
           color={'var(--mantine-color-primary-9)'}
           onClick={() => {
-            router.push('/settings');
+            router.push('/settings/user-profile');
             handleClose();
           }}
           leftSection={<IconUser size={18} />}

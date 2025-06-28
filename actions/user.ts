@@ -14,7 +14,7 @@ export const getPermissions = async () => {
 const getUserData = async () => {
   try {
     const basePath = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const accessToken = getAccessToken();
+    const accessToken = await getAccessToken();
     const response = await fetch(`${basePath}/api/v1/me`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,

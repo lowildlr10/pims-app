@@ -71,7 +71,7 @@ const ResposibilityCentersClient = ({ permissions }: LibraryProps) => {
   );
 
   useEffect(() => {
-    const _data = data?.data?.map((body: ResposibilityCenterType) => {
+    const _data = data?.data?.map((body: ResponsibilityCenterType) => {
       return {
         ...body,
         code_formatted: (

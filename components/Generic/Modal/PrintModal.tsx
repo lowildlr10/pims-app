@@ -179,7 +179,7 @@ const PrintModalClient = ({
                   column={'paper_type'}
                   defaultValue={defaultPaper}
                   value={paperId}
-                  onChange={(value) => setPaperId(value)}
+                  onChange={(value) => setPaperId(value ?? '')}
                   hasPresetValue
                   required
                   preLoading
@@ -200,7 +200,7 @@ const PrintModalClient = ({
                   ]}
                   defaultValue={defaultOrientation}
                   value={pageOrientation}
-                  onChange={(value) => setPageOrientation(value)}
+                  onChange={(value) => setPageOrientation(value ?? 'P')}
                   hasPresetValue
                   disableFetch
                   required

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ActionIcon, Button, Modal, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconSearch, IconX } from '@tabler/icons-react';
@@ -83,7 +83,7 @@ const SearchModalClient = ({
           <Button
             size={lgScreenAndBelow ? 'xs' : 'sm'}
             variant={'outline'}
-            color={'var(--mantine-color-tertiary-9)'}
+            color={'var(--mantine-color-gray-7)'}
             onClick={handleClearSearch}
             fullWidth
           >

@@ -27,6 +27,7 @@ const DynamicSelect = ({
   hasPresetValue,
   isLoading,
   preLoading,
+  error,
 }: DynamicSelectProps) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ComboboxData | undefined>(defaultData ?? []);
@@ -133,6 +134,7 @@ const DynamicSelect = ({
       maxDropdownHeight={limit ? undefined : 200}
       required={required}
       readOnly={readOnly}
+      error={error}
     />
   );
 };
