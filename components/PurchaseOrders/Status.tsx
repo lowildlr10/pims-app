@@ -4,6 +4,7 @@ import {
   IconArrowForward,
   IconFileIsr,
   IconPackageImport,
+  IconShoppingCartSearch,
   IconThumbUpFilled,
   IconTruckDelivery,
 } from '@tabler/icons-react';
@@ -91,6 +92,20 @@ const StatusClient = ({ size = 'md', status }: PurchaseOrderStatusProps) => {
             color={'var(--mantine-color-green-9)'}
             variant={'light'}
             leftSection={<IconPackageImport size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'inspection':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-indigo-7)'}
+            variant={'light'}
+            leftSection={<IconShoppingCartSearch size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>

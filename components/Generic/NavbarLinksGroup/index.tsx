@@ -14,6 +14,7 @@ import {
 import classes from '@/styles/generic/navbarlinksgroup.module.css';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { nprogress } from '@mantine/nprogress';
 
 export function LinksGroupClient({
   icon: Icon,
@@ -39,6 +40,7 @@ export function LinksGroupClient({
           href={link.link ?? '#'}
           key={link.label}
           underline={'never'}
+          onClick={() => pathname !== link.link && nprogress.start()}
           bg={
             pathname === link.link
               ? 'var(--mantine-color-tertiary-1)'
@@ -72,6 +74,7 @@ export function LinksGroupClient({
           <Anchor
             component={Link}
             href={link ?? '#'}
+            onClick={() => !hasLinks && pathname !== link && nprogress.start()}
             underline={'never'}
             c={'inherit'}
             fz={{ base: 'sm', lg: 13, xl: 'sm' }}

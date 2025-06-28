@@ -25,7 +25,10 @@ const AbstractQuotationPage = async () => {
       permissions={permissions}
       type={'main'}
     >
-      <MainContainerClient title={'Procurement - Abstract of Quotations'}>
+      <MainContainerClient
+        title={'Procurement - Abstract of Quotations'}
+        permissions={permissions}
+      >
         <AbstractQuotationsClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

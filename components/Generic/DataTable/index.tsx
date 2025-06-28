@@ -47,6 +47,7 @@ const DataTableClient = ({
   search,
   showSearch,
   showCreate,
+  createMenus,
   defaultModalOnClick = 'update',
   showCreateSubItem,
   mainItemsClickable = true,
@@ -62,6 +63,8 @@ const DataTableClient = ({
   updateMainItemBaseEndpoint = '',
   updateSubItemModalTitle = 'Update',
   updateSubItemBaseEndpoint = '',
+  updateMainItemEnable = true,
+  updateSubItemEnable = true,
   updateModalFullscreen,
   detailMainItemModalTitle = 'Details',
   detailMainItemBaseEndpoint = '',
@@ -75,6 +78,8 @@ const DataTableClient = ({
   printSubItemDefaultPaper = 'A4',
   printMainItemDefaultOrientation = 'P',
   printSubItemDefaultOrientation = 'P',
+  printMainItemEnable = true,
+  printSubItemEnable = true,
   logMainItemModalTitle = 'Logs',
   logMainItemEndpoint = '/logs',
   logSubItemModalTitle = 'Logs',
@@ -246,7 +251,8 @@ const DataTableClient = ({
 
   const handleOpenCreateModal = (
     parentId: string | null,
-    moduleType: ModuleType | null
+    moduleType: ModuleType | null,
+    otherParams?: { [key: string]: any } | null
   ) => {
     setCurrentCreateModule(moduleType ?? undefined);
 
@@ -265,6 +271,8 @@ const DataTableClient = ({
           pr_no: parentBody?.pr_no,
         });
         break;
+      case 'inv-issuance':
+        setFormData({ document_type: otherParams?.document_type });
       default:
         break;
     }
@@ -278,7 +286,11 @@ const DataTableClient = ({
     openUpdateModal();
   };
 
-  const handleOpenDetailModal = (id: string, moduleType: ModuleType | null) => {
+  const handleOpenDetailModal = (
+    id: string,
+    moduleType: ModuleType | null,
+    isMainModuleOpened = true
+  ) => {
     setCurrentDetailModule(moduleType ?? undefined);
     setCurrentUpdateModule(moduleType ?? undefined);
 
@@ -287,39 +299,51 @@ const DataTableClient = ({
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('pr', 'print')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
         );
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('pr', 'update')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
         );
         break;
       case 'rfq':
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('rfq', 'print')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
         );
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('rfq', 'update')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
         );
         break;
       case 'aoq':
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('aoq', 'print')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
         );
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('aoq', 'update')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
         );
         break;
 
@@ -327,15 +351,68 @@ const DataTableClient = ({
         setDetailModalShowPrint(
           ['supply:*', ...getAllowedPermissions('po', 'print')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
         );
 
         setDetailModalShowEdit(
           ['supply:*', ...getAllowedPermissions('po', 'update')].some(
             (permission) => permissions?.includes(permission)
-          )
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
         );
         break;
+
+      case 'iar':
+        setDetailModalShowPrint(
+          ['supply:*', ...getAllowedPermissions('iar', 'print')].some(
+            (permission) => permissions?.includes(permission)
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
+        );
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('iar', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
+        );
+        break;
+
+      case 'inv-supply':
+        setDetailModalShowPrint(false);
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('inv-supply', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
+        );
+        break;
+
+      case 'inv-issuance':
+        setDetailModalShowPrint(
+          ['supply:*', ...getAllowedPermissions('inv-issuance', 'print')].some(
+            (permission) => permissions?.includes(permission)
+          ) &&
+            ((isMainModuleOpened && printMainItemEnable) ||
+              (!isMainModuleOpened && printSubItemEnable))
+        );
+
+        setDetailModalShowEdit(
+          ['supply:*', ...getAllowedPermissions('inv-issuance', 'update')].some(
+            (permission) => permissions?.includes(permission)
+          ) &&
+            ((isMainModuleOpened && updateMainItemEnable) ||
+              (!isMainModuleOpened && updateSubItemEnable))
+        );
+        break;
+
       default:
         break;
     }
@@ -371,144 +448,132 @@ const DataTableClient = ({
         setSearch={setTableSearch}
         showCreate={showCreate}
         showSearch={showSearch}
-        handleOpenCreateModal={(parentId, moduleType) => {
-          handleOpenCreateModal(parentId, moduleType);
+        createMenus={createMenus}
+        handleOpenCreateModal={(parentId, moduleType, otherParams) => {
+          handleOpenCreateModal(parentId, moduleType, otherParams);
           setCurrentOpenedModuleType('main');
         }}
       />
 
-      <ScrollArea
+      {/* <ScrollArea
         h={{ md: '100%', lg: 'calc(100vh - 22.5em)' }}
         sx={{ borderRadius: 5 }}
+        bg={'var(--mantine-color-gray-0)'}
+      > */}
+      <Table
+        verticalSpacing={'sm'}
+        stickyHeaderOffset={lgScreenAndBelow ? 48 : 58}
+        stickyHeader
+        highlightOnHover
+        withTableBorder
       >
-        <Table
-          verticalSpacing={'sm'}
-          stickyHeaderOffset={-0.5}
-          stickyHeader
-          highlightOnHover
-          withTableBorder
-        >
-          <Table.Thead>
-            <Table.Tr bg={'var(--mantine-color-primary-9)'} c={'white'}>
-              {data.head?.map((head) => (
-                <Table.Th
-                  key={head.id}
-                  w={head.width ?? undefined}
-                  p={head.sortable ? 0 : undefined}
-                >
-                  {head.sortable ? (
-                    <Button
-                      size={lgScreenAndBelow ? 'xs' : 'sm'}
-                      variant={'transparent'}
-                      c={'var(--mantine-color-white-9)'}
-                      m={0}
-                      h={'auto'}
-                      py={'var(--mantine-spacing-sm)'}
-                      justify={'left'}
-                      fz={{ base: 11, lg: 'xs', xl: 'sm' }}
-                      rightSection={
-                        <>
-                          {columnSort === head.id ? (
-                            <>
-                              {sortDirection === 'desc' ? (
-                                <IconSortDescending2Filled size={14} />
-                              ) : (
-                                <IconSortAscending2Filled size={14} />
-                              )}
-                            </>
-                          ) : (
-                            <IconSortDescending2Filled size={14} />
-                          )}
-                        </>
-                      }
-                      onClick={() => {
-                        if (loading) return;
-                        setTableColumnSort(head.id);
-                        setTableSortDirection(
-                          tableSortDirection === 'desc' ? 'asc' : 'desc'
-                        );
-                      }}
-                      fullWidth
-                    >
-                      {head.label}
-                    </Button>
-                  ) : (
-                    <>{head.label}</>
-                  )}
-                </Table.Th>
-              ))}
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {loading &&
-              Array.from({ length: perPage }).map((_, i) => (
-                <Table.Tr key={i}>
-                  <Table.Td colSpan={data.head?.length}>
-                    <Skeleton height={30} radius='sm' />
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-
-            {!loading && data.body?.length === 0 && (
-              <>
-                <Table.Tr>
-                  <Table.Td
-                    c={'var(--mantine-color-red-5)'}
-                    ta={'center'}
-                    colSpan={data.head?.length}
+        <Table.Thead>
+          <Table.Tr bg={'var(--mantine-color-primary-9)'} c={'white'}>
+            {data.head?.map((head) => (
+              <Table.Th
+                key={head.id}
+                w={head.width ?? undefined}
+                p={head.sortable ? 0 : undefined}
+                ta={head.align ?? undefined}
+                bg={'var(--mantine-color-primary-9)'}
+              >
+                {head.sortable ? (
+                  <Button
+                    size={lgScreenAndBelow ? 'xs' : 'sm'}
+                    variant={'transparent'}
+                    c={'var(--mantine-color-white-9)'}
+                    m={0}
+                    h={'auto'}
+                    py={'var(--mantine-spacing-sm)'}
+                    ta={head.align ?? undefined}
+                    justify={'left'}
                     fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                    rightSection={
+                      <>
+                        {columnSort === head.id ? (
+                          <>
+                            {sortDirection === 'desc' ? (
+                              <IconSortDescending2Filled size={14} />
+                            ) : (
+                              <IconSortAscending2Filled size={14} />
+                            )}
+                          </>
+                        ) : (
+                          <IconSortDescending2Filled size={14} />
+                        )}
+                      </>
+                    }
+                    onClick={() => {
+                      if (loading) return;
+                      setTableColumnSort(head.id);
+                      setTableSortDirection(
+                        tableSortDirection === 'desc' ? 'asc' : 'desc'
+                      );
+                    }}
+                    fullWidth
                   >
-                    No data.
-                  </Table.Td>
-                </Table.Tr>
+                    {head.label}
+                  </Button>
+                ) : (
+                  <>{head.label}</>
+                )}
+              </Table.Th>
+            ))}
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {loading &&
+            Array.from({ length: perPage }).map((_, i) => (
+              <Table.Tr key={i}>
+                <Table.Td colSpan={data.head?.length}>
+                  <Skeleton height={30} radius='sm' />
+                </Table.Td>
+              </Table.Tr>
+            ))}
 
-                {/* {Array.from({ length: perPage - 1 }).map((_, i) => (
+          {!loading && data.body?.length === 0 && (
+            <>
+              <Table.Tr>
+                <Table.Td
+                  c={'var(--mantine-color-red-5)'}
+                  ta={'center'}
+                  colSpan={data.head?.length}
+                  fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                >
+                  No data.
+                </Table.Td>
+              </Table.Tr>
+
+              {/* {Array.from({ length: perPage - 1 }).map((_, i) => (
                   <Table.Tr key={i}>
                     <Table.Td colSpan={data.head?.length} py={'lg'}></Table.Td>
                   </Table.Tr>
                 ))} */}
-              </>
-            )}
+            </>
+          )}
 
-            {!loading &&
-              tableBody?.map((body: any) => (
-                <React.Fragment key={body.id}>
-                  <Table.Tr
-                    sx={{ cursor: mainItemsClickable ? 'pointer' : 'default' }}
-                  >
-                    {data.head?.map(
-                      (head, i) =>
-                        typeof body[head.id] !== 'undefined' && (
-                          <Tooltip.Floating
-                            key={`${body.id}-${body[head.id]}-${i}`}
-                            fz={'xs'}
-                            label={
-                              mainItemsClickable &&
-                              getAllowedPermissions(mainModule, 'view')?.some(
-                                (permission) => permissions.includes(permission)
-                              ) &&
-                              defaultModalOnClick === 'details'
-                                ? 'Click to show details'
-                                : mainItemsClickable &&
-                                    getAllowedPermissions(
-                                      mainModule,
-                                      'update'
-                                    )?.some((permission) =>
-                                      permissions.includes(permission)
-                                    ) &&
-                                    defaultModalOnClick === 'update'
-                                  ? 'Click to update'
-                                  : undefined
-                            }
-                            disabled={!mainItemsClickable}
-                          >
-                            <Table.Td
-                              fz={{ base: 11, lg: 'xs', xl: 'sm' }}
-                              valign={'top'}
-                              // fw={500}
-                              onClick={() => {
-                                if (
-                                  mainItemsClickable &&
+          {!loading &&
+            tableBody?.map((body: any) => (
+              <React.Fragment key={body.id}>
+                <Table.Tr
+                  sx={{
+                    cursor: mainItemsClickable ? 'pointer' : 'not-allowed',
+                  }}
+                >
+                  {data.head?.map(
+                    (head, i) =>
+                      typeof body[head.id] !== 'undefined' && (
+                        <Tooltip.Floating
+                          key={`${body.id}-${body[head.id]}-${i}`}
+                          fz={'xs'}
+                          label={
+                            mainItemsClickable &&
+                            getAllowedPermissions(mainModule, 'view')?.some(
+                              (permission) => permissions.includes(permission)
+                            ) &&
+                            defaultModalOnClick === 'details'
+                              ? 'Click to show details'
+                              : mainItemsClickable &&
                                   getAllowedPermissions(
                                     mainModule,
                                     'update'
@@ -516,162 +581,155 @@ const DataTableClient = ({
                                     permissions.includes(permission)
                                   ) &&
                                   defaultModalOnClick === 'update'
-                                ) {
-                                  setCurrentId(body.id);
-                                  setCurrentOpenedModuleType('main');
-                                  handleOpenUpdateModal(
-                                    body.id,
-                                    mainModule ?? null
-                                  );
-                                }
-
-                                if (
-                                  mainItemsClickable &&
-                                  getAllowedPermissions(
-                                    mainModule,
-                                    'view'
-                                  )?.some((permission) =>
-                                    permissions.includes(permission)
-                                  ) &&
-                                  defaultModalOnClick === 'details'
-                                ) {
-                                  setCurrentId(body.id);
-                                  setCurrentOpenedModuleType('main');
-                                  handleOpenDetailModal(
-                                    body.id,
-                                    mainModule ?? null
-                                  );
-                                }
-                              }}
-                            >
-                              {renderDynamicTdContent(body[head.id])}
-                            </Table.Td>
-                          </Tooltip.Floating>
-                        )
-                    )}
-
-                    {(hasSubBody || subModule) && (
-                      <Table.Td valign={'top'}>
-                        <Button
-                          fz={{ base: 10, lg: 11, xl: 'xs' }}
-                          size={lgScreenAndBelow ? 'compact-xs' : 'xs'}
-                          variant='light'
-                          color={'var(--mantine-color-secondary-9)'}
-                          rightSection={
-                            collapseStates[body.id ?? ''] ? (
-                              <IconArrowUp size={12} />
-                            ) : (
-                              <IconArrowDown size={12} />
-                            )
+                                ? 'Click to update'
+                                : undefined
                           }
-                          sx={{ cursor: 'pointer' }}
-                          onClick={() => handleToggleCollapse(body.id)}
+                          disabled={!mainItemsClickable}
                         >
-                          {collapseStates[body.id ?? ''] ? 'Hide' : 'Show'}{' '}
-                          {subButtonLabel}
-                        </Button>
-                      </Table.Td>
-                    )}
-                  </Table.Tr>
+                          <Table.Td
+                            fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                            valign={'top'}
+                            // fw={500}
+                            onClick={() => {
+                              if (
+                                mainItemsClickable &&
+                                getAllowedPermissions(
+                                  mainModule,
+                                  'update'
+                                )?.some((permission) =>
+                                  permissions.includes(permission)
+                                ) &&
+                                defaultModalOnClick === 'update'
+                              ) {
+                                setCurrentId(body.id);
+                                setCurrentOpenedModuleType('main');
+                                handleOpenUpdateModal(
+                                  body.id,
+                                  mainModule ?? null
+                                );
+                              }
+
+                              if (
+                                mainItemsClickable &&
+                                getAllowedPermissions(mainModule, 'view')?.some(
+                                  (permission) =>
+                                    permissions.includes(permission)
+                                ) &&
+                                defaultModalOnClick === 'details'
+                              ) {
+                                setCurrentId(body.id);
+                                setCurrentOpenedModuleType('main');
+                                handleOpenDetailModal(
+                                  body.id,
+                                  mainModule ?? null,
+                                  true
+                                );
+                              }
+                            }}
+                          >
+                            {renderDynamicTdContent(body[head.id])}
+                          </Table.Td>
+                        </Tooltip.Floating>
+                      )
+                  )}
 
                   {(hasSubBody || subModule) && (
-                    <Table.Tr>
-                      <Table.Td
-                        bg={'var(--mantine-color-secondary-0)'}
-                        colSpan={data.head?.length}
-                        p={collapseStates[body.id ?? ''] ? undefined : 0}
+                    <Table.Td valign={'top'}>
+                      <Button
+                        fz={{ base: 10, lg: 11, xl: 'xs' }}
+                        size={lgScreenAndBelow ? 'compact-xs' : 'xs'}
+                        variant='light'
+                        color={'var(--mantine-color-secondary-9)'}
+                        rightSection={
+                          collapseStates[body.id ?? ''] ? (
+                            <IconArrowUp size={12} />
+                          ) : (
+                            <IconArrowDown size={12} />
+                          )
+                        }
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => handleToggleCollapse(body.id)}
                       >
-                        <Collapse in={collapseStates[body.id ?? '']}>
-                          <Table
-                            bg={'white'}
-                            verticalSpacing={'sm'}
-                            highlightOnHover
-                            withTableBorder
-                          >
-                            <Table.Thead>
-                              <Table.Tr
-                                bg={'var(--mantine-color-secondary-9)'}
-                                c={'white'}
-                              >
-                                {data.subHead?.map((subHead) => (
-                                  <Table.Th
-                                    key={subHead.id}
-                                    w={subHead.width}
-                                    fw={500}
-                                    fz={{ base: 11, lg: 'xs', xl: 'sm' }}
-                                  >
-                                    {subHead.label}
-                                  </Table.Th>
-                                ))}
-                              </Table.Tr>
-                            </Table.Thead>
+                        {collapseStates[body.id ?? ''] ? 'Hide' : 'Show'}{' '}
+                        {subButtonLabel}
+                      </Button>
+                    </Table.Td>
+                  )}
+                </Table.Tr>
 
-                            <Table.Tbody>
-                              {!loading && body?.sub_body?.length === 0 && (
-                                <Table.Tr>
-                                  <Table.Td
-                                    c={'var(--mantine-color-red-5)'}
-                                    ta={'center'}
-                                    colSpan={data.head?.length}
-                                    fz={{ base: 11, lg: 'xs', xl: 'sm' }}
-                                  >
-                                    No data.
-                                  </Table.Td>
-                                </Table.Tr>
-                              )}
-
-                              {body?.sub_body?.map((subBody: any) => (
-                                <Table.Tr
-                                  key={subBody.id}
-                                  sx={{
-                                    cursor: subItemsClickable
-                                      ? 'pointer'
-                                      : 'default',
-                                  }}
+                {(hasSubBody || subModule) && (
+                  <Table.Tr>
+                    <Table.Td
+                      bg={'var(--mantine-color-secondary-0)'}
+                      colSpan={data.head?.length}
+                      p={collapseStates[body.id ?? ''] ? undefined : 0}
+                    >
+                      <Collapse in={collapseStates[body.id ?? '']}>
+                        <Table
+                          bg={'white'}
+                          verticalSpacing={'sm'}
+                          highlightOnHover
+                          withTableBorder
+                        >
+                          <Table.Thead>
+                            <Table.Tr
+                              bg={'var(--mantine-color-secondary-9)'}
+                              c={'white'}
+                            >
+                              {data.subHead?.map((subHead) => (
+                                <Table.Th
+                                  key={subHead.id}
+                                  w={subHead.width}
+                                  fw={500}
+                                  ta={subHead.align ?? undefined}
+                                  fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                                 >
-                                  {data.subHead?.map(
-                                    (subHead, subHeadIndex) =>
-                                      subBody[subHead.id] && (
-                                        <Tooltip.Floating
-                                          key={`${subBody.id}-${subHeadIndex}`}
-                                          fz={'xs'}
-                                          label={
-                                            subItemsClickable &&
-                                            getAllowedPermissions(
-                                              subModule,
-                                              'view'
-                                            )?.some((permission) =>
-                                              permissions.includes(permission)
-                                            ) &&
-                                            defaultModalOnClick === 'details'
-                                              ? 'Click to show details'
-                                              : subItemsClickable &&
-                                                  getAllowedPermissions(
-                                                    subModule,
-                                                    'update'
-                                                  )?.some((permission) =>
-                                                    permissions.includes(
-                                                      permission
-                                                    )
-                                                  ) &&
-                                                  defaultModalOnClick ===
-                                                    'update'
-                                                ? 'Click to update'
-                                                : undefined
-                                          }
-                                          disabled={!subItemsClickable}
-                                        >
-                                          <Table.Td
-                                            valign={'top'}
-                                            // fw={500}
-                                            fz={{
-                                              base: 11,
-                                              lg: 'xs',
-                                              xl: 'sm',
-                                            }}
-                                            onClick={() => {
-                                              if (
-                                                subItemsClickable &&
+                                  {subHead.label}
+                                </Table.Th>
+                              ))}
+                            </Table.Tr>
+                          </Table.Thead>
+
+                          <Table.Tbody>
+                            {!loading && body?.sub_body?.length === 0 && (
+                              <Table.Tr>
+                                <Table.Td
+                                  c={'var(--mantine-color-red-5)'}
+                                  ta={'center'}
+                                  colSpan={data.head?.length}
+                                  fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                                >
+                                  No data.
+                                </Table.Td>
+                              </Table.Tr>
+                            )}
+
+                            {body?.sub_body?.map((subBody: any) => (
+                              <Table.Tr
+                                key={subBody.id}
+                                sx={{
+                                  cursor: subItemsClickable
+                                    ? 'pointer'
+                                    : 'not-allowed',
+                                }}
+                              >
+                                {data.subHead?.map(
+                                  (subHead, subHeadIndex) =>
+                                    subBody[subHead.id] && (
+                                      <Tooltip.Floating
+                                        key={`${subBody.id}-${subHeadIndex}`}
+                                        fz={'xs'}
+                                        label={
+                                          subItemsClickable &&
+                                          getAllowedPermissions(
+                                            subModule,
+                                            'view'
+                                          )?.some((permission) =>
+                                            permissions.includes(permission)
+                                          ) &&
+                                          defaultModalOnClick === 'details'
+                                            ? 'Click to show details'
+                                            : subItemsClickable &&
                                                 getAllowedPermissions(
                                                   subModule,
                                                   'update'
@@ -681,95 +739,109 @@ const DataTableClient = ({
                                                   )
                                                 ) &&
                                                 defaultModalOnClick === 'update'
-                                              ) {
-                                                setCurrentId(subBody.id);
-                                                setCurrentOpenedModuleType(
-                                                  'sub'
-                                                );
-                                                handleOpenUpdateModal(
-                                                  subBody.id,
-                                                  subModule ?? null
-                                                );
-                                              }
-
-                                              if (
-                                                subItemsClickable &&
-                                                getAllowedPermissions(
-                                                  subModule,
-                                                  'view'
-                                                )?.some((permission) =>
-                                                  permissions.includes(
-                                                    permission
-                                                  )
-                                                ) &&
-                                                defaultModalOnClick ===
-                                                  'details'
-                                              ) {
-                                                setCurrentId(subBody.id);
-                                                setCurrentOpenedModuleType(
-                                                  'sub'
-                                                );
-                                                handleOpenDetailModal(
-                                                  subBody.id,
-                                                  subModule ?? null
-                                                );
-                                              }
-                                            }}
-                                          >
-                                            {renderDynamicTdContent(
-                                              subBody[subHead.id]
-                                            )}
-                                          </Table.Td>
-                                        </Tooltip.Floating>
-                                      )
-                                  )}
-                                </Table.Tr>
-                              ))}
-
-                              {showCreateSubItem &&
-                                getAllowedPermissions(
-                                  subModule,
-                                  'create'
-                                )?.some((permission) =>
-                                  permissions.includes(permission)
-                                ) && (
-                                  <Table.Tr>
-                                    <Table.Td
-                                      bg={'white'}
-                                      colSpan={data.subHead?.length}
-                                      p={0}
-                                    >
-                                      <Button
-                                        variant={'outline'}
-                                        size={
-                                          lgScreenAndBelow ? 'compact-xs' : 'xs'
+                                              ? 'Click to update'
+                                              : undefined
                                         }
-                                        color={'var(--mantine-color-primary-9)'}
-                                        leftSection={<IconPlus size={12} />}
-                                        onClick={() => {
-                                          setCurrentOpenedModuleType('sub');
-                                          handleOpenCreateModal(
-                                            body.id,
-                                            subModule ?? null
-                                          );
-                                        }}
-                                        fullWidth
+                                        disabled={!subItemsClickable}
                                       >
-                                        Add {subButtonLabel}
-                                      </Button>
-                                    </Table.Td>
-                                  </Table.Tr>
-                                )}
-                            </Table.Tbody>
-                          </Table>
-                        </Collapse>
-                      </Table.Td>
-                    </Table.Tr>
-                  )}
-                </React.Fragment>
-              ))}
+                                        <Table.Td
+                                          valign={'top'}
+                                          // fw={500}
+                                          fz={{
+                                            base: 11,
+                                            lg: 'xs',
+                                            xl: 'sm',
+                                          }}
+                                          onClick={() => {
+                                            if (
+                                              subItemsClickable &&
+                                              getAllowedPermissions(
+                                                subModule,
+                                                'update'
+                                              )?.some((permission) =>
+                                                permissions.includes(permission)
+                                              ) &&
+                                              defaultModalOnClick === 'update'
+                                            ) {
+                                              setCurrentId(subBody.id);
+                                              setCurrentOpenedModuleType('sub');
+                                              handleOpenUpdateModal(
+                                                subBody.id,
+                                                subModule ?? null
+                                              );
+                                            }
 
-            {/* {!loading &&
+                                            if (
+                                              subItemsClickable &&
+                                              getAllowedPermissions(
+                                                subModule,
+                                                'view'
+                                              )?.some((permission) =>
+                                                permissions.includes(permission)
+                                              ) &&
+                                              defaultModalOnClick === 'details'
+                                            ) {
+                                              setCurrentId(subBody.id);
+                                              setCurrentOpenedModuleType('sub');
+                                              handleOpenDetailModal(
+                                                subBody.id,
+                                                subModule ?? null,
+                                                false
+                                              );
+                                            }
+                                          }}
+                                        >
+                                          {renderDynamicTdContent(
+                                            subBody[subHead.id]
+                                          )}
+                                        </Table.Td>
+                                      </Tooltip.Floating>
+                                    )
+                                )}
+                              </Table.Tr>
+                            ))}
+
+                            {showCreateSubItem &&
+                              getAllowedPermissions(subModule, 'create')?.some(
+                                (permission) => permissions.includes(permission)
+                              ) && (
+                                <Table.Tr>
+                                  <Table.Td
+                                    bg={'white'}
+                                    colSpan={data.subHead?.length}
+                                    p={0}
+                                  >
+                                    <Button
+                                      variant={'outline'}
+                                      size={
+                                        lgScreenAndBelow ? 'compact-xs' : 'xs'
+                                      }
+                                      color={'var(--mantine-color-primary-9)'}
+                                      leftSection={<IconPlus size={12} />}
+                                      onClick={() => {
+                                        setCurrentOpenedModuleType('sub');
+                                        handleOpenCreateModal(
+                                          body.id,
+                                          subModule ?? null
+                                        );
+                                      }}
+                                      fullWidth
+                                    >
+                                      Add {subButtonLabel}
+                                    </Button>
+                                  </Table.Td>
+                                </Table.Tr>
+                              )}
+                          </Table.Tbody>
+                        </Table>
+                      </Collapse>
+                    </Table.Td>
+                  </Table.Tr>
+                )}
+              </React.Fragment>
+            ))}
+
+          {/* {!loading &&
               Array.from({ length: perPage - data.body?.length }).map(
                 (_, i) => (
                   <Table.Tr key={i}>
@@ -779,14 +851,15 @@ const DataTableClient = ({
                   </Table.Tr>
                 )
               )} */}
-          </Table.Tbody>
-        </Table>
-      </ScrollArea>
+        </Table.Tbody>
+      </Table>
+      {/* </ScrollArea> */}
 
       <LoadingOverlay
         visible={detailLoading}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
+        pos={'fixed'}
       />
 
       <CreateModalClient
@@ -794,10 +867,10 @@ const DataTableClient = ({
           currentOpenedModuleType === 'main'
             ? createModalOpened
               ? createMainItemModalTitle
-              : ''
+              : 'Create'
             : createModalOpened
               ? createSubItemModalTitle
-              : ''
+              : 'Create'
         }
         endpoint={
           currentOpenedModuleType === 'main'
@@ -952,10 +1025,10 @@ const DataTableClient = ({
           <UpdateModalClient
             title={
               currentOpenedModuleType === 'main'
-                ? updateModalOpened
+                ? stack.register('update-modal').opened
                   ? updateMainItemModalTitle
                   : ''
-                : updateModalOpened
+                : stack.register('update-modal').opened
                   ? updateSubItemModalTitle
                   : ''
             }

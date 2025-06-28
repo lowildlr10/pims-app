@@ -19,14 +19,16 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "./types/**/*.d.ts"
+    "./types/**/*.d.ts",
+    "app/settings/layoutbak"
   ],
   "exclude": ["node_modules"]
 }

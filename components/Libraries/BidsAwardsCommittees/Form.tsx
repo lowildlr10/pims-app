@@ -2,7 +2,7 @@ import { Stack, Switch, TextInput } from '@mantine/core';
 import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 
-const BidsAwardsCommitteeContentClient = forwardRef<
+const FormClient = forwardRef<
   HTMLFormElement,
   ModalBidsAwardsCommitteeContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
@@ -69,7 +69,6 @@ const BidsAwardsCommitteeContentClient = forwardRef<
   );
 });
 
-BidsAwardsCommitteeContentClient.displayName =
-  'BidsAwardsCommitteeContentClient';
+FormClient.displayName = 'FormClient';
 
-export default BidsAwardsCommitteeContentClient;
+export default FormClient;

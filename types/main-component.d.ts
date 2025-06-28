@@ -25,15 +25,7 @@ type PurchaseRequestActionProps = {
   permissions?: string[];
   id: string;
   status: PurchaseRequestStatus;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string,
-    redirect?: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type ModalPurchaseRequestContentProps = {
@@ -61,31 +53,7 @@ type RequestQuotationActionProps = {
   permissions?: string[];
   id: string;
   status: RequestQuotationStatus;
-  canvassingAt?: string;
-  completedAt?: string;
-  cancelledAt?: string;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
-};
-
-type RequestQuotationActionProps = {
-  permissions?: string[];
-  id: string;
-  status: RequestQuotationStatus;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type ModalRequestQuotationContentProps = {
@@ -114,31 +82,7 @@ type AbstractQuotationActionProps = {
   permissions?: string[];
   id: string;
   status: AbstractQuotationStatus;
-  canvassingAt?: string;
-  completedAt?: string;
-  cancelledAt?: string;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
-};
-
-type AbstractQuotationActionProps = {
-  permissions?: string[];
-  id: string;
-  status: AbstractQuotationStatus;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type ModalAbstractQuotationContentProps = {
@@ -174,35 +118,99 @@ type PurchaseOrderActionProps = {
   permissions?: string[];
   id: string;
   status: PurchaseOrderStatus;
-  canvassingAt?: string;
-  completedAt?: string;
-  cancelledAt?: string;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
-};
-
-type PurchaseOrderActionProps = {
-  permissions?: string[];
-  id: string;
-  status: PurchaseOrderStatus;
-  handleOpenActionModal?: (
-    actionType: ActionType,
-    title: string,
-    message: string,
-    color: string,
-    buttonLabel: string,
-    endpoint: string
-  ) => void;
+  handleOpenActionModal?: OpenActionModalActionType;
 };
 
 type ModalPurchaseOrderContentProps = {
   data: PurchaseOrderType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
+};
+
+type InspectionAcceptanceReportResponse = {
+  data: InspectionAcceptanceReportType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type InspectionAcceptanceReportStatusProps = {
+  size?: string;
+  status?: InspectionAcceptanceReportStatus;
+};
+
+type InspectionAcceptanceReportActionProps = {
+  permissions?: string[];
+  id: string;
+  status: InspectionAcceptanceReportStatus;
+  documentType: 'po' | 'jo';
+  handleOpenActionModal?: OpenActionModalActionType;
+};
+
+type ModalInspectionAcceptanceReportContentProps = {
+  data: InspectionAcceptanceReportType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
+};
+
+type InventorySuppliesResponse = {
+  data: PurchaseOrderType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type InventorySuppliesStatusProps = {
+  size?: string;
+  status?: InventorySupplyStatus;
+};
+
+type InventorySupplyActionProps = {
+  permissions?: string[];
+  id: string;
+  status: InventorySupplyStatus;
+  handleOpenActionModal?: OpenActionModalActionType;
+};
+
+type ModalInventorySupplyContentProps = {
+  data: InventorySupplyType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
+};
+
+type InventoryIssuanceResponse = {
+  data: PurchaseOrderType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type InventoryIssuanceStatusProps = {
+  size?: string;
+  status?: InventoryIssuanceStatus;
+};
+
+type InventoryIssuanceActionProps = {
+  permissions?: string[];
+  id: string;
+  status: InventoryIssuanceStatus;
+  handleOpenActionModal?: OpenActionModalActionType;
+};
+
+type ModalInventoryIssuanceContentProps = {
+  data: InventoryIssuanceType;
   isCreate?: boolean;
   readOnly?: boolean;
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;

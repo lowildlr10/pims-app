@@ -2,15 +2,15 @@
 
 import {
   AppShell,
+  Avatar,
   Burger,
   Group,
-  Image,
   Loader,
   Overlay,
   ScrollArea,
 } from '@mantine/core';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
-import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { useDisclosure, useHeadroom, useMediaQuery } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
   IconArrowBack,
@@ -31,7 +31,23 @@ import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { Text } from '@mantine/core';
 import NotificationMenuButtonClient from '../NotificationMenuButton';
+import { NavigationProgress } from '@mantine/nprogress';
 import { keyframes } from '@emotion/react';
+import { NProgressClient } from '../NProgress';
+import {
+  INVENTORY_LINKS,
+  PROCUREMENT_LINKS,
+  PAYMENT_LINKS,
+  PROCUREMENT_ALLOWED_PERMISSIONS,
+  LIBRARY_ALLOWED_PERMISSIONS,
+  INVENTORY_ALLOWED_PERMISSIONS,
+  PAYMENT_ALLOWED_PERMISSIONS,
+  LIBRARY_LINKS,
+  USER_MANAGEMENT_LINKS,
+  USER_MANAGEMENT_ALLOWED_PERMISSIONS,
+  COMPANY_PROFILE_ALLOWED_PERMISSIONS,
+  SYSTEM_LOGS_ALLOWED_PERMISSIONS,
+} from '@/config/menus';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -41,337 +57,55 @@ const defaultMainMenus: LinksGroupProps[] = [
   { label: 'Dashboard', icon: IconGauge, link: '/' },
   {
     label: 'Procurement',
-    allowedPermissions: [
-      'super:*',
-      'head:*',
-      'pr:*',
-      'rfq:*',
-      'aoq:*',
-      'po:*',
-      'iar:*',
-      'ors:*',
-      'dv:*',
-      'pr:view',
-      'rfq:view',
-      'aoq:view',
-      'po:view',
-      'iar:view',
-      'ors:view',
-      'dv:view',
-    ],
+    allowedPermissions: PROCUREMENT_ALLOWED_PERMISSIONS,
     icon: IconShoppingCart,
     initiallyOpened: true,
-    links: [
-      {
-        label: 'Purchase Requests',
-        allowedPermissions: ['super:*', 'head:*', 'pr:*', 'pr:view'],
-        link: '/procurement/pr',
-      },
-      {
-        label: 'Request for Quotations',
-        allowedPermissions: ['super:*', 'head:*', 'rfq:*', 'rfq:view'],
-        link: '/procurement/rfq',
-      },
-      {
-        label: 'Abstract of Quotations',
-        allowedPermissions: ['super:*', 'head:*', 'aoq:*', 'aoq:view'],
-        link: '/procurement/aoq',
-      },
-      {
-        label: 'Purchase/Job Orders',
-        allowedPermissions: ['super:*', 'head:*', 'po:*', 'po:view'],
-        link: '/procurement/po',
-      },
-      {
-        label: 'Inspection and Acceptance Report',
-        allowedPermissions: ['super:*', 'head:*', 'iar:*', 'iar:view'],
-        link: '/procurement/iar',
-      },
-      {
-        label: 'Obligation Request and Status',
-        allowedPermissions: ['super:*', 'head:*', 'ors:*', 'ors:view'],
-        link: '/procurement/ors',
-      },
-      {
-        label: 'Disbursement Voucher',
-        allowedPermissions: ['super:*', 'head:*', 'dv:*', 'dv:view'],
-        link: '/procurement/dv',
-      },
-    ],
+    links: PROCUREMENT_LINKS,
   },
   {
     label: 'Inventory',
-    allowedPermissions: ['super:*', 'head:*', 'inventory:*', 'inventory:view'],
+    allowedPermissions: INVENTORY_ALLOWED_PERMISSIONS,
     icon: IconBuildingWarehouse,
     initiallyOpened: false,
-    links: [
-      {
-        label: 'Supplies',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'inventory:*',
-          'inventory:view',
-        ],
-        link: '/inventory/supplies',
-      },
-      {
-        label: 'Issuances',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'inventory:*',
-          'inventory:view',
-        ],
-        link: '/inventory/issuances',
-      },
-    ],
+    links: INVENTORY_LINKS,
   },
   {
     label: 'Payment',
-    allowedPermissions: [
-      'super:*',
-      'head:*',
-      'check:*',
-      'deposit:*',
-      'check:view',
-      'deposit:view',
-    ],
+    allowedPermissions: PAYMENT_ALLOWED_PERMISSIONS,
     icon: IconCash,
     initiallyOpened: false,
-    links: [
-      {
-        label: 'Check',
-        allowedPermissions: ['super:*', 'head:*', 'check:*', 'check:view'],
-        link: '/payment/check',
-      },
-      {
-        label: 'Bank Deposit',
-        allowedPermissions: ['super:*', 'head:*', 'deposit:*', 'deposit:view'],
-        link: '/payment/deposit',
-      },
-    ],
+    links: PAYMENT_LINKS,
   },
-  { label: 'Settings', icon: IconSettings2, link: '/settings' },
+  { label: 'Settings', icon: IconSettings2, link: '/settings/user-profile' },
 ];
 
 const defaultSettingsMenus: LinksGroupProps[] = [
-  { label: 'User Profile', icon: IconUser, link: '/settings' },
+  { label: 'User Profile', icon: IconUser, link: '/settings/user-profile' },
   {
     label: 'Company Profile',
-    allowedPermissions: ['super:*', 'head:*', 'company:*', 'company:view'],
+    allowedPermissions: COMPANY_PROFILE_ALLOWED_PERMISSIONS,
     icon: IconSitemap,
     link: '/settings/company-profile',
   },
   {
     label: 'Library',
     icon: IconLibrary,
-    allowedPermissions: [
-      'super:*',
-      'head:*',
-      'lib-bid-committee:*',
-      'lib-fund-source:*',
-      'lib-item-class:*',
-      'lib-mfo-pap:*',
-      'lib-mode-proc:*',
-      'lib-paper-size:*',
-      'lib-responsibility-center:*',
-      'lib-signatory:*',
-      'lib-supplier:*',
-      'lib-uacs-class:*',
-      'lib-uacs-code:*',
-      'lib-unit-issue:*',
-      'lib-bid-committee:view',
-      'lib-fund-source:view',
-      'lib-item-class:view',
-      'lib-mfo-pap:view',
-      'lib-mode-proc:view',
-      'lib-paper-size:view',
-      'lib-responsibility-center:view',
-      'lib-signatory:view',
-      'lib-supplier:view',
-      'lib-uacs-class:view',
-      'lib-uacs-code:view',
-      'lib-unit-issue:view',
-    ],
+    allowedPermissions: LIBRARY_ALLOWED_PERMISSIONS,
     initiallyOpened: false,
-    links: [
-      {
-        label: 'Bids and Awards Committees',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-bid-committee:*',
-          'lib-bid-committee:view',
-        ],
-        link: '/settings/library/bids-awards-committees',
-      },
-      {
-        label: 'Funding Soruces/Projects',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-fund-source:*',
-          'lib-fund-source:view',
-        ],
-        link: '/settings/library/funding-sources',
-      },
-      {
-        label: 'Item Classifications',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-item-class:*',
-          'lib-item-class:view',
-        ],
-        link: '/settings/library/item-classifications',
-      },
-      {
-        label: 'MFO/PAP',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-mfo-pap:*',
-          'lib-mfo-pap:view',
-        ],
-        link: '/settings/library/mfo-pap',
-      },
-      {
-        label: 'Modes of Procurement',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-mode-proc:*',
-          'lib-mode-proc:view',
-        ],
-        link: '/settings/library/modes-procurement',
-      },
-      {
-        label: 'Print Paper Sizes',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-paper-size:*',
-          'lib-paper-size:view',
-        ],
-        link: '/settings/library/paper-sizes',
-      },
-      {
-        label: 'Responsibility Centers',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-responsibility-center:*',
-          'lib-responsibility-center:view',
-        ],
-        link: '/settings/library/responsibility-centers',
-      },
-      {
-        label: 'Signatories',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-signatory:*',
-          'lib-signatory:view',
-        ],
-        link: '/settings/library/signatories',
-      },
-      {
-        label: 'Suppliers',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-supplier:*',
-          'lib-supplier:view',
-        ],
-        link: '/settings/library/suppliers',
-      },
-      {
-        label: 'UACS Code Classifications',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-uacs-class:*',
-          'lib-uacs-class:view',
-        ],
-        link: '/settings/library/uacs-code-classifications',
-      },
-      {
-        label: 'UACS Object Codes',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-uacs-code:*',
-          'lib-uacs-code:view',
-        ],
-        link: '/settings/library/uacs-object-codes',
-      },
-      {
-        label: 'Unit of Issues',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'lib-unit-issue:*',
-          'lib-unit-issue:view',
-        ],
-        link: '/settings/library/unit-issues',
-      },
-    ],
+    links: LIBRARY_LINKS,
   },
   {
     label: 'User Management',
-    allowedPermissions: [
-      'super:*',
-      'head:*',
-      'account-division:*',
-      'account-section:*',
-      'account-role:*',
-      'account-user:*',
-      'account-division:view',
-      'account-section:view',
-      'account-role:view',
-      'account-user:view',
-    ],
+    allowedPermissions: USER_MANAGEMENT_ALLOWED_PERMISSIONS,
     icon: IconUserCog,
     initiallyOpened: false,
-    links: [
-      {
-        label: 'Division and Sections',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'account-division:*',
-          'account-division:view',
-        ],
-        link: '/settings/user-management/divisions',
-      },
-      {
-        label: 'Roles',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'account-role:*',
-          'account-role:view',
-        ],
-        link: '/settings/user-management/roles',
-      },
-      {
-        label: 'Users',
-        allowedPermissions: [
-          'super:*',
-          'head:*',
-          'account-user:*',
-          'account-user:view',
-        ],
-        link: '/settings/user-management/users',
-      },
-    ],
+    links: USER_MANAGEMENT_LINKS,
   },
   {
     label: 'System Logs',
-    allowedPermissions: ['super:*', 'system-log:*', 'system-log:view'],
+    allowedPermissions: SYSTEM_LOGS_ALLOWED_PERMISSIONS,
     icon: IconLogs,
-    link: '/settings/system-log',
+    link: '/settings/system-logs',
   },
   { label: 'Exit', icon: IconArrowBack, link: '/' },
 ];
@@ -390,6 +124,7 @@ export function LayoutSidebarClient({
   ));
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
+  const pinned = useHeadroom({ fixedAt: 120 });
   const [opened, { open, close }] = useDisclosure(false);
 
   useEffect(() => {
@@ -414,10 +149,13 @@ export function LayoutSidebarClient({
       navbar={{
         width: 300,
         breakpoint: 'md',
-        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+        collapsed: {
+          mobile: !mobileOpened && pinned,
+          desktop: !desktopOpened && pinned,
+        },
       }}
-      mih={{ base: 'auto', lg: '100vh' }}
-      padding='md'
+      // mih={{ base: 'auto', lg: '100vh' }}
+      padding={'sm'}
       transitionDuration={300}
       transitionTimingFunction='ease'
     >
@@ -438,15 +176,16 @@ export function LayoutSidebarClient({
               visibleFrom={'md'}
               size={lgScreenAndBelow ? 'xs' : 'sm'}
             />
-            <Group>
-              <Image
-                width={lgScreenAndBelow ? 20 : 30}
-                height={lgScreenAndBelow ? 20 : 30}
+            <Group px={'xs'} gap={'xs'} align={'center'}>
+              <Avatar
+                variant={'filled'}
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+                radius={'xs'}
                 src={company?.company_logo ?? '/images/logo-fallback.png'}
                 alt={company?.company_name ?? 'Company'}
               />
-              <Text size={lgScreenAndBelow ? 'md' : 'lg'} fw={400}>
-                Procurement System
+              <Text size={lgScreenAndBelow ? 'lg' : 'xl'} fw={500}>
+                PIMS
               </Text>
             </Group>
           </Group>
@@ -473,6 +212,7 @@ export function LayoutSidebarClient({
           },
         })}
       >
+        {/* <AppShell.Section>LGU-ATOK</AppShell.Section> */}
         <AppShell.Section
           className={classes.links}
           grow
@@ -486,7 +226,7 @@ export function LayoutSidebarClient({
           <UserButtonClient user={user} handleOpen={open} />
         </AppShell.Section>
       </AppShell.Navbar>
-      <AppShell.Main bg={'var(--mantine-color-gray-1)'}>
+      <AppShell.Main bg={'var(--mantine-color-gray-4)'} pl={'sm'}>
         <Overlay
           color={'var(--mantine-color-black-7)'}
           backgroundOpacity={0.6}
@@ -506,15 +246,11 @@ export function LayoutSidebarClient({
                 100%,0% { opacity: 1 }
                 9% { opacity: 0 }
               `} 0.3s linear`,
+            position: 'fixed',
           }}
         />
         {children}
-        <ProgressBar
-          height={'2.5px'}
-          color={'var(--mantine-color-secondary-3)'}
-          options={{ showSpinner: false }}
-          shallowRouting
-        />
+        <NProgressClient />
         <UserModalClient
           title={user.fullname ?? 'User'}
           open={opened}

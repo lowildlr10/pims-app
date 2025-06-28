@@ -7,31 +7,36 @@ import {
   Stack,
 } from '@mantine/core';
 import React, { useRef, useState } from 'react';
-import DivisionContentClient from '../../UserManagement/DivisionSection/DivisionForm';
-import SectionContentClient from '../../UserManagement/DivisionSection/SectionForm';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
-import RoleContentClient from '../../UserManagement/Roles/Form';
+import DivisionFormClient from '../../UserManagement/DivisionSection/DivisionForm';
+import SectionFormClient from '../../UserManagement/DivisionSection/SectionForm';
+import RoleFormClient from '../../UserManagement/Roles/Form';
 import { IconCancel, IconPencil } from '@tabler/icons-react';
-import UserContentClient from '../../UserManagement/Users/Form';
-import FundingSourceContentClient from '../../Libraries/FundingSources/Form';
-import ItemClassificationContentClient from '../../Libraries/ItemClassifications/Form';
-import MfoPapContentClient from '../../Libraries/MfoPaps/Form';
-import ProcurementModeContentClient from '../../Libraries/ProcurementModes/Form';
-import PaperSizeContentClient from '../../Libraries/PaperSizes/Form';
-import SupplierContentClient from '../../Libraries/Suppliers/Form';
-import UacsCodeClassificationContentClient from '../../Libraries/UacsClassifications/Form';
-import UacsCodeContentClient from '../../Libraries/UacsCodes/Form';
-import UnitIssueContentClient from '../../Libraries/UnitIssues/Form';
-import SignatoryContentClient from '../../Libraries/Signatories/Form';
-import BidsAwardsCommitteeContentClient from '../../Libraries/BidsAwardsCommittees/Form';
-import ResponsibilityCenterContentClient from '../../Libraries/ResposibilityCenters/Form';
-import PurchaseRequestContentClient from '../../PurchaseRequests/Form';
+import UserFormClient from '../../UserManagement/Users/Form';
+import FundingSourceFormClient from '../../Libraries/FundingSources/Form';
+import ItemClassificationFormClient from '../../Libraries/ItemClassifications/Form';
+import MfoPapFormClient from '../../Libraries/MfoPaps/Form';
+import ProcurementModeFormClient from '../../Libraries/ProcurementModes/Form';
+import PaperSizeFormClient from '../../Libraries/PaperSizes/Form';
+import SupplierFormClient from '../../Libraries/Suppliers/Form';
+import UacsCodeClassificationFormClient from '../../Libraries/UacsClassifications/Form';
+import UacsCodeFormClient from '../../Libraries/UacsCodes/Form';
+import UnitIssueFormClient from '../../Libraries/UnitIssues/Form';
+import SignatoryFormClient from '../../Libraries/Signatories/Form';
+import BidsAwardsCommitteeFormClient from '../../Libraries/BidsAwardsCommittees/Form';
+import ResponsibilityCenterFormClient from '../../Libraries/ResposibilityCenters/Form';
+import PurchaseRequestFormClient from '../../PurchaseRequests/Form';
 import { useMediaQuery } from '@mantine/hooks';
-import RequestQuotionContentClient from '../../RequestQuotations/Form';
-import AbstractQuotionContentClient from '../../AbstractQuotations/Form';
-import PurchaseOrderContentClient from '@/components/PurchaseOrders/Form';
+import RequestQuotionFormClient from '../../RequestQuotations/Form';
+import AbstractQuotionFormClient from '../../AbstractQuotations/Form';
+import PurchaseOrderFormClient from '@/components/PurchaseOrders/Form';
+import InspectionAcceptanceReportFormClient from '@/components/InspectionAcceptanceReports/Form';
+import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
+import RisFormClient from '../../InventoryIssuances/Forms/RisForm';
+import IcsFormClient from '../../InventoryIssuances/Forms/IcsForm';
+import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
 
 const UpdateModalClient = ({
   title,
@@ -127,7 +132,7 @@ const UpdateModalClient = ({
 
       <Stack mb={50}>
         {opened && content === 'account-division' && (
-          <DivisionContentClient
+          <DivisionFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -136,7 +141,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'account-section' && (
-          <SectionContentClient
+          <SectionFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -145,7 +150,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'account-role' && (
-          <RoleContentClient
+          <RoleFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -154,7 +159,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'account-user' && (
-          <UserContentClient
+          <UserFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -163,7 +168,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-bid-committee' && (
-          <BidsAwardsCommitteeContentClient
+          <BidsAwardsCommitteeFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -172,7 +177,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-fund-source' && (
-          <FundingSourceContentClient
+          <FundingSourceFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -181,7 +186,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-item-class' && (
-          <ItemClassificationContentClient
+          <ItemClassificationFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -190,7 +195,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-mfo-pap' && (
-          <MfoPapContentClient
+          <MfoPapFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -199,7 +204,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-mode-proc' && (
-          <ProcurementModeContentClient
+          <ProcurementModeFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -208,7 +213,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-paper-size' && (
-          <PaperSizeContentClient
+          <PaperSizeFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -217,7 +222,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-responsibility-center' && (
-          <ResponsibilityCenterContentClient
+          <ResponsibilityCenterFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -226,7 +231,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-supplier' && (
-          <SupplierContentClient
+          <SupplierFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -235,7 +240,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-signatory' && (
-          <SignatoryContentClient
+          <SignatoryFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -244,7 +249,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-uacs-class' && (
-          <UacsCodeClassificationContentClient
+          <UacsCodeClassificationFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -253,7 +258,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-uacs-code' && (
-          <UacsCodeContentClient
+          <UacsCodeFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -262,7 +267,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'lib-unit-issue' && (
-          <UnitIssueContentClient
+          <UnitIssueFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -271,7 +276,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'pr' && (
-          <PurchaseRequestContentClient
+          <PurchaseRequestFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -279,7 +284,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'rfq' && (
-          <RequestQuotionContentClient
+          <RequestQuotionFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -287,7 +292,7 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'aoq' && (
-          <AbstractQuotionContentClient
+          <AbstractQuotionFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -295,11 +300,55 @@ const UpdateModalClient = ({
         )}
 
         {opened && content === 'po' && (
-          <PurchaseOrderContentClient
+          <PurchaseOrderFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
           />
+        )}
+
+        {opened && content === 'iar' && (
+          <InspectionAcceptanceReportFormClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleUpdate}
+          />
+        )}
+
+        {opened && content === 'inv-supply' && (
+          <InventorySupplyFormClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleUpdate}
+          />
+        )}
+
+        {opened && content === 'inv-issuance' && (
+          <>
+            {data?.document_type === 'ris' && (
+              <RisFormClient
+                ref={formRef}
+                data={data}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
+
+            {data?.document_type === 'ics' && (
+              <IcsFormClient
+                ref={formRef}
+                data={data}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
+
+            {data?.document_type === 'are' && (
+              <AreFormClient
+                ref={formRef}
+                data={data}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
+          </>
         )}
       </Stack>
 

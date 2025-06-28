@@ -3,7 +3,7 @@ import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import DynamicSelect from '../../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 
-const DivisionContentClient = forwardRef<
+const DivisionFormClient = forwardRef<
   HTMLFormElement,
   ModalDivisionContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
@@ -68,7 +68,9 @@ const DivisionContentClient = forwardRef<
           }
           value={form.values.division_head_id}
           size={'sm'}
-          onChange={(value) => form.setFieldValue('division_head_id', value)}
+          onChange={(value) =>
+            form.setFieldValue('division_head_id', value ?? '')
+          }
         />
         <Switch
           label={'Status'}
@@ -90,6 +92,6 @@ const DivisionContentClient = forwardRef<
   );
 });
 
-DivisionContentClient.displayName = 'DivisionContentClient';
+DivisionFormClient.displayName = 'DivisionFormClient';
 
-export default DivisionContentClient;
+export default DivisionFormClient;

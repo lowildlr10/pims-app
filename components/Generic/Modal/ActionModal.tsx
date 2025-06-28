@@ -1,3 +1,5 @@
+'use client';
+
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
@@ -19,34 +21,115 @@ import {
   IconCheck,
   IconDiscountCheckFilled,
   IconPackageImport,
+  IconShoppingCartSearch,
   IconThumbDownFilled,
   IconThumbUpFilled,
   IconTruckDelivery,
 } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, {
+  cloneElement,
+  isValidElement,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 const ActionModalClient = ({
   title,
-  message,
+  children,
   color,
   actionType,
   buttonLabel,
   endpoint,
   redirect,
+  size = 'md',
+  fullScreen,
   opened,
   close,
   stack,
   updateTable,
+  requiresPayload = false,
 }: ActionModalProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const { push } = useRouter();
   const [loading, setLoading] = useState(false);
+  const [modalFullScreen, setModalFullScreen] = useState(fullScreen);
+  const [payload, setPayload] = useState<any>();
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const handleAction = () => {
+  useEffect(() => {
+    if ((!fullScreen && lgScreenAndBelow) || fullScreen)
+      setModalFullScreen(true);
+
+    if (!fullScreen && !lgScreenAndBelow) setModalFullScreen(false);
+  }, [fullScreen, lgScreenAndBelow]);
+
+  // useEffect(() => {
+  //   if (loading && requiresPayload && !payload) {
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   if (!loading) {
+  //     return;
+  //   }
+
+  //   API.put(endpoint, payload ?? {})
+  //     .then((res) => {
+  //       notify({
+  //         title: 'Success!',
+  //         message: res?.data?.message,
+  //         color: 'green',
+  //       });
+
+  //       if (updateTable) updateTable(null);
+
+  //       setLoading(false);
+
+  //       close();
+
+  //       if (redirect) {
+  //         setLoading(true);
+  //         push(redirect);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       const errors = getErrors(err);
+
+  //       errors.forEach((error) => {
+  //         notify({
+  //           title: 'Failed',
+  //           message: error,
+  //           color: 'red',
+  //         });
+  //       });
+
+  //       setLoading(false);
+  //     });
+  // }, [loading, requiresPayload, payload]);
+
+  // const handleAction = () => {
+  //   if (formRef?.current) {
+  //     const validation: any = formRef.current.validate();
+
+  //     if (!validation?.hasErrors) {
+  //       setPayload(formRef.current.getValues());
+  //       setLoading(true);
+  //     } else {
+  //       setLoading(false);
+  //     }
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  // };
+
+  const handleAction = (uncontrolledPayload?: object) => {
     setLoading(true);
 
-    API.put(endpoint)
+    API.put(endpoint, uncontrolledPayload ?? {})
       .then((res) => {
         notify({
           title: 'Success!',
@@ -178,6 +261,15 @@ const ActionModalClient = ({
           />
         );
 
+      case 'inspect':
+        return (
+          <IconShoppingCartSearch
+            color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
       default:
         return <></>;
     }
@@ -192,7 +284,8 @@ const ActionModalClient = ({
       opened={opened}
       onClose={close}
       title={title}
-      size={'md'}
+      size={size}
+      fullScreen={modalFullScreen}
       centered
     >
       <LoadingOverlay
@@ -201,9 +294,19 @@ const ActionModalClient = ({
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
 
-      <Stack mb={70} px={'sm'}>
-        <Text>{message}</Text>
-      </Stack>
+      {opened && (
+        <Stack mb={70} px={'sm'}>
+          {isValidElement(children) && formRef
+            ? cloneElement(
+                children as ReactElement<any> & { ref?: React.Ref<any> },
+                {
+                  ref: formRef,
+                  handleAction,
+                }
+              )
+            : children}
+        </Stack>
+      )}
 
       <Stack
         w={'100%'}
@@ -223,7 +326,11 @@ const ActionModalClient = ({
             leftSection={dynamicButtonIcon(actionType)}
             loading={loading}
             loaderProps={{ type: 'dots' }}
-            onClick={handleAction}
+            onClick={() =>
+              requiresPayload && formRef?.current
+                ? formRef?.current.requestSubmit()
+                : handleAction()
+            }
           >
             {buttonLabel}
           </Button>
