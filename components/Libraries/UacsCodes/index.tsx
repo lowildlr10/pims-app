@@ -7,6 +7,8 @@ import useSWR from 'swr';
 import DataTableClient from '../../Generic/DataTable';
 import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
+import Helper from '@/utils/Helpers';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -49,6 +51,10 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
     defaultTableData ?? {}
   );
 
+  const [activeFormData, setActiveFormData] = useState<FormDataType>();
+  const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [activeDataEditable, setActiveDataEditable] = useState(false);
+
   const { data, isLoading, mutate } = useSWR<UacsCodesResponse>(
     [
       `/libraries/uacs-codes`,
@@ -81,6 +87,34 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
       keepPreviousData: true,
     }
   );
+
+  useEffect(() => {
+    if (Helper.empty(activeData?.moduleType) || Helper.empty(activeData?.data))
+      return;
+
+    const { display, moduleType, data } = activeData ?? {};
+    // const status = data?.status;
+    let hasEditPermission = false;
+
+    switch (moduleType) {
+      case 'lib-uacs-code':
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions('lib-uacs-code', 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      default:
+        break;
+    }
+  }, [activeData, permissions]);
 
   useEffect(() => {
     const _data = data?.data?.map((body: UacsCodeType) => {
@@ -119,6 +153,7 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
       search={search}
       showSearch
       showCreate
+      showEdit={activeDataEditable}
       createMainItemModalTitle={'Create UACS Object Code'}
       createMainItemEndpoint={'/libraries/uacs-codes'}
       updateMainItemModalTitle={'Update UACS Object Code'}
@@ -133,6 +168,8 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
       to={data?.to ?? 0}
       total={data?.total ?? 0}
       refreshData={mutate}
+      activeFormData={activeFormData}
+      setActiveData={setActiveData}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);

@@ -344,12 +344,12 @@ const FormClient = forwardRef<
     <form
       ref={ref}
       onSubmit={form.onSubmit((values) => {
-        let vatRegistered = '';
+        let vatRegistered = false;
 
         if (values.vat_registered === '1') {
-          vatRegistered = 'true';
+          vatRegistered = true;
         } else if (values.vat_registered === '0') {
-          vatRegistered = 'false';
+          vatRegistered = false;
         }
 
         if (handleCreateUpdate) {

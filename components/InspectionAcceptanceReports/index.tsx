@@ -6,8 +6,14 @@ import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
 import dayjs from 'dayjs';
-import { useMediaQuery } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import StatusClient from './Status';
+import Helper from '@/utils/Helpers';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import ActionsClient from './Actions';
+import { ActionIcon, Menu, Tooltip } from '@mantine/core';
+import { IconLibrary } from '@tabler/icons-react';
+import ActionModalClient from '../Generic/Modal/ActionModal';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -44,8 +50,14 @@ const defaultTableData: TableDataType = {
     {
       id: 'status_formatted',
       label: 'Status',
-      width: '16%',
+      width: '14%',
       sortable: true,
+    },
+    {
+      id: 'action',
+      label: '',
+      width: '2%',
+      clickable: false,
     },
   ],
   body: [],
@@ -66,6 +78,26 @@ const InspectionAcceptanceReportsClient = ({
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
+
+  const [activeFormData, setActiveFormData] = useState<FormDataType>();
+  const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [activeDataPrintable, setActiveDataPrintable] = useState(false);
+  const [activeDataEditable, setActiveDataEditable] = useState(false);
+
+  const [actionType, setActionType] = useState<ActionType>();
+  const [title, setTitle] = useState('');
+  const [children, setChildren] = useState<React.ReactNode>();
+  const [color, setColor] = useState('var(--mantine-color-primary-9)');
+  const [buttonLabel, setButtonLabel] = useState('');
+  const [endpoint, setEndpoint] = useState('');
+  const [redirect, setRedirect] = useState<string>();
+  const [size, setSize] = useState<'xs' | 'sm' | 'md' | 'lg' | 'xl'>();
+  const [fullScreen, setFullScreen] = useState<boolean>();
+  const [requiresPayload, setRequiresPayload] = useState<boolean>();
+  const [
+    actionModalOpened,
+    { open: openActionModal, close: closeActionModal },
+  ] = useDisclosure(false);
 
   const { data, isLoading, mutate } =
     useSWR<InspectionAcceptanceReportResponse>(
@@ -102,6 +134,41 @@ const InspectionAcceptanceReportsClient = ({
     );
 
   useEffect(() => {
+    if (Helper.empty(activeData?.moduleType) || Helper.empty(activeData?.data))
+      return;
+
+    const { display, moduleType, data } = activeData ?? {};
+    const status = data?.status;
+    let hasPrintPermission = false;
+    let hasEditPermission = false;
+
+    switch (moduleType) {
+      case 'iar':
+        hasPrintPermission = [
+          'supply:*',
+          ...getAllowedPermissions('iar', 'print'),
+        ].some((permission) => permissions?.includes(permission));
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions('iar', 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataPrintable(hasPrintPermission);
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      default:
+        break;
+    }
+  }, [activeData, permissions]);
+
+  useEffect(() => {
     const iarData = data?.data?.map((body: InspectionAcceptanceReportType) => {
       const {
         purchase_order: purchaseOrder,
@@ -124,6 +191,37 @@ const InspectionAcceptanceReportsClient = ({
             status={body.status}
           />
         ),
+        action: (
+          <Menu
+            position={'left-start'}
+            offset={6}
+            shadow={'md'}
+            width={400}
+            withArrow
+          >
+            <Menu.Target>
+              <Tooltip label={'Quick Action'}>
+                <ActionIcon
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  color={'var(--mantine-color-primary-7)'}
+                >
+                  <IconLibrary size={lgScreenAndBelow ? 14 : 16} />
+                </ActionIcon>
+              </Tooltip>
+            </Menu.Target>
+
+            <Menu.Dropdown>
+              <Menu.Label>Quick Actions</Menu.Label>
+              <ActionsClient
+                permissions={permissions ?? []}
+                id={body.id ?? ''}
+                status={body.status ?? 'draft'}
+                documentType={purchaseOrder?.document_type ?? 'po'}
+                handleOpenActionModal={handleOpenActionModal}
+              />
+            </Menu.Dropdown>
+          </Menu>
+        ),
       };
     });
 
@@ -133,45 +231,97 @@ const InspectionAcceptanceReportsClient = ({
     }));
   }, [data, lgScreenAndBelow]);
 
+  const handleOpenActionModal = (
+    actionType: ActionType,
+    title: string,
+    children: React.ReactNode,
+    color: string,
+    buttonLabel: string,
+    endpoint: string,
+    redirect?: string,
+    requiresPayload?: boolean,
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
+    fullScreen?: boolean
+  ) => {
+    setActionType(actionType);
+    setTitle(title);
+    setChildren(children);
+    setColor(color);
+    setButtonLabel(buttonLabel);
+    setEndpoint(endpoint);
+    setRedirect(redirect);
+    setRequiresPayload(requiresPayload);
+    setSize(size);
+    setFullScreen(fullScreen);
+
+    openActionModal();
+  };
+
   return (
-    <DataTableClient
-      mainModule={'iar'}
-      user={user}
-      permissions={permissions}
-      columnSort={columnSort}
-      sortDirection={sortDirection}
-      search={search}
-      showSearch
-      defaultModalOnClick={'details'}
-      createMainItemModalTitle={'Create Inspection and Acceptance Report'}
-      createMainItemEndpoint={'/inspection-acceptance-reports'}
-      createModalFullscreen
-      updateMainItemModalTitle={'Update Inspection and Acceptance Report'}
-      updateMainItemBaseEndpoint={'/inspection-acceptance-reports'}
-      updateModalFullscreen
-      detailMainItemModalTitle={'Inspection and Acceptance Report Details'}
-      detailMainItemBaseEndpoint={'/inspection-acceptance-reports'}
-      printMainItemModalTitle={'Inspection and Acceptance Report'}
-      printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-      printSubItemDefaultPaper={'A4'}
-      logMainItemModalTitle={'Inspection and Acceptance Report Logs'}
-      data={tableData}
-      perPage={perPage}
-      loading={isLoading}
-      page={page}
-      lastPage={data?.last_page ?? 0}
-      from={data?.from ?? 0}
-      to={data?.to ?? 0}
-      total={data?.total ?? 0}
-      refreshData={mutate}
-      onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
-        setSearch(_search ?? '');
-        setPage(_page);
-        setPerPage(_perPage);
-        setColumnSort(_columnSort ?? columnSort);
-        setSortDirection(_sortDirection ?? 'desc');
-      }}
-    />
+    <>
+      <ActionModalClient
+        title={title}
+        color={color}
+        actionType={actionType}
+        buttonLabel={buttonLabel}
+        endpoint={endpoint}
+        redirect={redirect}
+        size={size}
+        fullScreen={fullScreen}
+        opened={actionModalOpened}
+        close={closeActionModal}
+        updateTable={() => {
+          mutate();
+          setSearch(activeFormData?.id ?? '');
+        }}
+        requiresPayload={requiresPayload}
+      >
+        {children}
+      </ActionModalClient>
+
+      <DataTableClient
+        mainModule={'iar'}
+        user={user}
+        permissions={permissions}
+        columnSort={columnSort}
+        sortDirection={sortDirection}
+        search={search}
+        showSearch
+        showPrint={activeDataPrintable}
+        showEdit={activeDataEditable}
+        defaultModalOnClick={'details'}
+        createMainItemModalTitle={'Create Inspection and Acceptance Report'}
+        createMainItemEndpoint={'/inspection-acceptance-reports'}
+        createModalFullscreen
+        updateMainItemModalTitle={'Update Inspection and Acceptance Report'}
+        updateMainItemBaseEndpoint={'/inspection-acceptance-reports'}
+        updateModalFullscreen
+        detailMainItemModalTitle={'Inspection and Acceptance Report Details'}
+        detailMainItemBaseEndpoint={'/inspection-acceptance-reports'}
+        printMainItemModalTitle={'Inspection and Acceptance Report'}
+        printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
+        printSubItemDefaultPaper={'A4'}
+        logMainItemModalTitle={'Inspection and Acceptance Report Logs'}
+        data={tableData}
+        perPage={perPage}
+        loading={isLoading}
+        page={page}
+        lastPage={data?.last_page ?? 0}
+        from={data?.from ?? 0}
+        to={data?.to ?? 0}
+        total={data?.total ?? 0}
+        refreshData={mutate}
+        activeFormData={activeFormData}
+        setActiveData={setActiveData}
+        onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
+          setSearch(_search ?? '');
+          setPage(_page);
+          setPerPage(_perPage);
+          setColumnSort(_columnSort ?? columnSort);
+          setSortDirection(_sortDirection ?? 'desc');
+        }}
+      />
+    </>
   );
 };
 

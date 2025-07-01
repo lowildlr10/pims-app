@@ -7,6 +7,8 @@ import useSWR from 'swr';
 import DataTableClient from '../../Generic/DataTable';
 import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
+import Helper from '@/utils/Helpers';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -54,6 +56,10 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
     defaultTableData ?? {}
   );
 
+  const [activeFormData, setActiveFormData] = useState<FormDataType>();
+  const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [activeDataEditable, setActiveDataEditable] = useState(false);
+
   const { data, isLoading, mutate } = useSWR<DivisionResponse>(
     [
       `/accounts/divisions`,
@@ -86,6 +92,51 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       keepPreviousData: true,
     }
   );
+
+  useEffect(() => {
+    if (Helper.empty(activeData?.moduleType) || Helper.empty(activeData?.data))
+      return;
+
+    const { display, moduleType, data } = activeData ?? {};
+    // const status = data?.status;
+    let hasEditPermission = false;
+
+    switch (moduleType) {
+      case 'account-division':
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions('account-division', 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      case 'account-section':
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions('account-section', 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+          setActiveFormData({
+            division_id: data?.parent_id ?? undefined,
+          });
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      default:
+        break;
+    }
+  }, [activeData, permissions]);
 
   useEffect(() => {
     const _data = data?.data?.map((body: DivisionType) => {
@@ -149,6 +200,7 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       showCreate
       showCreateSubItem
       subItemsClickable
+      showEdit={activeDataEditable}
       createMainItemModalTitle={'Create Division'}
       createMainItemEndpoint={'/accounts/divisions'}
       createSubItemModalTitle={'Create Section'}
@@ -169,6 +221,8 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       to={data?.to ?? 0}
       total={data?.total ?? 0}
       refreshData={mutate}
+      activeFormData={activeFormData}
+      setActiveData={setActiveData}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);

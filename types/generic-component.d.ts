@@ -117,12 +117,47 @@ type TableHeader = {
   width?: string | number;
   align?: 'left' | 'center' | 'right';
   sortable?: boolean;
+  clickable?: boolean;
 };
 
 type TableDataType = {
   head?: TableHeader[];
   subHead?: TableHeader[];
   body?: any;
+};
+
+type FormDataType = CompanyType &
+  BidsAwardsCommitteeType &
+  FundingSourceType &
+  ItemClassificationType &
+  MfoPapType &
+  PaperSizeType &
+  ProcurementModeType &
+  ResponsibilityCenterType &
+  SignatoryType &
+  SupplierType &
+  UacsCodeType &
+  RoleType &
+  DivisionType &
+  SectionType &
+  UserType &
+  SystemLogType &
+  PurchaseRequestType &
+  RequestQuotationType &
+  AbstractQuotationType &
+  PurchaseOrderType &
+  InspectionAcceptanceReportType &
+  InventorySupplyType &
+  InventoryIssuanceType & {
+    parent_id?: string | null;
+    parent_body?: FormDataType;
+    other_params?: { [key: string]: any } | null;
+  };
+
+type ActiveDataType = {
+  display: 'details' | 'create' | 'update';
+  moduleType: ModuleType;
+  data: FormDataType;
 };
 
 type DataTableProps = {
@@ -138,6 +173,8 @@ type DataTableProps = {
   search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
+  showPrint?: boolean;
+  showEdit?: boolean;
   createMenus?: {
     label: string;
     value: SignatoryDocumentType;
@@ -158,8 +195,6 @@ type DataTableProps = {
   updateMainItemBaseEndpoint?: string;
   updateSubItemModalTitle?: string;
   updateSubItemBaseEndpoint?: string;
-  updateMainItemEnable?: boolean;
-  updateSubItemEnable?: boolean;
   updateModalFullscreen?: boolean;
   detailMainItemModalTitle?: string;
   detailMainItemBaseEndpoint?: string;
@@ -173,8 +208,6 @@ type DataTableProps = {
   printSubItemDefaultPaper?: string;
   printMainItemDefaultOrientation?: 'P' | 'L';
   printSubItemDefaultOrientation?: 'P' | 'L';
-  printMainItemEnable?: boolean;
-  printSubItemEnable?: boolean;
   logMainItemModalTitle?: string;
   logMainItemEndpoint?: string;
   logSubItemModalTitle?: string;
@@ -182,6 +215,10 @@ type DataTableProps = {
   subButtonLabel?: string;
 
   data: TableDataType;
+  activeFormData?: FormDataType;
+  setActiveData?: React.Dispatch<
+    React.SetStateAction<ActiveDataType | undefined>
+  >;
   perPage: number;
   loading?: boolean;
 
@@ -242,8 +279,12 @@ type SearchModalProps = {
 
 type DetailActionProps = {
   permissions?: string[];
-  data?: any;
+  data?: FormDataType;
   content?: ModuleType;
+  display?: 'bar' | 'button';
+  showButtonLabel?: boolean;
+  buttonSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | string;
+  buttonIconSize?: string | number;
   hasStatus?: boolean;
   status?: string;
   stack?: ModalStackReturnType;

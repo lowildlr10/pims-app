@@ -6,7 +6,6 @@ import {
   Collapse,
   LoadingOverlay,
   Modal,
-  ScrollArea,
   Skeleton,
   Stack,
   Table,
@@ -47,6 +46,8 @@ const DataTableClient = ({
   search,
   showSearch,
   showCreate,
+  showPrint,
+  showEdit,
   createMenus,
   defaultModalOnClick = 'update',
   showCreateSubItem,
@@ -63,8 +64,6 @@ const DataTableClient = ({
   updateMainItemBaseEndpoint = '',
   updateSubItemModalTitle = 'Update',
   updateSubItemBaseEndpoint = '',
-  updateMainItemEnable = true,
-  updateSubItemEnable = true,
   updateModalFullscreen,
   detailMainItemModalTitle = 'Details',
   detailMainItemBaseEndpoint = '',
@@ -78,8 +77,6 @@ const DataTableClient = ({
   printSubItemDefaultPaper = 'A4',
   printMainItemDefaultOrientation = 'P',
   printSubItemDefaultOrientation = 'P',
-  printMainItemEnable = true,
-  printSubItemEnable = true,
   logMainItemModalTitle = 'Logs',
   logMainItemEndpoint = '/logs',
   logSubItemModalTitle = 'Logs',
@@ -87,6 +84,8 @@ const DataTableClient = ({
   subButtonLabel = 'Items',
 
   data,
+  activeFormData,
+  setActiveData,
   perPage,
   loading,
 
@@ -112,7 +111,9 @@ const DataTableClient = ({
   const [tableColumnSort, setTableColumnSort] = useState(columnSort);
   const [tableSortDirection, setTableSortDirection] = useState(sortDirection);
 
-  const [formData, setFormData] = useState<any>();
+  const [formData, setFormData] = useState<FormDataType | undefined>(
+    activeFormData
+  );
 
   const [
     createModalOpened,
@@ -130,8 +131,8 @@ const DataTableClient = ({
   ] = useDisclosure(false);
   const [currentUpdateModule, setCurrentUpdateModule] = useState<ModuleType>();
   const [currentDetailModule, setCurrentDetailModule] = useState<ModuleType>();
-  const [detailModalShowPrint, setDetailModalShowPrint] = useState(false);
-  const [detailModalShowEdit, setDetailModalShowEdit] = useState(false);
+  const [detailModalShowPrint, setDetailModalShowPrint] = useState(showPrint);
+  const [detailModalShowEdit, setDetailModalShowEdit] = useState(showEdit);
 
   const [fetchDetails, setFetchDetails] = useState(false);
 
@@ -182,8 +183,28 @@ const DataTableClient = ({
   }, [stack, updateModalOpened, currentId]);
 
   useEffect(() => {
-    setFormData(detailData?.data?.data);
-  }, [detailData]);
+    setFormData(activeFormData ?? undefined);
+  }, [activeFormData]);
+
+  useEffect(() => {
+    const selectedModule = currentDetailModule ?? currentUpdateModule;
+
+    if (setActiveData && selectedModule) {
+      setActiveData({
+        display: 'details',
+        moduleType: selectedModule,
+        data: detailData?.data?.data,
+      });
+    }
+  }, [detailData, currentDetailModule, currentUpdateModule, setActiveData]);
+
+  useEffect(() => {
+    setDetailModalShowPrint(showPrint);
+  }, [showPrint]);
+
+  useEffect(() => {
+    setDetailModalShowEdit(showEdit);
+  }, [showEdit]);
 
   useEffect(() => {
     const search = searchParams.get('search');
@@ -256,166 +277,31 @@ const DataTableClient = ({
   ) => {
     setCurrentCreateModule(moduleType ?? undefined);
 
-    switch (moduleType) {
-      case 'account-section':
-        setFormData({ division_id: parentId });
-        break;
-      case 'rfq':
-        const parentBody = data?.body?.find(
-          (form: any) => form.id === parentId
-        );
-
-        setFormData({
-          purchase_request_id: parentId,
-          purpose: parentBody?.purpose,
-          pr_no: parentBody?.pr_no,
-        });
-        break;
-      case 'inv-issuance':
-        setFormData({ document_type: otherParams?.document_type });
-      default:
-        break;
+    if (moduleType && setActiveData) {
+      setActiveData({
+        display: 'create',
+        moduleType,
+        data: {
+          parent_id: parentId,
+          parent_body:
+            data?.body?.find((form: any) => form.id === parentId) ?? undefined,
+          other_params: otherParams,
+        },
+      });
     }
 
     openCreateModal();
   };
 
-  const handleOpenUpdateModal = (id: string, moduleType: ModuleType | null) => {
+  const handleOpenUpdateModal = (moduleType: ModuleType | undefined) => {
     setCurrentUpdateModule(moduleType ?? undefined);
 
     openUpdateModal();
   };
 
-  const handleOpenDetailModal = (
-    id: string,
-    moduleType: ModuleType | null,
-    isMainModuleOpened = true
-  ) => {
+  const handleOpenDetailModal = (moduleType: ModuleType | undefined) => {
     setCurrentDetailModule(moduleType ?? undefined);
     setCurrentUpdateModule(moduleType ?? undefined);
-
-    switch (moduleType) {
-      case 'pr':
-        setDetailModalShowPrint(
-          ['supply:*', ...getAllowedPermissions('pr', 'print')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && printMainItemEnable) ||
-              (!isMainModuleOpened && printSubItemEnable))
-        );
-
-        setDetailModalShowEdit(
-          ['supply:*', ...getAllowedPermissions('pr', 'update')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && updateMainItemEnable) ||
-              (!isMainModuleOpened && updateSubItemEnable))
-        );
-        break;
-      case 'rfq':
-        setDetailModalShowPrint(
-          ['supply:*', ...getAllowedPermissions('rfq', 'print')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && printMainItemEnable) ||
-              (!isMainModuleOpened && printSubItemEnable))
-        );
-
-        setDetailModalShowEdit(
-          ['supply:*', ...getAllowedPermissions('rfq', 'update')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && updateMainItemEnable) ||
-              (!isMainModuleOpened && updateSubItemEnable))
-        );
-        break;
-      case 'aoq':
-        setDetailModalShowPrint(
-          ['supply:*', ...getAllowedPermissions('aoq', 'print')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && printMainItemEnable) ||
-              (!isMainModuleOpened && printSubItemEnable))
-        );
-
-        setDetailModalShowEdit(
-          ['supply:*', ...getAllowedPermissions('aoq', 'update')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && updateMainItemEnable) ||
-              (!isMainModuleOpened && updateSubItemEnable))
-        );
-        break;
-
-      case 'po':
-        setDetailModalShowPrint(
-          ['supply:*', ...getAllowedPermissions('po', 'print')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && printMainItemEnable) ||
-              (!isMainModuleOpened && printSubItemEnable))
-        );
-
-        setDetailModalShowEdit(
-          ['supply:*', ...getAllowedPermissions('po', 'update')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && updateMainItemEnable) ||
-              (!isMainModuleOpened && updateSubItemEnable))
-        );
-        break;
-
-      case 'iar':
-        setDetailModalShowPrint(
-          ['supply:*', ...getAllowedPermissions('iar', 'print')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && printMainItemEnable) ||
-              (!isMainModuleOpened && printSubItemEnable))
-        );
-
-        setDetailModalShowEdit(
-          ['supply:*', ...getAllowedPermissions('iar', 'update')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && updateMainItemEnable) ||
-              (!isMainModuleOpened && updateSubItemEnable))
-        );
-        break;
-
-      case 'inv-supply':
-        setDetailModalShowPrint(false);
-
-        setDetailModalShowEdit(
-          ['supply:*', ...getAllowedPermissions('inv-supply', 'update')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && updateMainItemEnable) ||
-              (!isMainModuleOpened && updateSubItemEnable))
-        );
-        break;
-
-      case 'inv-issuance':
-        setDetailModalShowPrint(
-          ['supply:*', ...getAllowedPermissions('inv-issuance', 'print')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && printMainItemEnable) ||
-              (!isMainModuleOpened && printSubItemEnable))
-        );
-
-        setDetailModalShowEdit(
-          ['supply:*', ...getAllowedPermissions('inv-issuance', 'update')].some(
-            (permission) => permissions?.includes(permission)
-          ) &&
-            ((isMainModuleOpened && updateMainItemEnable) ||
-              (!isMainModuleOpened && updateSubItemEnable))
-        );
-        break;
-
-      default:
-        break;
-    }
 
     stack.open('detail-modal');
   };
@@ -455,20 +341,20 @@ const DataTableClient = ({
         }}
       />
 
-      {/* <ScrollArea
-        h={{ md: '100%', lg: 'calc(100vh - 22.5em)' }}
-        sx={{ borderRadius: 5 }}
-        bg={'var(--mantine-color-gray-0)'}
-      > */}
       <Table
         verticalSpacing={'sm'}
         stickyHeaderOffset={lgScreenAndBelow ? 48 : 58}
         stickyHeader
         highlightOnHover
         withTableBorder
+        sx={{ borderTopLeftRadius: '5px', borderTopRightRadius: '5px' }}
       >
         <Table.Thead>
-          <Table.Tr bg={'var(--mantine-color-primary-9)'} c={'white'}>
+          <Table.Tr
+            bg={'var(--mantine-color-primary-9)'}
+            c={'white'}
+            h={lgScreenAndBelow ? '2.55rem' : '3rem'}
+          >
             {data.head?.map((head) => (
               <Table.Th
                 key={head.id}
@@ -476,18 +362,20 @@ const DataTableClient = ({
                 p={head.sortable ? 0 : undefined}
                 ta={head.align ?? undefined}
                 bg={'var(--mantine-color-primary-9)'}
+                fz={lgScreenAndBelow ? 'xs' : 'sm'}
               >
                 {head.sortable ? (
                   <Button
-                    size={lgScreenAndBelow ? 'xs' : 'sm'}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
                     variant={'transparent'}
                     c={'var(--mantine-color-white-9)'}
                     m={0}
-                    h={'auto'}
-                    py={'var(--mantine-spacing-sm)'}
+                    h={lgScreenAndBelow ? 'lg' : 'xl'}
+                    px={lgScreenAndBelow ? 'xs' : 'sm'}
+                    py={0}
                     ta={head.align ?? undefined}
                     justify={'left'}
-                    fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                    fz={lgScreenAndBelow ? 'xs' : 'sm'}
                     rightSection={
                       <>
                         {columnSort === head.id ? (
@@ -543,12 +431,6 @@ const DataTableClient = ({
                   No data.
                 </Table.Td>
               </Table.Tr>
-
-              {/* {Array.from({ length: perPage - 1 }).map((_, i) => (
-                  <Table.Tr key={i}>
-                    <Table.Td colSpan={data.head?.length} py={'lg'}></Table.Td>
-                  </Table.Tr>
-                ))} */}
             </>
           )}
 
@@ -584,13 +466,23 @@ const DataTableClient = ({
                                 ? 'Click to update'
                                 : undefined
                           }
-                          disabled={!mainItemsClickable}
+                          disabled={
+                            !mainItemsClickable || head?.clickable === false
+                          }
                         >
                           <Table.Td
                             fz={{ base: 11, lg: 'xs', xl: 'sm' }}
                             valign={'top'}
                             // fw={500}
                             onClick={() => {
+                              if (head?.clickable === false) {
+                                setCurrentId(body.id);
+                                setCurrentOpenedModuleType('main');
+                                setCurrentDetailModule(mainModule);
+                                setFetchDetails(true);
+                                return;
+                              }
+
                               if (
                                 mainItemsClickable &&
                                 getAllowedPermissions(
@@ -603,10 +495,7 @@ const DataTableClient = ({
                               ) {
                                 setCurrentId(body.id);
                                 setCurrentOpenedModuleType('main');
-                                handleOpenUpdateModal(
-                                  body.id,
-                                  mainModule ?? null
-                                );
+                                handleOpenUpdateModal(mainModule);
                               }
 
                               if (
@@ -619,11 +508,7 @@ const DataTableClient = ({
                               ) {
                                 setCurrentId(body.id);
                                 setCurrentOpenedModuleType('main');
-                                handleOpenDetailModal(
-                                  body.id,
-                                  mainModule ?? null,
-                                  true
-                                );
+                                handleOpenDetailModal(mainModule);
                               }
                             }}
                           >
@@ -638,8 +523,8 @@ const DataTableClient = ({
                       <Button
                         fz={{ base: 10, lg: 11, xl: 'xs' }}
                         size={lgScreenAndBelow ? 'compact-xs' : 'xs'}
-                        variant='light'
-                        color={'var(--mantine-color-secondary-9)'}
+                        variant={'outline'}
+                        color={'var(--mantine-color-secondary-7)'}
                         rightSection={
                           collapseStates[body.id ?? ''] ? (
                             <IconArrowUp size={12} />
@@ -660,9 +545,17 @@ const DataTableClient = ({
                 {(hasSubBody || subModule) && (
                   <Table.Tr>
                     <Table.Td
-                      bg={'var(--mantine-color-secondary-0)'}
+                      bg={'var(--mantine-color-tertiary-2)'}
                       colSpan={data.head?.length}
-                      p={collapseStates[body.id ?? ''] ? undefined : 0}
+                      px={collapseStates[body.id ?? ''] ? undefined : 0}
+                      pt={collapseStates[body.id ?? ''] ? undefined : 0}
+                      pb={
+                        collapseStates[body.id ?? '']
+                          ? lgScreenAndBelow
+                            ? 'lg'
+                            : 'xl'
+                          : 0
+                      }
                     >
                       <Collapse in={collapseStates[body.id ?? '']}>
                         <Table
@@ -742,7 +635,10 @@ const DataTableClient = ({
                                               ? 'Click to update'
                                               : undefined
                                         }
-                                        disabled={!subItemsClickable}
+                                        disabled={
+                                          !subItemsClickable ||
+                                          subHead?.clickable === false
+                                        }
                                       >
                                         <Table.Td
                                           valign={'top'}
@@ -753,6 +649,14 @@ const DataTableClient = ({
                                             xl: 'sm',
                                           }}
                                           onClick={() => {
+                                            if (subHead?.clickable === false) {
+                                              setCurrentId(subBody.id);
+                                              setCurrentOpenedModuleType('sub');
+                                              setCurrentDetailModule(subModule);
+                                              setFetchDetails(true);
+                                              return;
+                                            }
+
                                             if (
                                               subItemsClickable &&
                                               getAllowedPermissions(
@@ -765,10 +669,7 @@ const DataTableClient = ({
                                             ) {
                                               setCurrentId(subBody.id);
                                               setCurrentOpenedModuleType('sub');
-                                              handleOpenUpdateModal(
-                                                subBody.id,
-                                                subModule ?? null
-                                              );
+                                              handleOpenUpdateModal(subModule);
                                             }
 
                                             if (
@@ -783,11 +684,7 @@ const DataTableClient = ({
                                             ) {
                                               setCurrentId(subBody.id);
                                               setCurrentOpenedModuleType('sub');
-                                              handleOpenDetailModal(
-                                                subBody.id,
-                                                subModule ?? null,
-                                                false
-                                              );
+                                              handleOpenDetailModal(subModule);
                                             }
                                           }}
                                         >
@@ -840,20 +737,8 @@ const DataTableClient = ({
                 )}
               </React.Fragment>
             ))}
-
-          {/* {!loading &&
-              Array.from({ length: perPage - data.body?.length }).map(
-                (_, i) => (
-                  <Table.Tr key={i}>
-                    <Table.Td colSpan={data.head?.length} py={'lg'}>
-                      <Stack h={9}></Stack>
-                    </Table.Td>
-                  </Table.Tr>
-                )
-              )} */}
         </Table.Tbody>
       </Table>
-      {/* </ScrollArea> */}
 
       <LoadingOverlay
         visible={detailLoading}

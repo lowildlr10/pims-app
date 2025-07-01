@@ -488,7 +488,13 @@ const ActionsClient = ({
         </Menu.Item>
       )}
 
-      {status !== 'cancelled' && (
+      {![
+        'draft',
+        'pending',
+        'disapproved',
+        'approved_cash_available',
+        'cancelled',
+      ].includes(status ?? '') && (
         <>
           <Menu.Divider />
           <Menu.Label>Navigation</Menu.Label>

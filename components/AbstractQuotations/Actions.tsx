@@ -64,7 +64,7 @@ const ActionsClient = ({
           </Menu.Item>
         )}
 
-      {(status === 'approved' || status === 'awarded') && (
+      {['approved', 'awarded'].includes(status ?? '') && (
         <Menu.Item color={'var(--mantine-color-gray-5)'}>
           No available action
         </Menu.Item>
