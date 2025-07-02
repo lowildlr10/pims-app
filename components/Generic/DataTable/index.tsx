@@ -773,7 +773,7 @@ const DataTableClient = ({
         close={() => {
           setCurrentId(undefined);
           setCurrentOpenedModuleType(undefined);
-          setFormData(undefined);
+          setActiveData && setActiveData(undefined);
           closeCreateModal();
         }}
         updateTable={handleUpdateTable}
@@ -806,7 +806,7 @@ const DataTableClient = ({
           close={() => {
             setCurrentId(undefined);
             setCurrentOpenedModuleType(undefined);
-            setFormData(undefined);
+            setActiveData && setActiveData(undefined);
             closeUpdateModal();
           }}
           updateTable={handleUpdateTable}
@@ -834,7 +834,7 @@ const DataTableClient = ({
             close={() => {
               setCurrentId(undefined);
               setCurrentOpenedModuleType(undefined);
-              setFormData(undefined);
+              setActiveData && setActiveData(undefined);
               stack.closeAll();
             }}
             updateTable={handleUpdateTable}

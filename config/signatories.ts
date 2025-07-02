@@ -87,12 +87,6 @@ export const SIGNATORIES_CONFIG: SignatoryDetailsFieldType[] = [
         signatory_type: 'inspection',
         position: '',
       },
-      {
-        checked: false,
-        label: 'Acceptance',
-        signatory_type: 'acceptance',
-        position: '',
-      },
     ],
   },
   {

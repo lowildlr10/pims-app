@@ -287,7 +287,13 @@ const FormClient = forwardRef<
                   {...form.getInputProps(
                     `items.${index}.details.${detalIndex}.brand_model`
                   )}
-                  variant={isCreate || !item.included ? 'filled' : 'default'}
+                  variant={
+                    isCreate || !item.included
+                      ? 'filled'
+                      : readOnly
+                        ? 'unstyled'
+                        : 'default'
+                  }
                   placeholder={
                     isCreate
                       ? 'To be quoted'
@@ -329,7 +335,13 @@ const FormClient = forwardRef<
                   {...form.getInputProps(
                     `items.${index}.details.${detalIndex}.unit_cost`
                   )}
-                  variant={isCreate || !item.included ? 'filled' : 'default'}
+                  variant={
+                    isCreate || !item.included
+                      ? 'filled'
+                      : readOnly
+                        ? 'unstyled'
+                        : 'default'
+                  }
                   placeholder={isCreate ? 'To be quoted' : 'Unit Cost'}
                   defaultValue={detail?.unit_cost}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -909,8 +921,8 @@ const FormClient = forwardRef<
                           <React.Fragment key={header.label}>
                             <Table.Th
                               ta={'center'}
-                              w={'150px'}
-                              miw={'150px'}
+                              w={'180px'}
+                              miw={'180px'}
                               fz={lgScreenAndBelow ? 'sm' : 'md'}
                             >
                               Brand

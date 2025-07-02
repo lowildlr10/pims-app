@@ -72,13 +72,15 @@ const CreateModalClient = ({
 
     API.post(endpoint, uncontrolledPayload ?? payload)
       .then((res) => {
+        const response: FormDataType = res?.data?.data;
+
         notify({
           title: 'Success!',
           message: res?.data?.message,
           color: 'green',
         });
 
-        if (updateTable) updateTable(null);
+        if (updateTable) updateTable(response?.id ?? null);
 
         setPayload({});
         setLoading(false);

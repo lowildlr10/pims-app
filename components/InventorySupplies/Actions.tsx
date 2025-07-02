@@ -18,7 +18,7 @@ const ActionsClient = ({
       ) ? (
         <Menu.Item
           component={Link}
-          href={'/inventories/issuances'}
+          href={`/inventories/issuances?search=${id}`}
           leftSection={
             <IconTableShare
               color={'var(--mantine-color-primary-9)'}

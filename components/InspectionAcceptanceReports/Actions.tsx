@@ -71,7 +71,7 @@ const NavigationMenus = ({
               />
             }
             component={Link}
-            href={`/inventories/supplies`}
+            href={`/inventories/supplies?search=${id}`}
           >
             Navigate to Inventory Supply
           </Menu.Item>

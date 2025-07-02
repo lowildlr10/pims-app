@@ -164,6 +164,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
         );
 
         if (display === 'create') {
+          setActiveFormData(undefined);
         } else {
           setActiveFormData(data);
         }
