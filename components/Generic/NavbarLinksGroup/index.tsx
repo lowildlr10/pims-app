@@ -40,7 +40,7 @@ export function LinksGroupClient({
           href={link.link ?? '#'}
           key={link.label}
           underline={'never'}
-          onClick={() => pathname !== link.link && nprogress.start()}
+          //onClick={() => pathname !== link.link && nprogress.start()}
           bg={
             pathname === link.link
               ? 'var(--mantine-color-tertiary-1)'
@@ -74,7 +74,7 @@ export function LinksGroupClient({
           <Anchor
             component={Link}
             href={link ?? '#'}
-            onClick={() => !hasLinks && pathname !== link && nprogress.start()}
+            //onClick={() => !hasLinks && pathname !== link && nprogress.start()}
             underline={'never'}
             c={'inherit'}
             fz={{ base: 'sm', lg: 13, xl: 'sm' }}
