@@ -7,6 +7,7 @@ import {
 } from '@/config/menus';
 import { Breadcrumbs, Anchor } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { nprogress } from '@mantine/nprogress';
 import { IconCaretRightFilled } from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -37,6 +38,8 @@ const MenuLink = ({ label, link, pathname, allowed }: MenuLinkProps) => {
       sx={{ cursor: allowed ? 'pointer' : 'not-allowed' }}
       fw={pathname === link ? 500 : 'normal'}
       fz={lgScreenAndBelow ? 'xs' : 'sm'}
+      prefetch={false}
+      onNavigate={(e) => pathname !== link && nprogress.start()}
     >
       {label}
     </Anchor>

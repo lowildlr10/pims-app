@@ -17,6 +17,55 @@ import { IconLibrary } from '@tabler/icons-react';
 import PurchaseRequestActionsClient from '../PurchaseRequests/Actions';
 import ActionsClient from './Actions';
 
+const MAIN_MODULE: ModuleType = 'pr';
+const SUB_MODULE: ModuleType = 'aoq';
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Purchase Request',
+    endpoint: '/purchase-requests',
+  },
+  sub: {
+    title: 'Update Abstract of Bids and Quotation',
+    endpoint: '/abstract-quotations',
+  },
+  fullscreen: true,
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Purchase Request Details',
+    endpoint: '/purchase-requests',
+  },
+  sub: {
+    title: 'Abstract of Bids and Quotation Details',
+    endpoint: '/abstract-quotations',
+  },
+  fullscreen: true,
+};
+
+const PRINT_ITEM_CONFIG: PrintItemTableType = {
+  main: {
+    title: 'Print Purchase Request',
+    endpoint: `/documents/${MAIN_MODULE}/prints`,
+  },
+  sub: {
+    title: 'Print Abstract of Bids and Quotation',
+    endpoint: `/documents/${SUB_MODULE}/prints`,
+    default_orientation: 'L',
+    default_paper: 'A4',
+  },
+};
+
+const LOG_ITEM_CONFIG: LogItemTableType = {
+  main: {
+    title: 'Purchase Request Logs',
+  },
+  sub: {
+    title: 'Abstract of Bids and Quotation Logs',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -197,14 +246,14 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'pr':
+      case MAIN_MODULE:
         hasPrintPermission = [
           'supply:*',
-          ...getAllowedPermissions('pr', 'print'),
+          ...getAllowedPermissions(MAIN_MODULE, 'print'),
         ].some((permission) => permissions?.includes(permission));
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('pr', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
@@ -225,14 +274,14 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
         }
         break;
 
-      case 'aoq':
+      case SUB_MODULE:
         hasPrintPermission = [
           'supply:*',
-          ...getAllowedPermissions('aoq', 'print'),
+          ...getAllowedPermissions(SUB_MODULE, 'print'),
         ].some((permission) => permissions?.includes(permission));
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('aoq', 'update'),
+          ...getAllowedPermissions(SUB_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
@@ -413,8 +462,8 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
       </ActionModalClient>
 
       <DataTableClient
-        mainModule={'pr'}
-        subModule={'aoq'}
+        mainModule={MAIN_MODULE}
+        subModule={SUB_MODULE}
         user={user}
         permissions={permissions}
         columnSort={columnSort}
@@ -425,28 +474,10 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
         showEdit={activeDataEditable}
         defaultModalOnClick={'details'}
         subItemsClickable
-        createMainItemModalTitle={'Create Purchase Request'}
-        createMainItemEndpoint={'/purchase-requests'}
-        createSubItemModalTitle={'Create Abstract of Bids and Quotation'}
-        createSubItemEndpoint={'/abstract-quotations'}
-        createModalFullscreen
-        updateMainItemModalTitle={'Update Purchase Request'}
-        updateMainItemBaseEndpoint={'/purchase-requests'}
-        updateSubItemModalTitle={'Update Abstract of Bids and Quotation'}
-        updateSubItemBaseEndpoint={'/abstract-quotations'}
-        updateModalFullscreen
-        detailMainItemModalTitle={'Purchase Request Details'}
-        detailMainItemBaseEndpoint={'/purchase-requests'}
-        detailSubItemModalTitle={'Abstract of Bids and Quotation Details'}
-        detailSubItemBaseEndpoint={'/abstract-quotations'}
-        printMainItemModalTitle={'Print Purchase Request'}
-        printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-        printSubItemModalTitle={'Print Abstract of Bids and Quotation'}
-        printSubItemBaseEndpoint={`/documents/${subDocumentType}/prints`}
-        printSubItemDefaultPaper={'long'}
-        printSubItemDefaultOrientation={'L'}
-        logMainItemModalTitle={'Purchase Request Logs'}
-        logSubItemModalTitle={'Abstract of Bids and Quotation Logs'}
+        updateItemData={UPDATE_ITEM_CONFIG}
+        detailItemData={DETAIL_ITEM_CONFIG}
+        printItemData={PRINT_ITEM_CONFIG}
+        logItemData={LOG_ITEM_CONFIG}
         subButtonLabel={'Abstracts'}
         data={tableData}
         perPage={perPage}

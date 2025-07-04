@@ -15,6 +15,37 @@ import { ActionIcon, Menu, Tooltip } from '@mantine/core';
 import { IconLibrary } from '@tabler/icons-react';
 import ActionModalClient from '../Generic/Modal/ActionModal';
 
+const MAIN_MODULE: ModuleType = 'iar';
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Inspection and Acceptance Report',
+    endpoint: '/inspection-acceptance-reports',
+  },
+  fullscreen: true,
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Inspection and Acceptance Report Details',
+    endpoint: '/inspection-acceptance-reports',
+  },
+  fullscreen: true,
+};
+
+const PRINT_ITEM_CONFIG: PrintItemTableType = {
+  main: {
+    title: 'Print Inspection and Acceptance Report',
+    endpoint: `/documents/${MAIN_MODULE}/prints`,
+  },
+};
+
+const LOG_ITEM_CONFIG: LogItemTableType = {
+  main: {
+    title: 'Inspection and Acceptance Report Logs',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -74,7 +105,6 @@ const InspectionAcceptanceReportsClient = ({
   const [columnSort, setColumnSort] = useState('iar_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
-  const [documentType] = useState<SignatoryDocumentType>('iar');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
@@ -143,14 +173,14 @@ const InspectionAcceptanceReportsClient = ({
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'iar':
+      case MAIN_MODULE:
         hasPrintPermission = [
           'supply:*',
-          ...getAllowedPermissions('iar', 'print'),
+          ...getAllowedPermissions(MAIN_MODULE, 'print'),
         ].some((permission) => permissions?.includes(permission));
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('iar', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(hasPrintPermission);
@@ -280,7 +310,7 @@ const InspectionAcceptanceReportsClient = ({
       </ActionModalClient>
 
       <DataTableClient
-        mainModule={'iar'}
+        mainModule={MAIN_MODULE}
         user={user}
         permissions={permissions}
         columnSort={columnSort}
@@ -290,18 +320,10 @@ const InspectionAcceptanceReportsClient = ({
         showPrint={activeDataPrintable}
         showEdit={activeDataEditable}
         defaultModalOnClick={'details'}
-        createMainItemModalTitle={'Create Inspection and Acceptance Report'}
-        createMainItemEndpoint={'/inspection-acceptance-reports'}
-        createModalFullscreen
-        updateMainItemModalTitle={'Update Inspection and Acceptance Report'}
-        updateMainItemBaseEndpoint={'/inspection-acceptance-reports'}
-        updateModalFullscreen
-        detailMainItemModalTitle={'Inspection and Acceptance Report Details'}
-        detailMainItemBaseEndpoint={'/inspection-acceptance-reports'}
-        printMainItemModalTitle={'Inspection and Acceptance Report'}
-        printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-        printSubItemDefaultPaper={'A4'}
-        logMainItemModalTitle={'Inspection and Acceptance Report Logs'}
+        updateItemData={UPDATE_ITEM_CONFIG}
+        detailItemData={DETAIL_ITEM_CONFIG}
+        printItemData={PRINT_ITEM_CONFIG}
+        logItemData={LOG_ITEM_CONFIG}
         data={tableData}
         perPage={perPage}
         loading={isLoading}

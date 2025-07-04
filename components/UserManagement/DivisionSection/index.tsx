@@ -10,6 +10,40 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
+const MAIN_MODULE: ModuleType = 'account-division';
+const SUB_MODULE: ModuleType = 'account-section';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Division',
+    endpoint: '/accounts/divisions',
+  },
+  sub: {
+    title: 'Create Section',
+    endpoint: '/accounts/sections',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Division',
+    endpoint: '/accounts/divisions',
+  },
+  sub: {
+    title: 'Create Section',
+    endpoint: '/accounts/sections',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/accounts/divisions',
+  },
+  sub: {
+    endpoint: '/accounts/sections',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -102,24 +136,25 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'account-division':
+      case MAIN_MODULE:
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('account-division', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataEditable(hasEditPermission);
 
         if (display === 'create') {
+          setActiveFormData(undefined);
         } else {
           setActiveFormData(data);
         }
         break;
 
-      case 'account-section':
+      case SUB_MODULE:
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('account-section', 'update'),
+          ...getAllowedPermissions(SUB_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataEditable(hasEditPermission);
@@ -190,8 +225,8 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
 
   return (
     <DataTableClient
-      mainModule={'account-division'}
-      subModule={'account-section'}
+      mainModule={MAIN_MODULE}
+      subModule={SUB_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -201,16 +236,9 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       showCreateSubItem
       subItemsClickable
       showEdit={activeDataEditable}
-      createMainItemModalTitle={'Create Division'}
-      createMainItemEndpoint={'/accounts/divisions'}
-      createSubItemModalTitle={'Create Section'}
-      createSubItemEndpoint={'/accounts/sections'}
-      updateMainItemModalTitle={'Update Division'}
-      updateMainItemBaseEndpoint={'/accounts/divisions'}
-      updateSubItemModalTitle={'Update Section'}
-      updateSubItemBaseEndpoint={'/accounts/sections'}
-      detailMainItemBaseEndpoint={'/accounts/divisions'}
-      detailSubItemBaseEndpoint={'/accounts/sections'}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       subButtonLabel={'Sections'}
       data={tableData}
       perPage={perPage}

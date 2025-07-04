@@ -8,8 +8,8 @@ import {
   Loader,
   Overlay,
   ScrollArea,
+  Title,
 } from '@mantine/core';
-import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { useDisclosure, useHeadroom, useMediaQuery } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
@@ -29,9 +29,6 @@ import { UserButtonClient } from '../UserButton';
 import { useEffect, useState } from 'react';
 import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
-import { Text } from '@mantine/core';
-import NotificationMenuButtonClient from '../NotificationMenuButton';
-import { NavigationProgress } from '@mantine/nprogress';
 import { keyframes } from '@emotion/react';
 import { NProgressClient } from '../NProgress';
 import {
@@ -48,6 +45,9 @@ import {
   COMPANY_PROFILE_ALLOWED_PERMISSIONS,
   SYSTEM_LOGS_ALLOWED_PERMISSIONS,
 } from '@/config/menus';
+import API from '@/libs/API';
+import { notify } from '@/libs/Notification';
+import Helper from '@/utils/Helpers';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -118,6 +118,7 @@ export function LayoutSidebarClient({
   children,
 }: LayoutSidebarProps) {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const [loading, setLoading] = useState(false);
   const [menus, setMenus] = useState<LinksGroupProps[]>(defaultMenu);
   const links = menus.map((item) => (
     <LinksGroupClient {...item} key={item.label} permissions={permissions} />
@@ -126,6 +127,7 @@ export function LayoutSidebarClient({
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
   const pinned = useHeadroom({ fixedAt: 120 });
   const [opened, { open, close }] = useDisclosure(false);
+  const [logo, setLogo] = useState<string>('/images/logo-fallback.png');
 
   useEffect(() => {
     switch (type) {
@@ -142,6 +144,41 @@ export function LayoutSidebarClient({
         break;
     }
   }, [type]);
+
+  useEffect(() => {
+    if (Helper.empty(company) || Helper.empty(company?.company_logo)) return;
+
+    setLoading(true);
+
+    let retries = 3;
+
+    const fetch = () => {
+      API.get('/media', {
+        type: 'logo',
+        parent_id: company.id,
+      })
+        .then((res) => {
+          const logo = res?.data?.data ?? undefined;
+          setLogo(logo);
+        })
+        .catch(() => {
+          if (retries > 0) {
+            retries -= 1;
+            fetch();
+          } else {
+            notify({
+              title: 'Failed',
+              message: 'Failed after multiple retries',
+              color: 'red',
+            });
+            setLoading(false);
+          }
+        })
+        .finally(() => setLoading(false));
+    };
+
+    fetch();
+  }, [company]);
 
   return (
     <AppShell
@@ -176,17 +213,26 @@ export function LayoutSidebarClient({
               visibleFrom={'md'}
               size={lgScreenAndBelow ? 'xs' : 'sm'}
             />
-            <Group px={'xs'} gap={'xs'} align={'center'}>
-              <Avatar
-                variant={'filled'}
-                size={lgScreenAndBelow ? 'xs' : 'sm'}
-                radius={'xs'}
-                src={company?.company_logo ?? '/images/logo-fallback.png'}
-                alt={company?.company_name ?? 'Company'}
-              />
-              <Text size={lgScreenAndBelow ? 'lg' : 'xl'} fw={500}>
+            <Group px={'xs'} gap={7} align={'center'}>
+              {loading ? (
+                <Loader
+                  color={'var(--mantine-color-tertiary-0)'}
+                  type={'bars'}
+                  size={lgScreenAndBelow ? 'xs' : 'sm'}
+                />
+              ) : (
+                <Avatar
+                  variant={'filled'}
+                  size={lgScreenAndBelow ? 'xs' : 'sm'}
+                  radius={'xs'}
+                  src={logo}
+                  alt={company?.company_name ?? 'Company'}
+                />
+              )}
+
+              <Title order={lgScreenAndBelow ? 5 : 3} fw={600}>
                 PIMS
-              </Text>
+              </Title>
             </Group>
           </Group>
 

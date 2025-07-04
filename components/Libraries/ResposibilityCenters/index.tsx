@@ -10,6 +10,28 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
+const MAIN_MODULE: ModuleType = 'lib-responsibility-center';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Reponsibility Center',
+    endpoint: '/libraries/responsibility-centers',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Reponsibility Center',
+    endpoint: '/libraries/responsibility-centers',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/libraries/responsibility-centers',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -85,15 +107,16 @@ const ResposibilityCentersClient = ({ permissions }: LibraryProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'lib-responsibility-center':
+      case MAIN_MODULE:
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('lib-responsibility-center', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataEditable(hasEditPermission);
 
         if (display === 'create') {
+          setActiveFormData(undefined);
         } else {
           setActiveFormData(data);
         }
@@ -133,7 +156,7 @@ const ResposibilityCentersClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      mainModule={'lib-responsibility-center'}
+      mainModule={MAIN_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -141,11 +164,9 @@ const ResposibilityCentersClient = ({ permissions }: LibraryProps) => {
       showSearch
       showCreate
       showEdit={activeDataEditable}
-      createMainItemModalTitle={'Create Reponsibility Center'}
-      createMainItemEndpoint={'/libraries/responsibility-centers'}
-      updateMainItemModalTitle={'Update Reponsibility Center'}
-      updateMainItemBaseEndpoint={'/libraries/responsibility-centers'}
-      detailMainItemBaseEndpoint={'/libraries/responsibility-centers'}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       data={tableData}
       perPage={perPage}
       loading={isLoading}

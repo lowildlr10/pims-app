@@ -31,6 +31,7 @@ import { ActionIcon } from '@mantine/core';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import CustomColorPickerClient from '../Generic/CustomColorPicker';
 import DynamicSelect from '../Generic/DynamicSelect';
+import Helper from '@/utils/Helpers';
 
 const CompanyProfileClient = ({
   company,
@@ -38,6 +39,10 @@ const CompanyProfileClient = ({
 }: CompanyProfileProps) => {
   const [loading, setLoading] = useState(false);
   const [enableUpdate, setEnableUpdate] = useState(false);
+  const [logo, setLogo] = useState('/images/logo-fallback.png');
+  const [backgroundImage, setBackgroundImage] = useState(
+    '/images/background-fallback.png'
+  );
 
   const [primary, setPrimary] = useState<string>(
     company.theme_colors?.primary[9] ?? colors.primary[9]
@@ -88,6 +93,77 @@ const CompanyProfileClient = ({
   useEffect(() => {
     form.reset();
   }, [enableUpdate]);
+
+  useEffect(() => {
+    if (Helper.empty(company) || Helper.empty(company?.company_logo)) return;
+
+    setLoading(true);
+
+    let retries = 3;
+
+    const fetch = () => {
+      API.get('/media', {
+        type: 'logo',
+        parent_id: company.id,
+      })
+        .then((res) => {
+          const logo = res?.data?.data ?? undefined;
+          setLogo(logo);
+        })
+        .catch(() => {
+          if (retries > 0) {
+            retries -= 1;
+            fetch();
+          } else {
+            notify({
+              title: 'Failed',
+              message: 'Failed after multiple retries',
+              color: 'red',
+            });
+            setLoading(false);
+          }
+        })
+        .finally(() => setLoading(false));
+    };
+
+    fetch();
+  }, [company]);
+
+  useEffect(() => {
+    if (Helper.empty(company) || Helper.empty(company?.login_background))
+      return;
+
+    setLoading(true);
+
+    let retries = 3;
+
+    const fetch = () => {
+      API.get('/media', {
+        type: 'login-background',
+        parent_id: company.id,
+      })
+        .then((res) => {
+          const background = res?.data?.data ?? undefined;
+          setBackgroundImage(background);
+        })
+        .catch(() => {
+          if (retries > 0) {
+            retries -= 1;
+            fetch();
+          } else {
+            notify({
+              title: 'Failed',
+              message: 'Failed after multiple retries',
+              color: 'red',
+            });
+            setLoading(false);
+          }
+        })
+        .finally(() => setLoading(false));
+    };
+
+    fetch();
+  }, [company]);
 
   const generateColorPalettes = (hex: string) => {
     const hexToRgb = (hex: string) => {
@@ -185,11 +261,9 @@ const CompanyProfileClient = ({
               <Stack align={'center'} p={'md'} w={{ base: '100%', lg: '25%' }}>
                 <Box mb={10}>
                   <SingleImageUploadClient
-                    image={
-                      company.company_logo ?? '/images/logo-black-fallback.png'
-                    }
-                    postUrl={`/media/${company.id}`}
-                    params={{ update_type: 'company-logo' }}
+                    image={logo ?? '/images/logo-black-fallback.png'}
+                    postUrl={'/media'}
+                    params={{ parent_id: company.id, type: 'logo' }}
                     type={'logo'}
                   />
                 </Box>
@@ -315,13 +389,11 @@ const CompanyProfileClient = ({
             <Divider />
 
             <SingleImageUploadClient
-              image={
-                company?.login_background ?? '/images/background-fallback.png'
-              }
-              postUrl={`/media/${company.id}`}
-              params={{ update_type: 'company-login-background' }}
+              image={backgroundImage ?? '/images/background-fallback.png'}
+              postUrl={'/media'}
+              params={{ parent_id: company.id, type: 'login-background' }}
               height={300}
-              type={'default'}
+              type={'login-background'}
             />
           </Stack>
 

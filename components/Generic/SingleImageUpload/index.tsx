@@ -19,14 +19,14 @@ const SingleImageUploadClient = ({
   postUrl,
   params,
   height = 220,
-  type = 'default',
+  type,
 }: SingleImageUploadProps) => {
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const form = useForm({
     mode: 'controlled',
     initialValues: {
-      image: image ?? '',
+      file: '',
     },
   });
 
@@ -36,19 +36,28 @@ const SingleImageUploadClient = ({
   }, [file]);
 
   useEffect(() => {
-    if (!form.values.image || !file) return;
+    if (loading) {
+      setLoading(false);
+    }
+
+    if (!form.values.file || !file || loading) return;
     handleUpdateImage();
-  }, [form.values.image]);
+  }, [form.values.file]);
+
+  useEffect(() => {
+    setLoading(true);
+    form.setFieldValue('file', image ?? '');
+  }, [image]);
 
   const handleProcessImage = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64String = event.target?.result as string;
-      form.setFieldValue('image', base64String);
+      form.setFieldValue('file', base64String);
     };
 
     if (file === null) {
-      form.setFieldValue('image', '');
+      form.setFieldValue('file', '');
       return;
     }
 
@@ -66,7 +75,7 @@ const SingleImageUploadClient = ({
   const handleUpdateImage = () => {
     setLoading(true);
 
-    API.put(postUrl, {
+    API.post(postUrl, {
       ...form.values,
       ...params,
     })
@@ -122,7 +131,9 @@ const SingleImageUploadClient = ({
                 type === 'avatar' || type === 'logo' ? 'transparent' : 'light'
               }
               color={
-                type === 'signature' || type === 'default' ? 'gray' : undefined
+                type === 'signature' || type === 'login-background'
+                  ? 'gray'
+                  : undefined
               }
               {...props}
               fullWidth
@@ -136,15 +147,8 @@ const SingleImageUploadClient = ({
 
               {type === 'avatar' || type === 'logo' ? (
                 <>
-                  {form.values.image ? (
-                    <Avatar
-                      size={height}
-                      src={
-                        Helper.isValidUrl(form.values.image)
-                          ? `${form.values.image}?${new Date().getTime()}`
-                          : form.values.image
-                      }
-                    />
+                  {form.values.file ? (
+                    <Avatar size={height} src={form.values.file ?? undefined} />
                   ) : (
                     <Avatar size={height} />
                   )}
@@ -156,13 +160,11 @@ const SingleImageUploadClient = ({
                   height={height ?? 220}
                   width={'100%'}
                   p={'md'}
-                  src={
-                    Helper.isValidUrl(form.values.image)
-                      ? `${form.values.image}?${new Date().getTime()}`
-                      : form.values.image
-                  }
+                  src={form.values.file ?? ''}
                   fallbackSrc={
-                    type === 'signature' ? '/images/signature-fallback.png' : ''
+                    type === 'signature'
+                      ? '/images/signature-fallback.png'
+                      : '/images/background-fallback.png'
                   }
                   alt={type === 'signature' ? 'Signature' : 'Image'}
                 />

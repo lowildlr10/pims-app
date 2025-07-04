@@ -10,6 +10,29 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
+const MAIN_MODULE: ModuleType = 'lib-signatory';
+const SUB_MODULE: ModuleType = 'lib-signatory-detail';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Signatory',
+    endpoint: '/libraries/signatories',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Signatory',
+    endpoint: '/libraries/signatories',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/libraries/signatories',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -101,15 +124,16 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'lib-signatory':
+      case MAIN_MODULE:
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('lib-signatory', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataEditable(hasEditPermission);
 
         if (display === 'create') {
+          setActiveFormData(undefined);
         } else {
           setActiveFormData(data);
         }
@@ -162,8 +186,8 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      mainModule={'lib-signatory'}
-      subModule={'lib-signatory-detail'}
+      mainModule={MAIN_MODULE}
+      subModule={SUB_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -171,11 +195,9 @@ const SignatoriesClient = ({ permissions }: LibraryProps) => {
       showCreate
       showSearch
       showEdit={activeDataEditable}
-      createMainItemModalTitle={'Create Signatory'}
-      createMainItemEndpoint={'/libraries/signatories'}
-      updateMainItemModalTitle={'Update Signatory'}
-      updateMainItemBaseEndpoint={'/libraries/signatories'}
-      detailMainItemBaseEndpoint={'/libraries/signatories'}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       subButtonLabel={'Details'}
       data={tableData}
       perPage={perPage}

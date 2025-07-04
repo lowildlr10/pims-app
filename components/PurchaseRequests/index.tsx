@@ -17,6 +17,45 @@ import { Menu } from '@mantine/core';
 import ActionsClient from './Actions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
 
+const MAIN_MODULE: ModuleType = 'pr';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Purchase Request',
+    endpoint: '/purchase-requests',
+  },
+  fullscreen: true,
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Purchase Request',
+    endpoint: '/purchase-requests',
+  },
+  fullscreen: true,
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Purchase Request Details',
+    endpoint: '/purchase-requests',
+  },
+  fullscreen: true,
+};
+
+const PRINT_ITEM_CONFIG: PrintItemTableType = {
+  main: {
+    title: 'Print Purchase Request',
+    endpoint: `/documents/${MAIN_MODULE}/prints`,
+  },
+};
+
+const LOG_ITEM_CONFIG: LogItemTableType = {
+  main: {
+    title: 'Purchase Request Logs',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -73,7 +112,6 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
   const [columnSort, setColumnSort] = useState('pr_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
-  const [documentType] = useState<SignatoryDocumentType>('pr');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
@@ -141,14 +179,14 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'pr':
+      case MAIN_MODULE:
         hasPrintPermission = [
           'supply:*',
-          ...getAllowedPermissions('pr', 'print'),
+          ...getAllowedPermissions(MAIN_MODULE, 'print'),
         ].some((permission) => permissions?.includes(permission));
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('pr', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
@@ -282,7 +320,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
       </ActionModalClient>
 
       <DataTableClient
-        mainModule={'pr'}
+        mainModule={MAIN_MODULE}
         user={user}
         permissions={permissions}
         columnSort={columnSort}
@@ -293,17 +331,11 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
         showPrint={activeDataPrintable}
         showEdit={activeDataEditable}
         defaultModalOnClick={'details'}
-        createMainItemModalTitle={'Create Purchase Request'}
-        createMainItemEndpoint={'/purchase-requests'}
-        createModalFullscreen
-        updateMainItemModalTitle={'Update Purchase Request'}
-        updateMainItemBaseEndpoint={'/purchase-requests'}
-        updateModalFullscreen
-        detailMainItemModalTitle={'Purchase Request Details'}
-        detailMainItemBaseEndpoint={'/purchase-requests'}
-        printMainItemModalTitle={'Print Purchase Request'}
-        printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-        logMainItemModalTitle={'Purchase Request Logs'}
+        createItemData={CREATE_ITEM_CONFIG}
+        updateItemData={UPDATE_ITEM_CONFIG}
+        detailItemData={DETAIL_ITEM_CONFIG}
+        printItemData={PRINT_ITEM_CONFIG}
+        logItemData={LOG_ITEM_CONFIG}
         data={tableData}
         perPage={perPage}
         loading={isLoading}

@@ -10,6 +10,28 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
+const MAIN_MODULE: ModuleType = 'lib-item-class';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Item Classification',
+    endpoint: '/libraries/item-classifications',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Item Classification',
+    endpoint: '/libraries/item-classifications',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/libraries/item-classifications',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -79,15 +101,16 @@ const ItemClassificationsClient = ({ permissions }: LibraryProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'lib-item-class':
+      case MAIN_MODULE:
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('lib-item-class', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataEditable(hasEditPermission);
 
         if (display === 'create') {
+          setActiveFormData(undefined);
         } else {
           setActiveFormData(data);
         }
@@ -127,7 +150,7 @@ const ItemClassificationsClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      mainModule={'lib-item-class'}
+      mainModule={MAIN_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -135,11 +158,9 @@ const ItemClassificationsClient = ({ permissions }: LibraryProps) => {
       showSearch
       showCreate
       showEdit={activeDataEditable}
-      createMainItemModalTitle={'Create Item Classification'}
-      createMainItemEndpoint={'/libraries/item-classifications'}
-      updateMainItemModalTitle={'Update Item Classification'}
-      updateMainItemBaseEndpoint={'/libraries/item-classifications'}
-      detailMainItemBaseEndpoint={'/libraries/item-classifications'}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       data={tableData}
       perPage={perPage}
       loading={isLoading}

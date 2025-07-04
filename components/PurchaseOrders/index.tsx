@@ -17,6 +17,53 @@ import ActionsClient from './Actions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
 import { IconLibrary } from '@tabler/icons-react';
 
+const MAIN_MODULE: ModuleType = 'pr';
+const SUB_MODULE: ModuleType = 'po';
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Purchase Request',
+    endpoint: '/purchase-requests',
+  },
+  sub: {
+    title: 'Update Purchase/Job Order',
+    endpoint: '/purchase-orders',
+  },
+  fullscreen: true,
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Purchase Request Details',
+    endpoint: '/purchase-requests',
+  },
+  sub: {
+    title: 'Purchase/Job Order Details',
+    endpoint: '/purchase-orders',
+  },
+  fullscreen: true,
+};
+
+const PRINT_ITEM_CONFIG: PrintItemTableType = {
+  main: {
+    title: 'Print Purchase Request',
+    endpoint: `/documents/${MAIN_MODULE}/prints`,
+  },
+  sub: {
+    title: 'Print Purchase/Job Order',
+    endpoint: `/documents/${SUB_MODULE}/prints`,
+  },
+};
+
+const LOG_ITEM_CONFIG: LogItemTableType = {
+  main: {
+    title: 'Purchase Request Logs',
+  },
+  sub: {
+    title: 'Purchase/Job Order Logs',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -122,8 +169,6 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
   const [columnSort, setColumnSort] = useState('pr_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
-  const [documentType] = useState<SignatoryDocumentType>('pr');
-  const [subDocumentType] = useState<SignatoryDocumentType>('po');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
@@ -191,14 +236,14 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'pr':
+      case MAIN_MODULE:
         hasPrintPermission = [
           'supply:*',
-          ...getAllowedPermissions('pr', 'print'),
+          ...getAllowedPermissions(MAIN_MODULE, 'print'),
         ].some((permission) => permissions?.includes(permission));
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('pr', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
@@ -219,14 +264,14 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
         }
         break;
 
-      case 'po':
+      case SUB_MODULE:
         hasPrintPermission = [
           'supply:*',
-          ...getAllowedPermissions('po', 'print'),
+          ...getAllowedPermissions(SUB_MODULE, 'print'),
         ].some((permission) => permissions?.includes(permission));
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('po', 'update'),
+          ...getAllowedPermissions(SUB_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(hasPrintPermission);
@@ -409,8 +454,8 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
       </ActionModalClient>
 
       <DataTableClient
-        mainModule={'pr'}
-        subModule={'po'}
+        mainModule={MAIN_MODULE}
+        subModule={SUB_MODULE}
         user={user}
         permissions={permissions}
         columnSort={columnSort}
@@ -421,27 +466,10 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
         showEdit={activeDataEditable}
         defaultModalOnClick={'details'}
         subItemsClickable
-        createMainItemModalTitle={'Create Purchase Request'}
-        createMainItemEndpoint={'/purchase-requests'}
-        createSubItemModalTitle={'Create Purchase/Job Order'}
-        createSubItemEndpoint={'/purchase-orders'}
-        createModalFullscreen
-        updateMainItemModalTitle={'Update Purchase Request'}
-        updateMainItemBaseEndpoint={'/purchase-requests'}
-        updateSubItemModalTitle={'Update Purchase/Job Order'}
-        updateSubItemBaseEndpoint={'/purchase-orders'}
-        updateModalFullscreen
-        detailMainItemModalTitle={'Purchase Request Details'}
-        detailMainItemBaseEndpoint={'/purchase-requests'}
-        detailSubItemModalTitle={'Purchase/Job Order Details'}
-        detailSubItemBaseEndpoint={'/purchase-orders'}
-        printMainItemModalTitle={'Print Purchase Request'}
-        printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-        printSubItemModalTitle={'Print Purchase/Job Order'}
-        printSubItemBaseEndpoint={`/documents/${subDocumentType}/prints`}
-        printSubItemDefaultPaper={'A4'}
-        logMainItemModalTitle={'Purchase Request Logs'}
-        logSubItemModalTitle={'Purchase/Job Order Logs'}
+        updateItemData={UPDATE_ITEM_CONFIG}
+        detailItemData={DETAIL_ITEM_CONFIG}
+        printItemData={PRINT_ITEM_CONFIG}
+        logItemData={LOG_ITEM_CONFIG}
         subButtonLabel={'PO/JOs'}
         data={tableData}
         perPage={perPage}

@@ -10,6 +10,28 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
+const MAIN_MODULE: ModuleType = 'account-role';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Role',
+    endpoint: '/accounts/roles',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Role',
+    endpoint: '/accounts/roles',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/accounts/roles',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -84,15 +106,16 @@ const RolesClient = ({ permissions }: RolesProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'account-role':
+      case MAIN_MODULE:
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('account-role', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataEditable(hasEditPermission);
 
         if (display === 'create') {
+          setActiveFormData(undefined);
         } else {
           setActiveFormData(data);
         }
@@ -147,7 +170,7 @@ const RolesClient = ({ permissions }: RolesProps) => {
 
   return (
     <DataTableClient
-      mainModule={'account-role'}
+      mainModule={MAIN_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -155,11 +178,9 @@ const RolesClient = ({ permissions }: RolesProps) => {
       showSearch
       showCreate
       showEdit={activeDataEditable}
-      createMainItemModalTitle={'Create Role'}
-      createMainItemEndpoint={'/accounts/roles'}
-      updateMainItemModalTitle={'Update Role'}
-      updateMainItemBaseEndpoint={'/accounts/roles'}
-      detailMainItemBaseEndpoint={'/accounts/roles'}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       data={tableData}
       perPage={perPage}
       loading={isLoading}

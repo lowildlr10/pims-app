@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { Box, Divider, Flex, Stack, Text, Title } from '@mantine/core';
 import LoginFormClient from './LoginForm';
@@ -9,11 +9,52 @@ import Image from 'next/image';
 import { useScrollIntoView } from '@mantine/hooks';
 import { Button } from '@mantine/core';
 import { IconArrowRight } from '@tabler/icons-react';
+import Helper from '@/utils/Helpers';
+import API from '@/libs/API';
+import { notify } from '@/libs/Notification';
 
 const LoginClient = ({ company }: LoginProps) => {
   const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
     offset: 60,
   });
+  const [background, setBackground] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (Helper.empty(company) || Helper.empty(company?.login_background))
+      return;
+
+    setLoading(true);
+
+    let retries = 3;
+
+    const fetch = () => {
+      API.get('/media', {
+        type: 'login-background',
+        parent_id: company.id,
+      })
+        .then((res) => {
+          const backgroundImage = res?.data?.data ?? undefined;
+          setBackground(backgroundImage);
+        })
+        .catch(() => {
+          if (retries > 0) {
+            retries -= 1;
+            fetch();
+          } else {
+            notify({
+              title: 'Failed',
+              message: 'Failed after multiple retries',
+              color: 'red',
+            });
+            setLoading(false);
+          }
+        })
+        .finally(() => setLoading(false));
+    };
+
+    fetch();
+  }, [company]);
 
   return (
     <Box p={0} m={0}>
@@ -25,17 +66,14 @@ const LoginClient = ({ company }: LoginProps) => {
         <Stack
           bg={'var(--mantine-color-primary-9)'}
           c={'var(--mantine-color-white)'}
-          opacity={company?.login_background ? 0.9 : 1}
+          opacity={background ? 0.9 : 1}
           w={{ base: '100vw', lg: '40%' }}
           gap={'sm'}
           justify={'center'}
           align={'center'}
           h={{ base: '100vh', lg: undefined }}
         >
-          <LoginLogoClient
-            companyName={company?.company_name ?? 'Company'}
-            logoUrl={company?.company_logo ?? '/images/logo-fallback.png'}
-          />
+          <LoginLogoClient company={company} />
 
           <Divider
             size={'sm'}
@@ -90,9 +128,9 @@ const LoginClient = ({ company }: LoginProps) => {
         </Stack>
       </Flex>
 
-      {company?.login_background && (
+      {background && (
         <Image
-          src={company?.login_background ?? undefined}
+          src={background ?? undefined}
           alt={'Background Image'}
           loading={'lazy'}
           style={{

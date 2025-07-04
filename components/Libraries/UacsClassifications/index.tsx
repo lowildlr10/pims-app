@@ -10,6 +10,28 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
+const MAIN_MODULE: ModuleType = 'lib-uacs-class';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create UACS Code Classification',
+    endpoint: '/libraries/uacs-code-classifications',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update UACS Code Classification',
+    endpoint: '/libraries/uacs-code-classifications',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/libraries/uacs-code-classifications',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -79,15 +101,16 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'lib-uacs-class':
+      case MAIN_MODULE:
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('lib-uacs-class', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataEditable(hasEditPermission);
 
         if (display === 'create') {
+          setActiveFormData(undefined);
         } else {
           setActiveFormData(data);
         }
@@ -127,7 +150,7 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      mainModule={'lib-uacs-class'}
+      mainModule={MAIN_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -135,11 +158,9 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
       showSearch
       showCreate
       showEdit={activeDataEditable}
-      createMainItemModalTitle={'Create UACS Code Classification'}
-      createMainItemEndpoint={'/libraries/uacs-code-classifications'}
-      updateMainItemModalTitle={'Update UACS Code Classification'}
-      updateMainItemBaseEndpoint={'/libraries/uacs-code-classifications'}
-      detailMainItemBaseEndpoint={'/libraries/uacs-code-classifications'}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       data={tableData}
       perPage={perPage}
       loading={isLoading}

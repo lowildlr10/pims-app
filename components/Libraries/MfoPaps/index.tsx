@@ -10,6 +10,28 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
+const MAIN_MODULE: ModuleType = 'lib-mfo-pap';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create MFO/PAP',
+    endpoint: '/libraries/mfo-paps',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Bids and Awards Committee',
+    endpoint: '/libraries/mfo-paps',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/libraries/mfo-paps',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -85,15 +107,16 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'lib-mfo-pap':
+      case MAIN_MODULE:
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('lib-mfo-pap', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataEditable(hasEditPermission);
 
         if (display === 'create') {
+          setActiveFormData(undefined);
         } else {
           setActiveFormData(data);
         }
@@ -133,7 +156,7 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      mainModule={'lib-mfo-pap'}
+      mainModule={MAIN_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -141,11 +164,9 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
       showSearch
       showCreate
       showEdit={activeDataEditable}
-      createMainItemModalTitle={'Create MFO/PAP'}
-      createMainItemEndpoint={'/libraries/mfo-paps'}
-      updateMainItemModalTitle={'Update MFO/PAP'}
-      updateMainItemBaseEndpoint={'/libraries/mfo-paps'}
-      detailMainItemBaseEndpoint={'/libraries/mfo-paps'}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       data={tableData}
       perPage={perPage}
       loading={isLoading}

@@ -8,6 +8,28 @@ import DataTableClient from '../../Generic/DataTable';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
+const MAIN_MODULE: ModuleType = 'lib-paper-size';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Paper Size Type',
+    endpoint: '/libraries/paper-sizes',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Paper Size Type',
+    endpoint: '/libraries/paper-sizes',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/libraries/paper-sizes',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -95,15 +117,16 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'lib-paper-size':
+      case MAIN_MODULE:
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('lib-paper-size', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataEditable(hasEditPermission);
 
         if (display === 'create') {
+          setActiveFormData(undefined);
         } else {
           setActiveFormData(data);
         }
@@ -129,7 +152,7 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      mainModule={'lib-paper-size'}
+      mainModule={MAIN_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -137,11 +160,9 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
       showSearch
       showCreate
       showEdit={activeDataEditable}
-      createMainItemModalTitle={'Create Paper Size Type'}
-      createMainItemEndpoint={'/libraries/paper-sizes'}
-      updateMainItemModalTitle={'Update Paper Size Type'}
-      updateMainItemBaseEndpoint={'/libraries/paper-sizes'}
-      detailMainItemBaseEndpoint={'/libraries/paper-sizes'}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       data={tableData}
       perPage={perPage}
       loading={isLoading}

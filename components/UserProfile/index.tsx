@@ -1,17 +1,52 @@
 'use client';
 
 import { Box, Divider, Flex, ScrollArea, Stack } from '@mantine/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconSignature, IconUserCog } from '@tabler/icons-react';
 import UserProfileFormClient from './UserProfileForm';
 import SignatureFormClient from './SignatureForm';
 import { Tabs } from '@mantine/core';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
 import { useViewportSize } from '@mantine/hooks';
+import API from '@/libs/API';
+import { notify } from '@/libs/Notification';
+import Helper from '@/utils/Helpers';
 
 const UserProfileClient = ({ user }: UserProfileProps) => {
   const { width } = useViewportSize();
   const [activeTab, setActiveTab] = useState<string | null>('information');
+  const [avatar, setAvatar] = useState('');
+
+  useEffect(() => {
+    if (Helper.empty(user) || Helper.empty(user?.avatar)) return;
+
+    let retries = 3;
+
+    const fetch = () => {
+      API.get('/media', {
+        type: 'avatar',
+        parent_id: user.id,
+      })
+        .then((res) => {
+          const avatarImage = res?.data?.data ?? undefined;
+          setAvatar(avatarImage);
+        })
+        .catch(() => {
+          if (retries > 0) {
+            retries -= 1;
+            fetch();
+          } else {
+            notify({
+              title: 'Failed',
+              message: 'Failed after multiple retries',
+              color: 'red',
+            });
+          }
+        });
+    };
+
+    fetch();
+  }, [user]);
 
   return (
     <Flex
@@ -28,9 +63,9 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
       >
         <Box mb={10}>
           <SingleImageUploadClient
-            image={user.avatar ?? ''}
-            postUrl={`/media/${user.id}`}
-            params={{ update_type: 'user-avatar' }}
+            image={avatar ?? ''}
+            postUrl={'/media'}
+            params={{ type: 'avatar', parent_id: user.id }}
             type={'avatar'}
           />
         </Box>

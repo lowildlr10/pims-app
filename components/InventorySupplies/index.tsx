@@ -15,6 +15,31 @@ import ActionsClient from './Actions';
 import { IconLibrary } from '@tabler/icons-react';
 import ActionModalClient from '../Generic/Modal/ActionModal';
 
+const MAIN_MODULE: ModuleType = 'po';
+const SUB_MODULE: ModuleType = 'inv-supply';
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  sub: {
+    title: 'Update Inventory Property and Supply',
+    endpoint: '/inventories/supplies',
+  },
+  fullscreen: true,
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  sub: {
+    title: 'Inventory Property and Supply Details',
+    endpoint: '/inventories/supplies',
+  },
+  fullscreen: true,
+};
+
+const LOG_ITEM_CONFIG: LogItemTableType = {
+  sub: {
+    title: 'Inventory Property and Supply Logs',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -111,7 +136,6 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
   const [columnSort, setColumnSort] = useState('po_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
-  const [documentType] = useState<SignatoryDocumentType>('po');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
@@ -179,11 +203,11 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'inv-supply':
+      case SUB_MODULE:
         hasPrintPermission = false;
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('inv-supply', 'update'),
+          ...getAllowedPermissions(SUB_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(hasPrintPermission);
@@ -388,8 +412,8 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
       </ActionModalClient>
 
       <DataTableClient
-        mainModule={'po'}
-        subModule={'inv-supply'}
+        mainModule={MAIN_MODULE}
+        subModule={SUB_MODULE}
         user={user}
         permissions={permissions}
         columnSort={columnSort}
@@ -401,17 +425,9 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
         defaultModalOnClick={'details'}
         mainItemsClickable={false}
         subItemsClickable
-        updateSubItemModalTitle={'Update Inventory Supply'}
-        updateSubItemBaseEndpoint={'/inventories/supplies'}
-        updateModalFullscreen
-        detailMainItemModalTitle={'Purchase Order Details'}
-        detailMainItemBaseEndpoint={'/purchase-orders'}
-        detailSubItemModalTitle={'Inventory Supply Details'}
-        detailSubItemBaseEndpoint={'/inventories/supplies'}
-        printMainItemModalTitle={'Print Purchase Order'}
-        printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-        logMainItemModalTitle={'Purchase/Job Order Logs'}
-        logSubItemModalTitle={'Inventory Supply Logs'}
+        updateItemData={UPDATE_ITEM_CONFIG}
+        detailItemData={DETAIL_ITEM_CONFIG}
+        logItemData={LOG_ITEM_CONFIG}
         subButtonLabel={'Supplies'}
         data={tableData}
         perPage={perPage}

@@ -3,7 +3,7 @@ type SingleImageUploadProps = {
   params?: any;
   image: string;
   height?: string | number;
-  type?: 'avatar' | 'logo' | 'signature' | 'default';
+  type?: 'avatar' | 'signature' | 'logo' | 'favicon' | 'login-background';
 };
 
 type LayoutSidebarProps = {
@@ -160,6 +160,39 @@ type ActiveDataType = {
   data: FormDataType;
 };
 
+type DataTableItemType = {
+  title?: string;
+  endpoint?: string;
+};
+
+type CreateUpdateDetailItemTableType = {
+  main?: DataTableItemType;
+  sub?: DataTableItemType;
+  fullscreen?: boolean;
+};
+
+type PrintItemTableType = {
+  main?: DataTableItemType & {
+    default_paper?: 'A4';
+    default_orientation?: 'P' | 'L';
+  };
+  sub?: DataTableItemType & {
+    default_paper?: 'A4';
+    default_orientation?: 'P' | 'L';
+  };
+};
+
+type LogItemTableType = {
+  main?: DataTableItemType;
+  sub?: DataTableItemType;
+};
+
+type ItemCreateMenuTableType = {
+  label: string;
+  value: SignatoryDocumentType;
+  moduleType: ModuleType;
+};
+
 type DataTableProps = {
   mainModule?: ModuleType;
   subModule?: ModuleType;
@@ -175,43 +208,19 @@ type DataTableProps = {
   showCreate?: boolean;
   showPrint?: boolean;
   showEdit?: boolean;
-  createMenus?: {
-    label: string;
-    value: SignatoryDocumentType;
-    moduleType: ModuleType;
-  }[];
+  createMenus?: ItemCreateMenuTableType[];
   defaultModalOnClick?: 'update' | 'details';
   showCreateSubItem?: boolean;
   mainItemsClickable?: boolean;
   subItemsClickable?: boolean;
   autoCollapseSubItems?: 'all' | 'first' | 'none';
 
-  createMainItemModalTitle?: string;
-  createMainItemEndpoint?: string;
-  createSubItemModalTitle?: string;
-  createSubItemEndpoint?: string;
-  createModalFullscreen?: boolean;
-  updateMainItemModalTitle?: string;
-  updateMainItemBaseEndpoint?: string;
-  updateSubItemModalTitle?: string;
-  updateSubItemBaseEndpoint?: string;
-  updateModalFullscreen?: boolean;
-  detailMainItemModalTitle?: string;
-  detailMainItemBaseEndpoint?: string;
-  detailSubItemModalTitle?: string;
-  detailSubItemBaseEndpoint?: string;
-  printMainItemModalTitle?: string;
-  printSubItemModalTitle?: string;
-  printMainItemBaseEndpoint?: string;
-  printSubItemBaseEndpoint?: string;
-  printMainItemDefaultPaper?: string;
-  printSubItemDefaultPaper?: string;
-  printMainItemDefaultOrientation?: 'P' | 'L';
-  printSubItemDefaultOrientation?: 'P' | 'L';
-  logMainItemModalTitle?: string;
-  logMainItemEndpoint?: string;
-  logSubItemModalTitle?: string;
-  logSuItemEndpoint?: string;
+  createItemData?: CreateUpdateDetailItemTableType;
+  updateItemData?: CreateUpdateDetailItemTableType;
+  detailItemData?: CreateUpdateDetailItemTableType;
+  printItemData?: PrintItemTableType;
+  logItemData?: LogItemTableType;
+
   subButtonLabel?: string;
 
   data: TableDataType;
@@ -257,11 +266,7 @@ type DataTableActionsProps = {
   search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
-  createMenus?: {
-    label: string;
-    value: SignatoryDocumentType;
-    moduleType: ModuleType;
-  }[];
+  createMenus?: ItemCreateMenuTableType[];
   setSearch?: (value: string) => void;
   handleOpenCreateModal?: (
     parentId: string | null,

@@ -17,6 +17,61 @@ import { IconLibrary } from '@tabler/icons-react';
 import PurchaseRequestActionsClient from '../PurchaseRequests/Actions';
 import ActionsClient from './Actions';
 
+const MAIN_MODULE: ModuleType = 'pr';
+const SUB_MODULE: ModuleType = 'rfq';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  sub: {
+    title: 'Create Request for Quotation',
+    endpoint: '/request-quotations',
+  },
+  fullscreen: true,
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Purchase Request',
+    endpoint: '/purchase-requests',
+  },
+  sub: {
+    title: 'Update Request for Quotation',
+    endpoint: '/request-quotations',
+  },
+  fullscreen: true,
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Purchase Request Details',
+    endpoint: '/purchase-requests',
+  },
+  sub: {
+    title: 'Request for Quotation Details',
+    endpoint: '/request-quotations',
+  },
+  fullscreen: true,
+};
+
+const PRINT_ITEM_CONFIG: PrintItemTableType = {
+  main: {
+    title: 'Print Purchase Request',
+    endpoint: `/documents/${MAIN_MODULE}/prints`,
+  },
+  sub: {
+    title: 'Print Request for Quotation',
+    endpoint: `/documents/${SUB_MODULE}/prints`,
+  },
+};
+
+const LOG_ITEM_CONFIG: LogItemTableType = {
+  main: {
+    title: 'Purchase Request Logs',
+  },
+  sub: {
+    title: 'Request for Quotation Logs',
+  },
+};
+
 const defaultTableData: TableDataType = {
   head: [
     {
@@ -128,8 +183,6 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
   const [columnSort, setColumnSort] = useState('pr_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
-  const [documentType] = useState<SignatoryDocumentType>('pr');
-  const [subDocumentType] = useState<SignatoryDocumentType>('rfq');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
@@ -197,14 +250,14 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'pr':
+      case MAIN_MODULE:
         hasPrintPermission = [
           'supply:*',
-          ...getAllowedPermissions('pr', 'print'),
+          ...getAllowedPermissions(MAIN_MODULE, 'print'),
         ].some((permission) => permissions?.includes(permission));
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('pr', 'update'),
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
@@ -225,14 +278,14 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
         }
         break;
 
-      case 'rfq':
+      case SUB_MODULE:
         hasPrintPermission = [
           'supply:*',
-          ...getAllowedPermissions('rfq', 'print'),
+          ...getAllowedPermissions(SUB_MODULE, 'print'),
         ].some((permission) => permissions?.includes(permission));
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('rfq', 'update'),
+          ...getAllowedPermissions(SUB_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
@@ -431,8 +484,8 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
       </ActionModalClient>
 
       <DataTableClient
-        mainModule={'pr'}
-        subModule={'rfq'}
+        mainModule={MAIN_MODULE}
+        subModule={SUB_MODULE}
         user={user}
         permissions={permissions}
         columnSort={columnSort}
@@ -444,26 +497,11 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
         defaultModalOnClick={'details'}
         showCreateSubItem
         subItemsClickable
-        createMainItemModalTitle={'Create Purchase Request'}
-        createMainItemEndpoint={'/purchase-requests'}
-        createSubItemModalTitle={'Create Request for Quotation'}
-        createSubItemEndpoint={'/request-quotations'}
-        createModalFullscreen
-        updateMainItemModalTitle={'Update Purchase Request'}
-        updateMainItemBaseEndpoint={'/purchase-requests'}
-        updateSubItemModalTitle={'Update Request for Quotation'}
-        updateSubItemBaseEndpoint={'/request-quotations'}
-        updateModalFullscreen
-        detailMainItemModalTitle={'Purchase Request Details'}
-        detailMainItemBaseEndpoint={'/purchase-requests'}
-        detailSubItemModalTitle={'Request for Quotation Details'}
-        detailSubItemBaseEndpoint={'/request-quotations'}
-        printMainItemModalTitle={'Print Purchase Request'}
-        printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-        printSubItemModalTitle={'Print Request for Quotation'}
-        printSubItemBaseEndpoint={`/documents/${subDocumentType}/prints`}
-        logMainItemModalTitle={'Purchase Request Logs'}
-        logSubItemModalTitle={'Request for Quotation Logs'}
+        createItemData={CREATE_ITEM_CONFIG}
+        updateItemData={UPDATE_ITEM_CONFIG}
+        detailItemData={DETAIL_ITEM_CONFIG}
+        printItemData={PRINT_ITEM_CONFIG}
+        logItemData={LOG_ITEM_CONFIG}
         subButtonLabel={'RFQs'}
         data={tableData}
         perPage={perPage}

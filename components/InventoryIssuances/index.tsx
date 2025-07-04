@@ -6,16 +6,73 @@ import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
 import dayjs from 'dayjs';
-import { randomId, useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
-import PurchaseRequestStatusClient from '../PurchaseRequests/Status';
 import StatusClient from './Status';
-import { ActionIcon, Menu, Stack, Text } from '@mantine/core';
+import { ActionIcon, Menu } from '@mantine/core';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { Tooltip } from '@mantine/core';
 import { IconLibrary } from '@tabler/icons-react';
 import ActionsClient from './Actions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
+
+const MAIN_MODULE: ModuleType = 'po';
+const SUB_MODULE: ModuleType = 'inv-issuance';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Inventory Issuance',
+    endpoint: '/inventories/issuances',
+  },
+  fullscreen: true,
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  sub: {
+    title: 'Update Inventory Issuance',
+    endpoint: '/inventories/issuances',
+  },
+  fullscreen: true,
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  sub: {
+    title: 'Inventory Issuance Details',
+    endpoint: '/inventories/issuances',
+  },
+  fullscreen: true,
+};
+
+const PRINT_ITEM_CONFIG: PrintItemTableType = {
+  sub: {
+    title: 'Print Inventory Issuance',
+    endpoint: `/documents/${SUB_MODULE}/prints`,
+  },
+};
+
+const LOG_ITEM_CONFIG: LogItemTableType = {
+  sub: {
+    title: 'Inventory Issuance Logs',
+  },
+};
+
+const CREATE_MENUS: ItemCreateMenuTableType[] = [
+  {
+    label: Helper.mapInventoryIssuanceDocumentType('ris'),
+    value: 'ris',
+    moduleType: 'inv-issuance',
+  },
+  {
+    label: Helper.mapInventoryIssuanceDocumentType('ics'),
+    value: 'ics',
+    moduleType: 'inv-issuance',
+  },
+  {
+    label: Helper.mapInventoryIssuanceDocumentType('are'),
+    value: 'are',
+    moduleType: 'inv-issuance',
+  },
+];
 
 const defaultTableData: TableDataType = {
   head: [
@@ -92,10 +149,12 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
   const [columnSort, setColumnSort] = useState('po_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
-  const [documentType] = useState<SignatoryDocumentType>('po');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
+
+  const [printItemData, setPrintItemData] =
+    useState<PrintItemTableType>(PRINT_ITEM_CONFIG);
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
@@ -160,14 +219,14 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
     let hasEditPermission = false;
 
     switch (moduleType) {
-      case 'inv-issuance':
+      case SUB_MODULE:
         hasPrintPermission = [
           'supply:*',
-          ...getAllowedPermissions('inv-issuance', 'print'),
+          ...getAllowedPermissions(SUB_MODULE, 'print'),
         ].some((permission) => permissions?.includes(permission));
         hasEditPermission = [
           'supply:*',
-          ...getAllowedPermissions('inv-issuance', 'update'),
+          ...getAllowedPermissions(SUB_MODULE, 'update'),
         ].some((permission) => permissions?.includes(permission));
 
         setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
@@ -176,6 +235,14 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
             hasEditPermission
         );
+
+        setPrintItemData((prev) => ({
+          ...prev,
+          sub: {
+            ...prev.sub,
+            endpoint: `/documents/${data?.document_type || 'ris'}/prints`,
+          },
+        }));
 
         if (display === 'create') {
           setActiveFormData({
@@ -303,8 +370,8 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
       </ActionModalClient>
 
       <DataTableClient
-        mainModule={'po'}
-        subModule={'inv-issuance'}
+        mainModule={MAIN_MODULE}
+        subModule={SUB_MODULE}
         user={user}
         permissions={permissions}
         columnSort={columnSort}
@@ -317,34 +384,12 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
         showCreate
         showPrint={activeDataPrintable}
         showEdit={activeDataEditable}
-        createMenus={[
-          {
-            label: Helper.mapInventoryIssuanceDocumentType('ris'),
-            value: 'ris',
-            moduleType: 'inv-issuance',
-          },
-          {
-            label: Helper.mapInventoryIssuanceDocumentType('ics'),
-            value: 'ics',
-            moduleType: 'inv-issuance',
-          },
-          {
-            label: Helper.mapInventoryIssuanceDocumentType('are'),
-            value: 'are',
-            moduleType: 'inv-issuance',
-          },
-        ]}
-        createMainItemModalTitle={'Create Issuance'}
-        createMainItemEndpoint={'/inventories/issuances'}
-        createModalFullscreen
-        updateSubItemModalTitle={'Update Inventory Issuance'}
-        updateSubItemBaseEndpoint={'/inventories/issuances'}
-        updateModalFullscreen
-        detailSubItemModalTitle={'Inventory Issuance Details'}
-        detailSubItemBaseEndpoint={'/inventories/issuances'}
-        printSubItemModalTitle={'Print Request for Quotation'}
-        printSubItemBaseEndpoint={`/documents/${documentType}/prints`}
-        logSubItemModalTitle={'Inventory Issuance Logs'}
+        createMenus={CREATE_MENUS}
+        createItemData={CREATE_ITEM_CONFIG}
+        updateItemData={UPDATE_ITEM_CONFIG}
+        detailItemData={DETAIL_ITEM_CONFIG}
+        printItemData={printItemData}
+        logItemData={LOG_ITEM_CONFIG}
         subButtonLabel={'Issuances'}
         data={tableData}
         perPage={perPage}

@@ -36,7 +36,7 @@ const useAuth = () => {
       setLoading(false);
       setError(true);
     }
-  }, []); // No dependencies, only memoized once during hook initialization
+  }, []);
 
   const logout = useCallback(async () => {
     setLoading(true);
@@ -64,7 +64,31 @@ const useAuth = () => {
     }
   }, []);
 
-  return { loading, error, message, login, logout };
+  const refreshToken = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+
+    try {
+      API.post('/refresh-token')
+        .then(({ data }) => {
+          setCookie('access_token', data.access_token, 86400);
+          setMessage(data.message);
+          setError(false);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setMessage(err?.response?.data?.message ?? err.message);
+          setLoading(false);
+          setError(true);
+        });
+    } catch (err: any) {
+      setMessage(err?.response?.data?.message ?? err.message);
+      setError(true);
+      setLoading(false);
+    }
+  }, []);
+
+  return { loading, error, message, login, logout, refreshToken };
 };
 
 export default useAuth;
