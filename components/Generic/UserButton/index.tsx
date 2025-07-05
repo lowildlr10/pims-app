@@ -3,51 +3,16 @@
 import { IconChevronRight } from '@tabler/icons-react';
 import { Avatar, Group, Loader, Text, UnstyledButton } from '@mantine/core';
 import classes from '@/styles/generic/userbutton.module.css';
-import { useEffect, useState } from 'react';
-import API from '@/libs/API';
-import { notify } from '@/libs/Notification';
 import { useMediaQuery } from '@mantine/hooks';
-import Helper from '@/utils/Helpers';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 export function UserButtonClient({ user, handleOpen }: UserButtonProps) {
+  const { media: avatar, loading } = useMediaAsset({
+    type: 'avatar',
+    user,
+  });
+
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
-  const [avatar, setAvatar] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (Helper.empty(user) || Helper.empty(user?.avatar)) return;
-
-    setLoading(true);
-
-    let retries = 3;
-
-    const fetch = () => {
-      API.get('/media', {
-        type: 'avatar',
-        parent_id: user.id,
-      })
-        .then((res) => {
-          const logo = res?.data?.data ?? undefined;
-          setAvatar(logo);
-        })
-        .catch(() => {
-          if (retries > 0) {
-            retries -= 1;
-            fetch();
-          } else {
-            notify({
-              title: 'Failed',
-              message: 'Failed after multiple retries',
-              color: 'red',
-            });
-            setLoading(false);
-          }
-        })
-        .finally(() => setLoading(false));
-    };
-
-    fetch();
-  }, [user]);
 
   return (
     <UnstyledButton

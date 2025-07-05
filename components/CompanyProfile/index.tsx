@@ -31,18 +31,31 @@ import { ActionIcon } from '@mantine/core';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import CustomColorPickerClient from '../Generic/CustomColorPicker';
 import DynamicSelect from '../Generic/DynamicSelect';
-import Helper from '@/utils/Helpers';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 const CompanyProfileClient = ({
   company,
   permissions,
 }: CompanyProfileProps) => {
+  const {
+    media: logo,
+    loading: logoLoading,
+    clearCache: clearLogoCache,
+  } = useMediaAsset({
+    type: 'logo',
+    company,
+  });
+  const {
+    media: backgroundImage,
+    loading: backgroundImageLoading,
+    clearCache: clearBackgroundImageCache,
+  } = useMediaAsset({
+    type: 'login-background',
+    company,
+  });
+
   const [loading, setLoading] = useState(false);
   const [enableUpdate, setEnableUpdate] = useState(false);
-  const [logo, setLogo] = useState('/images/logo-fallback.png');
-  const [backgroundImage, setBackgroundImage] = useState(
-    '/images/background-fallback.png'
-  );
 
   const [primary, setPrimary] = useState<string>(
     company.theme_colors?.primary[9] ?? colors.primary[9]
@@ -93,77 +106,6 @@ const CompanyProfileClient = ({
   useEffect(() => {
     form.reset();
   }, [enableUpdate]);
-
-  useEffect(() => {
-    if (Helper.empty(company) || Helper.empty(company?.company_logo)) return;
-
-    setLoading(true);
-
-    let retries = 3;
-
-    const fetch = () => {
-      API.get('/media', {
-        type: 'logo',
-        parent_id: company.id,
-      })
-        .then((res) => {
-          const logo = res?.data?.data ?? undefined;
-          setLogo(logo);
-        })
-        .catch(() => {
-          if (retries > 0) {
-            retries -= 1;
-            fetch();
-          } else {
-            notify({
-              title: 'Failed',
-              message: 'Failed after multiple retries',
-              color: 'red',
-            });
-            setLoading(false);
-          }
-        })
-        .finally(() => setLoading(false));
-    };
-
-    fetch();
-  }, [company]);
-
-  useEffect(() => {
-    if (Helper.empty(company) || Helper.empty(company?.login_background))
-      return;
-
-    setLoading(true);
-
-    let retries = 3;
-
-    const fetch = () => {
-      API.get('/media', {
-        type: 'login-background',
-        parent_id: company.id,
-      })
-        .then((res) => {
-          const background = res?.data?.data ?? undefined;
-          setBackgroundImage(background);
-        })
-        .catch(() => {
-          if (retries > 0) {
-            retries -= 1;
-            fetch();
-          } else {
-            notify({
-              title: 'Failed',
-              message: 'Failed after multiple retries',
-              color: 'red',
-            });
-            setLoading(false);
-          }
-        })
-        .finally(() => setLoading(false));
-    };
-
-    fetch();
-  }, [company]);
 
   const generateColorPalettes = (hex: string) => {
     const hexToRgb = (hex: string) => {
@@ -238,7 +180,7 @@ const CompanyProfileClient = ({
     >
       <form onSubmit={form.onSubmit(() => handleUpdateProfile())}>
         <LoadingOverlay
-          visible={loading}
+          visible={loading || logoLoading || backgroundImageLoading}
           zIndex={1000}
           overlayProps={{ radius: 'sm', blur: 2 }}
         />
@@ -265,6 +207,7 @@ const CompanyProfileClient = ({
                     postUrl={'/media'}
                     params={{ parent_id: company.id, type: 'logo' }}
                     type={'logo'}
+                    clearImageCache={clearLogoCache}
                   />
                 </Box>
               </Stack>
@@ -392,8 +335,9 @@ const CompanyProfileClient = ({
               image={backgroundImage ?? '/images/background-fallback.png'}
               postUrl={'/media'}
               params={{ parent_id: company.id, type: 'login-background' }}
-              height={300}
+              height={500}
               type={'login-background'}
+              clearImageCache={clearBackgroundImageCache}
             />
           </Stack>
 

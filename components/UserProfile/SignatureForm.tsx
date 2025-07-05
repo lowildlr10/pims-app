@@ -4,50 +4,27 @@ import { notify } from '@/libs/Notification';
 import { Button, LoadingOverlay, Paper, Stack, Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons-react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
-import Helper from '@/utils/Helpers';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 const SignatureFormClient = ({ user }: SignatureFormProps) => {
+  const {
+    media: signature,
+    loading: signatureLoading,
+    clearCache: clearSignatureCache,
+  } = useMediaAsset({
+    type: 'signature',
+    user,
+  });
+
   const [loading, setLoading] = useState(false);
-  const [signature, setSignature] = useState('');
   const form = useForm({
     mode: 'controlled',
     initialValues: {
       allow_signature: user.allow_signature ?? false,
     },
   });
-
-  useEffect(() => {
-    if (Helper.empty(user) || Helper.empty(user?.signature)) return;
-
-    let retries = 3;
-
-    const fetch = () => {
-      API.get('/media', {
-        type: 'signature',
-        parent_id: user.id,
-      })
-        .then((res) => {
-          const signatureImage = res?.data?.data ?? undefined;
-          setSignature(signatureImage);
-        })
-        .catch(() => {
-          if (retries > 0) {
-            retries -= 1;
-            fetch();
-          } else {
-            notify({
-              title: 'Failed',
-              message: 'Failed after multiple retries',
-              color: 'red',
-            });
-          }
-        });
-    };
-
-    fetch();
-  }, [user]);
 
   const handleUpdateSignature = () => {
     setLoading(true);
@@ -83,7 +60,7 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
   return (
     <form onSubmit={form.onSubmit(() => handleUpdateSignature())}>
       <LoadingOverlay
-        visible={loading}
+        visible={loading || signatureLoading}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
@@ -94,6 +71,7 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
             postUrl={'/media'}
             params={{ type: 'signature', parent_id: user.id }}
             type={'signature'}
+            clearImageCache={clearSignatureCache}
           />
         </Paper>
 

@@ -17,14 +17,11 @@ import { Switch } from '@mantine/core';
 import DynamicSelect from '../../Generic/DynamicSelect';
 import DynamicMultiselect from '../../Generic/DynamicMultiselect';
 import SingleImageUploadClient from '../../Generic/SingleImageUpload';
-import { notify } from '@/libs/Notification';
-import API from '@/libs/API';
-import Helper from '@/utils/Helpers';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
     const [currentData, setCurrentData] = useState(data);
-    const [avatar, setAvatar] = useState('');
     const currentForm = useMemo(
       () => ({
         employee_id: currentData?.employee_id ?? '',
@@ -49,6 +46,11 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
       initialValues: currentForm,
     });
 
+    const { media: avatar, clearCache: clearAvatarCache } = useMediaAsset({
+      type: 'avatar',
+      user: currentData,
+    });
+
     useEffect(() => {
       setCurrentData(data);
     }, [data]);
@@ -64,38 +66,6 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
         roles: JSON.stringify(form.values.roles),
       });
     }, [form.values]);
-
-    useEffect(() => {
-      if (Helper.empty(currentData) || Helper.empty(currentData?.avatar))
-        return;
-
-      let retries = 3;
-
-      const fetch = () => {
-        API.get('/media', {
-          type: 'avatar',
-          parent_id: currentData?.id,
-        })
-          .then((res) => {
-            const avatarImage = res?.data?.data ?? undefined;
-            setAvatar(avatarImage);
-          })
-          .catch(() => {
-            if (retries > 0) {
-              retries -= 1;
-              fetch();
-            } else {
-              notify({
-                title: 'Failed',
-                message: 'Failed after multiple retries',
-                color: 'red',
-              });
-            }
-          });
-      };
-
-      fetch();
-    }, [currentData]);
 
     return (
       <form
@@ -113,6 +83,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
                 params={{ type: 'avatar', parent_id: currentData?.id }}
                 height={150}
                 type={'avatar'}
+                clearImageCache={clearAvatarCache}
               />
             </Box>
           )}

@@ -1,9 +1,17 @@
+type MediaType =
+  | 'avatar'
+  | 'signature'
+  | 'logo'
+  | 'favicon'
+  | 'login-background';
+
 type SingleImageUploadProps = {
   postUrl: string;
   params?: any;
   image: string;
   height?: string | number;
-  type?: 'avatar' | 'signature' | 'logo' | 'favicon' | 'login-background';
+  type?: MediaType;
+  clearImageCache?: () => void;
 };
 
 type LayoutSidebarProps = {

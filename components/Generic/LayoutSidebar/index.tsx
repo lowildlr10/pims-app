@@ -26,7 +26,7 @@ import {
   IconUserCog,
 } from '@tabler/icons-react';
 import { UserButtonClient } from '../UserButton';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { keyframes } from '@emotion/react';
@@ -45,9 +45,7 @@ import {
   COMPANY_PROFILE_ALLOWED_PERMISSIONS,
   SYSTEM_LOGS_ALLOWED_PERMISSIONS,
 } from '@/config/menus';
-import API from '@/libs/API';
-import { notify } from '@/libs/Notification';
-import Helper from '@/utils/Helpers';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -117,8 +115,12 @@ export function LayoutSidebarClient({
   permissions,
   children,
 }: LayoutSidebarProps) {
+  const { media: logo, loading } = useMediaAsset({
+    type: 'logo',
+    company,
+  });
+
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
-  const [loading, setLoading] = useState(false);
   const [menus, setMenus] = useState<LinksGroupProps[]>(defaultMenu);
   const links = menus.map((item) => (
     <LinksGroupClient {...item} key={item.label} permissions={permissions} />
@@ -127,7 +129,6 @@ export function LayoutSidebarClient({
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
   const pinned = useHeadroom({ fixedAt: 120 });
   const [opened, { open, close }] = useDisclosure(false);
-  const [logo, setLogo] = useState<string>('/images/logo-fallback.png');
 
   useEffect(() => {
     switch (type) {
@@ -144,41 +145,6 @@ export function LayoutSidebarClient({
         break;
     }
   }, [type]);
-
-  useEffect(() => {
-    if (Helper.empty(company) || Helper.empty(company?.company_logo)) return;
-
-    setLoading(true);
-
-    let retries = 3;
-
-    const fetch = () => {
-      API.get('/media', {
-        type: 'logo',
-        parent_id: company.id,
-      })
-        .then((res) => {
-          const logo = res?.data?.data ?? undefined;
-          setLogo(logo);
-        })
-        .catch(() => {
-          if (retries > 0) {
-            retries -= 1;
-            fetch();
-          } else {
-            notify({
-              title: 'Failed',
-              message: 'Failed after multiple retries',
-              color: 'red',
-            });
-            setLoading(false);
-          }
-        })
-        .finally(() => setLoading(false));
-    };
-
-    fetch();
-  }, [company]);
 
   return (
     <AppShell

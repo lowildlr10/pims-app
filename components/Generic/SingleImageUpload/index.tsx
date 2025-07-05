@@ -1,7 +1,6 @@
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
-import Helper from '@/utils/Helpers';
 import {
   Avatar,
   Button,
@@ -20,8 +19,10 @@ const SingleImageUploadClient = ({
   params,
   height = 220,
   type,
+  clearImageCache,
 }: SingleImageUploadProps) => {
   const [loading, setLoading] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const form = useForm({
     mode: 'controlled',
@@ -36,21 +37,20 @@ const SingleImageUploadClient = ({
   }, [file]);
 
   useEffect(() => {
-    if (loading) {
-      setLoading(false);
-    }
-
-    if (!form.values.file || !file || loading) return;
+    if (!form.values.file || !file) return;
     handleUpdateImage();
   }, [form.values.file]);
 
   useEffect(() => {
-    setLoading(true);
     form.setFieldValue('file', image ?? '');
+    setInitialLoad(true);
   }, [image]);
 
   const handleProcessImage = () => {
+    setInitialLoad(false);
+
     const reader = new FileReader();
+
     reader.onload = (event) => {
       const base64String = event.target?.result as string;
       form.setFieldValue('file', base64String);
@@ -73,6 +73,8 @@ const SingleImageUploadClient = ({
   };
 
   const handleUpdateImage = () => {
+    if (initialLoad) return;
+
     setLoading(true);
 
     API.post(postUrl, {
@@ -87,6 +89,10 @@ const SingleImageUploadClient = ({
         });
         form.resetDirty();
         setLoading(false);
+
+        if (clearImageCache) {
+          clearImageCache();
+        }
       })
       .catch((err) => {
         const errors = getErrors(err);
