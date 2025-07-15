@@ -82,14 +82,15 @@ const LoginClient = ({ company }: LoginProps) => {
             w={{ base: 220, sm: 300, lg: '80%' }}
           />
 
-          <Stack align={'center'} justify={'center'}>
+          <Stack align={'center'} justify={'center'} px={'xl'}>
             <Title
-              order={2}
-              fw={600}
-              fz={{ base: 'h4', sm: 'h3', md: 'h2', lg: 'h2', xl: 'h1' }}
+              fw={'bolder'}
+              fz={{ base: 'h4', sm: 'h3', md: 'h2' }}
               ta={'center'}
             >
-              PROCUREMENT SYSTEM
+              PROCUREMENT & INVENTORY
+              <br />
+              MANAGEMENT SYSTEM
             </Title>
             <Text fz={{ base: 'sm', lg: 'md' }}>v1.0.0</Text>
           </Stack>

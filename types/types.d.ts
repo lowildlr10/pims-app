@@ -233,6 +233,8 @@ type SignatoryDetailTypeType =
   | 'cash_availability'
   | 'approved_by'
   | 'approval'
+  | 'approval_lce'
+  | 'approval_bac'
   | 'canvassers'
   | 'twg_chairperson'
   | 'twg_member'

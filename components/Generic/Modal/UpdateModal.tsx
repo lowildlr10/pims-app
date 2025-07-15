@@ -88,12 +88,12 @@ const UpdateModalClient = ({
         setPayload({});
         setLoading(false);
 
-        if (stack) {
-          stack.close('update-modal');
-          stack.open('detail-modal');
-        } else {
-          close();
-        }
+        // if (stack) {
+        //   stack.close('update-modal');
+        //   stack.open('detail-modal');
+        // } else {
+        //   close();
+        // }
       })
       .catch((err) => {
         const errors = getErrors(err);

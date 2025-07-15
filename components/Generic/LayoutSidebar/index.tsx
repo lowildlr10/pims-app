@@ -67,13 +67,13 @@ const defaultMainMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: INVENTORY_LINKS,
   },
-  {
-    label: 'Payment',
-    allowedPermissions: PAYMENT_ALLOWED_PERMISSIONS,
-    icon: IconCash,
-    initiallyOpened: false,
-    links: PAYMENT_LINKS,
-  },
+  // {
+  //   label: 'Payment',
+  //   allowedPermissions: PAYMENT_ALLOWED_PERMISSIONS,
+  //   icon: IconCash,
+  //   initiallyOpened: false,
+  //   links: PAYMENT_LINKS,
+  // },
   { label: 'Settings', icon: IconSettings2, link: '/settings/user-profile' },
 ];
 
