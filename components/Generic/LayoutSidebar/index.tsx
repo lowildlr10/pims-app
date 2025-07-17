@@ -46,6 +46,7 @@ import {
   SYSTEM_LOGS_ALLOWED_PERMISSIONS,
 } from '@/config/menus';
 import { useMediaAsset } from '@/hooks/useMediaAsset';
+import NotificationMenuButtonClient from '../NotificationMenuButton';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -202,25 +203,23 @@ export function LayoutSidebarClient({
             </Group>
           </Group>
 
-          {/* <Group>
+          <Group>
             <NotificationMenuButtonClient />
-          </Group> */}
+          </Group>
         </Group>
       </AppShell.Header>
       <AppShell.Navbar
         p='md'
         sx={(theme, u) => ({
-          transform: `${
-            desktopOpened
+          transform: `${desktopOpened
+            ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
+            : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
+            } !important`,
+          [u.smallerThan('md')]: {
+            transform: `${mobileOpened
               ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
               : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
-          } !important`,
-          [u.smallerThan('md')]: {
-            transform: `${
-              mobileOpened
-                ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
-                : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
-            } !important`,
+              } !important`,
           },
         })}
       >

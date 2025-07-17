@@ -1,48 +1,209 @@
 'use client';
 
-import { Indicator } from '@mantine/core';
-import { ActionIcon, Box, Menu } from '@mantine/core';
+import API from '@/libs/API';
+import Helper from '@/utils/Helpers';
 import {
-  IconArrowsLeftRight,
-  IconBellFilled,
-  IconMessageCircle,
-  IconPhoto,
-  IconSettings,
-} from '@tabler/icons-react';
-import React from 'react';
+  Anchor,
+  Blockquote,
+  Button,
+  Group,
+  Indicator,
+  Menu,
+  ScrollArea,
+  Stack,
+  Text,
+  Transition,
+  ActionIcon,
+  Box,
+} from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { IconBellFilled, IconCalendarWeek, IconX } from '@tabler/icons-react';
+import dayjs from 'dayjs';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
+import useSWRInfinite from 'swr/infinite';
+
+const PAGE_SIZE = 15;
+
+const fetcher = (url: string) => API.get(url);
+
+const getKey = (pageIndex: number, previousPageData: any) => {
+  if (previousPageData && previousPageData.data.length === 0) return null;
+  return `/notifications?page=${pageIndex + 1}&limit=${PAGE_SIZE}`;
+};
 
 const NotificationMenuButtonClient = () => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const [opened, setOpened] = useState(false);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const {
+    data,
+    size,
+    setSize,
+    isLoading,
+    isValidating,
+    mutate
+  } = useSWRInfinite(getKey, fetcher);
+
+  const [notifications, setNotifications] = useState(data ? data.flatMap((page) => page.data) : []);
+  const [hasMore, setHasMore] = useState(data?.[data.length - 1]?.data.length === PAGE_SIZE);
+
+  useEffect(() => {
+    setNotifications(data ? data.flatMap((page) => page.data) : []);
+    setHasMore(data?.[data.length - 1]?.data.length === PAGE_SIZE);
+  }, [data]);
+
+  useEffect(() => {
+    if (opened && scrollRef.current) {
+      scrollRef.current.scrollTop = 0;
+    }
+
+    if (opened) {
+      mutate();
+    }
+  }, [opened]);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el || !hasMore || isLoading || isValidating) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    if (scrollTop + clientHeight >= scrollHeight - 50) {
+      setSize((prev) => prev + 1);
+    }
+  };
+
   return (
-    <Menu shadow={'md'} width={300}>
+    <Menu
+      shadow="md"
+      width={lgScreenAndBelow ? '100%' : 400}
+      opened={opened}
+      onChange={setOpened}
+    >
       <Menu.Target>
-        <Box mx={'sm'}>
+        <Box mx="sm">
           <Indicator
             inline
-            size={8}
+            size={lgScreenAndBelow ? 5 : 8}
             offset={7}
-            position={'bottom-end'}
-            color={'var(--mantine-color-red-7)'}
+            position="bottom-end"
+            color="var(--mantine-color-red-7)"
+            disabled={notifications.filter(notif => Helper.empty(notif?.read_at)).length === 0}
             processing
           >
-            <ActionIcon size={'lg'} variant={'transparent'} color={'white'}>
-              <IconBellFilled size={24} stroke={1.5} />
+            <ActionIcon size="lg" variant="transparent" color="white">
+              <IconBellFilled size={lgScreenAndBelow ? 16 : 21} stroke={1.5} />
             </ActionIcon>
           </Indicator>
         </Box>
       </Menu.Target>
 
-      <Menu.Dropdown>
-        <Menu.Label>Notifications</Menu.Label>
-        <Menu.Item leftSection={<IconSettings size={14} />}>Settings</Menu.Item>
-        <Menu.Item leftSection={<IconMessageCircle size={14} />}>
-          Messages
+      <Menu.Dropdown left={lgScreenAndBelow ? 0 : undefined}>
+        <Menu.Label fz={lgScreenAndBelow ? 'xs' : 'sm'} py={lgScreenAndBelow ? 'xs' : 'sm'}>
+          <Group justify="space-between">
+            Notifications
+            <ActionIcon
+              color="var(--mantine-color-gray-7)"
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
+              variant="subtle"
+              onClick={() => setOpened(false)}
+            >
+              <IconX size={lgScreenAndBelow ? 13 : 15} />
+            </ActionIcon>
+          </Group>
+        </Menu.Label>
+
+        <Menu.Item
+          component={ScrollArea}
+          h={lgScreenAndBelow ? 'calc(100vh - 10em)' : 400}
+          p="5px"
+          m={0}
+          bg="var(--mantine-color-gray-0)"
+          closeMenuOnClick={false}
+          sx={{ cursor: 'default' }}
+          viewportRef={scrollRef}
+          onScrollPositionChange={handleScroll}
+        >
+          <Stack gap={3}>
+            {notifications.map((notif: any, index: number) => (
+              <Anchor
+                key={notif.id ?? index}
+                href={notif?.data?.href ?? '#'}
+                style={{ textDecoration: 'none' }}
+                component={Link}
+              >
+                <Blockquote
+                  color={notif?.read_at ? 'var(--mantine-color-gray-1)' : 'var(--mantine-color-primary-9)'}
+                  c="var(--mantine-color-dark-7)"
+                  bg="white"
+                  radius="x2"
+                  p="md"
+                  h="8.7em"
+                  cite={
+                    <Group align="center" gap={4}>
+                      <IconCalendarWeek size={lgScreenAndBelow ? 13 : 15} />
+                      <Text fz={lgScreenAndBelow ? 11 : 12} pt={1}>
+                        {notif.created_at
+                          ? dayjs(notif.created_at).isSame(dayjs(), 'day')
+                            ? `Today at ${dayjs(notif.created_at).format('h:mm A')}`
+                            : dayjs(notif.created_at).isSame(dayjs().subtract(1, 'day'), 'day')
+                              ? `Yesterday at ${dayjs(notif.created_at).format('h:mm A')}`
+                              : dayjs(notif.created_at).format('MMM D, YYYY [at] h:mm A')
+                          : 'Unknown time'}
+                      </Text>
+                    </Group>
+                  }
+                  m={0}
+                  mt={1}
+                >
+                  <Stack gap={'xs'}>
+                    <Text fw={500} size={lgScreenAndBelow ? 'xs' : 'sm'}>
+                      {notif?.data?.title}
+                    </Text>
+                    <Text
+                      size={lgScreenAndBelow ? 'xs' : 'sm'}
+                      sx={{
+                        display: '-webkit-box',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 2,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                      dangerouslySetInnerHTML={{ __html: notif?.data?.message }}
+                    />
+                  </Stack>
+                </Blockquote>
+              </Anchor>
+            ))}
+
+            <Transition
+              mounted={isLoading || isValidating}
+              transition="scale-y"
+              duration={300}
+              timingFunction="ease"
+            >
+              {(styles) => (
+                <Button
+                  color={'var(--mantine-color-primary-9)'}
+                  variant="transparent"
+                  size={lgScreenAndBelow ? 'xs' : 'sm'}
+                  loaderProps={{ type: 'bars' }}
+                  loading
+                  style={{ ...styles, justifyContent: 'center' }}
+                >
+                  Loading...
+                </Button>
+              )}
+            </Transition>
+          </Stack>
         </Menu.Item>
-        <Menu.Item leftSection={<IconPhoto size={14} />}>Gallery</Menu.Item>
 
         <Menu.Divider />
 
-        <Menu.Item leftSection={<IconArrowsLeftRight size={14} />}>
-          Show All
+        <Menu.Item fz={lgScreenAndBelow ? 'xs' : 'sm'} ta="center">
+          Clear All
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>
