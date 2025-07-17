@@ -6,10 +6,39 @@ import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../Generic/DataTable';
 import dayjs from 'dayjs';
-import { randomId, useMediaQuery } from '@mantine/hooks';
+import { randomId, useDisclosure, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
 import StatusClient from './Status';
-import { Badge, Stack, Text } from '@mantine/core';
+import { ActionIcon, Menu, Stack, Text, Tooltip } from '@mantine/core';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import ActionsClient from './Actions';
+import { IconLibrary } from '@tabler/icons-react';
+import ActionModalClient from '../Generic/Modal/ActionModal';
+
+const MAIN_MODULE: ModuleType = 'po';
+const SUB_MODULE: ModuleType = 'inv-supply';
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  sub: {
+    title: 'Update Inventory Property and Supply',
+    endpoint: '/inventories/supplies',
+  },
+  fullscreen: true,
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  sub: {
+    title: 'Inventory Property and Supply Details',
+    endpoint: '/inventories/supplies',
+  },
+  fullscreen: true,
+};
+
+const LOG_ITEM_CONFIG: LogItemTableType = {
+  sub: {
+    title: 'Inventory Property and Supply Logs',
+  },
+};
 
 const defaultTableData: TableDataType = {
   head: [
@@ -32,7 +61,7 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'delivery_date',
+      id: 'delivery_date_formatted',
       label: 'Delivery Date',
       width: '14%',
       sortable: true,
@@ -87,7 +116,13 @@ const defaultTableData: TableDataType = {
       id: 'status_formatted',
       label: 'Status',
       align: 'center',
-      width: '14%',
+      width: '12%',
+    },
+    {
+      id: 'action',
+      label: '',
+      width: '2%',
+      clickable: false,
     },
   ],
   body: [],
@@ -101,10 +136,29 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
   const [columnSort, setColumnSort] = useState('po_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
-  const [documentType] = useState<SignatoryDocumentType>('po');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
+
+  const [activeFormData, setActiveFormData] = useState<FormDataType>();
+  const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [activeDataPrintable, setActiveDataPrintable] = useState(false);
+  const [activeDataEditable, setActiveDataEditable] = useState(false);
+
+  const [actionType, setActionType] = useState<ActionType>();
+  const [title, setTitle] = useState('');
+  const [children, setChildren] = useState<React.ReactNode>();
+  const [color, setColor] = useState('var(--mantine-color-primary-9)');
+  const [buttonLabel, setButtonLabel] = useState('');
+  const [endpoint, setEndpoint] = useState('');
+  const [redirect, setRedirect] = useState<string>();
+  const [size, setSize] = useState<'xs' | 'sm' | 'md' | 'lg' | 'xl'>();
+  const [fullScreen, setFullScreen] = useState<boolean>();
+  const [requiresPayload, setRequiresPayload] = useState<boolean>();
+  const [
+    actionModalOpened,
+    { open: openActionModal, close: closeActionModal },
+  ] = useDisclosure(false);
 
   const { data, isLoading, mutate } = useSWR<InventorySuppliesResponse>(
     [
@@ -140,6 +194,38 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
   );
 
   useEffect(() => {
+    if (Helper.empty(activeData?.moduleType) || Helper.empty(activeData?.data))
+      return;
+
+    const { display, moduleType, data } = activeData ?? {};
+    // const status = data?.status;
+    let hasPrintPermission = false;
+    let hasEditPermission = false;
+
+    switch (moduleType) {
+      case SUB_MODULE:
+        hasPrintPermission = false;
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions(SUB_MODULE, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataPrintable(hasPrintPermission);
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      default:
+        break;
+    }
+  }, [activeData, permissions]);
+
+  useEffect(() => {
     const poData = data?.data?.map((body: PurchaseOrderType) => {
       const { supplies, supplier, purchase_request, ...poData } = body;
 
@@ -147,9 +233,9 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
         ...poData,
         funding_source_title: purchase_request?.funding_source?.title ?? '-',
         supplier_name: supplier?.supplier_name ?? '-',
-        delivery_date: dayjs(poData.status_timestamps.delivered_at).format(
-          'MM/DD/YYYY'
-        ),
+        delivery_date_formatted: poData?.status_timestamps?.delivered_at
+          ? dayjs(poData?.status_timestamps?.delivered_at).format('MM/DD/YYYY')
+          : '-',
         sub_body: supplies?.map((subBody: InventorySupplyType) => {
           const description = Helper.formatTextWithWhitespace(
             subBody?.description ?? '-'
@@ -236,6 +322,36 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
                 />
               </Stack>
             ),
+            action: (
+              <Menu
+                position={'left-start'}
+                offset={6}
+                shadow={'md'}
+                width={400}
+                withArrow
+              >
+                <Menu.Target>
+                  <Tooltip label={'Quick Action'}>
+                    <ActionIcon
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      color={'var(--mantine-color-secondary-7)'}
+                    >
+                      <IconLibrary size={lgScreenAndBelow ? 14 : 16} />
+                    </ActionIcon>
+                  </Tooltip>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Menu.Label>Quick Actions</Menu.Label>
+                  <ActionsClient
+                    permissions={permissions ?? []}
+                    id={subBody.id ?? ''}
+                    status={subBody.status ?? 'out-of-stock'}
+                    handleOpenActionModal={handleOpenActionModal}
+                  />
+                </Menu.Dropdown>
+              </Menu>
+            ),
           };
         }),
       };
@@ -247,50 +363,92 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
     }));
   }, [data, lgScreenAndBelow]);
 
+  const handleOpenActionModal = (
+    actionType: ActionType,
+    title: string,
+    children: React.ReactNode,
+    color: string,
+    buttonLabel: string,
+    endpoint: string,
+    redirect?: string,
+    requiresPayload?: boolean,
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
+    fullScreen?: boolean
+  ) => {
+    setActionType(actionType);
+    setTitle(title);
+    setChildren(children);
+    setColor(color);
+    setButtonLabel(buttonLabel);
+    setEndpoint(endpoint);
+    setRedirect(redirect);
+    setRequiresPayload(requiresPayload);
+    setSize(size);
+    setFullScreen(fullScreen);
+
+    openActionModal();
+  };
+
   return (
-    <DataTableClient
-      mainModule={'po'}
-      subModule={'inv-supply'}
-      user={user}
-      permissions={permissions}
-      columnSort={columnSort}
-      sortDirection={sortDirection}
-      search={search}
-      showSearch
-      defaultModalOnClick={'details'}
-      subItemsClickable
-      updateSubItemModalTitle={'Update Inventory Supply'}
-      updateSubItemBaseEndpoint={'/inventories/supplies'}
-      updateMainItemEnable={false}
-      updateModalFullscreen
-      detailMainItemModalTitle={'Purchase Order Details'}
-      detailMainItemBaseEndpoint={'/purchase-orders'}
-      detailSubItemModalTitle={'Inventory Supply Details'}
-      detailSubItemBaseEndpoint={'/inventories/supplies'}
-      printMainItemModalTitle={'Print Purchase Order'}
-      printMainItemBaseEndpoint={`/documents/${documentType}/prints`}
-      printMainItemEnable={false}
-      printSubItemEnable={false}
-      logMainItemModalTitle={'Purchase/Job Order Logs'}
-      logSubItemModalTitle={'Inventory Supply Logs'}
-      subButtonLabel={'Supplies'}
-      data={tableData}
-      perPage={perPage}
-      loading={isLoading}
-      page={page}
-      lastPage={data?.last_page ?? 0}
-      from={data?.from ?? 0}
-      to={data?.to ?? 0}
-      total={data?.total ?? 0}
-      refreshData={mutate}
-      onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
-        setSearch(_search ?? '');
-        setPage(_page);
-        setPerPage(_perPage);
-        setColumnSort(_columnSort ?? columnSort);
-        setSortDirection(_sortDirection ?? 'desc');
-      }}
-    />
+    <>
+      <ActionModalClient
+        title={title}
+        color={color}
+        actionType={actionType}
+        buttonLabel={buttonLabel}
+        endpoint={endpoint}
+        redirect={redirect}
+        size={size}
+        fullScreen={fullScreen}
+        opened={actionModalOpened}
+        close={closeActionModal}
+        updateTable={() => {
+          mutate();
+          setSearch(activeFormData?.id ?? '');
+        }}
+        requiresPayload={requiresPayload}
+      >
+        {children}
+      </ActionModalClient>
+
+      <DataTableClient
+        mainModule={MAIN_MODULE}
+        subModule={SUB_MODULE}
+        user={user}
+        permissions={permissions}
+        columnSort={columnSort}
+        sortDirection={sortDirection}
+        search={search}
+        showSearch
+        showPrint={activeDataPrintable}
+        showEdit={activeDataEditable}
+        defaultModalOnClick={'details'}
+        mainItemsClickable={false}
+        subItemsClickable
+        updateItemData={UPDATE_ITEM_CONFIG}
+        detailItemData={DETAIL_ITEM_CONFIG}
+        logItemData={LOG_ITEM_CONFIG}
+        subButtonLabel={'Supplies'}
+        data={tableData}
+        perPage={perPage}
+        loading={isLoading}
+        page={page}
+        lastPage={data?.last_page ?? 0}
+        from={data?.from ?? 0}
+        to={data?.to ?? 0}
+        total={data?.total ?? 0}
+        refreshData={mutate}
+        activeFormData={activeFormData}
+        setActiveData={setActiveData}
+        onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
+          setSearch(_search ?? '');
+          setPage(_page);
+          setPerPage(_perPage);
+          setColumnSort(_columnSort ?? columnSort);
+          setSortDirection(_sortDirection ?? 'desc');
+        }}
+      />
+    </>
   );
 };
 

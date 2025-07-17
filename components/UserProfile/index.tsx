@@ -8,8 +8,14 @@ import SignatureFormClient from './SignatureForm';
 import { Tabs } from '@mantine/core';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
 import { useViewportSize } from '@mantine/hooks';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 const UserProfileClient = ({ user }: UserProfileProps) => {
+  const { media: avatar, clearCache: clearAvatarCache } = useMediaAsset({
+    type: 'avatar',
+    user,
+  });
+
   const { width } = useViewportSize();
   const [activeTab, setActiveTab] = useState<string | null>('information');
 
@@ -28,10 +34,11 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
       >
         <Box mb={10}>
           <SingleImageUploadClient
-            image={user.avatar ?? ''}
-            postUrl={`/media/${user.id}`}
-            params={{ update_type: 'user-avatar' }}
+            image={avatar ?? ''}
+            postUrl={'/media'}
+            params={{ type: 'avatar', parent_id: user.id }}
             type={'avatar'}
+            clearImageCache={clearAvatarCache}
           />
         </Box>
 

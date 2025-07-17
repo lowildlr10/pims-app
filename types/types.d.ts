@@ -120,7 +120,7 @@ type UserType = {
     id?: string;
     designation_name?: string;
   };
-  roles: Role[];
+  roles?: Role[];
   created_at?: string;
   updated_at?: string;
 };
@@ -233,6 +233,8 @@ type SignatoryDetailTypeType =
   | 'cash_availability'
   | 'approved_by'
   | 'approval'
+  | 'approval_lce'
+  | 'approval_bac'
   | 'canvassers'
   | 'twg_chairperson'
   | 'twg_member'
@@ -423,7 +425,7 @@ type PurchaseRequestType = {
   cash_available_fullname?: string;
   approval_fullname?: string;
   status?: PurchaseRequestStatus;
-  status_timestamps: {
+  status_timestamps?: {
     pending_at?: string;
     approved_cash_available_at?: string;
     approved_at?: string;
@@ -485,7 +487,7 @@ type RequestQuotationType = {
   funding_source_location?: string;
   purpose?: string;
   status?: RequestQuotationStatus;
-  status_timestamps: {
+  status_timestamps?: {
     canvassing_at?: string;
     completed_at?: string;
     cancelled_at?: string;
@@ -560,7 +562,7 @@ type AbstractQuotationType = {
   member_3_fullname?: string;
   signatory_member_3?: SignatoryType;
   status?: AbstractQuotationStatus;
-  status_timestamps: {
+  status_timestamps?: {
     pending_at?: string;
     approved_at?: string;
     awarded_at?: string;
@@ -616,10 +618,10 @@ type PurchaseOrderType = {
   total_amount_words?: string;
   total_amount?: number;
   sig_approval_id?: string;
-  signatory_approval: SignatoryType;
+  signatory_approval?: SignatoryType;
   document_type?: 'po' | 'jo';
   status?: PurchaseOrderStatus;
-  status_timestamps: {
+  status_timestamps?: {
     pending_at?: string;
     approved_at?: string;
     issued_at?: string;
@@ -665,9 +667,9 @@ type InspectionAcceptanceReportType = {
   received_date?: string;
   acceptance_completed?: boolean;
   acceptance_id?: string;
-  acceptance: UserType;
+  acceptance?: UserType;
   status?: InspectionAcceptanceReportStatus;
-  status_timestamps: {
+  status_timestamps?: {
     pending_at?: string;
     inspected_at?: string;
     accepted_at?: string;
@@ -724,7 +726,7 @@ type InventoryIssuanceType = {
   purchase_order_id?: string;
   purchase_order?: PurchaseOrderType;
   responsibility_center_id?: string;
-  responsibility_center: ResponsibilityCenterType;
+  responsibility_center?: ResponsibilityCenterType;
   inventory_no?: string;
   inventory_date?: string;
   sai_no?: string;
@@ -743,7 +745,7 @@ type InventoryIssuanceType = {
   recipient?: UserType;
   received_date?: string;
   status?: InventoryIssuanceStatus;
-  status_timestamps: {
+  status_timestamps?: {
     pending_at?: string;
     approved_at?: string;
     issued_at?: string;

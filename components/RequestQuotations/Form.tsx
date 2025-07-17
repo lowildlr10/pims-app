@@ -36,7 +36,6 @@ import { notify } from '@/libs/Notification';
 import { Select } from '@mantine/core';
 import { List } from '@mantine/core';
 import DynamicMultiselect from '../Generic/DynamicMultiselect';
-import { Radio } from '@mantine/core';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -113,17 +112,14 @@ const FormClient = forwardRef<
                   : false),
             }))
           : [],
-      vat_registered:
-        currentData?.vat_registered === undefined ||
-        currentData?.vat_registered === null
-          ? ''
-          : currentData?.vat_registered === true
-            ? '1'
-            : '0',
+      vat_registered: currentData?.vat_registered,
       canvassers:
         currentData?.canvassers?.map((canvasser) => canvasser.user_id) ?? [],
     }),
     [currentData]
+  );
+  const [vatRegistered, setVatRegistered] = useState<boolean | undefined>(
+    currentForm.vat_registered
   );
   const form = useForm({
     mode: 'uncontrolled',
@@ -174,6 +170,7 @@ const FormClient = forwardRef<
 
   useEffect(() => {
     setCurrentData(data);
+    setVatRegistered(data?.vat_registered);
   }, [data]);
 
   useEffect(() => {
@@ -307,11 +304,9 @@ const FormClient = forwardRef<
               defaultValue={item?.unit_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
-              // clampBehavior={'strict'}
               decimalScale={2}
               fixedDecimalScale
               thousandSeparator={','}
-              // required={!readOnly && !isCreate && item.included}
               readOnly={readOnly || isCreate || !item.included}
             />
           </Table.Td>
@@ -326,7 +321,6 @@ const FormClient = forwardRef<
               defaultValue={item?.total_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
-              // clampBehavior={'strict'}
               decimalScale={2}
               fixedDecimalScale
               thousandSeparator={','}
@@ -344,14 +338,6 @@ const FormClient = forwardRef<
     <form
       ref={ref}
       onSubmit={form.onSubmit((values) => {
-        let vatRegistered = '';
-
-        if (values.vat_registered === '1') {
-          vatRegistered = 'true';
-        } else if (values.vat_registered === '0') {
-          vatRegistered = 'false';
-        }
-
         if (handleCreateUpdate) {
           handleCreateUpdate({
             ...values,
@@ -403,7 +389,7 @@ const FormClient = forwardRef<
             <Select
               key={form.key('signed_type')}
               {...form.getInputProps('signed_type')}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={readOnly ? 'default' : 'default'}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               label={'Signed Type'}
               data={[
@@ -456,6 +442,7 @@ const FormClient = forwardRef<
                         minHeight: '30px',
                         height: '30px',
                       },
+                      flex: lgScreenAndBelow ? 0.5 : 0.3,
                     }}
                     readOnly
                   />
@@ -487,6 +474,7 @@ const FormClient = forwardRef<
                         minHeight: '30px',
                         height: '30px',
                       },
+                      flex: lgScreenAndBelow ? 0.5 : 0.3,
                     }}
                     readOnly
                   />
@@ -520,6 +508,7 @@ const FormClient = forwardRef<
                         minHeight: '30px',
                         height: '30px',
                       },
+                      flex: lgScreenAndBelow ? 0.5 : 0.3,
                     }}
                     readOnly
                   />
@@ -579,6 +568,7 @@ const FormClient = forwardRef<
                         minHeight: '30px',
                         height: '30px',
                       },
+                      flex: 1,
                     }}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     leftSection={
@@ -622,6 +612,7 @@ const FormClient = forwardRef<
                         minHeight: '30px',
                         height: '30px',
                       },
+                      flex: 1,
                     }}
                     required={!readOnly}
                     readOnly={readOnly}
@@ -656,6 +647,7 @@ const FormClient = forwardRef<
                         input: {
                           minHeight: '30px',
                           height: '30px',
+                          flex: 1,
                         },
                       }}
                       endpoint={'/libraries/suppliers'}
@@ -689,6 +681,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       readOnly
                     />
@@ -713,6 +706,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       readOnly
                     />
@@ -739,6 +733,7 @@ const FormClient = forwardRef<
               <Group
                 justify={signedType === 'lce' ? 'space-between' : 'flex-end'}
                 flex={0.5}
+                gap={'xl'}
               >
                 {signedType === 'lce' && (
                   <DateTimePicker
@@ -767,6 +762,7 @@ const FormClient = forwardRef<
                     error={form?.errors?.opening_dt && ''}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      flex: 1,
                     }}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     leftSection={
@@ -811,6 +807,7 @@ const FormClient = forwardRef<
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      flex: 1,
                     }}
                     required={!readOnly}
                     readOnly={readOnly}
@@ -828,6 +825,7 @@ const FormClient = forwardRef<
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      flex: 1,
                     }}
                     readOnly
                   />
@@ -965,22 +963,35 @@ const FormClient = forwardRef<
                     All entries must be legibly printed/written.
                   </List.Item>
                   <List.Item>
-                    <Radio.Group
-                      key={form.key('vat_registered')}
-                      {...form.getInputProps('vat_registered')}
-                      label={
-                        'All taxes are inclusive. Please check whether you are '
-                      }
-                      size={lgScreenAndBelow ? 'sm' : 'md'}
-                      defaultValue={form.values.vat_registered}
-                      readOnly={readOnly}
-                    >
-                      <Stack mt={'xs'} mb={'md'}>
-                        <Radio value={''} label={'Not set'} />
-                        <Radio value={'1'} label={'VAT Registered     OR'} />
-                        <Radio value={'0'} label={'Non VAT Registered'} />
-                      </Stack>
-                    </Radio.Group>
+                    All taxes are inclusive. Please check whether you are
+                    <Stack mt='xs' mb='md'>
+                      <Checkbox
+                        label='VAT Registered OR'
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        variant='outline'
+                        radius='xl'
+                        checked={vatRegistered === true}
+                        onChange={(e) => {
+                          !readOnly &&
+                            setVatRegistered(
+                              e.currentTarget.checked ? true : undefined
+                            );
+                        }}
+                      />
+                      <Checkbox
+                        label='Non VAT Registered'
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        variant='outline'
+                        radius='xl'
+                        checked={vatRegistered === false}
+                        onChange={(e) => {
+                          !readOnly &&
+                            setVatRegistered(
+                              e.currentTarget.checked ? false : undefined
+                            );
+                        }}
+                      />
+                    </Stack>
                   </List.Item>
                   <List.Item>
                     Warranty shall be for a period of three (3) months for
@@ -1036,6 +1047,7 @@ const FormClient = forwardRef<
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   sx={{
                     borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    flex: 0.5,
                   }}
                   readOnly={readOnly}
                 />
@@ -1052,6 +1064,7 @@ const FormClient = forwardRef<
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   sx={{
                     borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    flex: 0.5,
                   }}
                   autosize
                   readOnly

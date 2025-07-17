@@ -1,9 +1,17 @@
+type MediaType =
+  | 'avatar'
+  | 'signature'
+  | 'logo'
+  | 'favicon'
+  | 'login-background';
+
 type SingleImageUploadProps = {
   postUrl: string;
   params?: any;
   image: string;
   height?: string | number;
-  type?: 'avatar' | 'logo' | 'signature' | 'default';
+  type?: MediaType;
+  clearImageCache?: () => void;
 };
 
 type LayoutSidebarProps = {
@@ -117,12 +125,80 @@ type TableHeader = {
   width?: string | number;
   align?: 'left' | 'center' | 'right';
   sortable?: boolean;
+  clickable?: boolean;
 };
 
 type TableDataType = {
   head?: TableHeader[];
   subHead?: TableHeader[];
   body?: any;
+};
+
+type FormDataType = CompanyType &
+  BidsAwardsCommitteeType &
+  FundingSourceType &
+  ItemClassificationType &
+  MfoPapType &
+  PaperSizeType &
+  ProcurementModeType &
+  ResponsibilityCenterType &
+  SignatoryType &
+  SupplierType &
+  UacsCodeType &
+  RoleType &
+  DivisionType &
+  SectionType &
+  UserType &
+  SystemLogType &
+  PurchaseRequestType &
+  RequestQuotationType &
+  AbstractQuotationType &
+  PurchaseOrderType &
+  InspectionAcceptanceReportType &
+  InventorySupplyType &
+  InventoryIssuanceType & {
+    parent_id?: string | null;
+    parent_body?: FormDataType;
+    other_params?: { [key: string]: any } | null;
+  };
+
+type ActiveDataType = {
+  display: 'details' | 'create' | 'update';
+  moduleType: ModuleType;
+  data: FormDataType;
+};
+
+type DataTableItemType = {
+  title?: string;
+  endpoint?: string;
+};
+
+type CreateUpdateDetailItemTableType = {
+  main?: DataTableItemType;
+  sub?: DataTableItemType;
+  fullscreen?: boolean;
+};
+
+type PrintItemTableType = {
+  main?: DataTableItemType & {
+    default_paper?: 'A4';
+    default_orientation?: 'P' | 'L';
+  };
+  sub?: DataTableItemType & {
+    default_paper?: 'A4';
+    default_orientation?: 'P' | 'L';
+  };
+};
+
+type LogItemTableType = {
+  main?: DataTableItemType;
+  sub?: DataTableItemType;
+};
+
+type ItemCreateMenuTableType = {
+  label: string;
+  value: SignatoryDocumentType;
+  moduleType: ModuleType;
 };
 
 type DataTableProps = {
@@ -138,50 +214,28 @@ type DataTableProps = {
   search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
-  createMenus?: {
-    label: string;
-    value: SignatoryDocumentType;
-    moduleType: ModuleType;
-  }[];
+  showPrint?: boolean;
+  showEdit?: boolean;
+  createMenus?: ItemCreateMenuTableType[];
   defaultModalOnClick?: 'update' | 'details';
   showCreateSubItem?: boolean;
   mainItemsClickable?: boolean;
   subItemsClickable?: boolean;
   autoCollapseSubItems?: 'all' | 'first' | 'none';
 
-  createMainItemModalTitle?: string;
-  createMainItemEndpoint?: string;
-  createSubItemModalTitle?: string;
-  createSubItemEndpoint?: string;
-  createModalFullscreen?: boolean;
-  updateMainItemModalTitle?: string;
-  updateMainItemBaseEndpoint?: string;
-  updateSubItemModalTitle?: string;
-  updateSubItemBaseEndpoint?: string;
-  updateMainItemEnable?: boolean;
-  updateSubItemEnable?: boolean;
-  updateModalFullscreen?: boolean;
-  detailMainItemModalTitle?: string;
-  detailMainItemBaseEndpoint?: string;
-  detailSubItemModalTitle?: string;
-  detailSubItemBaseEndpoint?: string;
-  printMainItemModalTitle?: string;
-  printSubItemModalTitle?: string;
-  printMainItemBaseEndpoint?: string;
-  printSubItemBaseEndpoint?: string;
-  printMainItemDefaultPaper?: string;
-  printSubItemDefaultPaper?: string;
-  printMainItemDefaultOrientation?: 'P' | 'L';
-  printSubItemDefaultOrientation?: 'P' | 'L';
-  printMainItemEnable?: boolean;
-  printSubItemEnable?: boolean;
-  logMainItemModalTitle?: string;
-  logMainItemEndpoint?: string;
-  logSubItemModalTitle?: string;
-  logSuItemEndpoint?: string;
+  createItemData?: CreateUpdateDetailItemTableType;
+  updateItemData?: CreateUpdateDetailItemTableType;
+  detailItemData?: CreateUpdateDetailItemTableType;
+  printItemData?: PrintItemTableType;
+  logItemData?: LogItemTableType;
+
   subButtonLabel?: string;
 
   data: TableDataType;
+  activeFormData?: FormDataType;
+  setActiveData?: React.Dispatch<
+    React.SetStateAction<ActiveDataType | undefined>
+  >;
   perPage: number;
   loading?: boolean;
 
@@ -220,11 +274,7 @@ type DataTableActionsProps = {
   search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
-  createMenus?: {
-    label: string;
-    value: SignatoryDocumentType;
-    moduleType: ModuleType;
-  }[];
+  createMenus?: ItemCreateMenuTableType[];
   setSearch?: (value: string) => void;
   handleOpenCreateModal?: (
     parentId: string | null,
@@ -242,8 +292,12 @@ type SearchModalProps = {
 
 type DetailActionProps = {
   permissions?: string[];
-  data?: any;
+  data?: FormDataType;
   content?: ModuleType;
+  display?: 'bar' | 'button';
+  showButtonLabel?: boolean;
+  buttonSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | string;
+  buttonIconSize?: string | number;
   hasStatus?: boolean;
   status?: string;
   stack?: ModalStackReturnType;

@@ -5,6 +5,30 @@ import API from '@/libs/API';
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import DataTableClient from '../../Generic/DataTable';
+import Helper from '@/utils/Helpers';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+
+const MAIN_MODULE: ModuleType = 'lib-paper-size';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Paper Size Type',
+    endpoint: '/libraries/paper-sizes',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Paper Size Type',
+    endpoint: '/libraries/paper-sizes',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/libraries/paper-sizes',
+  },
+};
 
 const defaultTableData: TableDataType = {
   head: [
@@ -47,6 +71,10 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
     defaultTableData ?? {}
   );
 
+  const [activeFormData, setActiveFormData] = useState<FormDataType>();
+  const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [activeDataEditable, setActiveDataEditable] = useState(false);
+
   const { data, isLoading, mutate } = useSWR<PaperSizesResponse>(
     [
       `/libraries/paper-sizes`,
@@ -81,6 +109,35 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
   );
 
   useEffect(() => {
+    if (Helper.empty(activeData?.moduleType) || Helper.empty(activeData?.data))
+      return;
+
+    const { display, moduleType, data } = activeData ?? {};
+    // const status = data?.status;
+    let hasEditPermission = false;
+
+    switch (moduleType) {
+      case MAIN_MODULE:
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+          setActiveFormData(undefined);
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      default:
+        break;
+    }
+  }, [activeData, permissions]);
+
+  useEffect(() => {
     const _data = data?.data?.map((body: PaperSizeType) => {
       return {
         ...body,
@@ -95,18 +152,17 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      mainModule={'lib-paper-size'}
+      mainModule={MAIN_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
       showSearch
       showCreate
-      createMainItemModalTitle={'Create Paper Size Type'}
-      createMainItemEndpoint={'/libraries/paper-sizes'}
-      updateMainItemModalTitle={'Update Paper Size Type'}
-      updateMainItemBaseEndpoint={'/libraries/paper-sizes'}
-      detailMainItemBaseEndpoint={'/libraries/paper-sizes'}
+      showEdit={activeDataEditable}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -116,6 +172,8 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
       to={data?.to ?? 0}
       total={data?.total ?? 0}
       refreshData={mutate}
+      activeFormData={activeFormData}
+      setActiveData={setActiveData}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);

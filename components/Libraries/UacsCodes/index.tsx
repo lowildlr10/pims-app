@@ -7,6 +7,30 @@ import useSWR from 'swr';
 import DataTableClient from '../../Generic/DataTable';
 import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
+import Helper from '@/utils/Helpers';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+
+const MAIN_MODULE: ModuleType = 'lib-uacs-code';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create UACS Object Code',
+    endpoint: '/libraries/uacs-codes',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update UACS Object Code',
+    endpoint: '/libraries/uacs-codes',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/libraries/uacs-codes',
+  },
+};
 
 const defaultTableData: TableDataType = {
   head: [
@@ -49,6 +73,10 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
     defaultTableData ?? {}
   );
 
+  const [activeFormData, setActiveFormData] = useState<FormDataType>();
+  const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [activeDataEditable, setActiveDataEditable] = useState(false);
+
   const { data, isLoading, mutate } = useSWR<UacsCodesResponse>(
     [
       `/libraries/uacs-codes`,
@@ -83,6 +111,35 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
   );
 
   useEffect(() => {
+    if (Helper.empty(activeData?.moduleType) || Helper.empty(activeData?.data))
+      return;
+
+    const { display, moduleType, data } = activeData ?? {};
+    // const status = data?.status;
+    let hasEditPermission = false;
+
+    switch (moduleType) {
+      case MAIN_MODULE:
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+          setActiveFormData(undefined);
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      default:
+        break;
+    }
+  }, [activeData, permissions]);
+
+  useEffect(() => {
     const _data = data?.data?.map((body: UacsCodeType) => {
       return {
         ...body,
@@ -112,18 +169,17 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      mainModule={'lib-uacs-code'}
+      mainModule={MAIN_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
       showSearch
       showCreate
-      createMainItemModalTitle={'Create UACS Object Code'}
-      createMainItemEndpoint={'/libraries/uacs-codes'}
-      updateMainItemModalTitle={'Update UACS Object Code'}
-      updateMainItemBaseEndpoint={'/libraries/uacs-codes'}
-      detailMainItemBaseEndpoint={'/libraries/uacs-codes'}
+      showEdit={activeDataEditable}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -133,6 +189,8 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
       to={data?.to ?? 0}
       total={data?.total ?? 0}
       refreshData={mutate}
+      activeFormData={activeFormData}
+      setActiveData={setActiveData}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);

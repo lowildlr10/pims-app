@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Box,
   Button,
   Group,
@@ -13,6 +14,7 @@ import React, { useEffect, useState } from 'react';
 import {
   IconActivity,
   IconHandFinger,
+  IconLibrary,
   IconPencil,
   IconPrinter,
   IconX,
@@ -43,11 +45,15 @@ import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
 import InventoryIssuanceStatusClient from '@/components/InventoryIssuances/Status';
 import InventoryIssuanceActionsClient from '@/components/InventoryIssuances/Actions';
 
-const DetailActionsClient = ({
+export const DetailActionsClient = ({
   permissions,
   data,
   content,
   hasStatus,
+  showButtonLabel = true,
+  buttonSize,
+  buttonIconSize,
+  display = 'bar',
   status,
   stack,
   updateTable,
@@ -64,10 +70,10 @@ const DetailActionsClient = ({
   const [buttonLabel, setButtonLabel] = useState('');
   const [endpoint, setEndpoint] = useState('');
   const [redirect, setRedirect] = useState<string>();
-  const [currentStatus, setCurrentStatus] = useState(status);
   const [size, setSize] = useState<'xs' | 'sm' | 'md' | 'lg' | 'xl'>();
   const [fullScreen, setFullScreen] = useState<boolean>();
   const [requiresPayload, setRequiresPayload] = useState<boolean>();
+  const [currentStatus, setCurrentStatus] = useState(status);
 
   useEffect(() => {
     setCurrentStatus(status);
@@ -159,13 +165,24 @@ const DetailActionsClient = ({
     return (
       <Menu offset={6} shadow={'md'} width={400} withArrow>
         <Menu.Target>
-          <Button
-            size={lgScreenAndBelow ? 'xs' : 'sm'}
-            color={'var(--mantine-color-secondary-9)'}
-            rightSection={<IconHandFinger size={18} />}
-          >
-            Actions
-          </Button>
+          {showButtonLabel ? (
+            <Button
+              size={buttonSize ?? (lgScreenAndBelow ? 'xs' : 'sm')}
+              color={'var(--mantine-color-secondary-9)'}
+              rightSection={<IconLibrary size={lgScreenAndBelow ? 14 : 18} />}
+            >
+              Actions
+            </Button>
+          ) : (
+            <ActionIcon
+              size={buttonSize ?? (lgScreenAndBelow ? 'xs' : 'sm')}
+              color={'var(--mantine-color-secondary-9)'}
+            >
+              <IconLibrary
+                size={buttonIconSize ?? (lgScreenAndBelow ? 14 : 18)}
+              />
+            </ActionIcon>
+          )}
         </Menu.Target>
 
         <Menu.Dropdown>
@@ -174,7 +191,7 @@ const DetailActionsClient = ({
             <PurchaseRequestActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
-              status={data?.status}
+              status={data?.status ?? 'draft'}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -183,7 +200,7 @@ const DetailActionsClient = ({
             <RequestQuotationActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
-              status={data?.status}
+              status={data?.status ?? 'draft'}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -192,7 +209,7 @@ const DetailActionsClient = ({
             <AbstractQuotationActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
-              status={data?.status}
+              status={data?.status ?? 'draft'}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -201,7 +218,7 @@ const DetailActionsClient = ({
             <PurchaseOrderActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
-              status={data?.status}
+              status={data?.status ?? 'draft'}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -210,7 +227,7 @@ const DetailActionsClient = ({
             <InspectionAcceptanceReportActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
-              status={data?.status}
+              status={data?.status ?? 'draft'}
               documentType={data?.purchase_order?.document_type ?? 'po'}
               handleOpenActionModal={handleOpenActionModal}
             />
@@ -220,7 +237,7 @@ const DetailActionsClient = ({
             <InventorySupplyActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
-              status={data?.status}
+              status={data?.status ?? 'out-of-stock'}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -229,46 +246,78 @@ const DetailActionsClient = ({
             <InventoryIssuanceActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
-              status={data?.status}
+              status={data?.status ?? 'draft'}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
 
-          <Menu.Divider />
+          {display === 'bar' && (
+            <>
+              <Menu.Divider />
 
-          <Menu.Label>Activity</Menu.Label>
-          <Menu.Item
-            leftSection={<IconActivity size={18} stroke={1.5} />}
-            onClick={() => {
-              stack.close('detail-modal');
-              stack.open('log-modal');
-            }}
-          >
-            Audit Logs
-          </Menu.Item>
+              <Menu.Label>Activity</Menu.Label>
+              <Menu.Item
+                leftSection={<IconActivity size={18} stroke={1.5} />}
+                onClick={() => {
+                  stack.close('detail-modal');
+                  stack.open('log-modal');
+                }}
+              >
+                Audit Logs
+              </Menu.Item>
+            </>
+          )}
         </Menu.Dropdown>
       </Menu>
     );
   };
 
   return (
-    <Paper w={'100%'} py={'sm'} px={'lg'} shadow={'sm'}>
-      <Group justify={'space-between'}>
-        {hasStatus ? (
-          <Group>
-            <Text
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              fw={700}
-              tt={'uppercase'}
-            >
-              Status:
-            </Text>
-            {dynamicStatus(content)}
-          </Group>
-        ) : (
-          <Box></Box>
-        )}
+    <>
+      {display === 'bar' && (
+        <Paper w={'100%'} py={'sm'} px={'lg'} shadow={'sm'}>
+          <Group justify={'space-between'}>
+            {hasStatus ? (
+              <Group>
+                <Text
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  fw={700}
+                  tt={'uppercase'}
+                >
+                  Status:
+                </Text>
+                {dynamicStatus(content)}
+              </Group>
+            ) : (
+              <Box></Box>
+            )}
 
+            <Stack>
+              {dynamicActions(content)}
+
+              <ActionModalClient
+                title={title}
+                color={color}
+                actionType={actionType}
+                buttonLabel={buttonLabel}
+                endpoint={endpoint}
+                redirect={redirect}
+                size={size}
+                fullScreen={fullScreen}
+                opened={actionModalOpened}
+                close={closeActionModal}
+                stack={stack}
+                updateTable={updateTable}
+                requiresPayload={requiresPayload}
+              >
+                {children}
+              </ActionModalClient>
+            </Stack>
+          </Group>
+        </Paper>
+      )}
+
+      {display === 'button' && (
         <Stack>
           {dynamicActions(content)}
 
@@ -290,8 +339,8 @@ const DetailActionsClient = ({
             {children}
           </ActionModalClient>
         </Stack>
-      </Group>
-    </Paper>
+      )}
+    </>
   );
 };
 
@@ -318,60 +367,12 @@ const DetailModalClient = ({
   }, [data]);
 
   useEffect(() => {
-    let isEditable = true;
+    setShowPrintButton(showPrint);
+  }, [showPrint]);
 
-    switch (content) {
-      case 'pr':
-        isEditable = [
-          'draft',
-          'disapproved',
-          'pending',
-          'approved_cash_available',
-          'approved',
-        ].includes(currentData?.status ?? '');
-
-        if (
-          showEdit &&
-          isEditable &&
-          !['super:*', 'supply:*'].some((permission) =>
-            permissions?.includes(permission)
-          ) &&
-          user?.id !== data?.requested_by_id
-        ) {
-          setShowEditButton(false);
-        } else {
-          setShowEditButton(isEditable);
-        }
-        break;
-
-      case 'rfq':
-        isEditable = ['draft', 'canvassing', 'completed'].includes(
-          currentData?.status ?? ''
-        );
-
-        if (showEdit && isEditable) {
-          setShowEditButton(true);
-        } else {
-          setShowEditButton(false);
-        }
-        break;
-
-      case 'aoq':
-        isEditable = ['draft', 'pending'].includes(currentData?.status ?? '');
-
-        if (showEdit && isEditable) {
-          setShowEditButton(true);
-        } else {
-          setShowEditButton(false);
-        }
-        break;
-
-      default:
-        setShowPrintButton(showPrint);
-        setShowEditButton(showEdit);
-        break;
-    }
-  }, [content, currentData]);
+  useEffect(() => {
+    setShowEditButton(showEdit);
+  }, [showEdit]);
 
   return (
     <Modal

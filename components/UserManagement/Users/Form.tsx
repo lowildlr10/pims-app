@@ -17,6 +17,7 @@ import { Switch } from '@mantine/core';
 import DynamicSelect from '../../Generic/DynamicSelect';
 import DynamicMultiselect from '../../Generic/DynamicMultiselect';
 import SingleImageUploadClient from '../../Generic/SingleImageUpload';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
@@ -43,6 +44,11 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
     const form = useForm({
       mode: 'controlled',
       initialValues: currentForm,
+    });
+
+    const { media: avatar, clearCache: clearAvatarCache } = useMediaAsset({
+      type: 'avatar',
+      user: currentData,
     });
 
     useEffect(() => {
@@ -72,11 +78,12 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
           {currentData?.id && (
             <Box mb={10}>
               <SingleImageUploadClient
-                image={currentData.avatar ?? ''}
-                postUrl={`/media/${currentData.id}`}
-                params={{ update_type: 'user-avatar' }}
+                image={avatar ?? ''}
+                postUrl={'/media'}
+                params={{ type: 'avatar', parent_id: currentData?.id }}
                 height={150}
                 type={'avatar'}
+                clearImageCache={clearAvatarCache}
               />
             </Box>
           )}

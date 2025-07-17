@@ -7,6 +7,42 @@ import useSWR from 'swr';
 import DataTableClient from '../../Generic/DataTable';
 import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
+import Helper from '@/utils/Helpers';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+
+const MAIN_MODULE: ModuleType = 'account-division';
+const SUB_MODULE: ModuleType = 'account-section';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Division',
+    endpoint: '/accounts/divisions',
+  },
+  sub: {
+    title: 'Create Section',
+    endpoint: '/accounts/sections',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Division',
+    endpoint: '/accounts/divisions',
+  },
+  sub: {
+    title: 'Create Section',
+    endpoint: '/accounts/sections',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/accounts/divisions',
+  },
+  sub: {
+    endpoint: '/accounts/sections',
+  },
+};
 
 const defaultTableData: TableDataType = {
   head: [
@@ -54,6 +90,10 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
     defaultTableData ?? {}
   );
 
+  const [activeFormData, setActiveFormData] = useState<FormDataType>();
+  const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [activeDataEditable, setActiveDataEditable] = useState(false);
+
   const { data, isLoading, mutate } = useSWR<DivisionResponse>(
     [
       `/accounts/divisions`,
@@ -86,6 +126,52 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       keepPreviousData: true,
     }
   );
+
+  useEffect(() => {
+    if (Helper.empty(activeData?.moduleType) || Helper.empty(activeData?.data))
+      return;
+
+    const { display, moduleType, data } = activeData ?? {};
+    // const status = data?.status;
+    let hasEditPermission = false;
+
+    switch (moduleType) {
+      case MAIN_MODULE:
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+          setActiveFormData(undefined);
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      case SUB_MODULE:
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions(SUB_MODULE, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+          setActiveFormData({
+            division_id: data?.parent_id ?? undefined,
+          });
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      default:
+        break;
+    }
+  }, [activeData, permissions]);
 
   useEffect(() => {
     const _data = data?.data?.map((body: DivisionType) => {
@@ -139,8 +225,8 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
 
   return (
     <DataTableClient
-      mainModule={'account-division'}
-      subModule={'account-section'}
+      mainModule={MAIN_MODULE}
+      subModule={SUB_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
@@ -149,16 +235,10 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       showCreate
       showCreateSubItem
       subItemsClickable
-      createMainItemModalTitle={'Create Division'}
-      createMainItemEndpoint={'/accounts/divisions'}
-      createSubItemModalTitle={'Create Section'}
-      createSubItemEndpoint={'/accounts/sections'}
-      updateMainItemModalTitle={'Update Division'}
-      updateMainItemBaseEndpoint={'/accounts/divisions'}
-      updateSubItemModalTitle={'Update Section'}
-      updateSubItemBaseEndpoint={'/accounts/sections'}
-      detailMainItemBaseEndpoint={'/accounts/divisions'}
-      detailSubItemBaseEndpoint={'/accounts/sections'}
+      showEdit={activeDataEditable}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       subButtonLabel={'Sections'}
       data={tableData}
       perPage={perPage}
@@ -169,6 +249,8 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       to={data?.to ?? 0}
       total={data?.total ?? 0}
       refreshData={mutate}
+      activeFormData={activeFormData}
+      setActiveData={setActiveData}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);

@@ -152,16 +152,16 @@ export const INVENTORY_LINKS = [
 ];
 
 export const PAYMENT_LINKS = [
-  {
-    label: 'Check',
-    allowedPermissions: ['super:*', 'head:*', 'check:*', 'check:view'],
-    link: '/payments/checks',
-  },
-  {
-    label: 'Bank Deposit',
-    allowedPermissions: ['super:*', 'head:*', 'deposit:*', 'deposit:view'],
-    link: '/payments/deposits',
-  },
+  // {
+  //   label: 'Check',
+  //   allowedPermissions: ['super:*', 'head:*', 'check:*', 'check:view'],
+  //   link: '/payments/checks',
+  // },
+  // {
+  //   label: 'Bank Deposit',
+  //   allowedPermissions: ['super:*', 'head:*', 'deposit:*', 'deposit:view'],
+  //   link: '/payments/deposits',
+  // },
 ];
 
 export const LIBRARY_LINKS = [

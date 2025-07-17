@@ -1,6 +1,5 @@
 type LoginLogoProps = {
-  logoUrl: string;
-  companyName: string;
+  company: CompanyType;
 };
 
 type LoginFormType = {

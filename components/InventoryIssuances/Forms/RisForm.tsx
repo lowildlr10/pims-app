@@ -607,6 +607,10 @@ const RisFormClient = forwardRef<
                           sx={{
                             borderBottom:
                               '2px solid var(--mantine-color-gray-5)',
+                            input: {
+                              minHeight: '30px',
+                              height: '30px',
+                            },
                           }}
                           readOnly={readOnly}
                         />
