@@ -170,12 +170,14 @@ const FormClient = forwardRef<HTMLFormElement, ModalSignatoryContentProps>(
                                 ...currentSubDetail,
                                 checked:
                                   currentSubDetail.signatory_type ===
-                                  subDetail.signatory_type
+                                    subDetail.signatory_type &&
+                                  currentDetail.document === detail.document
                                     ? e.target.checked
                                     : currentSubDetail.checked,
                                 position:
                                   currentSubDetail.signatory_type ===
-                                  subDetail.signatory_type
+                                    subDetail.signatory_type &&
+                                  currentDetail.document === detail.document
                                     ? ''
                                     : currentSubDetail.position,
                               })
@@ -203,7 +205,8 @@ const FormClient = forwardRef<HTMLFormElement, ModalSignatoryContentProps>(
                                     ...currentSubDetail,
                                     position:
                                       currentSubDetail.signatory_type ===
-                                      subDetail.signatory_type
+                                        subDetail.signatory_type &&
+                                      currentDetail.document === detail.document
                                         ? value
                                         : currentSubDetail.position,
                                   })

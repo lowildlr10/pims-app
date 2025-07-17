@@ -56,13 +56,7 @@ const FormClient = forwardRef<
       received_date: currentData?.received_date ?? null,
       inspected: currentData?.inspected ?? false,
       sig_inspection_id: currentData?.sig_inspection_id ?? '',
-      acceptance_completed:
-        currentData?.acceptance_completed === undefined ||
-        currentData?.acceptance_completed === null
-          ? ''
-          : currentData?.acceptance_completed === true
-            ? '1'
-            : '0',
+      acceptance_completed: currentData?.acceptance_completed,
       acceptance_id: currentData?.acceptance_id ?? '',
       items:
         currentData?.items &&
@@ -84,12 +78,20 @@ const FormClient = forwardRef<
     mode: 'uncontrolled',
     initialValues: currentForm,
   });
+  const [inspected, setInspected] = useState<boolean | undefined>(
+    currentForm.inspected
+  );
+  const [acceptanceCompleted, setAcceptanceCompleted] = useState<
+    boolean | undefined
+  >(currentForm.acceptance_completed);
   const [province, setProvince] = useState('Loading...');
   const [municipality, setMunicipality] = useState('Loading...');
   const [companyType, setCompanyType] = useState('Loading...');
 
   useEffect(() => {
     setCurrentData(data);
+    setInspected(data?.inspected);
+    setAcceptanceCompleted(data?.acceptance_completed);
   }, [data]);
 
   useEffect(() => {
@@ -187,14 +189,6 @@ const FormClient = forwardRef<
     <form
       ref={ref}
       onSubmit={form.onSubmit((values) => {
-        let acceptanceCompleted = '';
-
-        if (values.acceptance_completed === '1') {
-          acceptanceCompleted = 'true';
-        } else if (values.acceptance_completed === '0') {
-          acceptanceCompleted = 'false';
-        }
-
         if (handleCreateUpdate) {
           handleCreateUpdate({
             ...values,
@@ -210,6 +204,7 @@ const FormClient = forwardRef<
             received_date: values.received_date
               ? dayjs(values.received_date).format('YYYY-MM-DD')
               : '',
+            inspected,
             acceptance_completed: acceptanceCompleted,
           });
         }
@@ -280,6 +275,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       readOnly
                     />
@@ -306,6 +302,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       readOnly
                     />
@@ -358,6 +355,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       leftSection={
@@ -404,6 +402,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       readOnly
                     />
@@ -443,6 +442,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       leftSection={
@@ -489,6 +489,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       required={!readOnly}
                       readOnly={readOnly}
@@ -542,6 +543,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       leftSection={
@@ -582,6 +584,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                     />
                   </Group>
@@ -670,6 +673,15 @@ const FormClient = forwardRef<
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
                         Date Inspected:
                       </Text>
+                      {!readOnly && inspected === true && (
+                        <Stack>
+                          <IconAsterisk
+                            size={7}
+                            color={'var(--mantine-color-red-8)'}
+                            stroke={2}
+                          />
+                        </Stack>
+                      )}
                     </Flex>
                     <DateInput
                       key={form.key('inspected_date')}
@@ -701,6 +713,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       leftSection={
@@ -708,6 +721,7 @@ const FormClient = forwardRef<
                       }
                       clearable
                       readOnly={readOnly}
+                      required={!readOnly && inspected === true}
                     />
                   </Group>
                 </Stack>
@@ -721,15 +735,16 @@ const FormClient = forwardRef<
               >
                 <Stack w={'100%'} px={'sm'}>
                   <Checkbox
-                    key={form.key('inspected')}
-                    {...form.getInputProps('inspected')}
                     label={
                       'Inspected, verified and found OK as to quantity and specifications'
                     }
                     size={lgScreenAndBelow ? 'sm' : 'md'}
-                    radius={'xs'}
-                    defaultChecked={form.values.inspected}
-                    disabled={readOnly}
+                    variant='outline'
+                    radius='xl'
+                    checked={inspected}
+                    onChange={(e) => {
+                      !readOnly && setInspected(e.currentTarget.checked);
+                    }}
                   />
                 </Stack>
 
@@ -768,6 +783,7 @@ const FormClient = forwardRef<
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                       }}
                       readOnly={readOnly}
+                      required={!readOnly && inspected === true}
                     />
                   ) : (
                     <TextInput
@@ -808,6 +824,15 @@ const FormClient = forwardRef<
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
                         Date Received:
                       </Text>
+                      {!readOnly && acceptanceCompleted === true && (
+                        <Stack>
+                          <IconAsterisk
+                            size={7}
+                            color={'var(--mantine-color-red-8)'}
+                            stroke={2}
+                          />
+                        </Stack>
+                      )}
                     </Flex>
                     <DateInput
                       key={form.key('received_date')}
@@ -839,6 +864,7 @@ const FormClient = forwardRef<
                           minHeight: '30px',
                           height: '30px',
                         },
+                        flex: 1,
                       }}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       leftSection={
@@ -846,6 +872,7 @@ const FormClient = forwardRef<
                       }
                       clearable
                       readOnly={readOnly}
+                      required={acceptanceCompleted !== undefined}
                     />
                   </Group>
                 </Stack>
@@ -858,19 +885,32 @@ const FormClient = forwardRef<
                 p={'md'}
               >
                 <Stack w={'100%'} px={'sm'}>
-                  <Radio.Group
-                    key={form.key('acceptance_completed')}
-                    {...form.getInputProps('acceptance_completed')}
+                  <Checkbox
+                    label='Complete'
                     size={lgScreenAndBelow ? 'sm' : 'md'}
-                    defaultValue={form.values.acceptance_completed}
-                    readOnly={readOnly}
-                  >
-                    <Stack mt={'xs'} mb={'md'}>
-                      <Radio value={''} label={'-- Not Set --'} />
-                      <Radio value={'1'} label={'Complete'} />
-                      <Radio value={'0'} label={'Partial'} />
-                    </Stack>
-                  </Radio.Group>
+                    variant='outline'
+                    radius='xl'
+                    checked={acceptanceCompleted === true}
+                    onChange={(e) => {
+                      !readOnly &&
+                        setAcceptanceCompleted(
+                          e.currentTarget.checked ? true : undefined
+                        );
+                    }}
+                  />
+                  <Checkbox
+                    label='Partial'
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    variant='outline'
+                    radius='xl'
+                    checked={acceptanceCompleted === false}
+                    onChange={(e) => {
+                      !readOnly &&
+                        setAcceptanceCompleted(
+                          e.currentTarget.checked ? false : undefined
+                        );
+                    }}
+                  />
                 </Stack>
 
                 <Stack w={'100%'} px={'sm'}>
@@ -906,6 +946,7 @@ const FormClient = forwardRef<
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                       }}
                       readOnly={readOnly}
+                      required={!readOnly && acceptanceCompleted !== undefined}
                     />
                   ) : (
                     <TextInput

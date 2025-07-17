@@ -29,7 +29,7 @@ import {
 import { Notifications } from '@mantine/notifications';
 import { fontFamily, breakpoints, colors } from '@/config/theme';
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion';
-import { getCompany } from '@/actions/company';
+import { getCompany, getCompanyFavicon } from '@/actions/company';
 
 export default async function LoginLayout({
   children,
@@ -37,6 +37,7 @@ export default async function LoginLayout({
   children: React.ReactNode;
 }) {
   const company: CompanyType = await getCompany();
+  const favIcon: string = await getCompanyFavicon();
 
   const theme = mergeMantineTheme(
     DEFAULT_THEME,
@@ -57,11 +58,7 @@ export default async function LoginLayout({
   return (
     <html lang='en' {...mantineHtmlProps}>
       <head>
-        <link
-          rel='icon'
-          href={company?.favicon ?? '/favicon.ico'}
-          sizes='any'
-        />
+        <link rel='icon' href={favIcon ?? 'favicon.ico'} sizes='any' />
         <ColorSchemeScript />
       </head>
       <body className='bg-background'>

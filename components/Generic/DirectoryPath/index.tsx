@@ -7,6 +7,7 @@ import {
 } from '@/config/menus';
 import { Breadcrumbs, Anchor } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { nprogress } from '@mantine/nprogress';
 import { IconCaretRightFilled } from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -37,6 +38,8 @@ const MenuLink = ({ label, link, pathname, allowed }: MenuLinkProps) => {
       sx={{ cursor: allowed ? 'pointer' : 'not-allowed' }}
       fw={pathname === link ? 500 : 'normal'}
       fz={lgScreenAndBelow ? 'xs' : 'sm'}
+      prefetch={false}
+      onNavigate={(e) => pathname !== link && nprogress.start()}
     >
       {label}
     </Anchor>
@@ -83,23 +86,23 @@ export function DirectoryPathClient({ permissions }: DirectoryPathProps) {
       );
     });
 
-  const renderPaymentMenuContent =
-    /^\/payments\/[^/]+$/.test(pathname) &&
-    paymentLinks.map((item) => {
-      const allowed = item.allowedPermissions?.some((permission) =>
-        permissions?.includes(permission)
-      );
+  // const renderPaymentMenuContent =
+  //   /^\/payments\/[^/]+$/.test(pathname) &&
+  //   paymentLinks.map((item) => {
+  //     const allowed = item.allowedPermissions?.some((permission) =>
+  //       permissions?.includes(permission)
+  //     );
 
-      return (
-        <MenuLink
-          key={item.link}
-          label={item.label}
-          link={item.link}
-          allowed={allowed}
-          pathname={pathname}
-        />
-      );
-    });
+  //     return (
+  //       <MenuLink
+  //         key={item.link}
+  //         label={item.label}
+  //         link={item.link}
+  //         allowed={allowed}
+  //         pathname={pathname}
+  //       />
+  //     );
+  //   });
 
   return (
     <>
@@ -112,7 +115,7 @@ export function DirectoryPathClient({ permissions }: DirectoryPathProps) {
       >
         {renderProcurementMenuContent}
         {renderInventoryMenuContent}
-        {renderPaymentMenuContent}
+        {/* {renderPaymentMenuContent} */}
       </Breadcrumbs>
     </>
   );

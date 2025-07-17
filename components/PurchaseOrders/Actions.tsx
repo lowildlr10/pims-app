@@ -32,10 +32,10 @@ const NavigationMenus = ({
       ) &&
         [
           'delivered',
-          'for_inspection',
-          'for_obligation',
-          'for_disbursement',
-          'for_payment',
+          'inspection',
+          'obligation',
+          'disbursement',
+          'payment',
           'completed',
         ].includes(status) &&
         pathname === '/procurement/po' && (
@@ -241,10 +241,10 @@ const PoActionsClient = ({
 
       {[
         'delivered',
-        'for_inspection',
-        'for_obligation',
-        'for_disbursement',
-        'for_payment',
+        'inspection',
+        'obligation',
+        'disbursement',
+        'payment',
         'completed',
       ].includes(status) && (
         <>

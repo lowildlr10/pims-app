@@ -8,8 +8,8 @@ import {
   Loader,
   Overlay,
   ScrollArea,
+  Title,
 } from '@mantine/core';
-import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { useDisclosure, useHeadroom, useMediaQuery } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
@@ -26,12 +26,9 @@ import {
   IconUserCog,
 } from '@tabler/icons-react';
 import { UserButtonClient } from '../UserButton';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
-import { Text } from '@mantine/core';
-import NotificationMenuButtonClient from '../NotificationMenuButton';
-import { NavigationProgress } from '@mantine/nprogress';
 import { keyframes } from '@emotion/react';
 import { NProgressClient } from '../NProgress';
 import {
@@ -48,6 +45,8 @@ import {
   COMPANY_PROFILE_ALLOWED_PERMISSIONS,
   SYSTEM_LOGS_ALLOWED_PERMISSIONS,
 } from '@/config/menus';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
+import NotificationMenuButtonClient from '../NotificationMenuButton';
 
 const defaultMenu: LinksGroupProps[] = [
   { label: 'Loading...', icon: Loader, link: '/' },
@@ -69,13 +68,13 @@ const defaultMainMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: INVENTORY_LINKS,
   },
-  {
-    label: 'Payment',
-    allowedPermissions: PAYMENT_ALLOWED_PERMISSIONS,
-    icon: IconCash,
-    initiallyOpened: false,
-    links: PAYMENT_LINKS,
-  },
+  // {
+  //   label: 'Payment',
+  //   allowedPermissions: PAYMENT_ALLOWED_PERMISSIONS,
+  //   icon: IconCash,
+  //   initiallyOpened: false,
+  //   links: PAYMENT_LINKS,
+  // },
   { label: 'Settings', icon: IconSettings2, link: '/settings/user-profile' },
 ];
 
@@ -117,6 +116,11 @@ export function LayoutSidebarClient({
   permissions,
   children,
 }: LayoutSidebarProps) {
+  const { media: logo, loading } = useMediaAsset({
+    type: 'logo',
+    company,
+  });
+
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const [menus, setMenus] = useState<LinksGroupProps[]>(defaultMenu);
   const links = menus.map((item) => (
@@ -176,39 +180,46 @@ export function LayoutSidebarClient({
               visibleFrom={'md'}
               size={lgScreenAndBelow ? 'xs' : 'sm'}
             />
-            <Group px={'xs'} gap={'xs'} align={'center'}>
-              <Avatar
-                variant={'filled'}
-                size={lgScreenAndBelow ? 'xs' : 'sm'}
-                radius={'xs'}
-                src={company?.company_logo ?? '/images/logo-fallback.png'}
-                alt={company?.company_name ?? 'Company'}
-              />
-              <Text size={lgScreenAndBelow ? 'lg' : 'xl'} fw={500}>
+            <Group px={'xs'} gap={7} align={'center'}>
+              {loading ? (
+                <Loader
+                  color={'var(--mantine-color-tertiary-0)'}
+                  type={'bars'}
+                  size={lgScreenAndBelow ? 'xs' : 'sm'}
+                />
+              ) : (
+                <Avatar
+                  variant={'filled'}
+                  size={lgScreenAndBelow ? 'xs' : 'sm'}
+                  radius={'xs'}
+                  src={logo}
+                  alt={company?.company_name ?? 'Company'}
+                />
+              )}
+
+              <Title order={lgScreenAndBelow ? 5 : 3} fw={600}>
                 PIMS
-              </Text>
+              </Title>
             </Group>
           </Group>
 
-          {/* <Group>
+          <Group>
             <NotificationMenuButtonClient />
-          </Group> */}
+          </Group>
         </Group>
       </AppShell.Header>
       <AppShell.Navbar
         p='md'
         sx={(theme, u) => ({
-          transform: `${
-            desktopOpened
+          transform: `${desktopOpened
+            ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
+            : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
+            } !important`,
+          [u.smallerThan('md')]: {
+            transform: `${mobileOpened
               ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
               : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
-          } !important`,
-          [u.smallerThan('md')]: {
-            transform: `${
-              mobileOpened
-                ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
-                : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
-            } !important`,
+              } !important`,
           },
         })}
       >

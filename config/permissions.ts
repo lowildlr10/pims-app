@@ -326,25 +326,25 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
       },
     ],
   },
-  {
-    label: 'Payment',
-    description: 'Scope for Payment module',
-    module_type: 'payment',
-    checked: false,
-    indeterminate: false,
-    scopes: [
-      {
-        label: 'View',
-        value: 'view',
-        checked: false,
-      },
-      {
-        label: 'Print',
-        value: 'print',
-        checked: false,
-      },
-    ],
-  },
+  // {
+  //   label: 'Payment',
+  //   description: 'Scope for Payment module',
+  //   module_type: 'payment',
+  //   checked: false,
+  //   indeterminate: false,
+  //   scopes: [
+  //     {
+  //       label: 'View',
+  //       value: 'view',
+  //       checked: false,
+  //     },
+  //     {
+  //       label: 'Print',
+  //       value: 'print',
+  //       checked: false,
+  //     },
+  //   ],
+  // },
 
   // Account management
   {

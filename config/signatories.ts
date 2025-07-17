@@ -23,8 +23,14 @@ export const SIGNATORIES_CONFIG: SignatoryDetailsFieldType[] = [
     details: [
       {
         checked: false,
-        label: 'Approval',
-        signatory_type: 'approval',
+        label: 'Approval LCE',
+        signatory_type: 'approval_lce',
+        position: '',
+      },
+      {
+        checked: false,
+        label: 'Approval BAC',
+        signatory_type: 'approval_bac',
         position: '',
       },
     ],
@@ -67,7 +73,7 @@ export const SIGNATORIES_CONFIG: SignatoryDetailsFieldType[] = [
   },
   {
     document: 'po',
-    label: 'Purchase/Job Order Document',
+    label: 'Purchase Order Document',
     details: [
       {
         checked: false,
@@ -85,12 +91,6 @@ export const SIGNATORIES_CONFIG: SignatoryDetailsFieldType[] = [
         checked: false,
         label: 'Inspection',
         signatory_type: 'inspection',
-        position: '',
-      },
-      {
-        checked: false,
-        label: 'Acceptance',
-        signatory_type: 'acceptance',
         position: '',
       },
     ],

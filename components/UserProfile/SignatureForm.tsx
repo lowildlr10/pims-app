@@ -3,11 +3,21 @@ import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import { Button, LoadingOverlay, Paper, Stack, Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconPencil, IconUpload } from '@tabler/icons-react';
+import { IconPencil } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 const SignatureFormClient = ({ user }: SignatureFormProps) => {
+  const {
+    media: signature,
+    loading: signatureLoading,
+    clearCache: clearSignatureCache,
+  } = useMediaAsset({
+    type: 'signature',
+    user,
+  });
+
   const [loading, setLoading] = useState(false);
   const form = useForm({
     mode: 'controlled',
@@ -50,17 +60,18 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
   return (
     <form onSubmit={form.onSubmit(() => handleUpdateSignature())}>
       <LoadingOverlay
-        visible={loading}
+        visible={loading || signatureLoading}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
       <Stack justify={'flex-start'} gap={'xl'} px={'xl'}>
         <Paper>
           <SingleImageUploadClient
-            image={user.signature ?? ''}
-            postUrl={`/media/${user.id}`}
-            params={{ update_type: 'user-signature' }}
+            image={signature ?? ''}
+            postUrl={'/media'}
+            params={{ type: 'signature', parent_id: user.id }}
             type={'signature'}
+            clearImageCache={clearSignatureCache}
           />
         </Paper>
 

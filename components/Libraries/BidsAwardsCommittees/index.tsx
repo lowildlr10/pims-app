@@ -7,6 +7,30 @@ import useSWR from 'swr';
 import DataTableClient from '../../Generic/DataTable';
 import { Badge, Group, Text } from '@mantine/core';
 import { IconExclamationCircleFilled } from '@tabler/icons-react';
+import Helper from '@/utils/Helpers';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+
+const MAIN_MODULE: ModuleType = 'lib-bid-committee';
+
+const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Create Bids and Awards Committee',
+    endpoint: '/libraries/bids-awards-committees',
+  },
+};
+
+const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    title: 'Update Bids and Awards Committee',
+    endpoint: '/libraries/bids-awards-committees',
+  },
+};
+
+const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
+  main: {
+    endpoint: '/libraries/bids-awards-committees',
+  },
+};
 
 const defaultTableData: TableDataType = {
   head: [
@@ -30,6 +54,10 @@ const BidsAwardsCommitteesClient = ({ permissions }: LibraryProps) => {
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
+
+  const [activeFormData, setActiveFormData] = useState<FormDataType>();
+  const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const { data, isLoading, mutate } = useSWR<BidsAwardsCommitteeResponse>(
     [
@@ -65,6 +93,35 @@ const BidsAwardsCommitteesClient = ({ permissions }: LibraryProps) => {
   );
 
   useEffect(() => {
+    if (Helper.empty(activeData?.moduleType) || Helper.empty(activeData?.data))
+      return;
+
+    const { display, moduleType, data } = activeData ?? {};
+    // const status = data?.status;
+    let hasEditPermission = false;
+
+    switch (moduleType) {
+      case MAIN_MODULE:
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions(MAIN_MODULE, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setActiveDataEditable(hasEditPermission);
+
+        if (display === 'create') {
+          setActiveFormData(undefined);
+        } else {
+          setActiveFormData(data);
+        }
+        break;
+
+      default:
+        break;
+    }
+  }, [activeData, permissions]);
+
+  useEffect(() => {
     const _data = data?.data?.map((body: BidsAwardsCommitteeType) => {
       return {
         ...body,
@@ -93,18 +150,17 @@ const BidsAwardsCommitteesClient = ({ permissions }: LibraryProps) => {
 
   return (
     <DataTableClient
-      mainModule={'lib-bid-committee'}
+      mainModule={MAIN_MODULE}
       permissions={permissions}
       columnSort={columnSort}
       sortDirection={sortDirection}
       search={search}
       showSearch
       showCreate
-      createMainItemModalTitle={'Create Bids and Awards Committee'}
-      createMainItemEndpoint={'/libraries/bids-awards-committees'}
-      updateMainItemModalTitle={'Update Bids and Awards Committee'}
-      updateMainItemBaseEndpoint={'/libraries/bids-awards-committees'}
-      detailMainItemBaseEndpoint={'/libraries/bids-awards-committees'}
+      showEdit={activeDataEditable}
+      createItemData={CREATE_ITEM_CONFIG}
+      updateItemData={UPDATE_ITEM_CONFIG}
+      detailItemData={DETAIL_ITEM_CONFIG}
       data={tableData}
       perPage={perPage}
       loading={isLoading}
@@ -114,6 +170,8 @@ const BidsAwardsCommitteesClient = ({ permissions }: LibraryProps) => {
       to={data?.to ?? 0}
       total={data?.total ?? 0}
       refreshData={mutate}
+      activeFormData={activeFormData}
+      setActiveData={setActiveData}
       onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
         setSearch(_search ?? '');
         setPage(_page);

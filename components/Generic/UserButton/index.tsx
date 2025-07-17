@@ -1,10 +1,19 @@
 'use client';
 
 import { IconChevronRight } from '@tabler/icons-react';
-import { Avatar, Group, Text, UnstyledButton } from '@mantine/core';
+import { Avatar, Group, Loader, Text, UnstyledButton } from '@mantine/core';
 import classes from '@/styles/generic/userbutton.module.css';
+import { useMediaQuery } from '@mantine/hooks';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 export function UserButtonClient({ user, handleOpen }: UserButtonProps) {
+  const { media: avatar, loading } = useMediaAsset({
+    type: 'avatar',
+    user,
+  });
+
+  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+
   return (
     <UnstyledButton
       className={classes.user}
@@ -12,7 +21,15 @@ export function UserButtonClient({ user, handleOpen }: UserButtonProps) {
       p={{ base: 'sm', lg: 'xs', xl: 'md' }}
     >
       <Group>
-        <Avatar src={user?.avatar ?? undefined} radius='xl' />
+        {loading ? (
+          <Loader
+            color={'var(--mantine-color-tertiary-0)'}
+            type={'bars'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
+          />
+        ) : (
+          <Avatar src={avatar ?? undefined} radius='xl' />
+        )}
 
         <div style={{ flex: 1 }}>
           <Text fz={{ base: 'sm', lg: 13, xl: 'sm' }} size='sm' fw={500}>

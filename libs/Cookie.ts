@@ -25,6 +25,18 @@ export const expireCookie = (key: string, res?: OutgoingMessage): void => {
   }
 };
 
+export const renewCookie = (
+  key: string,
+  age = 86400,
+  path = '/',
+  cookie = ''
+): void => {
+  const value = getCookie(key, cookie);
+  if (value !== null) {
+    setCookie(key, value, age, path);
+  }
+};
+
 export const getCookie = (key: string, cookie = ''): string | null => {
   const decodedCookie = isServer ? cookie : decodeURIComponent(document.cookie);
   const ca = decodedCookie.split(';');

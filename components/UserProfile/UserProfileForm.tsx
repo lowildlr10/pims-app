@@ -20,7 +20,6 @@ import { Select } from '@mantine/core';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import DynamicAutocomplete from '../Generic/DynamicAutocomplete';
-import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
   const [loading, setLoading] = useState(false);

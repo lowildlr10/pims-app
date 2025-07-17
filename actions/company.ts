@@ -1,6 +1,23 @@
 import { getAccessToken } from '@/libs/Auth';
 import { expireCookie } from '@/libs/Cookie';
 
+export const getCompanyFavicon = async () => {
+  try {
+    const basePath = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const company = await getCompany();
+
+    const mediaData = await fetch(
+      `${basePath}/api/v1/media/?type=favicon&parent_id=${company.id}`
+    );
+    const media = await mediaData.json();
+    const favicon = media?.data?.data ?? undefined;
+
+    return favicon ?? undefined;
+  } catch (error) {
+    return undefined;
+  }
+};
+
 export const getCompany = async () => {
   const data = await getCompanyData();
   return await data?.data.company;

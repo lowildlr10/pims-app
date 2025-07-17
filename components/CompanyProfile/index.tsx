@@ -31,11 +31,29 @@ import { ActionIcon } from '@mantine/core';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import CustomColorPickerClient from '../Generic/CustomColorPicker';
 import DynamicSelect from '../Generic/DynamicSelect';
+import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 const CompanyProfileClient = ({
   company,
   permissions,
 }: CompanyProfileProps) => {
+  const {
+    media: logo,
+    loading: logoLoading,
+    clearCache: clearLogoCache,
+  } = useMediaAsset({
+    type: 'logo',
+    company,
+  });
+  const {
+    media: backgroundImage,
+    loading: backgroundImageLoading,
+    clearCache: clearBackgroundImageCache,
+  } = useMediaAsset({
+    type: 'login-background',
+    company,
+  });
+
   const [loading, setLoading] = useState(false);
   const [enableUpdate, setEnableUpdate] = useState(false);
 
@@ -162,7 +180,7 @@ const CompanyProfileClient = ({
     >
       <form onSubmit={form.onSubmit(() => handleUpdateProfile())}>
         <LoadingOverlay
-          visible={loading}
+          visible={loading || logoLoading || backgroundImageLoading}
           zIndex={1000}
           overlayProps={{ radius: 'sm', blur: 2 }}
         />
@@ -185,12 +203,11 @@ const CompanyProfileClient = ({
               <Stack align={'center'} p={'md'} w={{ base: '100%', lg: '25%' }}>
                 <Box mb={10}>
                   <SingleImageUploadClient
-                    image={
-                      company.company_logo ?? '/images/logo-black-fallback.png'
-                    }
-                    postUrl={`/media/${company.id}`}
-                    params={{ update_type: 'company-logo' }}
+                    image={logo ?? '/images/logo-black-fallback.png'}
+                    postUrl={'/media'}
+                    params={{ parent_id: company.id, type: 'logo' }}
                     type={'logo'}
+                    clearImageCache={clearLogoCache}
                   />
                 </Box>
               </Stack>
@@ -315,13 +332,12 @@ const CompanyProfileClient = ({
             <Divider />
 
             <SingleImageUploadClient
-              image={
-                company?.login_background ?? '/images/background-fallback.png'
-              }
-              postUrl={`/media/${company.id}`}
-              params={{ update_type: 'company-login-background' }}
-              height={300}
-              type={'default'}
+              image={backgroundImage ?? '/images/background-fallback.png'}
+              postUrl={'/media'}
+              params={{ parent_id: company.id, type: 'login-background' }}
+              height={500}
+              type={'login-background'}
+              clearImageCache={clearBackgroundImageCache}
             />
           </Stack>
 
