@@ -25,7 +25,6 @@ import dayjs from 'dayjs';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
-import { Loader } from '@mantine/core';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -78,6 +77,7 @@ const FormClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
+      department_id: currentData?.department_id ?? '',
       section_id: currentData?.section_id ?? '',
       pr_date: currentData?.pr_date ?? dayjs().format('YYYY-MM-DD'),
       sai_no: currentData?.sai_no ?? '',
@@ -91,28 +91,28 @@ const FormClient = forwardRef<
       sig_approved_by_id: currentData?.sig_approved_by_id ?? '',
       items:
         currentData?.items &&
-        typeof currentData?.items !== undefined &&
-        currentData?.items.length > 0
+          typeof currentData?.items !== undefined &&
+          currentData?.items.length > 0
           ? currentData?.items?.map((item, index) => ({
-              key: randomId(),
-              quantity: item.quantity,
-              unit_issue_id: item.unit_issue_id,
-              description: item.description,
-              stock_no: item.stock_no,
-              estimated_unit_cost: item.estimated_unit_cost,
-              estimated_cost: item.estimated_cost,
-            }))
+            key: randomId(),
+            quantity: item.quantity,
+            unit_issue_id: item.unit_issue_id,
+            description: item.description,
+            stock_no: item.stock_no,
+            estimated_unit_cost: item.estimated_unit_cost,
+            estimated_cost: item.estimated_cost,
+          }))
           : [
-              {
-                key: randomId(),
-                quantity: undefined,
-                unit_issue_id: undefined,
-                description: undefined,
-                stock_no: 1,
-                estimated_unit_cost: undefined,
-                estimated_cost: undefined,
-              },
-            ],
+            {
+              key: randomId(),
+              quantity: undefined,
+              unit_issue_id: undefined,
+              description: undefined,
+              stock_no: 1,
+              estimated_unit_cost: undefined,
+              estimated_cost: undefined,
+            },
+          ],
     }),
     [currentData]
   );
@@ -122,7 +122,8 @@ const FormClient = forwardRef<
   });
   const [location, setLocation] = useState('Loading...');
   const [companyType, setCompanyType] = useState('Loading...');
-  const [department, setDepartment] = useState('Loading...');
+  const [departmentId, setDepartmentId] = useState(currentData?.department_id ?? null);
+  const [sectionId, setSectionId] = useState(currentData?.section_id ?? null);
   const [unitIssues, setUnitIssues] = useState<string[]>([]);
   const [loadingUnitIssues, setLoadingUnitIssues] = useState(false);
   const [unitIssueData, setUnitIssueData] = useState<
@@ -134,6 +135,8 @@ const FormClient = forwardRef<
 
   useEffect(() => {
     setCurrentData(data);
+    setDepartmentId(data?.department_id ?? '');
+    setSectionId(data?.section_id ?? '');
   }, [data]);
 
   useEffect(() => {
@@ -161,7 +164,6 @@ const FormClient = forwardRef<
           `${company?.municipality}, ${company?.province}`.toUpperCase()
         );
         setCompanyType(company?.company_type ?? '');
-        setDepartment(company?.company_name ?? '');
       })
       .catch((err) => {
         const errors = getErrors(err);
@@ -188,9 +190,9 @@ const FormClient = forwardRef<
         setUnitIssueData(
           res?.data?.length > 0
             ? res.data?.map((item: any) => ({
-                value: item['id'],
-                label: item['unit_name'],
-              }))
+              value: item['id'],
+              label: item['unit_name'],
+            }))
             : [{ label: 'No data.', value: '' }]
         );
         setLoadingUnitIssues(false);
@@ -251,11 +253,11 @@ const FormClient = forwardRef<
                   unitIssueData ??
                   (item?.unit_issue_id
                     ? [
-                        {
-                          value: item?.unit_issue_id,
-                          label: unitIssues[index],
-                        },
-                      ]
+                      {
+                        value: item?.unit_issue_id,
+                        label: unitIssues[index],
+                      },
+                    ]
                     : undefined)
                 }
                 value={item?.unit_issue_id}
@@ -306,11 +308,10 @@ const FormClient = forwardRef<
               key={form.key(`items.${index}.stock_no`)}
               {...form.getInputProps(`items.${index}.stock_no`)}
               variant={readOnly ? 'unstyled' : 'default'}
-              placeholder={`Stock No ${
-                item?.stock_no?.toString() !== ''
-                  ? `: ${item?.stock_no?.toString()}`
-                  : ''
-              }`}
+              placeholder={`Stock No ${item?.stock_no?.toString() !== ''
+                ? `: ${item?.stock_no?.toString()}`
+                : ''
+                }`}
               defaultValue={item?.stock_no}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -376,6 +377,8 @@ const FormClient = forwardRef<
         if (handleCreateUpdate) {
           handleCreateUpdate({
             ...values,
+            department_id: departmentId,
+            section_id: sectionId,
             pr_date: values.pr_date
               ? dayjs(values.pr_date).format('YYYY-MM-DD')
               : '',
@@ -422,27 +425,8 @@ const FormClient = forwardRef<
         >
           <Stack p={'md'} flex={0.35}>
             <Group>
-              <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Department:</Text>
-              <TextInput
-                variant={readOnly ? 'unstyled' : 'filled'}
-                placeholder={'Loading...'}
-                value={department}
-                size={lgScreenAndBelow ? 'sm' : 'md'}
-                sx={{
-                  borderBottom: '2px solid var(--mantine-color-gray-5)',
-                  input: {
-                    minHeight: '30px',
-                    height: '30px',
-                  },
-                }}
-                flex={1}
-                leftSection={!department ? <Loader size={16} /> : undefined}
-                readOnly
-              />
-            </Group>
-            <Group>
               <Group gap={1} align={'flex-start'}>
-                <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Section:</Text>
+                <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Department:</Text>
                 {!readOnly && (
                   <Stack>
                     <IconAsterisk
@@ -456,23 +440,84 @@ const FormClient = forwardRef<
               <Stack justify={'center'} flex={1}>
                 {!readOnly ? (
                   <DynamicSelect
-                    key={form.key('section_id')}
-                    {...form.getInputProps('section_id')}
+                    variant="unstyled"
+                    endpoint="/accounts/departments"
+                    endpointParams={{ paginated: false, show_all: true }}
+                    column="department_name"
+                    valueColumn="id"
+                    defaultData={
+                      currentData?.department_id
+                        ? [
+                          {
+                            value: currentData.department_id,
+                            label: currentData?.department?.department_name ?? '',
+                          },
+                        ]
+                        : undefined
+                    }
+                    value={departmentId}
+                    onChange={(value) => {
+                      setDepartmentId(value);
+                      setSectionId(null);
+                    }}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    placeholder="Select a department..."
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      input: {
+                        minHeight: '30px',
+                        height: '30px',
+                      },
+                    }}
+                    required={!readOnly}
+                    readOnly={readOnly}
+                  />
+                ) : (
+                  <TextInput
+                    variant={'unstyled'}
+                    placeholder={'None'}
+                    value={currentData?.department?.department_name ?? ''}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      input: {
+                        minHeight: '30px',
+                        height: '30px',
+                      },
+                    }}
+                    flex={1}
+                    readOnly
+                  />
+                )}
+              </Stack>
+            </Group>
+            <Group>
+              <Group gap={1} align={'flex-start'}>
+                <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Section:</Text>
+              </Group>
+              <Stack justify={'center'} flex={1}>
+                {!readOnly ? (
+                  <DynamicSelect
                     variant={'unstyled'}
                     endpoint={'/accounts/sections'}
-                    endpointParams={{ paginated: false, show_all: true }}
+                    endpointParams={{
+                      paginated: false,
+                      show_all: true,
+                      filter_by_department: true,
+                      department_id: departmentId
+                    }}
                     column={'section_name'}
                     defaultData={
                       currentData?.section_id
                         ? [
-                            {
-                              value: currentData?.section_id ?? '',
-                              label: currentData?.section?.section_name ?? '',
-                            },
-                          ]
-                        : undefined
+                          {
+                            value: currentData?.section_id ?? '',
+                            label: currentData?.section?.section_name ?? '',
+                          },
+                        ]
+                        : []
                     }
-                    value={form.values.section_id}
+                    value={sectionId}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     placeholder={'Select a section...'}
                     sx={{
@@ -482,7 +527,7 @@ const FormClient = forwardRef<
                         height: '30px',
                       },
                     }}
-                    required={!readOnly}
+                    onChange={(value) => setSectionId(value ?? '')}
                     readOnly={readOnly}
                   />
                 ) : (
@@ -690,120 +735,120 @@ const FormClient = forwardRef<
 
         {(readOnly ||
           ['', 'draft', 'disapproved'].includes(currentData?.status ?? '')) && (
-          <Stack>
-            <Table
-              withColumnBorders
-              withRowBorders
-              verticalSpacing={'sm'}
-              withTableBorder
-              m={0}
-              borderColor={'var(--mantine-color-gray-8)'}
-            >
-              <Table.Thead>
-                <Table.Tr>
-                  {itemHeaders.map((header) => {
-                    if (readOnly && header.id === 'delete') return;
-
-                    if (!readOnly && header.id === 'estimated_cost') return;
-
-                    return (
-                      <Table.Th
-                        key={header.id}
-                        w={header?.width ?? undefined}
-                        fz={lgScreenAndBelow ? 'sm' : 'md'}
-                      >
-                        <Group gap={1} align={'flex-start'}>
-                          {header.label}{' '}
-                          {header?.required && !readOnly && (
-                            <Stack>
-                              <IconAsterisk
-                                size={7}
-                                color={'var(--mantine-color-red-8)'}
-                                stroke={2}
-                              />
-                            </Stack>
-                          )}
-                        </Group>
-                      </Table.Th>
-                    );
-                  })}
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {form.getValues()?.items?.map((item, index) => (
-                  <Table.Tr
-                    key={`item-${item.key}`}
-                    sx={{ verticalAlign: 'top' }}
-                  >
+            <Stack>
+              <Table
+                withColumnBorders
+                withRowBorders
+                verticalSpacing={'sm'}
+                withTableBorder
+                m={0}
+                borderColor={'var(--mantine-color-gray-8)'}
+              >
+                <Table.Thead>
+                  <Table.Tr>
                     {itemHeaders.map((header) => {
-                      if (
-                        header.id === 'delete' ||
-                        (!readOnly && header.id === 'estimated_cost')
-                      ) {
-                        return null;
-                      }
+                      if (readOnly && header.id === 'delete') return;
+
+                      if (!readOnly && header.id === 'estimated_cost') return;
 
                       return (
-                        <React.Fragment key={`field-${item.key}-${header.id}`}>
-                          {renderDynamicTdContent(header.id, item, index)}
-                        </React.Fragment>
+                        <Table.Th
+                          key={header.id}
+                          w={header?.width ?? undefined}
+                          fz={lgScreenAndBelow ? 'sm' : 'md'}
+                        >
+                          <Group gap={1} align={'flex-start'}>
+                            {header.label}{' '}
+                            {header?.required && !readOnly && (
+                              <Stack>
+                                <IconAsterisk
+                                  size={7}
+                                  color={'var(--mantine-color-red-8)'}
+                                  stroke={2}
+                                />
+                              </Stack>
+                            )}
+                          </Group>
+                        </Table.Th>
                       );
                     })}
-
-                    {!readOnly && (
-                      <Table.Td>
-                        <ActionIcon
-                          w={'100%'}
-                          color={'var(--mantine-color-red-7)'}
-                          variant={'light'}
-                          disabled={form.getValues().items.length === 1}
-                          onClick={() => {
-                            if (form.getValues().items.length === 1) return;
-                            form.removeListItem('items', index);
-                          }}
-                        >
-                          <IconTrash size={18} stroke={2} />
-                        </ActionIcon>
-                      </Table.Td>
-                    )}
                   </Table.Tr>
-                ))}
-              </Table.Tbody>
-
-              {!readOnly && (
-                <Table.Tfoot>
-                  <Table.Tr>
-                    <Table.Td colSpan={readOnly ? 7 : 6}>
-                      <Button
-                        size={lgScreenAndBelow ? 'sm' : 'md'}
-                        variant={'light'}
-                        color={'var(--mantine-color-primary-9)'}
-                        leftSection={<IconPlus size={18} stroke={2} />}
-                        onClick={() =>
-                          form.insertListItem('items', {
-                            key: randomId(),
-                            quantity: undefined,
-                            unit_issue_id: undefined,
-                            description: undefined,
-                            stock_no:
-                              (form.getValues().items[
-                                form.getValues().items.length - 1
-                              ]?.stock_no ?? 1) + 1,
-                            estimated_unit_cost: undefined,
-                            estimated_cost: undefined,
-                          })
+                </Table.Thead>
+                <Table.Tbody>
+                  {form.getValues()?.items?.map((item, index) => (
+                    <Table.Tr
+                      key={`item-${item.key}`}
+                      sx={{ verticalAlign: 'top' }}
+                    >
+                      {itemHeaders.map((header) => {
+                        if (
+                          header.id === 'delete' ||
+                          (!readOnly && header.id === 'estimated_cost')
+                        ) {
+                          return null;
                         }
-                        fullWidth
-                      >
-                        Add Item
-                      </Button>
-                    </Table.Td>
-                  </Table.Tr>
-                </Table.Tfoot>
-              )}
-            </Table>
-          </Stack>
-        )}
+
+                        return (
+                          <React.Fragment key={`field-${item.key}-${header.id}`}>
+                            {renderDynamicTdContent(header.id, item, index)}
+                          </React.Fragment>
+                        );
+                      })}
+
+                      {!readOnly && (
+                        <Table.Td>
+                          <ActionIcon
+                            w={'100%'}
+                            color={'var(--mantine-color-red-7)'}
+                            variant={'light'}
+                            disabled={form.getValues().items.length === 1}
+                            onClick={() => {
+                              if (form.getValues().items.length === 1) return;
+                              form.removeListItem('items', index);
+                            }}
+                          >
+                            <IconTrash size={18} stroke={2} />
+                          </ActionIcon>
+                        </Table.Td>
+                      )}
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+
+                {!readOnly && (
+                  <Table.Tfoot>
+                    <Table.Tr>
+                      <Table.Td colSpan={readOnly ? 7 : 6}>
+                        <Button
+                          size={lgScreenAndBelow ? 'sm' : 'md'}
+                          variant={'light'}
+                          color={'var(--mantine-color-primary-9)'}
+                          leftSection={<IconPlus size={18} stroke={2} />}
+                          onClick={() =>
+                            form.insertListItem('items', {
+                              key: randomId(),
+                              quantity: undefined,
+                              unit_issue_id: undefined,
+                              description: undefined,
+                              stock_no:
+                                (form.getValues().items[
+                                  form.getValues().items.length - 1
+                                ]?.stock_no ?? 1) + 1,
+                              estimated_unit_cost: undefined,
+                              estimated_cost: undefined,
+                            })
+                          }
+                          fullWidth
+                        >
+                          Add Item
+                        </Button>
+                      </Table.Td>
+                    </Table.Tr>
+                  </Table.Tfoot>
+                )}
+              </Table>
+            </Stack>
+          )}
 
         <Group
           align={'flex-start'}
@@ -845,14 +890,14 @@ const FormClient = forwardRef<
               defaultData={
                 currentData?.funding_source_id
                   ? [
-                      {
-                        value: currentData?.funding_source_id ?? '',
-                        label: currentData?.funding_source?.title ?? '',
-                      },
-                    ]
+                    {
+                      value: currentData?.funding_source_id ?? '',
+                      label: currentData?.funding_source?.title ?? '',
+                    },
+                  ]
                   : undefined
               }
-              value={form.values.funding_source_id}
+              defaultValue={form.values.funding_source_id}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               readOnly={readOnly}
             />
@@ -888,17 +933,17 @@ const FormClient = forwardRef<
                 defaultData={
                   currentData?.requested_by_id
                     ? [
-                        {
-                          value: currentData?.requested_by_id ?? '',
-                          label: currentData?.requestor?.fullname ?? '',
-                        },
-                      ]
+                      {
+                        value: currentData?.requested_by_id ?? '',
+                        label: currentData?.requestor?.fullname ?? '',
+                      },
+                    ]
                     : undefined
                 }
                 sx={{
                   borderBottom: '2px solid var(--mantine-color-gray-5)',
                 }}
-                value={form.values.requested_by_id}
+                defaultValue={form.values.requested_by_id}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 required={!readOnly}
                 readOnly={readOnly}
@@ -937,13 +982,13 @@ const FormClient = forwardRef<
                 defaultData={
                   currentData?.sig_cash_availability_id
                     ? [
-                        {
-                          value: currentData?.sig_cash_availability_id ?? '',
-                          label:
-                            currentData?.signatory_cash_available?.user
-                              ?.fullname ?? '',
-                        },
-                      ]
+                      {
+                        value: currentData?.sig_cash_availability_id ?? '',
+                        label:
+                          currentData?.signatory_cash_available?.user
+                            ?.fullname ?? '',
+                      },
+                    ]
                     : undefined
                 }
                 sx={{
@@ -951,7 +996,7 @@ const FormClient = forwardRef<
                 }}
                 valueColumn={'signatory_id'}
                 column={'fullname_designation'}
-                value={form.values.sig_cash_availability_id}
+                defaultValue={form.values.sig_cash_availability_id}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 required={!readOnly}
                 readOnly={readOnly}
@@ -994,19 +1039,19 @@ const FormClient = forwardRef<
                 defaultData={
                   currentData?.sig_approved_by_id
                     ? [
-                        {
-                          value: currentData?.sig_approved_by_id ?? '',
-                          label:
-                            currentData?.signatory_approval?.user?.fullname ??
-                            '',
-                        },
-                      ]
+                      {
+                        value: currentData?.sig_approved_by_id ?? '',
+                        label:
+                          currentData?.signatory_approval?.user?.fullname ??
+                          '',
+                      },
+                    ]
                     : undefined
                 }
                 sx={{
                   borderBottom: '2px solid var(--mantine-color-gray-5)',
                 }}
-                value={form.values.sig_approved_by_id}
+                defaultValue={form.values.sig_approved_by_id}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 required={!readOnly}
                 readOnly={readOnly}

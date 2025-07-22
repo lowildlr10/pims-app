@@ -10,8 +10,8 @@ import React, { useRef, useState } from 'react';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
-import DivisionFormClient from '../../UserManagement/DivisionSection/DivisionForm';
-import SectionFormClient from '../../UserManagement/DivisionSection/SectionForm';
+import DepartmentFormClient from '../../UserManagement/DepartmentSection/DepartmentForm';
+import SectionFormClient from '../../UserManagement/DepartmentSection/SectionForm';
 import RoleFormClient from '../../UserManagement/Roles/Form';
 import { IconCancel, IconPencil } from '@tabler/icons-react';
 import UserFormClient from '../../UserManagement/Users/Form';
@@ -131,8 +131,8 @@ const UpdateModalClient = ({
       />
 
       <Stack mb={50}>
-        {opened && content === 'account-division' && (
-          <DivisionFormClient
+        {opened && content === 'account-department' && (
+          <DepartmentFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}

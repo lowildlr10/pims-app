@@ -1,25 +1,25 @@
-import { ComboboxData, Loader, Select } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Select, Loader } from '@mantine/core';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
+import Helper from '@/utils/Helpers';
 
-const DynamicSelect = ({
+const DynamicSelect: React.FC<DynamicSelectProps> = ({
   name,
-  defaultData,
+  defaultData = [],
   endpoint,
   endpointParams = {},
-  column = 'column',
   valueColumn = 'id',
-  size,
+  column = 'column',
   label,
   placeholder,
-  limit,
+  size,
   value,
-  defaultValue,
-  variant,
+  defaultValue = null,
+  limit,
+  variant = 'default',
   sx,
-  onChange,
   readOnly,
   required,
   enableOnClickRefresh = true,
@@ -28,85 +28,109 @@ const DynamicSelect = ({
   isLoading,
   preLoading,
   error,
-}: DynamicSelectProps) => {
+  onChange,
+}) => {
+  const isControlled = value !== undefined;
+  const [internalValue, setInternalValue] = useState<string | null>(defaultValue);
+  const [data, setData] = useState<DynamicSelectComboboxDataType>(defaultData);
+  const [presetValueApplied, setPresetValueApplied] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<ComboboxData | undefined>(defaultData ?? []);
-  const [inputValue, setInputValue] = useState<string | undefined>(value);
-  const [isPresetValueSet, setIsPresetValueSet] = useState(false);
-  const [presetValue, setPresetValue] = useState<string | undefined>();
+  const [initialPreloading, setInitialPreloading] = useState(preLoading);
+  const effectiveValue = isControlled ? value : internalValue;
+
+  const fetchData = useCallback(async () => {
+    if (disableFetch || !endpoint) return;
+    setLoading(true);
+    try {
+      const res = await API.get(endpoint, { ...endpointParams, sort_direction: 'asc' });
+      const items = res?.data ?? [];
+
+      if (items.length > 0) {
+        const mappedData = items.map((item: any) => ({
+          value: item[valueColumn],
+          label: item[column],
+        }));
+
+        setData(mappedData);
+
+        if (hasPresetValue && !presetValueApplied) {
+          const valueToCompare = !isControlled ? defaultValue : value;
+          const presetItem = valueToCompare
+            ? items.find(
+              (item: any) =>
+                item[valueColumn] === valueToCompare ||
+                item[column]?.toLowerCase() === (valueToCompare as string).toLowerCase()
+            )
+            : null;
+
+          const presetVal = presetItem?.[valueColumn] ?? items[0][valueColumn];
+
+          if (!isControlled) {
+            setInternalValue(presetVal);
+          } else {
+            onChange?.(presetVal);
+          }
+
+          setPresetValueApplied(true);
+        }
+      } else {
+        setData([]);
+      }
+    } catch (err) {
+      getErrors(err).forEach((msg) =>
+        notify({ title: 'Failed', message: msg, color: 'red' })
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    disableFetch,
+    endpoint,
+    endpointParams,
+    valueColumn,
+    column,
+    defaultValue,
+    hasPresetValue,
+    isControlled,
+    internalValue
+  ]);
 
   useEffect(() => {
-    if (preLoading) handleFetchData();
-  }, [preLoading]);
+    if (preLoading && initialPreloading) {
+      fetchData();
+      setInitialPreloading(false);
+    }
+  }, [fetchData, preLoading, initialPreloading]);
 
   useEffect(() => {
-    setData(defaultData ?? []);
+    if (defaultData.length) {
+      setData(defaultData);
+    }
   }, [defaultData]);
 
   useEffect(() => {
-    if (onChange) onChange(inputValue ?? '');
-  }, [inputValue]);
-
-  useEffect(() => {
-    if (!hasPresetValue || isPresetValueSet) return;
-
-    if (presetValue) {
-      setInputValue(presetValue);
-      setIsPresetValueSet(true);
+    if (!isControlled) {
+      setInternalValue(defaultValue);
     }
-  }, [presetValue, hasPresetValue, isPresetValueSet]);
+  }, [defaultValue, isControlled]);
+
+  const handleChange = (val: string | null) => {
+    if (!isControlled) {
+      setInternalValue(val);
+    }
+
+    onChange?.(val);
+  };
 
   useEffect(() => {
-    setInputValue(value);
-  }, [value]);
+    if (!isControlled) return;
 
-  const handleFetchData = () => {
-    if (disableFetch || !endpoint) return;
+    onChange?.(effectiveValue);
 
-    setLoading(true);
-
-    API.get(endpoint, {
-      ...endpointParams,
-      sort_direction: 'asc',
-    })
-      .then((res) => {
-        setData(
-          res?.data?.length > 0
-            ? res.data.map((item: any) => ({
-                value: item[valueColumn],
-                label: item[column],
-              }))
-            : [{ label: 'No data.', value: '-', disabled: true }]
-        );
-
-        if (res?.data?.length > 0 && hasPresetValue && !isPresetValueSet) {
-          setPresetValue(
-            defaultValue
-              ? (res?.data?.find(
-                  (item: any) =>
-                    item[valueColumn] === defaultValue ||
-                    item[column].toLowerCase() === defaultValue.toLowerCase()
-                )[valueColumn] ?? res?.data[0][valueColumn])
-              : res?.data[0][valueColumn]
-          );
-        }
-
-        setLoading(false);
-      })
-      .catch((err) => {
-        const errors = getErrors(err);
-
-        errors.forEach((error) => {
-          notify({
-            title: 'Failed',
-            message: error,
-            color: 'red',
-          });
-        });
-
-        setLoading(false);
-      });
-  };
+    if (effectiveValue) {
+      fetchData();
+    }
+  }, [effectiveValue, isControlled]);
 
   return (
     <Select
@@ -114,21 +138,17 @@ const DynamicSelect = ({
       size={size}
       label={label}
       placeholder={placeholder ?? label}
-      limit={limit ?? undefined}
-      comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
+      limit={limit}
       data={data}
-      defaultValue={!hasPresetValue ? defaultValue : undefined}
-      value={inputValue}
-      onChange={(_value, option) => setInputValue(option?.value ?? null)}
-      nothingFoundMessage={'Nothing found...'}
-      leftSection={
-        (loading || isLoading) && (
-          <Loader color={'var(--mantine-color-primary-9)'} size='xs' />
-        )
-      }
-      variant={variant ?? 'default'}
+      comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
+      value={effectiveValue}
+      defaultValue={!isControlled ? defaultValue : undefined}
+      onChange={(_, option) => handleChange(option?.value ?? null)}
+      nothingFoundMessage="Nothing found..."
+      leftSection={(loading || isLoading) && <Loader size="xs" color="var(--mantine-color-primary-9)" />}
+      variant={variant}
       sx={sx}
-      onClick={!readOnly && enableOnClickRefresh ? handleFetchData : undefined}
+      onClick={!readOnly && enableOnClickRefresh ? fetchData : undefined}
       searchable
       clearable
       maxDropdownHeight={limit ? undefined : 200}

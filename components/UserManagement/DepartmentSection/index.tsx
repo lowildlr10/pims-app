@@ -10,13 +10,13 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
-const MAIN_MODULE: ModuleType = 'account-division';
+const MAIN_MODULE: ModuleType = 'account-department';
 const SUB_MODULE: ModuleType = 'account-section';
 
 const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    title: 'Create Division',
-    endpoint: '/accounts/divisions',
+    title: 'Create Department',
+    endpoint: '/accounts/departments',
   },
   sub: {
     title: 'Create Section',
@@ -26,8 +26,8 @@ const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
 
 const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    title: 'Update Division',
-    endpoint: '/accounts/divisions',
+    title: 'Update Department',
+    endpoint: '/accounts/departments',
   },
   sub: {
     title: 'Create Section',
@@ -37,7 +37,7 @@ const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
 
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    endpoint: '/accounts/divisions',
+    endpoint: '/accounts/departments',
   },
   sub: {
     endpoint: '/accounts/sections',
@@ -47,14 +47,14 @@ const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'division_name_formatted',
-      label: 'Division',
+      id: 'department_name_formatted',
+      label: 'Department',
       width: '70%',
       sortable: true,
     },
     {
       id: 'headfullname',
-      label: 'Division Head',
+      label: 'Department Head',
       width: '25%',
       sortable: true,
     },
@@ -79,11 +79,11 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
+const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('division_name');
+  const [columnSort, setColumnSort] = useState('department_name');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
@@ -94,9 +94,9 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
   const [activeData, setActiveData] = useState<ActiveDataType>();
   const [activeDataEditable, setActiveDataEditable] = useState(false);
 
-  const { data, isLoading, mutate } = useSWR<DivisionResponse>(
+  const { data, isLoading, mutate } = useSWR<DepartmentResponse>(
     [
-      `/accounts/divisions`,
+      `/accounts/departments`,
       search,
       page,
       perPage,
@@ -161,7 +161,7 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
 
         if (display === 'create') {
           setActiveFormData({
-            division_id: data?.parent_id ?? undefined,
+            department_id: data?.parent_id ?? undefined,
           });
         } else {
           setActiveFormData(data);
@@ -174,7 +174,7 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
   }, [activeData, permissions]);
 
   useEffect(() => {
-    const _data = data?.data?.map((body: DivisionType) => {
+    const _data = data?.data?.map((body: DepartmentType) => {
       const { sections, ..._data } = body;
       return {
         ..._data,
@@ -200,9 +200,9 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
               ),
             };
           }) || [],
-        division_name_formatted: (
+        department_name_formatted: (
           <Group>
-            <Text size={'sm'}>{body.division_name}</Text>
+            <Text size={'sm'}>{body.department_name}</Text>
             {!body.active && (
               <Badge
                 variant={'light'}
@@ -262,4 +262,4 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
   );
 };
 
-export default DivisionSectionClient;
+export default DepartmentSectionClient;

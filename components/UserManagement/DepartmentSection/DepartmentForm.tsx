@@ -3,16 +3,16 @@ import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import DynamicSelect from '../../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 
-const DivisionFormClient = forwardRef<
+const DepartmentFormClient = forwardRef<
   HTMLFormElement,
-  ModalDivisionContentProps
+  ModalDepartmentContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      division_name: currentData?.division_name ?? '',
+      department_name: currentData?.department_name ?? '',
       active: currentData?.active ?? false,
-      division_head_id: currentData?.division_head_id,
+      department_head_id: currentData?.department_head_id,
     }),
     [currentData]
   );
@@ -41,13 +41,13 @@ const DivisionFormClient = forwardRef<
     >
       <Stack>
         <TextInput
-          label='Division Name'
-          placeholder='Division name'
-          value={form.values.division_name}
+          label='Department Name'
+          placeholder='Department name'
+          value={form.values.department_name}
           onChange={(event) =>
-            form.setFieldValue('division_name', event.currentTarget.value)
+            form.setFieldValue('department_name', event.currentTarget.value)
           }
-          error={form.errors.division_name && ''}
+          error={form.errors.department_name && ''}
           size={'sm'}
           required
         />
@@ -55,21 +55,21 @@ const DivisionFormClient = forwardRef<
           endpoint={'/accounts/users'}
           endpointParams={{ paginated: false, show_all: true }}
           column={'fullname'}
-          label='Division Head'
+          label='Department Head'
           defaultData={
-            currentData?.division_head_id
+            currentData?.department_head_id
               ? [
-                  {
-                    value: currentData?.division_head_id ?? '',
-                    label: currentData?.head?.fullname ?? '',
-                  },
-                ]
+                {
+                  value: currentData?.department_head_id ?? '',
+                  label: currentData?.head?.fullname ?? '',
+                },
+              ]
               : undefined
           }
-          value={form.values.division_head_id}
+          value={form.values.department_head_id}
           size={'sm'}
           onChange={(value) =>
-            form.setFieldValue('division_head_id', value ?? '')
+            form.setFieldValue('department_head_id', value ?? '')
           }
         />
         <Switch
@@ -92,6 +92,6 @@ const DivisionFormClient = forwardRef<
   );
 });
 
-DivisionFormClient.displayName = 'DivisionFormClient';
+DepartmentFormClient.displayName = 'DepartmentFormClient';
 
-export default DivisionFormClient;
+export default DepartmentFormClient;

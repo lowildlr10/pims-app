@@ -153,16 +153,16 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
               show_all: true,
               show_inactive: true,
             }}
-            column={'division_section'}
+            column={'department_section'}
             label='Section'
             defaultData={
               currentData?.section_id
                 ? [
-                    {
-                      value: currentData?.section_id ?? '',
-                      label: currentData?.section?.section_name ?? '',
-                    },
-                  ]
+                  {
+                    value: currentData?.section_id ?? '',
+                    label: currentData?.section?.section_name ?? '',
+                  },
+                ]
                 : undefined
             }
             value={form.values.section_id}

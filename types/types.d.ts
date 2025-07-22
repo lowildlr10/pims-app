@@ -5,7 +5,7 @@ type ThemeColorType = {
 };
 
 type ModuleType =
-  | 'account-division'
+  | 'account-department'
   | 'account-section'
   | 'account-role'
   | 'account-user'
@@ -92,7 +92,7 @@ type UserType = {
   middlename?: string;
   lastname?: string;
   sex?: 'male' | 'female';
-  division_id?: string;
+  department_id?: string;
   section_id?: string;
   position_id?: string;
   designation_id?: string;
@@ -104,9 +104,9 @@ type UserType = {
   allow_signature?: boolean;
   signature?: string;
   restricted?: boolean;
-  division?: {
+  department?: {
     id?: string;
-    division_name?: string;
+    department_name?: string;
   };
   section?: {
     id?: string;
@@ -125,11 +125,11 @@ type UserType = {
   updated_at?: string;
 };
 
-type DivisionType = {
+type DepartmentType = {
   id?: string;
-  division_name?: string;
+  department_name?: string;
   active?: boolean;
-  division_head_id?: string;
+  department_head_id?: string;
   head?: UserType;
   sections?: SectionType[];
   created_at?: string;
@@ -138,12 +138,12 @@ type DivisionType = {
 
 type SectionType = {
   id?: string;
-  division_id?: string;
+  department_id?: string;
   section_name?: string;
   active?: boolean;
   section_head_id?: string;
   head?: UserType;
-  division?: DivisionType;
+  department?: DepartmentType;
   created_at?: string;
   updated_at?: string;
 };
@@ -395,6 +395,8 @@ type InventoryIssuanceDocumentType = 'ris' | 'ics' | 'are';
 
 type PurchaseRequestType = {
   id?: string;
+  department_id?: string;
+  department?: DepartmentType;
   section_id?: string;
   section?: SectionType;
   pr_no?: string;

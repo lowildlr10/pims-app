@@ -22,6 +22,7 @@ import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import { useMediaQuery } from '@mantine/hooks';
+import Helper from '@/utils/Helpers';
 
 const PrintModalClient = ({
   title,
@@ -35,16 +36,22 @@ const PrintModalClient = ({
   const [loading, setLoading] = useState(false);
   const [filename, setFilename] = useState<string>('');
   const [base64File, setBase64File] = useState<string>();
-  const [paperId, setPaperId] = useState<string>('');
+  const [paperId, setPaperId] = useState('');
   const [pageOrientation, setPageOrientation] = useState<string>(
     defaultOrientation ?? 'P'
   );
-  const [showSignatures, setShowSignatures] = useState<boolean>(true);
+  const [showSignatures, setShowSignatures] = useState<boolean>(false);
 
   useEffect(() => {
-    if (paperId && pageOrientation && showSignatures !== undefined)
+    console.log(paperId, pageOrientation, endpoint)
+
+    if (!Helper.empty(paperId)
+      && !Helper.empty(pageOrientation)
+      && !Helper.empty(endpoint)
+    ) {
       handleFetchData();
-  }, [paperId, pageOrientation, showSignatures]);
+    }
+  }, [paperId, pageOrientation, showSignatures, endpoint]);
 
   useEffect(() => {
     if (!opened) {
@@ -127,8 +134,7 @@ const PrintModalClient = ({
               {opened &&
                 base64File &&
                 paperId &&
-                pageOrientation &&
-                showSignatures !== undefined && (
+                pageOrientation && (
                   <iframe
                     src={base64File}
                     height='100%'
@@ -177,8 +183,7 @@ const PrintModalClient = ({
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   endpoint={'/libraries/paper-sizes'}
                   column={'paper_type'}
-                  defaultValue={defaultPaper}
-                  value={paperId}
+                  value={paperId ?? defaultPaper}
                   onChange={(value) => setPaperId(value ?? '')}
                   hasPresetValue
                   required

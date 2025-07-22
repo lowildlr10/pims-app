@@ -17,7 +17,7 @@ import {
   Box,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconBellFilled, IconCalendarWeek, IconX } from '@tabler/icons-react';
+import { IconBellFilled, IconCalendarWeek, IconCircleDashedCheck, IconX } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
@@ -126,8 +126,17 @@ const NotificationMenuButtonClient = () => {
           viewportRef={scrollRef}
           onScrollPositionChange={handleScroll}
         >
-          <Stack gap={3}>
-            {notifications.map((notif: any, index: number) => (
+          <Stack gap={3} w={'100%'} align={'center'}>
+            {notifications.length === 0 && (
+              <Stack w={'100%'} align={'center'} my={'md'}>
+                <IconCircleDashedCheck size={40} color={'var(--mantine-color-gray-7)'} />
+                <Text ta={'center'} fw={500} c={'var(--mantine-color-gray-7)'}>
+                  You're All Caught Up
+                </Text>
+              </Stack>
+            )}
+
+            {notifications.length > 0 && notifications.map((notif: any, index: number) => (
               <Anchor
                 key={notif.id ?? index}
                 href={notif?.data?.href ?? '#'}

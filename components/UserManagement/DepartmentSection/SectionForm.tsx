@@ -8,7 +8,7 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
     const [currentData, setCurrentData] = useState(data);
     const currentForm = useMemo(
       () => ({
-        division_id: currentData?.division_id,
+        department_id: currentData?.department_id,
         section_name: currentData?.section_name ?? '',
         active: currentData?.active ?? false,
         section_head_id: currentData?.section_head_id,
@@ -43,28 +43,28 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
         <Stack>
           {!isCreate && (
             <DynamicSelect
-              endpoint={'/accounts/divisions'}
+              endpoint={'/accounts/departments'}
               endpointParams={{
                 paginated: false,
                 show_all: true,
                 show_inactive: true,
               }}
-              column={'division_name'}
-              label='Division'
+              column={'department_name'}
+              label='Department'
               defaultData={
-                currentData?.division_id
+                currentData?.department_id
                   ? [
-                      {
-                        value: currentData?.division_id ?? '',
-                        label: currentData?.division?.division_name ?? '',
-                      },
-                    ]
+                    {
+                      value: currentData?.department_id ?? '',
+                      label: currentData?.department?.department_name ?? '',
+                    },
+                  ]
                   : undefined
               }
-              value={form.values.division_id}
+              value={form.values.department_id}
               size={'sm'}
               onChange={(value) =>
-                form.setFieldValue('division_id', value ?? '')
+                form.setFieldValue('department_id', value ?? '')
               }
               required
             />
@@ -78,7 +78,7 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
             onChange={(event) =>
               form.setFieldValue('section_name', event.currentTarget.value)
             }
-            error={form.errors.division_name && ''}
+            error={form.errors.department_name && ''}
             required
           />
           <DynamicSelect
@@ -90,11 +90,11 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
             defaultData={
               currentData?.section_head_id
                 ? [
-                    {
-                      value: currentData?.section_head_id ?? '',
-                      label: currentData?.head?.fullname ?? '',
-                    },
-                  ]
+                  {
+                    value: currentData?.section_head_id ?? '',
+                    label: currentData?.head?.fullname ?? '',
+                  },
+                ]
                 : undefined
             }
             value={form.values.section_head_id}

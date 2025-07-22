@@ -60,21 +60,23 @@ type DirectoryPathProps = {
   permissions?: string[];
 };
 
+type DynamicSelectComboboxDataType = { value: string; label: string; disabled?: boolean }[];
+
 type DynamicSelectProps = {
   name?: string;
-  defaultData?: { value: string; label: string }[];
+  defaultData?: ComboboxData;
   endpoint?: string;
-  endpointParams?: any;
+  endpointParams?: Record<string, any>;
   valueColumn?: string;
   column?: string;
   label?: string;
   placeholder?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  value?: string;
-  defaultValue?: string;
+  value?: string | null;
+  defaultValue?: string | null;
   limit?: number;
   variant?: 'unstyled' | 'filled' | 'default';
-  sx?: EmotionSx;
+  sx?: any;
   readOnly?: boolean;
   required?: boolean;
   enableOnClickRefresh?: boolean;
@@ -146,7 +148,7 @@ type FormDataType = CompanyType &
   SupplierType &
   UacsCodeType &
   RoleType &
-  DivisionType &
+  DepartmentType &
   SectionType &
   UserType &
   SystemLogType &
@@ -401,8 +403,8 @@ type UpdateModalProps = {
   updateTable?: (id: string | null) => void;
 };
 
-type ModalDivisionContentProps = {
-  data: DivisionType;
+type ModalDepartmentContentProps = {
+  data: DepartmentType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };

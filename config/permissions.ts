@@ -348,9 +348,9 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
 
   // Account management
   {
-    label: 'Division Library',
-    description: 'Scope for Division Library module',
-    module_type: 'account-division',
+    label: 'Department Library',
+    description: 'Scope for Department Library module',
+    module_type: 'account-department',
     checked: false,
     indeterminate: false,
     scopes: [
