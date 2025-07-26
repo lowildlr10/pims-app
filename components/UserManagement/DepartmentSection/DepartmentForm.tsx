@@ -59,11 +59,11 @@ const DepartmentFormClient = forwardRef<
           defaultData={
             currentData?.department_head_id
               ? [
-                {
-                  value: currentData?.department_head_id ?? '',
-                  label: currentData?.head?.fullname ?? '',
-                },
-              ]
+                  {
+                    value: currentData?.department_head_id ?? '',
+                    label: currentData?.head?.fullname ?? '',
+                  },
+                ]
               : undefined
           }
           value={form.values.department_head_id}

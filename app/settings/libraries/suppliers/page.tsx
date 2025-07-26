@@ -7,8 +7,8 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'Procurement System - Suppliers',
-  description: 'Procurement System - Suppliers',
+  title: 'PIMS - Suppliers',
+  description: 'PIMS - Suppliers',
 };
 
 const SupplierPage = async () => {

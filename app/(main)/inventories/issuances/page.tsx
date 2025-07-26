@@ -7,11 +7,11 @@ import { getCompany } from '@/actions/company';
 import InventoryIssuancesClient from '@/components/InventoryIssuances';
 
 export const metadata = {
-  title: 'Inventory System - Issuance',
-  description: 'Inventory System - Issuance',
+  title: 'PIMS - Inventory Issuances',
+  description: 'PIMS - Inventory Issuances',
 };
 
-const IssuancePage = async () => {
+const InventoryIssuancePage = async () => {
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
@@ -26,7 +26,7 @@ const IssuancePage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Inventory System - Issuance'}
+        title={'PIMS - Inventory Issuances'}
         permissions={permissions}
       >
         <InventoryIssuancesClient user={user} permissions={permissions} />
@@ -35,4 +35,4 @@ const IssuancePage = async () => {
   );
 };
 
-export default IssuancePage;
+export default InventoryIssuancePage;

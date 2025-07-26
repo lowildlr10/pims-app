@@ -176,7 +176,7 @@ export const LIBRARY_LINKS = [
     link: '/settings/libraries/bids-awards-committees',
   },
   {
-    label: 'Funding Soruces/Projects',
+    label: 'Funding Sources/Projects',
     allowedPermissions: [
       'super:*',
       'head:*',

@@ -31,7 +31,9 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
   onChange,
 }) => {
   const isControlled = value !== undefined;
-  const [internalValue, setInternalValue] = useState<string | null>(defaultValue);
+  const [internalValue, setInternalValue] = useState<string | null>(
+    defaultValue
+  );
   const [data, setData] = useState<DynamicSelectComboboxDataType>(defaultData);
   const [presetValueApplied, setPresetValueApplied] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,10 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
     if (disableFetch || !endpoint) return;
     setLoading(true);
     try {
-      const res = await API.get(endpoint, { ...endpointParams, sort_direction: 'asc' });
+      const res = await API.get(endpoint, {
+        ...endpointParams,
+        sort_direction: 'asc',
+      });
       const items = res?.data ?? [];
 
       if (items.length > 0) {
@@ -57,10 +62,11 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
           const valueToCompare = !isControlled ? defaultValue : value;
           const presetItem = valueToCompare
             ? items.find(
-              (item: any) =>
-                item[valueColumn] === valueToCompare ||
-                item[column]?.toLowerCase() === (valueToCompare as string).toLowerCase()
-            )
+                (item: any) =>
+                  item[valueColumn] === valueToCompare ||
+                  item[column]?.toLowerCase() ===
+                    (valueToCompare as string).toLowerCase()
+              )
             : null;
 
           const presetVal = presetItem?.[valueColumn] ?? items[0][valueColumn];
@@ -80,6 +86,7 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
       getErrors(err).forEach((msg) =>
         notify({ title: 'Failed', message: msg, color: 'red' })
       );
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -92,7 +99,7 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
     defaultValue,
     hasPresetValue,
     isControlled,
-    internalValue
+    internalValue,
   ]);
 
   useEffect(() => {
@@ -127,10 +134,10 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
 
     onChange?.(effectiveValue);
 
-    if (effectiveValue) {
+    if (effectiveValue && !isLoading) {
       fetchData();
     }
-  }, [effectiveValue, isControlled]);
+  }, [effectiveValue, isControlled, isLoading]);
 
   return (
     <Select
@@ -144,11 +151,16 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
       value={effectiveValue}
       defaultValue={!isControlled ? defaultValue : undefined}
       onChange={(_, option) => handleChange(option?.value ?? null)}
-      nothingFoundMessage="Nothing found..."
-      leftSection={(loading || isLoading) && <Loader size="xs" color="var(--mantine-color-primary-9)" />}
+      nothingFoundMessage='Nothing found...'
+      leftSection={
+        (loading || isLoading) && (
+          <Loader size='xs' color='var(--mantine-color-primary-9)' />
+        )
+      }
       variant={variant}
       sx={sx}
-      onClick={!readOnly && enableOnClickRefresh ? fetchData : undefined}
+      // onClick={!readOnly && enableOnClickRefresh ? fetchData : undefined}
+      onFocus={!readOnly && enableOnClickRefresh ? fetchData : undefined}
       searchable
       clearable
       maxDropdownHeight={limit ? undefined : 200}

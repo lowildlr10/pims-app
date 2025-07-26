@@ -7,8 +7,8 @@ import { getCompany } from '@/actions/company';
 import ResposibilityCentersClient from '@/components/Libraries/ResposibilityCenters';
 
 export const metadata = {
-  title: 'Procurement System - Responsibility Centers',
-  description: 'Procurement System - Responsibility Centers',
+  title: 'PIMS - Responsibility Centers',
+  description: 'PIMS - Responsibility Centers',
 };
 
 const BidsAwardsCommitteePage = async () => {

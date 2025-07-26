@@ -13,7 +13,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import {
   IconActivity,
-  IconHandFinger,
   IconLibrary,
   IconPencil,
   IconPrinter,
@@ -58,7 +57,7 @@ export const DetailActionsClient = ({
   stack,
   updateTable,
 }: DetailActionProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [
     actionModalOpened,
     { open: openActionModal, close: closeActionModal },
@@ -345,7 +344,6 @@ export const DetailActionsClient = ({
 };
 
 const DetailModalClient = ({
-  user,
   permissions,
   title,
   data,
@@ -357,7 +355,7 @@ const DetailModalClient = ({
   showPrint,
   showEdit,
 }: DetailModalProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [currentData, setCurrentData] = useState(data);
   const [showPrintButton, setShowPrintButton] = useState(showPrint);
   const [showEditButton, setShowEditButton] = useState(showEdit);

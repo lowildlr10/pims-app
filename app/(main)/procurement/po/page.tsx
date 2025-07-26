@@ -7,8 +7,8 @@ import { getCompany } from '@/actions/company';
 import PurchaseOrdersClient from '@/components/PurchaseOrders';
 
 export const metadata = {
-  title: 'Procurement System - Purchase and Job Order',
-  description: 'Procurement System - Purchase and Job Order',
+  title: 'PIMS - Purchase Orders',
+  description: 'PIMS - Purchase Orders',
 };
 
 const PurchaseOrderPage = async () => {
@@ -25,10 +25,7 @@ const PurchaseOrderPage = async () => {
       permissions={permissions}
       type={'main'}
     >
-      <MainContainerClient
-        title={'Procurement - Purchase and Job Order'}
-        permissions={permissions}
-      >
+      <MainContainerClient title={'Purchase Orders'} permissions={permissions}>
         <PurchaseOrdersClient user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

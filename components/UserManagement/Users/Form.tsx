@@ -22,6 +22,10 @@ import { useMediaAsset } from '@/hooks/useMediaAsset';
 const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
     const [currentData, setCurrentData] = useState(data);
+    const [departmentId, setDepartmentId] = useState(
+      currentData?.department_id ?? null
+    );
+    const [sectionId, setSectionId] = useState(currentData?.section_id ?? null);
     const currentForm = useMemo(
       () => ({
         employee_id: currentData?.employee_id ?? '',
@@ -29,7 +33,8 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
         middlename: currentData?.middlename ?? '',
         lastname: currentData?.lastname ?? '',
         sex: currentData?.sex ?? '',
-        section_id: currentData?.section_id ?? '',
+        department_id: departmentId ?? '',
+        section_id: sectionId ?? '',
         position: currentData?.position?.position_name ?? '',
         designation: currentData?.designation?.designation_name ?? '',
         username: currentData?.username ?? '',
@@ -39,7 +44,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
         password: '',
         roles: currentData?.roles?.map((role) => role.id) ?? [],
       }),
-      [currentData]
+      [currentData, departmentId, sectionId]
     );
     const form = useForm({
       mode: 'controlled',
@@ -53,6 +58,8 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
 
     useEffect(() => {
       setCurrentData(data);
+      setDepartmentId(data?.department_id ?? '');
+      setSectionId(data?.section_id ?? '');
     }, [data]);
 
     useEffect(() => {
@@ -63,9 +70,11 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
     useEffect(() => {
       setPayload({
         ...form.values,
-        roles: JSON.stringify(form.values.roles),
+        department_id: departmentId,
+        section_id: sectionId,
+        roles: form.values.roles,
       });
-    }, [form.values]);
+    }, [form.values, departmentId, sectionId]);
 
     return (
       <form
@@ -147,14 +156,49 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
             required
           />
           <DynamicSelect
-            endpoint={'/accounts/sections'}
+            endpoint={'/accounts/departments'}
             endpointParams={{
               paginated: false,
               show_all: true,
               show_inactive: true,
             }}
-            column={'department_section'}
-            label='Section'
+            column={'department_name'}
+            label='Department'
+            defaultData={
+              currentData?.department_id
+                ? [
+                  {
+                    value: currentData.department_id,
+                    label:
+                      currentData?.department?.department_name ?? '',
+                  },
+                ]
+                : undefined
+            }
+            value={departmentId}
+            size={'sm'}
+            onChange={(value) => {
+              setDepartmentId(value);
+              setSectionId(null);
+            }}
+            required
+          />
+          <DynamicSelect
+            endpoint={'/accounts/sections'}
+            endpointParams={{
+              paginated: false,
+              show_all: true,
+              show_inactive: true,
+              filter_by_department: true,
+              department_id: departmentId,
+            }}
+            column={'section_name'}
+            label={'Section'}
+            placeholder={
+              departmentId
+                ? 'Section'
+                : 'Please select a department first'
+            }
             defaultData={
               currentData?.section_id
                 ? [
@@ -165,10 +209,10 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
                 ]
                 : undefined
             }
-            value={form.values.section_id}
+            value={sectionId}
             size={'sm'}
-            onChange={(value) => form.setFieldValue('section_id', value)}
-            required
+            onChange={(value) => setSectionId(value)}
+            readOnly={!departmentId}
           />
           <DynamicAutocomplete
             endpoint={'/accounts/positions'}

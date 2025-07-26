@@ -7,8 +7,8 @@ import { getCompany } from '@/actions/company';
 import InspectionAcceptanceReportsClient from '@/components/InspectionAcceptanceReports';
 
 export const metadata = {
-  title: 'Procurement System - Inspection and Acceptance Report',
-  description: 'Procurement System - Inspection and Acceptance Report',
+  title: 'PIMS - Inspection and Acceptance Reports',
+  description: 'PIMS - Inspection and Acceptance Reports',
 };
 
 const InspectionAcceptanceReportPage = async () => {
@@ -26,7 +26,7 @@ const InspectionAcceptanceReportPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Procurement - Inspection and Acceptance Report'}
+        title={'Inspection and Acceptance Reports'}
         permissions={permissions}
       >
         <InspectionAcceptanceReportsClient

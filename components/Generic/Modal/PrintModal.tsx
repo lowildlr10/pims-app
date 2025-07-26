@@ -27,12 +27,12 @@ import Helper from '@/utils/Helpers';
 const PrintModalClient = ({
   title,
   endpoint,
-  defaultPaper,
-  defaultOrientation,
+  defaultPaper = 'A4',
+  defaultOrientation = 'P',
   opened,
   close,
 }: PrintModalProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [loading, setLoading] = useState(false);
   const [filename, setFilename] = useState<string>('');
   const [base64File, setBase64File] = useState<string>();
@@ -43,11 +43,10 @@ const PrintModalClient = ({
   const [showSignatures, setShowSignatures] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(paperId, pageOrientation, endpoint)
-
-    if (!Helper.empty(paperId)
-      && !Helper.empty(pageOrientation)
-      && !Helper.empty(endpoint)
+    if (
+      !Helper.empty(paperId) &&
+      !Helper.empty(pageOrientation) &&
+      !Helper.empty(endpoint)
     ) {
       handleFetchData();
     }
@@ -63,40 +62,42 @@ const PrintModalClient = ({
   }, [opened, defaultOrientation]);
 
   const handleFetchData = () => {
-    setLoading(true);
+    if (paperId !== defaultPaper) {
+      setLoading(true);
 
-    setFilename('');
-    setBase64File('');
+      setFilename('');
+      setBase64File('');
 
-    API.post(endpoint, {
-      paper_id: paperId,
-      page_orientation: pageOrientation,
-      show_signatures: showSignatures,
-    })
-      .then((res) => {
-        if (res?.data) {
-          setFilename(res?.data?.filename);
-          setBase64File(`data:application/pdf;base64,${res?.data?.blob}`);
-        } else {
-          setFilename('');
-          setBase64File('');
-        }
-
-        setLoading(false);
+      API.post(endpoint, {
+        paper_id: paperId,
+        page_orientation: pageOrientation,
+        show_signatures: showSignatures,
       })
-      .catch((err) => {
-        const errors = getErrors(err);
+        .then((res) => {
+          if (res?.data) {
+            setFilename(res?.data?.filename);
+            setBase64File(`data:application/pdf;base64,${res?.data?.blob}`);
+          } else {
+            setFilename('');
+            setBase64File('');
+          }
 
-        errors.forEach((error) => {
-          notify({
-            title: 'Failed',
-            message: error,
-            color: 'red',
+          setLoading(false);
+        })
+        .catch((err) => {
+          const errors = getErrors(err);
+
+          errors.forEach((error) => {
+            notify({
+              title: 'Failed',
+              message: error,
+              color: 'red',
+            });
           });
-        });
 
-        setLoading(false);
-      });
+          setLoading(false);
+        });
+    }
   };
 
   const handleDownload = () => {
@@ -131,20 +132,17 @@ const PrintModalClient = ({
                 overlayProps={{ radius: 'sm', blur: 2 }}
               />
 
-              {opened &&
-                base64File &&
-                paperId &&
-                pageOrientation && (
-                  <iframe
-                    src={base64File}
-                    height='100%'
-                    width='100%'
-                    style={{
-                      height: 'calc(100vh - 8.2em)',
-                      border: 0,
-                    }}
-                  ></iframe>
-                )}
+              {opened && base64File && paperId && pageOrientation && (
+                <iframe
+                  src={base64File}
+                  height='100%'
+                  width='100%'
+                  style={{
+                    height: 'calc(100vh - 8.2em)',
+                    border: 0,
+                  }}
+                ></iframe>
+              )}
             </Card>
           </Stack>
           <Stack
@@ -183,7 +181,7 @@ const PrintModalClient = ({
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   endpoint={'/libraries/paper-sizes'}
                   column={'paper_type'}
-                  value={paperId ?? defaultPaper}
+                  value={Helper.empty(paperId) ? defaultPaper : paperId}
                   onChange={(value) => setPaperId(value ?? '')}
                   hasPresetValue
                   required

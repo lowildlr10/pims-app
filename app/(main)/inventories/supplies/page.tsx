@@ -7,11 +7,11 @@ import { getCompany } from '@/actions/company';
 import InventorySuppliesClient from '@/components/InventorySupplies';
 
 export const metadata = {
-  title: 'Inventory System - Property and Supply',
-  description: 'Inventory System - Property and Supply',
+  title: 'PIMS - Inventory Property and Supplies',
+  description: 'PIMS - Inventory Property and Supplies',
 };
 
-const InventorySupplyPage = async () => {
+const InventoryPropertySupplyPage = async () => {
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
@@ -26,7 +26,7 @@ const InventorySupplyPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Inventory System - Property and Supply'}
+        title={'Inventory Property and Supplies'}
         permissions={permissions}
       >
         <InventorySuppliesClient user={user} permissions={permissions} />
@@ -35,4 +35,4 @@ const InventorySupplyPage = async () => {
   );
 };
 
-export default InventorySupplyPage;
+export default InventoryPropertySupplyPage;

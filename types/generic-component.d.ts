@@ -60,7 +60,11 @@ type DirectoryPathProps = {
   permissions?: string[];
 };
 
-type DynamicSelectComboboxDataType = { value: string; label: string; disabled?: boolean }[];
+type DynamicSelectComboboxDataType = {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}[];
 
 type DynamicSelectProps = {
   name?: string;
@@ -173,12 +177,18 @@ type ActiveDataType = {
 type DataTableItemType = {
   title?: string;
   endpoint?: string;
+  base_url?: string;
 };
 
 type CreateUpdateDetailItemTableType = {
   main?: DataTableItemType;
   sub?: DataTableItemType;
   fullscreen?: boolean;
+};
+
+type CreateUpdateDetailDataType = {
+  endpoint: string;
+  pathname: string;
 };
 
 type PrintItemTableType = {
@@ -192,9 +202,24 @@ type PrintItemTableType = {
   };
 };
 
+type PrintConfigType = {
+  title: string;
+  default_paper?: string;
+  default_orientation?: 'P' | 'L';
+  endpoint: string;
+  fullscreen?: boolean;
+};
+
 type LogItemTableType = {
   main?: DataTableItemType;
   sub?: DataTableItemType;
+};
+
+type LogConfigType = {
+  id: string;
+  title: string;
+  endpoint: string;
+  fullscreen?: boolean;
 };
 
 type ItemCreateMenuTableType = {
@@ -207,7 +232,6 @@ type DataTableProps = {
   mainModule?: ModuleType;
   subModule?: ModuleType;
 
-  user?: UserType;
   permissions: string[];
 
   columnSort?: string;
@@ -216,7 +240,6 @@ type DataTableProps = {
   search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
-  showPrint?: boolean;
   showEdit?: boolean;
   createMenus?: ItemCreateMenuTableType[];
   defaultModalOnClick?: 'update' | 'details';
@@ -228,8 +251,6 @@ type DataTableProps = {
   createItemData?: CreateUpdateDetailItemTableType;
   updateItemData?: CreateUpdateDetailItemTableType;
   detailItemData?: CreateUpdateDetailItemTableType;
-  printItemData?: PrintItemTableType;
-  logItemData?: LogItemTableType;
 
   subButtonLabel?: string;
 
@@ -277,6 +298,8 @@ type DataTableActionsProps = {
   showSearch?: boolean;
   showCreate?: boolean;
   createMenus?: ItemCreateMenuTableType[];
+  defaultModalOnClick?: 'update' | 'details';
+  setPageLoading?: (loading: boolean) => void;
   setSearch?: (value: string) => void;
   handleOpenCreateModal?: (
     parentId: string | null,
@@ -303,11 +326,20 @@ type DetailActionProps = {
   hasStatus?: boolean;
   status?: string;
   stack?: ModalStackReturnType;
+  openLogModal?: () => void;
   updateTable?: (id: string | null) => void;
 };
 
+type DetailProps = {
+  permissions?: string[];
+  content: ModuleType;
+  endpoint: string;
+  printConfig?: PrintConfigType;
+  logConfig?: LogConfigType;
+  backUrl?: string;
+};
+
 type DetailModalProps = {
-  user?: UserType;
   permissions?: string[];
   title: string;
   content?: ModuleType;
@@ -379,6 +411,13 @@ type LogModalProps = {
   close: () => void;
 };
 
+type CreateProps = {
+  data?: any;
+  content: ModuleType;
+  endpoint: string;
+  backUrl?: string;
+};
+
 type CreateModalProps = {
   title: string;
   content?: ModuleType;
@@ -391,12 +430,19 @@ type CreateModalProps = {
   updateTable?: (id: string | null) => void;
 };
 
+type UpdateProps = {
+  content: ModuleType;
+  endpoint: string;
+  backUrl?: string;
+};
+
 type UpdateModalProps = {
   title: string;
   content?: ModuleType;
   endpoint: string;
   data: any;
   opened: boolean;
+  showEdit?: boolean;
   fullscreen?: boolean;
   stack?: ModalStackReturnType;
   close: () => void;

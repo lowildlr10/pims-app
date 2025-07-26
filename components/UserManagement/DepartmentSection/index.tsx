@@ -92,6 +92,9 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [showCreate, setShowCreate] = useState(false);
+  const [showCreateSubItem, setShowCreateSubItem] = useState(false);
+  const [subItemsClickable, setSubItemsClickable] = useState(false);
   const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const { data, isLoading, mutate } = useSWR<DepartmentResponse>(
@@ -132,18 +135,9 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    // const status = data?.status;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case MAIN_MODULE:
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataEditable(hasEditPermission);
-
         if (display === 'create') {
           setActiveFormData(undefined);
         } else {
@@ -152,13 +146,6 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
         break;
 
       case SUB_MODULE:
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataEditable(hasEditPermission);
-
         if (display === 'create') {
           setActiveFormData({
             department_id: data?.parent_id ?? undefined,
@@ -171,7 +158,24 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
+
+  useEffect(() => {
+    setShowCreate([
+      'supply:*',
+      ...getAllowedPermissions(MAIN_MODULE, 'create'),
+    ].some((permission) => permissions?.includes(permission)));
+
+    setSubItemsClickable([
+      'supply:*',
+      ...getAllowedPermissions(SUB_MODULE, 'update'),
+    ].some((permission) => permissions?.includes(permission)));
+
+    setActiveDataEditable([
+      'supply:*',
+      ...getAllowedPermissions(MAIN_MODULE, 'update'),
+    ].some((permission) => permissions?.includes(permission)));
+  }, [permissions]);
 
   useEffect(() => {
     const _data = data?.data?.map((body: DepartmentType) => {
@@ -232,9 +236,9 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
       sortDirection={sortDirection}
       search={search}
       showSearch
-      showCreate
-      showCreateSubItem
-      subItemsClickable
+      showCreate={showCreate}
+      showCreateSubItem={showCreateSubItem}
+      subItemsClickable={subItemsClickable}
       showEdit={activeDataEditable}
       createItemData={CREATE_ITEM_CONFIG}
       updateItemData={UPDATE_ITEM_CONFIG}

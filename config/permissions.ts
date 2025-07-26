@@ -422,6 +422,30 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
 
   // System libraries
   {
+    label: 'Bids and Awards Committee Library',
+    description: 'Scope for Bids and Awards Committee Library module',
+    module_type: 'lib-bid-committee',
+    checked: false,
+    indeterminate: false,
+    scopes: [
+      {
+        label: 'View',
+        value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Create',
+        value: 'create',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+    ],
+  },
+  {
     label: 'Funding Source Library',
     description: 'Scope for Funding Source Library module',
     module_type: 'lib-fund-source',

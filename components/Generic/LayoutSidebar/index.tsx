@@ -15,7 +15,6 @@ import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
   IconArrowBack,
   IconBuildingWarehouse,
-  IconCash,
   IconGauge,
   IconLibrary,
   IconLogs,
@@ -26,7 +25,7 @@ import {
   IconUserCog,
 } from '@tabler/icons-react';
 import { UserButtonClient } from '../UserButton';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import UserModalClient from '../Modal/UserModal';
 import classes from '@/styles/generic/sidebar.module.css';
 import { keyframes } from '@emotion/react';
@@ -34,11 +33,9 @@ import { NProgressClient } from '../NProgress';
 import {
   INVENTORY_LINKS,
   PROCUREMENT_LINKS,
-  PAYMENT_LINKS,
   PROCUREMENT_ALLOWED_PERMISSIONS,
   LIBRARY_ALLOWED_PERMISSIONS,
   INVENTORY_ALLOWED_PERMISSIONS,
-  PAYMENT_ALLOWED_PERMISSIONS,
   LIBRARY_LINKS,
   USER_MANAGEMENT_LINKS,
   USER_MANAGEMENT_ALLOWED_PERMISSIONS,
@@ -68,13 +65,6 @@ const defaultMainMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: INVENTORY_LINKS,
   },
-  // {
-  //   label: 'Payment',
-  //   allowedPermissions: PAYMENT_ALLOWED_PERMISSIONS,
-  //   icon: IconCash,
-  //   initiallyOpened: false,
-  //   links: PAYMENT_LINKS,
-  // },
   { label: 'Settings', icon: IconSettings2, link: '/settings/user-profile' },
 ];
 
@@ -121,7 +111,7 @@ export function LayoutSidebarClient({
     company,
   });
 
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [menus, setMenus] = useState<LinksGroupProps[]>(defaultMenu);
   const links = menus.map((item) => (
     <LinksGroupClient {...item} key={item.label} permissions={permissions} />
@@ -223,7 +213,6 @@ export function LayoutSidebarClient({
           },
         })}
       >
-        {/* <AppShell.Section>LGU-ATOK</AppShell.Section> */}
         <AppShell.Section
           className={classes.links}
           grow
@@ -242,7 +231,7 @@ export function LayoutSidebarClient({
           color={'var(--mantine-color-black-7)'}
           backgroundOpacity={0.6}
           blur={2}
-          zIndex={5}
+          zIndex={35}
           onClick={() => {
             toggleDesktop();
           }}

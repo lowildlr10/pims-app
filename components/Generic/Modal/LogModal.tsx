@@ -24,7 +24,7 @@ dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
 const LogCard = ({ fullname, message, logType, loggedAt }: LogCardProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   return (
     <Card
@@ -69,7 +69,7 @@ const LogModalClient = ({
   opened,
   close,
 }: LogModalProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [logId, setLogId] = useState(id ?? '');
   const [page, setPage] = useState(1);
   const [perPage] = useState(10);
@@ -146,11 +146,11 @@ const LogModalClient = ({
                 loggedAt={
                   log.logged_at
                     ? dayjs
-                        .duration(
-                          dayjs(log.logged_at).diff(dayjs()),
-                          'milliseconds'
-                        )
-                        .humanize(true)
+                      .duration(
+                        dayjs(log.logged_at).diff(dayjs()),
+                        'milliseconds'
+                      )
+                      .humanize(true)
                     : '-'
                 }
               />

@@ -54,11 +54,11 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
               defaultData={
                 currentData?.department_id
                   ? [
-                    {
-                      value: currentData?.department_id ?? '',
-                      label: currentData?.department?.department_name ?? '',
-                    },
-                  ]
+                      {
+                        value: currentData?.department_id ?? '',
+                        label: currentData?.department?.department_name ?? '',
+                      },
+                    ]
                   : undefined
               }
               value={form.values.department_id}
@@ -90,11 +90,11 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
             defaultData={
               currentData?.section_head_id
                 ? [
-                  {
-                    value: currentData?.section_head_id ?? '',
-                    label: currentData?.head?.fullname ?? '',
-                  },
-                ]
+                    {
+                      value: currentData?.section_head_id ?? '',
+                      label: currentData?.head?.fullname ?? '',
+                    },
+                  ]
                 : undefined
             }
             value={form.values.section_head_id}

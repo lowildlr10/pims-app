@@ -7,8 +7,8 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'Procurement System - MFO/PAP',
-  description: 'Procurement System - MFO/PAP',
+  title: 'PIMS - MFO/PAP',
+  description: 'PIMS - MFO/PAP',
 };
 
 const MfoPapPage = async () => {

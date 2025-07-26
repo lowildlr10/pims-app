@@ -10,7 +10,6 @@ import { randomId, useDisclosure, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
 import StatusClient from './Status';
 import { ActionIcon, Menu, Stack, Text, Tooltip } from '@mantine/core';
-import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import ActionsClient from './Actions';
 import { IconLibrary } from '@tabler/icons-react';
 import ActionModalClient from '../Generic/Modal/ActionModal';
@@ -18,26 +17,13 @@ import ActionModalClient from '../Generic/Modal/ActionModal';
 const MAIN_MODULE: ModuleType = 'po';
 const SUB_MODULE: ModuleType = 'inv-supply';
 
-const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
-  sub: {
-    title: 'Update Inventory Property and Supply',
-    endpoint: '/inventories/supplies',
-  },
-  fullscreen: true,
-};
-
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   sub: {
     title: 'Inventory Property and Supply Details',
     endpoint: '/inventories/supplies',
+    base_url: '/inventories/supplies',
   },
   fullscreen: true,
-};
-
-const LOG_ITEM_CONFIG: LogItemTableType = {
-  sub: {
-    title: 'Inventory Property and Supply Logs',
-  },
 };
 
 const defaultTableData: TableDataType = {
@@ -129,7 +115,7 @@ const defaultTableData: TableDataType = {
 };
 
 const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -142,8 +128,6 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
-  const [activeDataPrintable, setActiveDataPrintable] = useState(false);
-  const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const [actionType, setActionType] = useState<ActionType>();
   const [title, setTitle] = useState('');
@@ -198,22 +182,9 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    // const status = data?.status;
-    let hasPrintPermission = false;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case SUB_MODULE:
-        hasPrintPermission = false;
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataPrintable(hasPrintPermission);
-
-        setActiveDataEditable(hasEditPermission);
-
         if (display === 'create') {
         } else {
           setActiveFormData(data);
@@ -223,7 +194,7 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
 
   useEffect(() => {
     const poData = data?.data?.map((body: PurchaseOrderType) => {
@@ -404,7 +375,7 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
         close={closeActionModal}
         updateTable={() => {
           mutate();
-          setSearch(activeFormData?.id ?? '');
+          // setSearch(activeFormData?.id ?? '');
         }}
         requiresPayload={requiresPayload}
       >
@@ -414,20 +385,15 @@ const InventorySuppliesClient = ({ user, permissions }: MainProps) => {
       <DataTableClient
         mainModule={MAIN_MODULE}
         subModule={SUB_MODULE}
-        user={user}
         permissions={permissions}
         columnSort={columnSort}
         sortDirection={sortDirection}
         search={search}
         showSearch
-        showPrint={activeDataPrintable}
-        showEdit={activeDataEditable}
         defaultModalOnClick={'details'}
         mainItemsClickable={false}
         subItemsClickable
-        updateItemData={UPDATE_ITEM_CONFIG}
         detailItemData={DETAIL_ITEM_CONFIG}
-        logItemData={LOG_ITEM_CONFIG}
         subButtonLabel={'Supplies'}
         data={tableData}
         perPage={perPage}

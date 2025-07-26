@@ -7,8 +7,8 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'Procurement System - UACS Object Code Classifications',
-  description: 'Procurement System - UACS Object Code Classifications',
+  title: 'PIMS - UACS Object Code Classifications',
+  description: 'PIMS - UACS Object Code Classifications',
 };
 
 const UacsCodeClassificationsPage = async () => {

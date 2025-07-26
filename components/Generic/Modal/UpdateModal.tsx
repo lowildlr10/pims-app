@@ -6,7 +6,7 @@ import {
   ScrollArea,
   Stack,
 } from '@mantine/core';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
@@ -45,14 +45,20 @@ const UpdateModalClient = ({
   opened,
   fullscreen,
   content,
+  showEdit,
   close,
   updateTable,
   stack,
-}: CreateModalProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+}: UpdateModalProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
+  const [allowUpdate, setAllowUpdate] = useState(showEdit);
   const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    setAllowUpdate(showEdit ?? false);
+  }, [showEdit]);
 
   const handleUpdate = (uncontrolledPayload?: object) => {
     let isControlled = true;
@@ -363,19 +369,22 @@ const UpdateModalClient = ({
         sx={{ zIndex: 1001 }}
       >
         <Group>
-          <Button
-            onClick={() =>
-              formRef?.current ? formRef?.current.requestSubmit() : undefined
-            }
-            type={'button'}
-            color={'var(--mantine-color-primary-9)'}
-            size={lgScreenAndBelow ? 'xs' : 'sm'}
-            leftSection={<IconPencil size={18} />}
-            loading={loading}
-            loaderProps={{ type: 'dots' }}
-          >
-            Update
-          </Button>
+          {allowUpdate && (
+            <Button
+              onClick={() =>
+                formRef?.current ? formRef?.current.requestSubmit() : undefined
+              }
+              type={'button'}
+              color={'var(--mantine-color-primary-9)'}
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
+              leftSection={<IconPencil size={18} />}
+              loading={loading}
+              loaderProps={{ type: 'dots' }}
+            >
+              Update
+            </Button>
+          )}
+
           <Button
             variant={'outline'}
             size={lgScreenAndBelow ? 'xs' : 'sm'}

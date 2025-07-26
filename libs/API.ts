@@ -56,9 +56,9 @@ export default class API {
             }
           } catch (refreshError) {
             // If refresh also fails, force logout
-            expireCookie('access_token');
-            window.location.href = '/login';
-            return Promise.reject(refreshError);
+            // expireCookie('access_token');
+            // window.location.href = '/login';
+            // return Promise.reject(refreshError);
           }
         }
 

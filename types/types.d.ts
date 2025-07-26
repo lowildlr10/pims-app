@@ -426,6 +426,7 @@ type PurchaseRequestType = {
   requestor_fullname?: string;
   cash_available_fullname?: string;
   approval_fullname?: string;
+  disapproved_reason?: string;
   status?: PurchaseRequestStatus;
   status_timestamps?: {
     pending_at?: string;
