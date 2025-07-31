@@ -47,8 +47,8 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'division_section',
-      label: 'Division - Section',
+      id: 'department_section',
+      label: 'Department - Section',
       width: '20%',
       sortable: true,
     },
@@ -80,6 +80,7 @@ const UsersClient = ({ permissions }: UsersProps) => {
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [showCreate, setShowCreate] = useState(false);
   const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const { data, isLoading, mutate } = useSWR<UsersResponse>(
@@ -120,18 +121,9 @@ const UsersClient = ({ permissions }: UsersProps) => {
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    // const status = data?.status;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case MAIN_MODULE:
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataEditable(hasEditPermission);
-
         if (display === 'create') {
           setActiveFormData(undefined);
         } else {
@@ -142,7 +134,19 @@ const UsersClient = ({ permissions }: UsersProps) => {
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
+
+  useEffect(() => {
+    setShowCreate([
+      'supply:*',
+      ...getAllowedPermissions(MAIN_MODULE, 'create'),
+    ].some((permission) => permissions?.includes(permission)));
+
+    setActiveDataEditable([
+      'supply:*',
+      ...getAllowedPermissions(MAIN_MODULE, 'update'),
+    ].some((permission) => permissions?.includes(permission)));
+  }, [permissions]);
 
   useEffect(() => {
     const _data = data?.data?.map((body: UserType) => {
@@ -171,9 +175,9 @@ const UsersClient = ({ permissions }: UsersProps) => {
             )) ?? '-'}
           </>
         ),
-        division_section: (
+        department_section: (
           <Stack gap={0}>
-            <Text size={'sm'}>{body.division?.division_name}</Text>
+            <Text size={'sm'}>{body.department?.department_name}</Text>
             <Text c={'dimmed'} size={'sm'}>
               {body.section?.section_name}
             </Text>
@@ -204,7 +208,7 @@ const UsersClient = ({ permissions }: UsersProps) => {
       sortDirection={sortDirection}
       search={search}
       showSearch
-      showCreate
+      showCreate={showCreate}
       showEdit={activeDataEditable}
       createItemData={CREATE_ITEM_CONFIG}
       updateItemData={UPDATE_ITEM_CONFIG}

@@ -6,12 +6,12 @@ import {
   ScrollArea,
   Stack,
 } from '@mantine/core';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
-import DivisionFormClient from '../../UserManagement/DivisionSection/DivisionForm';
-import SectionFormClient from '../../UserManagement/DivisionSection/SectionForm';
+import DepartmentFormClient from '../../UserManagement/DepartmentSection/DepartmentForm';
+import SectionFormClient from '../../UserManagement/DepartmentSection/SectionForm';
 import RoleFormClient from '../../UserManagement/Roles/Form';
 import { IconCancel, IconPencil } from '@tabler/icons-react';
 import UserFormClient from '../../UserManagement/Users/Form';
@@ -45,14 +45,20 @@ const UpdateModalClient = ({
   opened,
   fullscreen,
   content,
+  showEdit,
   close,
   updateTable,
   stack,
-}: CreateModalProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+}: UpdateModalProps) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
+  const [allowUpdate, setAllowUpdate] = useState(showEdit);
   const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    setAllowUpdate(showEdit ?? false);
+  }, [showEdit]);
 
   const handleUpdate = (uncontrolledPayload?: object) => {
     let isControlled = true;
@@ -131,8 +137,8 @@ const UpdateModalClient = ({
       />
 
       <Stack mb={50}>
-        {opened && content === 'account-division' && (
-          <DivisionFormClient
+        {opened && content === 'account-department' && (
+          <DepartmentFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -363,19 +369,22 @@ const UpdateModalClient = ({
         sx={{ zIndex: 1001 }}
       >
         <Group>
-          <Button
-            onClick={() =>
-              formRef?.current ? formRef?.current.requestSubmit() : undefined
-            }
-            type={'button'}
-            color={'var(--mantine-color-primary-9)'}
-            size={lgScreenAndBelow ? 'xs' : 'sm'}
-            leftSection={<IconPencil size={18} />}
-            loading={loading}
-            loaderProps={{ type: 'dots' }}
-          >
-            Update
-          </Button>
+          {allowUpdate && (
+            <Button
+              onClick={() =>
+                formRef?.current ? formRef?.current.requestSubmit() : undefined
+              }
+              type={'button'}
+              color={'var(--mantine-color-primary-9)'}
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
+              leftSection={<IconPencil size={18} />}
+              loading={loading}
+              loaderProps={{ type: 'dots' }}
+            >
+              Update
+            </Button>
+          )}
+
           <Button
             variant={'outline'}
             size={lgScreenAndBelow ? 'xs' : 'sm'}

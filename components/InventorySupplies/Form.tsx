@@ -56,7 +56,7 @@ const FormClient = forwardRef<
   HTMLFormElement,
   ModalInventorySupplyContentProps
 >(({ data, readOnly, handleCreateUpdate }, ref) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(() => {
     return {
@@ -77,8 +77,8 @@ const FormClient = forwardRef<
             : '-',
           issued_date: item.issuance?.status_timestamps?.issued_at
             ? dayjs(item.issuance?.status_timestamps?.issued_at).format(
-                'YYYY-MM-DD'
-              )
+              'YYYY-MM-DD'
+            )
             : '-',
           quantity: item.quantity ?? 0,
           status:
@@ -226,13 +226,13 @@ const FormClient = forwardRef<
                   defaultData={
                     currentData?.item_classification_id
                       ? [
-                          {
-                            value: currentData?.item_classification_id ?? '',
-                            label:
-                              currentData?.item_classification
-                                ?.classification_name ?? '',
-                          },
-                        ]
+                        {
+                          value: currentData?.item_classification_id ?? '',
+                          label:
+                            currentData?.item_classification
+                              ?.classification_name ?? '',
+                        },
+                      ]
                       : undefined
                   }
                   value={form.values.item_classification_id}

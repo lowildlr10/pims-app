@@ -1,8 +1,11 @@
 import { useState, useCallback } from 'react';
 import API from '@/libs/API';
 import { expireCookie, setCookie } from '@/libs/Cookie';
+import { useRouter } from 'next/navigation';
 
 const useAuth = () => {
+  const { push } = useRouter();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -19,7 +22,7 @@ const useAuth = () => {
             setError(false);
             setLoading(false);
 
-            window.location.href = '/';
+            push('/');
           })
           .catch((err) => {
             setMessage(err?.response?.data?.message ?? err.message);
@@ -50,7 +53,7 @@ const useAuth = () => {
           setError(false);
           setLoading(false);
 
-          window.location.href = '/login';
+          push('/login');
         })
         .catch((err) => {
           setMessage(err?.response?.data?.message ?? err.message);

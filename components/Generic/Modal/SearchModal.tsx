@@ -10,7 +10,7 @@ const SearchModalClient = ({
   close,
   setSearch,
 }: SearchModalProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const form = useForm({
     mode: 'controlled',
     initialValues: {

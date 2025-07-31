@@ -4,8 +4,8 @@ import LoginClient from '@/components/Login';
 import { redirect } from 'next/navigation';
 
 export const metadata = {
-  title: 'Procurement System - Login',
-  description: 'Procurement System - Login',
+  title: 'Procurement and Inventory Management System',
+  description: 'Procurement and Inventory Management System',
 };
 
 async function LoginPage() {

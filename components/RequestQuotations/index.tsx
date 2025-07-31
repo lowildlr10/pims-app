@@ -11,43 +11,25 @@ import Helper from '@/utils/Helpers';
 import PurchaseRequestStatusClient from '../PurchaseRequests/Status';
 import StatusClient from './Status';
 import { ActionIcon, Badge, Menu, Tooltip } from '@mantine/core';
-import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
 import { IconLibrary } from '@tabler/icons-react';
 import PurchaseRequestActionsClient from '../PurchaseRequests/Actions';
 import ActionsClient from './Actions';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const MAIN_MODULE: ModuleType = 'pr';
 const SUB_MODULE: ModuleType = 'rfq';
-
-const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
-  sub: {
-    title: 'Create Request for Quotation',
-    endpoint: '/request-quotations',
-  },
-  fullscreen: true,
-};
-
-const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
-  main: {
-    title: 'Update Purchase Request',
-    endpoint: '/purchase-requests',
-  },
-  sub: {
-    title: 'Update Request for Quotation',
-    endpoint: '/request-quotations',
-  },
-  fullscreen: true,
-};
 
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
     title: 'Purchase Request Details',
     endpoint: '/purchase-requests',
+    base_url: '/procurement/pr',
   },
   sub: {
     title: 'Request for Quotation Details',
     endpoint: '/request-quotations',
+    base_url: '/procurement/rfq',
   },
   fullscreen: true,
 };
@@ -176,7 +158,7 @@ const defaultTableData: TableDataType = {
 };
 
 const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -189,8 +171,6 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
-  const [activeDataPrintable, setActiveDataPrintable] = useState(false);
-  const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const [actionType, setActionType] = useState<ActionType>();
   const [title, setTitle] = useState('');
@@ -206,6 +186,7 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
     actionModalOpened,
     { open: openActionModal, close: closeActionModal },
   ] = useDisclosure(false);
+  const [showCreateSubItem, setShowCreateSubItem] = useState(false);
 
   const { data, isLoading, mutate } = useSWR<RequestQuotationsResponse>(
     [
@@ -245,33 +226,9 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    const status = data?.status;
-    let hasPrintPermission = false;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case MAIN_MODULE:
-        hasPrintPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'print'),
-        ].some((permission) => permissions?.includes(permission));
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
-
-        setActiveDataEditable(
-          [
-            'draft',
-            'disapproved',
-            'pending',
-            'approved_cash_available',
-            'approved',
-          ].includes(status ?? '') && hasEditPermission
-        );
-
         if (display === 'create') {
         } else {
           setActiveFormData(data);
@@ -279,22 +236,6 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
         break;
 
       case SUB_MODULE:
-        hasPrintPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'print'),
-        ].some((permission) => permissions?.includes(permission));
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
-
-        setActiveDataEditable(
-          ['draft', 'canvassing', 'completed'].includes(status ?? '') &&
-            hasEditPermission
-        );
-
         if (display === 'create') {
           setActiveFormData({
             purchase_request_id: data?.parent_id ?? undefined,
@@ -309,7 +250,14 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
+
+  useEffect(() => {
+    setShowCreateSubItem([
+      'supply:*',
+      ...getAllowedPermissions(SUB_MODULE, 'create'),
+    ].some((permission) => permissions?.includes(permission)));
+  }, [permissions]);
 
   useEffect(() => {
     const prData = data?.data?.map((body: PurchaseRequestType) => {
@@ -476,7 +424,7 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
         close={closeActionModal}
         updateTable={() => {
           mutate();
-          setSearch(activeFormData?.id ?? '');
+          // setSearch(activeFormData?.id ?? '');
         }}
         requiresPayload={requiresPayload}
       >
@@ -486,22 +434,15 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
       <DataTableClient
         mainModule={MAIN_MODULE}
         subModule={SUB_MODULE}
-        user={user}
         permissions={permissions}
         columnSort={columnSort}
         sortDirection={sortDirection}
         search={search}
         showSearch
-        showPrint={activeDataPrintable}
-        showEdit={activeDataEditable}
         defaultModalOnClick={'details'}
-        showCreateSubItem
+        showCreateSubItem={showCreateSubItem}
         subItemsClickable
-        createItemData={CREATE_ITEM_CONFIG}
-        updateItemData={UPDATE_ITEM_CONFIG}
         detailItemData={DETAIL_ITEM_CONFIG}
-        printItemData={PRINT_ITEM_CONFIG}
-        logItemData={LOG_ITEM_CONFIG}
         subButtonLabel={'RFQs'}
         data={tableData}
         perPage={perPage}

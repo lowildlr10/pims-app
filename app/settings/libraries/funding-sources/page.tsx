@@ -7,8 +7,8 @@ import React from 'react';
 import { getCompany } from '@/actions/company';
 
 export const metadata = {
-  title: 'Procurement System - Funding Sources/Projects',
-  description: 'Procurement System - Funding Sources/Projects',
+  title: 'PIMS - Funding Sources/Projects',
+  description: 'PIMS - Funding Sources/Projects',
 };
 
 const FundingSourcePage = async () => {

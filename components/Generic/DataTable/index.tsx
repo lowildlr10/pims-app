@@ -6,7 +6,6 @@ import {
   Collapse,
   Grid,
   LoadingOverlay,
-  Modal,
   Skeleton,
   Stack,
   Table,
@@ -27,9 +26,6 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import UpdateModalClient from '../Modal/UpdateModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import CreateModalClient from '../Modal/CreateModal';
-import DetailModalClient from '../Modal/DetailModal';
-import PrintModalClient from '../Modal/PrintModal';
-import LogModalClient from '../Modal/LogModal';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import API from '@/libs/API';
@@ -39,7 +35,6 @@ const DataTableClient = ({
   mainModule,
   subModule,
 
-  user,
   permissions,
 
   columnSort,
@@ -48,7 +43,6 @@ const DataTableClient = ({
   search,
   showSearch,
   showCreate,
-  showPrint,
   showEdit,
   createMenus,
   defaultModalOnClick = 'update',
@@ -59,9 +53,7 @@ const DataTableClient = ({
 
   createItemData,
   updateItemData,
-  printItemData,
   detailItemData,
-  logItemData,
 
   subButtonLabel = 'Items',
 
@@ -81,11 +73,13 @@ const DataTableClient = ({
 }: DataTableProps) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter();
+  const { replace, push } = useRouter();
   //const mobileView = useMediaQuery('(max-width: 900px)');
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   const [collapseStates, setCollapseStates] = useState<CollapseType>({});
+  const [subTableStickyStates, setSubTableStickyStates] =
+    useState<CollapseType>({});
   const [tableBody, setTableBody] = useState<any>(data?.body);
   const [hasSubBody, setHasSubBody] = useState(false);
   const [tableSearch, setTableSearch] = useState(search);
@@ -93,6 +87,7 @@ const DataTableClient = ({
   const [tablePerPage, setTablePerPage] = useState(perPage);
   const [tableColumnSort, setTableColumnSort] = useState(columnSort);
   const [tableSortDirection, setTableSortDirection] = useState(sortDirection);
+  const [pageLoading, setPageLoading] = useState(false);
 
   const [formData, setFormData] = useState<FormDataType | undefined>(
     activeFormData
@@ -114,8 +109,6 @@ const DataTableClient = ({
   ] = useDisclosure(false);
   const [currentUpdateModule, setCurrentUpdateModule] = useState<ModuleType>();
   const [currentDetailModule, setCurrentDetailModule] = useState<ModuleType>();
-  const [detailModalShowPrint, setDetailModalShowPrint] = useState(showPrint);
-  const [detailModalShowEdit, setDetailModalShowEdit] = useState(showEdit);
 
   const [fetchDetails, setFetchDetails] = useState(false);
 
@@ -133,14 +126,14 @@ const DataTableClient = ({
   } = useSWR<DetailResponse>(
     fetchDetails && currentId
       ? [
-          currentOpenedModuleType === 'main'
-            ? (detailItemData?.main?.endpoint ?? '')
-              ? `${detailItemData?.main?.endpoint ?? ''}/${currentId}`
-              : null
-            : (detailItemData?.sub?.endpoint ?? '')
-              ? `${detailItemData?.sub?.endpoint ?? ''}/${currentId}`
-              : null,
-        ]
+        currentOpenedModuleType === 'main'
+          ? (detailItemData?.main?.endpoint ?? '')
+            ? `${detailItemData?.main?.endpoint ?? ''}/${currentId}`
+            : null
+          : (detailItemData?.sub?.endpoint ?? '')
+            ? `${detailItemData?.sub?.endpoint ?? ''}/${currentId}`
+            : null,
+      ]
       : null,
     ([url]: GeneralResponse) => API.get(url),
     {
@@ -180,14 +173,6 @@ const DataTableClient = ({
       });
     }
   }, [detailData, currentDetailModule, currentUpdateModule, setActiveData]);
-
-  useEffect(() => {
-    setDetailModalShowPrint(showPrint);
-  }, [showPrint]);
-
-  useEffect(() => {
-    setDetailModalShowEdit(showEdit);
-  }, [showEdit]);
 
   useEffect(() => {
     const search = searchParams.get('search');
@@ -245,6 +230,15 @@ const DataTableClient = ({
     });
   };
 
+  const handleSubTableSticky = (id: string | undefined) => {
+    if (!id) return;
+
+    setSubTableStickyStates({
+      ...subTableStickyStates,
+      [id]: !subTableStickyStates[id],
+    });
+  };
+
   const handleUpdateTable = (id: string | null) => {
     if (refreshData) refreshData();
 
@@ -282,13 +276,6 @@ const DataTableClient = ({
     openUpdateModal();
   };
 
-  const handleOpenDetailModal = (moduleType: ModuleType | undefined) => {
-    setCurrentDetailModule(moduleType ?? undefined);
-    setCurrentUpdateModule(moduleType ?? undefined);
-
-    stack.open('detail-modal');
-  };
-
   const renderDynamicTdContent = (value: any): ReactNode => {
     if (typeof value === 'string') {
       return value;
@@ -324,6 +311,8 @@ const DataTableClient = ({
         showCreate={showCreate}
         showSearch={showSearch}
         createMenus={createMenus}
+        setPageLoading={setPageLoading}
+        defaultModalOnClick={defaultModalOnClick}
         handleOpenCreateModal={(parentId, moduleType, otherParams) => {
           handleOpenCreateModal(parentId, moduleType, otherParams);
           setCurrentOpenedModuleType('main');
@@ -415,7 +404,7 @@ const DataTableClient = ({
                   c={'var(--mantine-color-red-5)'}
                   ta={'center'}
                   colSpan={data.head?.length}
-                  fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                  fz={lgScreenAndBelow ? 'sm' : 'md'}
                 >
                   No data.
                 </Table.Td>
@@ -443,19 +432,19 @@ const DataTableClient = ({
                           fz={'xs'}
                           label={
                             mainItemsClickable &&
-                            getAllowedPermissions(mainModule, 'view')?.some(
-                              (permission) => permissions.includes(permission)
-                            ) &&
-                            defaultModalOnClick === 'details'
+                              getAllowedPermissions(mainModule, 'view')?.some(
+                                (permission) => permissions.includes(permission)
+                              ) &&
+                              defaultModalOnClick === 'details'
                               ? 'Click to show details'
                               : mainItemsClickable &&
-                                  getAllowedPermissions(
-                                    mainModule,
-                                    'update'
-                                  )?.some((permission) =>
-                                    permissions.includes(permission)
-                                  ) &&
-                                  defaultModalOnClick === 'update'
+                                getAllowedPermissions(
+                                  mainModule,
+                                  'update'
+                                )?.some((permission) =>
+                                  permissions.includes(permission)
+                                ) &&
+                                defaultModalOnClick === 'update'
                                 ? 'Click to update'
                                 : undefined
                           }
@@ -464,10 +453,9 @@ const DataTableClient = ({
                           }
                         >
                           <Table.Td
-                            fz={{ base: 11, lg: 'xs', xl: 'sm' }}
+                            fz={lgScreenAndBelow ? 'xs' : 'sm'}
                             valign={'top'}
-                            // fw={500}
-                            onClick={() => {
+                            onClick={(e) => {
                               if (head?.clickable === false) {
                                 setCurrentId(body.id);
                                 setCurrentOpenedModuleType('main');
@@ -499,9 +487,19 @@ const DataTableClient = ({
                                 ) &&
                                 defaultModalOnClick === 'details'
                               ) {
-                                setCurrentId(body.id);
-                                setCurrentOpenedModuleType('main');
-                                handleOpenDetailModal(mainModule);
+                                setPageLoading(true);
+                                e.preventDefault();
+
+                                if (hasSubBody) {
+                                  const searchParams = subModule
+                                    ? `from=${subModule}`
+                                    : '';
+                                  push(
+                                    `${detailItemData?.main?.base_url}/${body.id}?${searchParams}`
+                                  );
+                                } else {
+                                  push(`${pathname}/${body.id}`);
+                                }
                               }
                             }}
                           >
@@ -540,7 +538,7 @@ const DataTableClient = ({
                     sx={{
                       borderBottom:
                         (hasSubBody || subModule) &&
-                        collapseStates[body.id ?? '']
+                          collapseStates[body.id ?? '']
                           ? '2px solid var(--mantine-color-tertiary-9)'
                           : undefined,
                     }}
@@ -548,18 +546,20 @@ const DataTableClient = ({
                     <Table.Td
                       bg={'var(--mantine-color-tertiary-2)'}
                       colSpan={data.head?.length}
-                      px={collapseStates[body.id ?? ''] ? undefined : 0}
-                      pt={collapseStates[body.id ?? ''] ? undefined : 0}
-                      pb={
-                        collapseStates[body.id ?? '']
-                          ? lgScreenAndBelow
-                            ? 'lg'
-                            : 'xl'
-                          : 0
-                      }
+                      p={0}
                     >
-                      <Collapse in={collapseStates[body.id ?? '']}>
-                        <Grid>
+                      <Collapse
+                        in={collapseStates[body.id ?? '']}
+                        p={lgScreenAndBelow ? 'xs' : 'sm'}
+                        onTransitionEnd={() => handleSubTableSticky(body.id)}
+                      >
+                        <Grid
+                          display={
+                            !subTableStickyStates[body.id ?? '']
+                              ? 'initial'
+                              : 'none'
+                          }
+                        >
                           <Grid.Col span={'content'} px={0}>
                             <IconCaretRightFilled
                               color={'var(--mantine-color-secondary-9)'}
@@ -626,25 +626,25 @@ const DataTableClient = ({
                                             fz={'xs'}
                                             label={
                                               subItemsClickable &&
-                                              getAllowedPermissions(
-                                                subModule,
-                                                'view'
-                                              )?.some((permission) =>
-                                                permissions.includes(permission)
-                                              ) &&
-                                              defaultModalOnClick === 'details'
+                                                getAllowedPermissions(
+                                                  subModule,
+                                                  'view'
+                                                )?.some((permission) =>
+                                                  permissions.includes(permission)
+                                                ) &&
+                                                defaultModalOnClick === 'details'
                                                 ? 'Click to show details'
                                                 : subItemsClickable &&
-                                                    getAllowedPermissions(
-                                                      subModule,
-                                                      'update'
-                                                    )?.some((permission) =>
-                                                      permissions.includes(
-                                                        permission
-                                                      )
-                                                    ) &&
-                                                    defaultModalOnClick ===
-                                                      'update'
+                                                  getAllowedPermissions(
+                                                    subModule,
+                                                    'update'
+                                                  )?.some((permission) =>
+                                                    permissions.includes(
+                                                      permission
+                                                    )
+                                                  ) &&
+                                                  defaultModalOnClick ===
+                                                  'update'
                                                   ? 'Click to update'
                                                   : undefined
                                             }
@@ -655,13 +655,12 @@ const DataTableClient = ({
                                           >
                                             <Table.Td
                                               valign={'top'}
-                                              // fw={500}
                                               fz={{
                                                 base: 11,
                                                 lg: 'xs',
                                                 xl: 'sm',
                                               }}
-                                              onClick={() => {
+                                              onClick={(e) => {
                                                 if (
                                                   subHead?.clickable === false
                                                 ) {
@@ -687,7 +686,7 @@ const DataTableClient = ({
                                                     )
                                                   ) &&
                                                   defaultModalOnClick ===
-                                                    'update'
+                                                  'update'
                                                 ) {
                                                   setCurrentId(subBody.id);
                                                   setCurrentOpenedModuleType(
@@ -709,15 +708,23 @@ const DataTableClient = ({
                                                     )
                                                   ) &&
                                                   defaultModalOnClick ===
-                                                    'details'
+                                                  'details'
                                                 ) {
-                                                  setCurrentId(subBody.id);
-                                                  setCurrentOpenedModuleType(
-                                                    'sub'
-                                                  );
-                                                  handleOpenDetailModal(
-                                                    subModule
-                                                  );
+                                                  setPageLoading(true);
+                                                  e.preventDefault();
+
+                                                  if (
+                                                    detailItemData?.sub
+                                                      ?.base_url
+                                                  ) {
+                                                    push(
+                                                      `${detailItemData?.sub?.base_url}/${subBody.id}`
+                                                    );
+                                                  } else {
+                                                    push(
+                                                      `${pathname}/${body.id}`
+                                                    );
+                                                  }
                                                 }
                                               }}
                                             >
@@ -755,12 +762,32 @@ const DataTableClient = ({
                                             'var(--mantine-color-primary-9)'
                                           }
                                           leftSection={<IconPlus size={12} />}
-                                          onClick={() => {
+                                          onClick={(e) => {
                                             setCurrentOpenedModuleType('sub');
-                                            handleOpenCreateModal(
-                                              body.id,
-                                              subModule ?? null
-                                            );
+
+                                            if (
+                                              defaultModalOnClick === 'details'
+                                            ) {
+                                              setPageLoading(true);
+                                              e.preventDefault();
+
+                                              if (
+                                                detailItemData?.sub?.base_url
+                                              ) {
+                                                push(
+                                                  `${detailItemData?.sub?.base_url}/create?parent_id=${body.id}`
+                                                );
+                                              } else {
+                                                push(
+                                                  `${pathname}/create?parent_id=${body.id}`
+                                                );
+                                              }
+                                            } else {
+                                              handleOpenCreateModal(
+                                                body.id,
+                                                subModule ?? null
+                                              );
+                                            }
                                           }}
                                           fullWidth
                                         >
@@ -783,47 +810,49 @@ const DataTableClient = ({
       </Table>
 
       <LoadingOverlay
-        visible={detailLoading}
+        visible={detailLoading || pageLoading}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
         pos={'fixed'}
       />
 
-      <CreateModalClient
-        title={
-          currentOpenedModuleType === 'main'
-            ? createModalOpened
-              ? (createItemData?.main?.title ?? 'Create')
-              : ''
-            : createModalOpened
-              ? (createItemData?.sub?.title ?? 'Create')
-              : ''
-        }
-        endpoint={
-          currentOpenedModuleType === 'main'
-            ? createModalOpened
-              ? (createItemData?.main?.endpoint ?? '')
-              : ''
-            : createModalOpened
-              ? (createItemData?.sub?.endpoint ?? '')
-              : ''
-        }
-        data={formData}
-        content={currentCreateModule}
-        fullscreen={createItemData?.fullscreen}
-        opened={createModalOpened}
-        close={() => {
-          setCurrentId(undefined);
-          setCurrentOpenedModuleType(undefined);
-
-          if (setActiveData) {
-            setActiveData && setActiveData(undefined);
+      {defaultModalOnClick === 'update' && (
+        <CreateModalClient
+          title={
+            currentOpenedModuleType === 'main'
+              ? createModalOpened
+                ? (createItemData?.main?.title ?? 'Create')
+                : ''
+              : createModalOpened
+                ? (createItemData?.sub?.title ?? 'Create')
+                : ''
           }
+          endpoint={
+            currentOpenedModuleType === 'main'
+              ? createModalOpened
+                ? (createItemData?.main?.endpoint ?? '')
+                : ''
+              : createModalOpened
+                ? (createItemData?.sub?.endpoint ?? '')
+                : ''
+          }
+          data={formData}
+          content={currentCreateModule}
+          fullscreen={createItemData?.fullscreen}
+          opened={createModalOpened}
+          close={() => {
+            setCurrentId(undefined);
+            setCurrentOpenedModuleType(undefined);
 
-          closeCreateModal();
-        }}
-        updateTable={handleUpdateTable}
-      />
+            if (setActiveData) {
+              setActiveData && setActiveData(undefined);
+            }
+
+            closeCreateModal();
+          }}
+          updateTable={handleUpdateTable}
+        />
+      )}
 
       {defaultModalOnClick === 'update' && (
         <UpdateModalClient
@@ -848,6 +877,7 @@ const DataTableClient = ({
           data={updateModalOpened ? formData : undefined}
           content={currentUpdateModule}
           fullscreen={updateItemData?.fullscreen}
+          showEdit={showEdit}
           opened={updateModalOpened}
           close={() => {
             setCurrentId(undefined);
@@ -861,137 +891,6 @@ const DataTableClient = ({
           }}
           updateTable={handleUpdateTable}
         />
-      )}
-
-      {defaultModalOnClick === 'details' && (
-        <Modal.Stack>
-          <DetailModalClient
-            user={user}
-            permissions={permissions}
-            title={
-              currentOpenedModuleType === 'main'
-                ? stack.register('detail-modal').opened
-                  ? (detailItemData?.main?.title ?? 'Details')
-                  : ''
-                : stack.register('detail-modal').opened
-                  ? (detailItemData?.sub?.title ?? 'Details')
-                  : ''
-            }
-            data={stack.register('detail-modal').opened ? formData : undefined}
-            content={currentDetailModule}
-            opened={stack.register('detail-modal').opened}
-            stack={stack}
-            close={() => {
-              setCurrentId(undefined);
-              setCurrentOpenedModuleType(undefined);
-
-              if (setActiveData) {
-                setActiveData && setActiveData(undefined);
-              }
-
-              stack.closeAll();
-            }}
-            updateTable={handleUpdateTable}
-            showPrint={detailModalShowPrint}
-            showEdit={detailModalShowEdit}
-          />
-
-          <PrintModalClient
-            title={
-              currentOpenedModuleType === 'main'
-                ? stack.register('print-modal').opened
-                  ? (printItemData?.main?.title ?? 'Print')
-                  : ''
-                : stack.register('print-modal').opened
-                  ? (printItemData?.sub?.title ?? 'Print')
-                  : ''
-            }
-            endpoint={
-              currentOpenedModuleType === 'main'
-                ? stack.register('print-modal').opened
-                  ? `${printItemData?.main?.endpoint ?? ''}/${currentId}`
-                  : ''
-                : stack.register('print-modal').opened
-                  ? `${printItemData?.sub?.endpoint ?? ''}/${currentId}`
-                  : ''
-            }
-            defaultPaper={
-              currentOpenedModuleType === 'main'
-                ? (printItemData?.main?.default_paper ?? 'A4')
-                : (printItemData?.sub?.default_paper ?? 'A4')
-            }
-            defaultOrientation={
-              currentOpenedModuleType === 'main'
-                ? (printItemData?.main?.default_orientation ?? 'P')
-                : (printItemData?.sub?.default_orientation ?? 'P')
-            }
-            opened={stack.register('print-modal').opened}
-            stack={stack}
-            close={() => {
-              stack.register('print-modal').onClose();
-              stack.open('detail-modal');
-            }}
-          />
-
-          <LogModalClient
-            id={currentId ?? ''}
-            title={
-              currentOpenedModuleType === 'main'
-                ? stack.register('log-modal').opened
-                  ? (logItemData?.main?.title ?? 'Logs')
-                  : ''
-                : stack.register('log-modal').opened
-                  ? (logItemData?.sub?.title ?? 'Logs')
-                  : ''
-            }
-            endpoint={
-              currentOpenedModuleType === 'main'
-                ? stack.register('log-modal').opened
-                  ? (logItemData?.main?.endpoint ?? '/logs')
-                  : ''
-                : stack.register('log-modal').opened
-                  ? (logItemData?.sub?.endpoint ?? '/logs')
-                  : ''
-            }
-            opened={stack.register('log-modal').opened}
-            stack={stack}
-            close={() => {
-              stack.register('log-modal').onClose();
-              stack.open('detail-modal');
-            }}
-          />
-
-          <UpdateModalClient
-            title={
-              currentOpenedModuleType === 'main'
-                ? stack.register('update-modal').opened
-                  ? (updateItemData?.main?.title ?? 'Update')
-                  : ''
-                : stack.register('update-modal').opened
-                  ? (updateItemData?.sub?.title ?? 'Update')
-                  : ''
-            }
-            endpoint={
-              currentOpenedModuleType === 'main'
-                ? stack.register('update-modal').opened
-                  ? `${updateItemData?.main?.endpoint ?? ''}/${currentId}`
-                  : ''
-                : stack.register('update-modal').opened
-                  ? `${updateItemData?.sub?.endpoint ?? ''}/${currentId}`
-                  : ''
-            }
-            data={stack.register('update-modal').opened ? formData : undefined}
-            content={currentUpdateModule}
-            fullscreen={updateItemData?.fullscreen}
-            opened={stack.register('update-modal').opened}
-            stack={stack}
-            close={() => {
-              stack.register('update-modal').onClose();
-              stack.open('detail-modal');
-            }}
-            updateTable={handleUpdateTable}
-          />
-        </Modal.Stack>
       )}
 
       <DataTablePaginationClient

@@ -7,6 +7,7 @@ import { useDisclosure } from '@mantine/hooks';
 import SearchModalClient from '../Modal/SearchModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 const DataTableActionsClient = ({
   permissions,
@@ -15,7 +16,9 @@ const DataTableActionsClient = ({
   showSearch,
   showCreate,
   createMenus,
+  setPageLoading,
   setSearch,
+  defaultModalOnClick,
   handleOpenCreateModal,
 }: DataTableActionsProps) => {
   const pathname = usePathname();
@@ -52,33 +55,66 @@ const DataTableActionsClient = ({
                 </Menu.Target>
                 <Menu.Dropdown>
                   {createMenus.map((menu) => (
-                    <Menu.Item
-                      key={menu.label}
-                      onClick={() =>
-                        handleOpenCreateModal &&
-                        handleOpenCreateModal(menu.value, menu.moduleType, {
-                          document_type: menu?.value,
-                        })
-                      }
-                    >
-                      {menu.label}
-                    </Menu.Item>
+                    <>
+                      {defaultModalOnClick === 'update' && (
+                        <Menu.Item
+                          key={menu.label}
+                          onClick={() =>
+                            handleOpenCreateModal &&
+                            handleOpenCreateModal(menu.value, menu.moduleType, {
+                              document_type: menu?.value,
+                            })
+                          }
+                        >
+                          {menu.label}
+                        </Menu.Item>
+                      )}
+
+                      {defaultModalOnClick === 'details' && (
+                        <Menu.Item
+                          key={menu.label}
+                          href={`${pathname}/create?type=${menu.value}`}
+                          component={Link}
+                          onClick={() => setPageLoading?.(true)}
+                        >
+                          {menu.label}
+                        </Menu.Item>
+                      )}
+                    </>
                   ))}
                 </Menu.Dropdown>
               </Menu>
             ) : (
-              <Button
-                size={'xs'}
-                radius={'sm'}
-                color={'var(--mantine-color-primary-9)'}
-                leftSection={<IconPencilPlus size={14} />}
-                onClick={() =>
-                  handleOpenCreateModal &&
-                  handleOpenCreateModal(null, mainModule ?? null)
-                }
-              >
-                Create
-              </Button>
+              <>
+                {defaultModalOnClick === 'update' && (
+                  <Button
+                    size={'xs'}
+                    radius={'sm'}
+                    color={'var(--mantine-color-primary-9)'}
+                    leftSection={<IconPencilPlus size={14} />}
+                    onClick={() =>
+                      handleOpenCreateModal &&
+                      handleOpenCreateModal(null, mainModule ?? null)
+                    }
+                  >
+                    Create
+                  </Button>
+                )}
+
+                {defaultModalOnClick === 'details' && (
+                  <Button
+                    href={`${pathname}/create`}
+                    size={'xs'}
+                    radius={'sm'}
+                    color={'var(--mantine-color-primary-9)'}
+                    leftSection={<IconPencilPlus size={14} />}
+                    component={Link}
+                    onClick={() => setPageLoading?.(true)}
+                  >
+                    Create
+                  </Button>
+                )}
+              </>
             )}
           </>
         ) : (

@@ -21,7 +21,7 @@ type SignatureFormProps = {
   user: UserType;
 };
 
-type DivisionSectionProps = {
+type DepartmentSectionProps = {
   permissions: string[];
 };
 
@@ -62,8 +62,8 @@ type DetailResponse = {
   current_page: number;
 };
 
-type DivisionResponse = {
-  data: DivisionType[];
+type DepartmentResponse = {
+  data: DepartmentType[];
   from: number;
   to: number;
   total: number;

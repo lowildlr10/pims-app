@@ -14,7 +14,7 @@ const DataTablePaginationClient = ({
   setPage,
   setPerPage,
 }: DataTablePaginationProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   return (
     <Paper p={'md'} bg={'var(--mantine-color-gray-0)'}>

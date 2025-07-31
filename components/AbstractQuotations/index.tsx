@@ -10,7 +10,6 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
 import PurchaseRequestStatusClient from '../PurchaseRequests/Status';
 import StatusClient from './Status';
-import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
 import { ActionIcon, Menu, Tooltip } from '@mantine/core';
 import { IconLibrary } from '@tabler/icons-react';
@@ -20,50 +19,18 @@ import ActionsClient from './Actions';
 const MAIN_MODULE: ModuleType = 'pr';
 const SUB_MODULE: ModuleType = 'aoq';
 
-const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
-  main: {
-    title: 'Update Purchase Request',
-    endpoint: '/purchase-requests',
-  },
-  sub: {
-    title: 'Update Abstract of Bids and Quotation',
-    endpoint: '/abstract-quotations',
-  },
-  fullscreen: true,
-};
-
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
     title: 'Purchase Request Details',
     endpoint: '/purchase-requests',
+    base_url: '/procurement/pr',
   },
   sub: {
     title: 'Abstract of Bids and Quotation Details',
     endpoint: '/abstract-quotations',
+    base_url: '/procurement/aoq',
   },
   fullscreen: true,
-};
-
-const PRINT_ITEM_CONFIG: PrintItemTableType = {
-  main: {
-    title: 'Print Purchase Request',
-    endpoint: `/documents/${MAIN_MODULE}/prints`,
-  },
-  sub: {
-    title: 'Print Abstract of Bids and Quotation',
-    endpoint: `/documents/${SUB_MODULE}/prints`,
-    default_orientation: 'L',
-    default_paper: 'A4',
-  },
-};
-
-const LOG_ITEM_CONFIG: LogItemTableType = {
-  main: {
-    title: 'Purchase Request Logs',
-  },
-  sub: {
-    title: 'Abstract of Bids and Quotation Logs',
-  },
 };
 
 const defaultTableData: TableDataType = {
@@ -170,23 +137,19 @@ const defaultTableData: TableDataType = {
 };
 
 const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('pr_no');
   const [sortDirection, setSortDirection] = useState('desc');
   const [paginated] = useState(true);
-  const [documentType] = useState<SignatoryDocumentType>('pr');
-  const [subDocumentType] = useState<SignatoryDocumentType>('aoq');
   const [tableData, setTableData] = useState<TableDataType>(
     defaultTableData ?? {}
   );
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
-  const [activeDataPrintable, setActiveDataPrintable] = useState(false);
-  const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const [actionType, setActionType] = useState<ActionType>();
   const [title, setTitle] = useState('');
@@ -241,33 +204,9 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    const status = data?.status;
-    let hasPrintPermission = false;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case MAIN_MODULE:
-        hasPrintPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'print'),
-        ].some((permission) => permissions?.includes(permission));
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
-
-        setActiveDataEditable(
-          [
-            'draft',
-            'disapproved',
-            'pending',
-            'approved_cash_available',
-            'approved',
-          ].includes(status ?? '') && hasEditPermission
-        );
-
         if (display === 'create') {
         } else {
           setActiveFormData(data);
@@ -275,22 +214,6 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
         break;
 
       case SUB_MODULE:
-        hasPrintPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'print'),
-        ].some((permission) => permissions?.includes(permission));
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
-
-        setActiveDataEditable(
-          ['draft', 'pending', 'approved'].includes(status ?? '') &&
-            hasEditPermission
-        );
-
         if (display === 'create') {
         } else {
           setActiveFormData(data);
@@ -300,7 +223,7 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
 
   useEffect(() => {
     const prData = data?.data?.map((body: PurchaseRequestType) => {
@@ -454,7 +377,7 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
         close={closeActionModal}
         updateTable={() => {
           mutate();
-          setSearch(activeFormData?.id ?? '');
+          // setSearch(activeFormData?.id ?? '');
         }}
         requiresPayload={requiresPayload}
       >
@@ -464,20 +387,14 @@ const AbstractQuotationsClient = ({ user, permissions }: MainProps) => {
       <DataTableClient
         mainModule={MAIN_MODULE}
         subModule={SUB_MODULE}
-        user={user}
         permissions={permissions}
         columnSort={columnSort}
         sortDirection={sortDirection}
         search={search}
         showSearch
-        showPrint={activeDataPrintable}
-        showEdit={activeDataEditable}
         defaultModalOnClick={'details'}
         subItemsClickable
-        updateItemData={UPDATE_ITEM_CONFIG}
         detailItemData={DETAIL_ITEM_CONFIG}
-        printItemData={PRINT_ITEM_CONFIG}
-        logItemData={LOG_ITEM_CONFIG}
         subButtonLabel={'Abstracts'}
         data={tableData}
         perPage={perPage}

@@ -7,8 +7,8 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'Procurement System - Print Paper Sizes',
-  description: 'Procurement System - Print Paper Sizes',
+  title: 'PIMS - Print Paper Sizes',
+  description: 'PIMS - Print Paper Sizes',
 };
 
 const PaperSizePage = async () => {

@@ -17,33 +17,13 @@ import ActionModalClient from '../Generic/Modal/ActionModal';
 
 const MAIN_MODULE: ModuleType = 'iar';
 
-const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
-  main: {
-    title: 'Update Inspection and Acceptance Report',
-    endpoint: '/inspection-acceptance-reports',
-  },
-  fullscreen: true,
-};
-
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
     title: 'Inspection and Acceptance Report Details',
     endpoint: '/inspection-acceptance-reports',
+    base_url: '/procurement/iar',
   },
   fullscreen: true,
-};
-
-const PRINT_ITEM_CONFIG: PrintItemTableType = {
-  main: {
-    title: 'Print Inspection and Acceptance Report',
-    endpoint: `/documents/${MAIN_MODULE}/prints`,
-  },
-};
-
-const LOG_ITEM_CONFIG: LogItemTableType = {
-  main: {
-    title: 'Inspection and Acceptance Report Logs',
-  },
 };
 
 const defaultTableData: TableDataType = {
@@ -98,7 +78,7 @@ const InspectionAcceptanceReportsClient = ({
   user,
   permissions,
 }: MainProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -111,8 +91,6 @@ const InspectionAcceptanceReportsClient = ({
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
-  const [activeDataPrintable, setActiveDataPrintable] = useState(false);
-  const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const [actionType, setActionType] = useState<ActionType>();
   const [title, setTitle] = useState('');
@@ -168,25 +146,9 @@ const InspectionAcceptanceReportsClient = ({
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    const status = data?.status;
-    let hasPrintPermission = false;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case MAIN_MODULE:
-        hasPrintPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'print'),
-        ].some((permission) => permissions?.includes(permission));
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataPrintable(hasPrintPermission);
-
-        setActiveDataEditable(hasEditPermission);
-
         if (display === 'create') {
         } else {
           setActiveFormData(data);
@@ -196,7 +158,7 @@ const InspectionAcceptanceReportsClient = ({
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
 
   useEffect(() => {
     const iarData = data?.data?.map((body: InspectionAcceptanceReportType) => {
@@ -302,7 +264,7 @@ const InspectionAcceptanceReportsClient = ({
         close={closeActionModal}
         updateTable={() => {
           mutate();
-          setSearch(activeFormData?.id ?? '');
+          // setSearch(activeFormData?.id ?? '');
         }}
         requiresPayload={requiresPayload}
       >
@@ -311,19 +273,13 @@ const InspectionAcceptanceReportsClient = ({
 
       <DataTableClient
         mainModule={MAIN_MODULE}
-        user={user}
         permissions={permissions}
         columnSort={columnSort}
         sortDirection={sortDirection}
         search={search}
         showSearch
-        showPrint={activeDataPrintable}
-        showEdit={activeDataEditable}
         defaultModalOnClick={'details'}
-        updateItemData={UPDATE_ITEM_CONFIG}
         detailItemData={DETAIL_ITEM_CONFIG}
-        printItemData={PRINT_ITEM_CONFIG}
-        logItemData={LOG_ITEM_CONFIG}
         data={tableData}
         perPage={perPage}
         loading={isLoading}

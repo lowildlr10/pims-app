@@ -10,8 +10,8 @@ import React, { useRef, useState } from 'react';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
-import SectionFormClient from '../../UserManagement/DivisionSection/SectionForm';
-import DivisionFormClient from '../../UserManagement/DivisionSection/DivisionForm';
+import SectionFormClient from '../../UserManagement/DepartmentSection/SectionForm';
+import DepartmentFormClient from '../../UserManagement/DepartmentSection/DepartmentForm';
 import RoleFormClient from '../../UserManagement/Roles/Form';
 import { IconCancel, IconPencilPlus } from '@tabler/icons-react';
 import UserFormClient from '../../UserManagement/Users/Form';
@@ -44,7 +44,7 @@ const CreateModalClient = ({
   close,
   updateTable,
 }: CreateModalProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
   const formRef = useRef<HTMLFormElement>(null);
@@ -122,8 +122,8 @@ const CreateModalClient = ({
       />
 
       <Stack mb={50}>
-        {opened && content === 'account-division' && (
-          <DivisionFormClient
+        {opened && content === 'account-department' && (
+          <DepartmentFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}
