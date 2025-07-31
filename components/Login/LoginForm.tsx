@@ -7,6 +7,7 @@ import { notifications } from '@mantine/notifications';
 import {
   Anchor,
   Button,
+  FocusTrap,
   Group,
   Paper,
   PasswordInput,
@@ -18,26 +19,13 @@ import {
 import useAuth from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { notify } from '@/libs/Notification';
+import Helper from '@/utils/Helpers';
 
 const LoginFormClient = () => {
   const { loading, error, message, login } = useAuth();
   const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    if (loading) return;
-    if (!message) return;
-    if (!error) setLoggedIn(true);
-
-    notify({
-      title: error ? 'Failed!' : 'Success!',
-      message: message,
-      color: error ? 'red' : 'green',
-    });
-
-    form.reset();
-  }, [loading]);
-
   const form = useForm({
+    mode: 'uncontrolled',
     initialValues: {
       login: '',
       password: '',
@@ -60,9 +48,29 @@ const LoginFormClient = () => {
     },
   });
 
-  const handleLogin = () => {
-    if (form.values.login.trim() && form.values.password.trim()) {
-      login(form.values).then(() => {});
+  useEffect(() => {
+    if (loading) return;
+    if (!message) return;
+    if (!error) setLoggedIn(true);
+
+    notify({
+      title: error ? 'Failed!' : 'Success!',
+      message: message,
+      color: error ? 'red' : 'green',
+    });
+
+    form.reset();
+  }, [loading]);
+
+  const handleLogin = async (_login: string, _password: string) => {
+    const userLogin = _login.trim();
+    const userPassword = _password.trim();
+
+    if (!Helper.empty(userLogin) && !Helper.empty(userPassword)) {
+      await login({
+        login: userLogin,
+        password: userPassword,
+      });
     }
   };
 
@@ -83,38 +91,35 @@ const LoginFormClient = () => {
         </Text>
       </Stack>
 
-      <form onSubmit={form.onSubmit(() => handleLogin())}>
-        <Stack>
-          <TextInput
-            leftSection={<IconUser />}
-            size='lg'
-            style={{ marginTop: '8%' }}
-            required
-            placeholder='Username or email'
-            value={form.values.login}
-            onChange={(event) =>
-              form.setFieldValue('login', event.currentTarget.value)
-            }
-            error={form.errors.login && 'Invalid username or email'}
-            disabled={loggedIn}
-          />
+      <form
+        onSubmit={form.onSubmit(async (values) => {
+          await handleLogin(values.login, values.password);
+        })}
+      >
+        <FocusTrap active={!(loggedIn || loading)}>
+          <Stack>
+            <TextInput
+              {...form.getInputProps('login')}
+              key={form.key('login')}
+              leftSection={<IconUser />}
+              size='lg'
+              style={{ marginTop: '8%' }}
+              required
+              placeholder={'Username or email'}
+              disabled={loggedIn || loading}
+            />
 
-          <PasswordInput
-            leftSection={<IconLock />}
-            size='lg'
-            required
-            placeholder='Your password'
-            value={form.values.password}
-            onChange={(event) =>
-              form.setFieldValue('password', event.currentTarget.value)
-            }
-            error={
-              form.errors.password &&
-              'Password should include at least 6 characters'
-            }
-            disabled={loggedIn}
-          />
-        </Stack>
+            <PasswordInput
+              {...form.getInputProps('password')}
+              key={form.key('password')}
+              leftSection={<IconLock />}
+              size={'lg'}
+              required
+              placeholder={'Your password'}
+              disabled={loggedIn || loading}
+            />
+          </Stack>
+        </FocusTrap>
 
         <Group justify='right' mt='lg'>
           <Anchor

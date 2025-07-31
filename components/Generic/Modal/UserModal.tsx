@@ -13,6 +13,7 @@ const UserModalClient = ({ title, open, handleClose }: UserModalProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
   const { loading, message, error, logout } = useAuth();
   const [loggedOut, setLoggedOut] = useState(false);
+  const [triggered, setTrigged] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -24,12 +25,16 @@ const UserModalClient = ({ title, open, handleClose }: UserModalProps) => {
       message: message,
       color: error ? 'red' : 'green',
     });
-  }, [loading]);
+  }, [loading, message, error]);
+
+  useEffect(() => {
+    if (!error && triggered) setLoggedOut(true);
+  }, [error, triggered]);
 
   return (
     <Modal
       opened={open}
-      onClose={handleClose}
+      onClose={() => !(loading || loggedOut) && handleClose()}
       title={title}
       overlayProps={{
         backgroundOpacity: 0.55,
@@ -47,7 +52,10 @@ const UserModalClient = ({ title, open, handleClose }: UserModalProps) => {
           color={'var(--mantine-color-red-9)'}
           leftSection={<IconLogout2 size={18} />}
           variant={'outline'}
-          onClick={logout}
+          onClick={async () => {
+            await logout();
+            setTrigged(true);
+          }}
           autoContrast
           disabled={loggedOut}
         >

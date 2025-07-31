@@ -11,7 +11,6 @@ import Helper from '@/utils/Helpers';
 import PurchaseRequestStatusClient from '../PurchaseRequests/Status';
 import StatusClient from './Status';
 import { ActionIcon, Menu, NumberFormatter, Tooltip } from '@mantine/core';
-import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import PurchaseRequestActionsClient from '../PurchaseRequests/Actions';
 import ActionsClient from './Actions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
@@ -20,48 +19,18 @@ import { IconLibrary } from '@tabler/icons-react';
 const MAIN_MODULE: ModuleType = 'pr';
 const SUB_MODULE: ModuleType = 'po';
 
-const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
-  main: {
-    title: 'Update Purchase Request',
-    endpoint: '/purchase-requests',
-  },
-  sub: {
-    title: 'Update Purchase/Job Order',
-    endpoint: '/purchase-orders',
-  },
-  fullscreen: true,
-};
-
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
     title: 'Purchase Request Details',
     endpoint: '/purchase-requests',
+    base_url: '/procurement/pr',
   },
   sub: {
     title: 'Purchase/Job Order Details',
     endpoint: '/purchase-orders',
+    base_url: '/procurement/po',
   },
   fullscreen: true,
-};
-
-const PRINT_ITEM_CONFIG: PrintItemTableType = {
-  main: {
-    title: 'Print Purchase Request',
-    endpoint: `/documents/${MAIN_MODULE}/prints`,
-  },
-  sub: {
-    title: 'Print Purchase/Job Order',
-    endpoint: `/documents/${SUB_MODULE}/prints`,
-  },
-};
-
-const LOG_ITEM_CONFIG: LogItemTableType = {
-  main: {
-    title: 'Purchase Request Logs',
-  },
-  sub: {
-    title: 'Purchase/Job Order Logs',
-  },
 };
 
 const defaultTableData: TableDataType = {
@@ -162,7 +131,7 @@ const defaultTableData: TableDataType = {
 };
 
 const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -175,8 +144,6 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
-  const [activeDataPrintable, setActiveDataPrintable] = useState(false);
-  const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const [actionType, setActionType] = useState<ActionType>();
   const [title, setTitle] = useState('');
@@ -231,33 +198,9 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    const status = data?.status;
-    let hasPrintPermission = false;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case MAIN_MODULE:
-        hasPrintPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'print'),
-        ].some((permission) => permissions?.includes(permission));
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
-
-        setActiveDataEditable(
-          [
-            'draft',
-            'disapproved',
-            'pending',
-            'approved_cash_available',
-            'approved',
-          ].includes(status ?? '') && hasEditPermission
-        );
-
         if (display === 'create') {
         } else {
           setActiveFormData(data);
@@ -265,22 +208,6 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
         break;
 
       case SUB_MODULE:
-        hasPrintPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'print'),
-        ].some((permission) => permissions?.includes(permission));
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataPrintable(hasPrintPermission);
-
-        setActiveDataEditable(
-          ['draft', 'pending', 'approved'].includes(status ?? '') &&
-            hasEditPermission
-        );
-
         if (display === 'create') {
         } else {
           setActiveFormData(data);
@@ -290,7 +217,7 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
 
   useEffect(() => {
     const prData = data?.data?.map((body: PurchaseRequestType) => {
@@ -446,7 +373,7 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
         close={closeActionModal}
         updateTable={() => {
           mutate();
-          setSearch(activeFormData?.id ?? '');
+          // setSearch(activeFormData?.id ?? '');
         }}
         requiresPayload={requiresPayload}
       >
@@ -456,21 +383,15 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
       <DataTableClient
         mainModule={MAIN_MODULE}
         subModule={SUB_MODULE}
-        user={user}
         permissions={permissions}
         columnSort={columnSort}
         sortDirection={sortDirection}
         search={search}
         showSearch
-        showPrint={activeDataPrintable}
-        showEdit={activeDataEditable}
         defaultModalOnClick={'details'}
         subItemsClickable
-        updateItemData={UPDATE_ITEM_CONFIG}
         detailItemData={DETAIL_ITEM_CONFIG}
-        printItemData={PRINT_ITEM_CONFIG}
-        logItemData={LOG_ITEM_CONFIG}
-        subButtonLabel={'PO/JOs'}
+        subButtonLabel={'POs'}
         data={tableData}
         perPage={perPage}
         loading={isLoading}

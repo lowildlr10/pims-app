@@ -12,7 +12,7 @@ export function UserButtonClient({ user, handleOpen }: UserButtonProps) {
     user,
   });
 
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   return (
     <UnstyledButton

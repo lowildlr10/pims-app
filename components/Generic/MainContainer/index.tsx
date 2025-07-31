@@ -13,7 +13,7 @@ const MainContainerClient = ({
   children,
   permissions,
 }: MainContainerProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   return (
     // <Paper shadow='sm' p='xl' h={{ base: '100%', lg: 'calc(100vh - 6em)' }}>

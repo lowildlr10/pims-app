@@ -38,7 +38,7 @@ const NavigationMenus = ({
           'payment',
           'completed',
         ].includes(status) &&
-        pathname === '/procurement/po' && (
+        pathname.includes('/procurement/po') && (
           <Menu.Item
             leftSection={
               <IconArrowRightDashed
@@ -57,7 +57,7 @@ const NavigationMenus = ({
       {['supply:*', ...getAllowedPermissions('iar', 'view')].some(
         (permission) => permissions?.includes(permission)
       ) &&
-        pathname === '/inventories/supplies' && (
+        pathname.includes('/inventories/supplies') && (
           <Menu.Item
             leftSection={
               <IconArrowLeftDashed
@@ -76,7 +76,7 @@ const NavigationMenus = ({
       {['supply:*', ...getAllowedPermissions('inv-issuance', 'view')].some(
         (permission) => permissions?.includes(permission)
       ) &&
-        pathname === '/inventories/supplies' && (
+        pathname.includes('/inventories/supplies') && (
           <Menu.Item
             leftSection={
               <IconArrowRightDashed
@@ -308,7 +308,7 @@ const ActionsClient = ({
 
   return (
     <>
-      {pathname === '/procurement/po' && (
+      {pathname.includes('/procurement/po') && (
         <PoActionsClient
           permissions={permissions}
           id={id}
@@ -317,7 +317,7 @@ const ActionsClient = ({
         />
       )}
 
-      {pathname === '/inventories/supplies' && (
+      {pathname.includes('/inventories/supplies') && (
         <IssuanceActionsClient
           permissions={permissions}
           id={id}

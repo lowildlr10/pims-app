@@ -7,8 +7,8 @@ import { getCompany } from '@/actions/company';
 import AbstractQuotationsClient from '@/components/AbstractQuotations';
 
 export const metadata = {
-  title: 'Procurement System - Abstract of Quotations',
-  description: 'Procurement System - Abstract of Quotations',
+  title: 'PIMS - Abstract of Bids and Quotations',
+  description: 'PIMS - Abstract of Bids and Quotations',
 };
 
 const AbstractQuotationPage = async () => {
@@ -26,7 +26,7 @@ const AbstractQuotationPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Procurement - Abstract of Quotations'}
+        title={'Abstract of Bids and Quotations'}
         permissions={permissions}
       >
         <AbstractQuotationsClient user={user} permissions={permissions} />

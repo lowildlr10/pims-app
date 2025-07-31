@@ -10,50 +10,22 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
 import StatusClient from './Status';
 import { ActionIcon, Menu } from '@mantine/core';
-import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { Tooltip } from '@mantine/core';
 import { IconLibrary } from '@tabler/icons-react';
 import ActionsClient from './Actions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const MAIN_MODULE: ModuleType = 'po';
 const SUB_MODULE: ModuleType = 'inv-issuance';
-
-const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
-  main: {
-    title: 'Create Inventory Issuance',
-    endpoint: '/inventories/issuances',
-  },
-  fullscreen: true,
-};
-
-const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
-  sub: {
-    title: 'Update Inventory Issuance',
-    endpoint: '/inventories/issuances',
-  },
-  fullscreen: true,
-};
 
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   sub: {
     title: 'Inventory Issuance Details',
     endpoint: '/inventories/issuances',
+    base_url: '/inventories/issuances',
   },
   fullscreen: true,
-};
-
-const PRINT_ITEM_CONFIG: PrintItemTableType = {
-  sub: {
-    title: 'Print Inventory Issuance',
-    endpoint: `/documents/${SUB_MODULE}/prints`,
-  },
-};
-
-const LOG_ITEM_CONFIG: LogItemTableType = {
-  sub: {
-    title: 'Inventory Issuance Logs',
-  },
 };
 
 const CREATE_MENUS: ItemCreateMenuTableType[] = [
@@ -142,7 +114,7 @@ const defaultTableData: TableDataType = {
 };
 
 const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -153,13 +125,8 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
     defaultTableData ?? {}
   );
 
-  const [printItemData, setPrintItemData] =
-    useState<PrintItemTableType>(PRINT_ITEM_CONFIG);
-
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
-  const [activeDataPrintable, setActiveDataPrintable] = useState(false);
-  const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const [actionType, setActionType] = useState<ActionType>();
   const [title, setTitle] = useState('');
@@ -175,6 +142,7 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
     actionModalOpened,
     { open: openActionModal, close: closeActionModal },
   ] = useDisclosure(false);
+  const [showCreate, setShowCreate] = useState(false);
 
   const { data, isLoading, mutate } = useSWR<InventoryIssuanceResponse>(
     [
@@ -214,36 +182,9 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    const status = data?.status;
-    let hasPrintPermission = false;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case SUB_MODULE:
-        hasPrintPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'print'),
-        ].some((permission) => permissions?.includes(permission));
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataPrintable(status !== 'cancelled' && hasPrintPermission);
-
-        setActiveDataEditable(
-          ['draft', 'pending', 'approved'].includes(status ?? '') &&
-            hasEditPermission
-        );
-
-        setPrintItemData((prev) => ({
-          ...prev,
-          sub: {
-            ...prev.sub,
-            endpoint: `/documents/${data?.document_type || 'ris'}/prints`,
-          },
-        }));
-
         if (display === 'create') {
           setActiveFormData({
             document_type: data?.other_params?.document_type,
@@ -256,7 +197,14 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
+
+  useEffect(() => {
+    setShowCreate([
+      'supply:*',
+      ...getAllowedPermissions(SUB_MODULE, 'create'),
+    ].some((permission) => permissions?.includes(permission)));
+  }, [permissions]);
 
   useEffect(() => {
     const poData = data?.data?.map((body: PurchaseOrderType) => {
@@ -362,7 +310,7 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
         close={closeActionModal}
         updateTable={() => {
           mutate();
-          setSearch(activeFormData?.id ?? '');
+          // setSearch(activeFormData?.id ?? '');
         }}
         requiresPayload={requiresPayload}
       >
@@ -372,7 +320,6 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
       <DataTableClient
         mainModule={MAIN_MODULE}
         subModule={SUB_MODULE}
-        user={user}
         permissions={permissions}
         columnSort={columnSort}
         sortDirection={sortDirection}
@@ -381,15 +328,9 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
         defaultModalOnClick={'details'}
         mainItemsClickable={false}
         subItemsClickable
-        showCreate
-        showPrint={activeDataPrintable}
-        showEdit={activeDataEditable}
+        showCreate={showCreate}
         createMenus={CREATE_MENUS}
-        createItemData={CREATE_ITEM_CONFIG}
-        updateItemData={UPDATE_ITEM_CONFIG}
         detailItemData={DETAIL_ITEM_CONFIG}
-        printItemData={printItemData}
-        logItemData={LOG_ITEM_CONFIG}
         subButtonLabel={'Issuances'}
         data={tableData}
         perPage={perPage}

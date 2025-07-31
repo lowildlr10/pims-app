@@ -42,7 +42,7 @@ const NavigationMenus = ({
         (permission) => permissions?.includes(permission)
       ) &&
         ['inspected', 'partially_completed', 'completed'].includes(status) &&
-        pathname === '/procurement/iar' && (
+        pathname.includes('/procurement/iar') && (
           <Menu.Item
             leftSection={
               <IconArrowRightDashed
@@ -61,7 +61,7 @@ const NavigationMenus = ({
         (permission) => permissions?.includes(permission)
       ) &&
         ['inspected', 'partially_completed', 'completed'].includes(status) &&
-        pathname === '/procurement/iar' && (
+        pathname.includes('/procurement/iar') && (
           <Menu.Item
             leftSection={
               <IconArrowRightDashed

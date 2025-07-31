@@ -152,12 +152,12 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
           />
           <TextInput
             size={'md'}
-            label='Division'
+            label='Department'
             description={
               'Please contact your administrator to update this field'
             }
             placeholder=''
-            value={user.division?.division_name}
+            value={user.department?.department_name}
             disabled={enableUpdate}
             readOnly={true}
           />

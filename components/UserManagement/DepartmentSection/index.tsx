@@ -10,13 +10,13 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
-const MAIN_MODULE: ModuleType = 'account-division';
+const MAIN_MODULE: ModuleType = 'account-department';
 const SUB_MODULE: ModuleType = 'account-section';
 
 const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    title: 'Create Division',
-    endpoint: '/accounts/divisions',
+    title: 'Create Department',
+    endpoint: '/accounts/departments',
   },
   sub: {
     title: 'Create Section',
@@ -26,8 +26,8 @@ const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
 
 const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    title: 'Update Division',
-    endpoint: '/accounts/divisions',
+    title: 'Update Department',
+    endpoint: '/accounts/departments',
   },
   sub: {
     title: 'Create Section',
@@ -37,7 +37,7 @@ const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
 
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    endpoint: '/accounts/divisions',
+    endpoint: '/accounts/departments',
   },
   sub: {
     endpoint: '/accounts/sections',
@@ -47,14 +47,14 @@ const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'division_name_formatted',
-      label: 'Division',
+      id: 'department_name_formatted',
+      label: 'Department',
       width: '70%',
       sortable: true,
     },
     {
       id: 'headfullname',
-      label: 'Division Head',
+      label: 'Department Head',
       width: '25%',
       sortable: true,
     },
@@ -79,11 +79,11 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
+const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [columnSort, setColumnSort] = useState('division_name');
+  const [columnSort, setColumnSort] = useState('department_name');
   const [sortDirection, setSortDirection] = useState('asc');
   const [paginated] = useState(true);
   const [tableData, setTableData] = useState<TableDataType>(
@@ -92,11 +92,14 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [showCreate, setShowCreate] = useState(false);
+  const [showCreateSubItem, setShowCreateSubItem] = useState(false);
+  const [subItemsClickable, setSubItemsClickable] = useState(false);
   const [activeDataEditable, setActiveDataEditable] = useState(false);
 
-  const { data, isLoading, mutate } = useSWR<DivisionResponse>(
+  const { data, isLoading, mutate } = useSWR<DepartmentResponse>(
     [
-      `/accounts/divisions`,
+      `/accounts/departments`,
       search,
       page,
       perPage,
@@ -132,18 +135,9 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    // const status = data?.status;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case MAIN_MODULE:
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataEditable(hasEditPermission);
-
         if (display === 'create') {
           setActiveFormData(undefined);
         } else {
@@ -152,16 +146,9 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
         break;
 
       case SUB_MODULE:
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(SUB_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataEditable(hasEditPermission);
-
         if (display === 'create') {
           setActiveFormData({
-            division_id: data?.parent_id ?? undefined,
+            department_id: data?.parent_id ?? undefined,
           });
         } else {
           setActiveFormData(data);
@@ -171,10 +158,27 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
 
   useEffect(() => {
-    const _data = data?.data?.map((body: DivisionType) => {
+    setShowCreate([
+      'supply:*',
+      ...getAllowedPermissions(MAIN_MODULE, 'create'),
+    ].some((permission) => permissions?.includes(permission)));
+
+    setSubItemsClickable([
+      'supply:*',
+      ...getAllowedPermissions(SUB_MODULE, 'update'),
+    ].some((permission) => permissions?.includes(permission)));
+
+    setActiveDataEditable([
+      'supply:*',
+      ...getAllowedPermissions(MAIN_MODULE, 'update'),
+    ].some((permission) => permissions?.includes(permission)));
+  }, [permissions]);
+
+  useEffect(() => {
+    const _data = data?.data?.map((body: DepartmentType) => {
       const { sections, ..._data } = body;
       return {
         ..._data,
@@ -200,9 +204,9 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
               ),
             };
           }) || [],
-        division_name_formatted: (
+        department_name_formatted: (
           <Group>
-            <Text size={'sm'}>{body.division_name}</Text>
+            <Text size={'sm'}>{body.department_name}</Text>
             {!body.active && (
               <Badge
                 variant={'light'}
@@ -232,9 +236,9 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
       sortDirection={sortDirection}
       search={search}
       showSearch
-      showCreate
-      showCreateSubItem
-      subItemsClickable
+      showCreate={showCreate}
+      showCreateSubItem={showCreateSubItem}
+      subItemsClickable={subItemsClickable}
       showEdit={activeDataEditable}
       createItemData={CREATE_ITEM_CONFIG}
       updateItemData={UPDATE_ITEM_CONFIG}
@@ -262,4 +266,4 @@ const DivisionSectionClient = ({ permissions }: DivisionSectionProps) => {
   );
 };
 
-export default DivisionSectionClient;
+export default DepartmentSectionClient;

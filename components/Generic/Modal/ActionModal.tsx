@@ -9,6 +9,7 @@ import {
   Loader,
   LoadingOverlay,
   Modal,
+  ScrollArea,
   Stack,
   Text,
 } from '@mantine/core';
@@ -52,11 +53,10 @@ const ActionModalClient = ({
   updateTable,
   requiresPayload = false,
 }: ActionModalProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const { push } = useRouter();
   const [loading, setLoading] = useState(false);
   const [modalFullScreen, setModalFullScreen] = useState(fullScreen);
-  const [payload, setPayload] = useState<any>();
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -65,66 +65,6 @@ const ActionModalClient = ({
 
     if (!fullScreen && !lgScreenAndBelow) setModalFullScreen(false);
   }, [fullScreen, lgScreenAndBelow]);
-
-  // useEffect(() => {
-  //   if (loading && requiresPayload && !payload) {
-  //     setLoading(false);
-  //     return;
-  //   }
-
-  //   if (!loading) {
-  //     return;
-  //   }
-
-  //   API.put(endpoint, payload ?? {})
-  //     .then((res) => {
-  //       notify({
-  //         title: 'Success!',
-  //         message: res?.data?.message,
-  //         color: 'green',
-  //       });
-
-  //       if (updateTable) updateTable(null);
-
-  //       setLoading(false);
-
-  //       close();
-
-  //       if (redirect) {
-  //         setLoading(true);
-  //         push(redirect);
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       const errors = getErrors(err);
-
-  //       errors.forEach((error) => {
-  //         notify({
-  //           title: 'Failed',
-  //           message: error,
-  //           color: 'red',
-  //         });
-  //       });
-
-  //       setLoading(false);
-  //     });
-  // }, [loading, requiresPayload, payload]);
-
-  // const handleAction = () => {
-  //   if (formRef?.current) {
-  //     const validation: any = formRef.current.validate();
-
-  //     if (!validation?.hasErrors) {
-  //       setPayload(formRef.current.getValues());
-  //       setLoading(true);
-  //     } else {
-  //       setLoading(false);
-  //     }
-  //     return;
-  //   }
-
-  //   setLoading(true);
-  // };
 
   const handleAction = (uncontrolledPayload?: object) => {
     setLoading(true);
@@ -286,6 +226,7 @@ const ActionModalClient = ({
       title={title}
       size={size}
       fullScreen={modalFullScreen}
+      scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
       <LoadingOverlay
@@ -298,12 +239,12 @@ const ActionModalClient = ({
         <Stack mb={70} px={'sm'}>
           {isValidElement(children) && formRef
             ? cloneElement(
-                children as ReactElement<any> & { ref?: React.Ref<any> },
-                {
-                  ref: formRef,
-                  handleAction,
-                }
-              )
+              children as ReactElement<any> & { ref?: React.Ref<any> },
+              {
+                ref: formRef,
+                handleAction,
+              }
+            )
             : children}
         </Stack>
       )}
@@ -316,7 +257,7 @@ const ActionModalClient = ({
         right={0}
         align={'end'}
         p={15}
-        sx={{ zIndex: 100 }}
+        sx={{ zIndex: 1001 }}
       >
         <Group>
           <Button

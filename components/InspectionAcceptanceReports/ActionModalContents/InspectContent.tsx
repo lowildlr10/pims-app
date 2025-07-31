@@ -22,7 +22,7 @@ const InspectContent = forwardRef<
     handleAction?: (uncontrolledPayload?: object) => void;
   }
 >(({ id, documentType, handleAction }, ref) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<
     {
@@ -96,9 +96,9 @@ const InspectContent = forwardRef<
           setClassificationData(
             res?.data?.length > 0
               ? res.data?.map((item: any) => ({
-                  value: item['id'],
-                  label: item['classification_name'],
-                }))
+                value: item['id'],
+                label: item['classification_name'],
+              }))
               : [{ label: 'No data.', value: '' }]
           );
         })

@@ -8,10 +8,12 @@ import {
   Group,
   NumberInput,
   Stack,
+  Switch,
   Table,
   Text,
   Textarea,
   TextInput,
+  Tooltip,
 } from '@mantine/core';
 import React, {
   forwardRef,
@@ -70,7 +72,7 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
   },
   {
     id: 'include_checkbox',
-    label: 'Unawarded',
+    label: '',
     width: '2%',
   },
 ];
@@ -79,7 +81,7 @@ const FormClient = forwardRef<
   HTMLFormElement,
   ModalRequestQuotationContentProps
 >(({ data, isCreate, readOnly, handleCreateUpdate }, ref) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
@@ -92,25 +94,19 @@ const FormClient = forwardRef<
       sig_approval_id: currentData?.sig_approval_id ?? '',
       items:
         currentData?.items &&
-        typeof currentData?.items !== undefined &&
-        currentData?.items.length > 0
+          typeof currentData?.items !== undefined &&
+          currentData?.items.length > 0
           ? currentData?.items?.map((item, index) => ({
-              key: randomId(),
-              pr_item_id: item?.pr_item_id,
-              stock_no: item.pr_item?.stock_no ?? 1,
-              quantity: item.pr_item?.quantity,
-              description: item.pr_item?.description ?? '-',
-              brand_model: item.brand_model ?? '',
-              unit_cost: item?.unit_cost ?? undefined,
-              total_cost: item?.total_cost ?? undefined,
-              included:
-                item?.included ??
-                (item.pr_item?.awarded_to_id === undefined ||
-                item.pr_item?.awarded_to_id === null ||
-                !!item.pr_item.awarded_to_id === false
-                  ? true
-                  : false),
-            }))
+            key: randomId(),
+            pr_item_id: item?.pr_item_id,
+            stock_no: item.pr_item?.stock_no ?? 1,
+            quantity: item.pr_item?.quantity,
+            description: item.pr_item?.description ?? '-',
+            brand_model: item.brand_model ?? '',
+            unit_cost: item?.unit_cost ?? undefined,
+            total_cost: item?.total_cost ?? undefined,
+            included: item?.included ?? true,
+          }))
           : [],
       vat_registered: currentData?.vat_registered,
       canvassers:
@@ -200,6 +196,18 @@ const FormClient = forwardRef<
       });
   }, []);
 
+  const handleToggleIncludedSlider = (checked: boolean) => {
+    form.setFieldValue(
+      'items',
+      form.getValues()?.items?.map((item) => ({
+        ...item,
+        included: checked,
+      }))
+    );
+    form.setInitialValues(form.getValues());
+    form.setValues(form.getValues());
+  };
+
   const renderDynamicTdContent = (
     id: string,
     item: RequestQuotationItemsFieldType,
@@ -211,11 +219,10 @@ const FormClient = forwardRef<
           <Table.Td>
             <NumberInput
               variant={readOnly ? 'unstyled' : 'filled'}
-              placeholder={`Item No ${
-                item?.stock_no?.toString() !== ''
+              placeholder={`Item No ${item?.stock_no?.toString() !== ''
                   ? `: ${item?.stock_no?.toString()}`
                   : ''
-              }`}
+                }`}
               defaultValue={item?.stock_no}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -231,11 +238,10 @@ const FormClient = forwardRef<
           <Table.Td>
             <NumberInput
               variant={readOnly ? 'unstyled' : 'filled'}
-              placeholder={`Quantity ${
-                item?.quantity?.toString() !== ''
+              placeholder={`Quantity ${item?.quantity?.toString() !== ''
                   ? `: ${item?.quantity?.toString()}`
                   : ''
-              }`}
+                }`}
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -317,7 +323,9 @@ const FormClient = forwardRef<
           <Table.Td>
             <NumberInput
               variant={readOnly ? 'unstyled' : 'filled'}
-              placeholder={'Total Cost'}
+              placeholder={
+                isCreate ? 'To be quoted' : readOnly ? '' : 'Total Cost'
+              }
               defaultValue={item?.total_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -574,6 +582,7 @@ const FormClient = forwardRef<
                     leftSection={
                       !readOnly ? <IconCalendar size={18} /> : undefined
                     }
+                    highlightToday
                     clearable
                     required={!readOnly}
                     readOnly={readOnly}
@@ -656,15 +665,15 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.supplier_id
                           ? [
-                              {
-                                value: currentData?.supplier_id ?? '',
-                                label:
-                                  currentData?.supplier?.supplier_name ?? '',
-                              },
-                            ]
+                            {
+                              value: currentData?.supplier_id ?? '',
+                              label:
+                                currentData?.supplier?.supplier_name ?? '',
+                            },
+                          ]
                           : undefined
                       }
-                      value={form.values.supplier_id}
+                      defaultValue={form.values.supplier_id}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       placeholder={'Select a supplier...'}
                       readOnly={readOnly || currentData?.status === 'completed'}
@@ -787,23 +796,24 @@ const FormClient = forwardRef<
                       paginated: false,
                       show_all: true,
                       document: 'rfq',
-                      signatory_type: 'approval',
+                      signatory_type:
+                        signedType === 'lce' ? 'approval_lce' : 'approval_bac',
                     }}
                     defaultData={
                       currentData?.sig_approval_id
                         ? [
-                            {
-                              value: currentData?.sig_approval_id ?? '',
-                              label:
-                                currentData?.signatory_approval?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                          {
+                            value: currentData?.sig_approval_id ?? '',
+                            label:
+                              currentData?.signatory_approval?.user
+                                ?.fullname ?? '',
+                          },
+                        ]
                         : undefined
                     }
                     valueColumn={'signatory_id'}
                     column={'fullname_designation'}
-                    value={form.values.sig_approval_id}
+                    defaultValue={form.values.sig_approval_id}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -869,6 +879,26 @@ const FormClient = forwardRef<
                                 />
                               </Stack>
                             )}
+                            {header.id === 'include_checkbox' && (
+                              <Tooltip label='Toggle All' refProp='rootRef'>
+                                <Switch
+                                  w={'100%'}
+                                  radius={lgScreenAndBelow ? 'xs' : 'sm'}
+                                  onLabel={'Yes'}
+                                  offLabel={'No'}
+                                  sx={{
+                                    justifyItems: 'center',
+                                  }}
+                                  color={'var(--mantine-color-primary-9)'}
+                                  onChange={(e) =>
+                                    handleToggleIncludedSlider(
+                                      e.currentTarget.checked
+                                    )
+                                  }
+                                  defaultChecked
+                                />
+                              </Tooltip>
+                            )}
                           </Group>
                         </Table.Th>
                       );
@@ -901,18 +931,22 @@ const FormClient = forwardRef<
 
                       {!readOnly && (
                         <Table.Td valign={'top'} ta={'center'} pt={'sm'}>
-                          <Checkbox
-                            key={form.key(`items.${index}.included`)}
-                            {...form.getInputProps(`items.${index}.included`)}
-                            w={'100%'}
-                            size={lgScreenAndBelow ? 'sm' : 'md'}
-                            color={'var(--mantine-color-primary-9)'}
-                            defaultChecked={item.included}
-                            sx={{
-                              justifyItems: 'center',
-                            }}
-                            disabled
-                          />
+                          <Tooltip label='Included?' refProp='rootRef'>
+                            <Switch
+                              key={form.key(`items.${index}.included`)}
+                              {...form.getInputProps(`items.${index}.included`)}
+                              w={'100%'}
+                              radius={lgScreenAndBelow ? 'xs' : 'sm'}
+                              onLabel={'Yes'}
+                              offLabel={'No'}
+                              sx={{
+                                justifyItems: 'center',
+                              }}
+                              color={'var(--mantine-color-primary-9)'}
+                              defaultChecked={item.included}
+                            />
+                          </Tooltip>
+
                           <input
                             key={form.key(`items.${index}.quantity`)}
                             {...form.getInputProps(`items.${index}.quantity`)}

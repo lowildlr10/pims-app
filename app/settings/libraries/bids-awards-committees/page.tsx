@@ -7,8 +7,8 @@ import { getCompany } from '@/actions/company';
 import BidsAwardsCommitteesClient from '@/components/Libraries/BidsAwardsCommittees';
 
 export const metadata = {
-  title: 'Procurement System - Bids and Awards Committees',
-  description: 'Procurement System - Bids and Awards Committees',
+  title: 'PIMS - Bids and Awards Committees',
+  description: 'PIMS - Bids and Awards Committees',
 };
 
 const BidsAwardsCommitteePage = async () => {

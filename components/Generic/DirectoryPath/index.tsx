@@ -22,7 +22,7 @@ const inventoryLinks = INVENTORY_LINKS;
 const paymentLinks = PAYMENT_LINKS;
 
 const MenuLink = ({ label, link, pathname, allowed }: MenuLinkProps) => {
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   return (
     <Anchor
@@ -48,7 +48,7 @@ const MenuLink = ({ label, link, pathname, allowed }: MenuLinkProps) => {
 
 export function DirectoryPathClient({ permissions }: DirectoryPathProps) {
   const pathname = usePathname();
-  const lgScreenAndBelow = useMediaQuery('(max-width: 1366px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   const renderProcurementMenuContent =
     /^\/procurement\/[^/]+$/.test(pathname) &&

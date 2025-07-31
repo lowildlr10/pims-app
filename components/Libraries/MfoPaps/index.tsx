@@ -63,6 +63,7 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
 
   const [activeFormData, setActiveFormData] = useState<FormDataType>();
   const [activeData, setActiveData] = useState<ActiveDataType>();
+  const [showCreate, setShowCreate] = useState(false);
   const [activeDataEditable, setActiveDataEditable] = useState(false);
 
   const { data, isLoading, mutate } = useSWR<MfoPapsResponse>(
@@ -103,18 +104,9 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
       return;
 
     const { display, moduleType, data } = activeData ?? {};
-    // const status = data?.status;
-    let hasEditPermission = false;
 
     switch (moduleType) {
       case MAIN_MODULE:
-        hasEditPermission = [
-          'supply:*',
-          ...getAllowedPermissions(MAIN_MODULE, 'update'),
-        ].some((permission) => permissions?.includes(permission));
-
-        setActiveDataEditable(hasEditPermission);
-
         if (display === 'create') {
           setActiveFormData(undefined);
         } else {
@@ -125,7 +117,19 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
       default:
         break;
     }
-  }, [activeData, permissions]);
+  }, [activeData]);
+
+  useEffect(() => {
+    setShowCreate([
+      'supply:*',
+      ...getAllowedPermissions(MAIN_MODULE, 'create'),
+    ].some((permission) => permissions?.includes(permission)));
+
+    setActiveDataEditable([
+      'supply:*',
+      ...getAllowedPermissions(MAIN_MODULE, 'update'),
+    ].some((permission) => permissions?.includes(permission)));
+  }, [permissions]);
 
   useEffect(() => {
     const _data = data?.data?.map((body: MfoPapType) => {
@@ -162,7 +166,7 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
       sortDirection={sortDirection}
       search={search}
       showSearch
-      showCreate
+      showCreate={showCreate}
       showEdit={activeDataEditable}
       createItemData={CREATE_ITEM_CONFIG}
       updateItemData={UPDATE_ITEM_CONFIG}

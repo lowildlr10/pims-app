@@ -15,6 +15,7 @@ import React from 'react';
 import Link from 'next/link';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { usePathname } from 'next/navigation';
+import DisapproveContent from './ActionModalContents/DisapproveContent';
 
 const NavigationMenus = ({
   id,
@@ -41,7 +42,7 @@ const NavigationMenus = ({
           'awarded',
           'completed',
         ].includes(status) &&
-        pathname === '/procurement/pr' && (
+        pathname.includes('/procurement/pr') && (
           <Menu.Item
             leftSection={
               <IconArrowRightDashed
@@ -67,7 +68,7 @@ const NavigationMenus = ({
           'awarded',
           'completed',
         ].includes(status) &&
-        pathname === '/procurement/rfq' && (
+        pathname.includes('/procurement/rfq') && (
           <Menu.Item
             leftSection={
               <IconArrowRightDashed
@@ -87,7 +88,7 @@ const NavigationMenus = ({
         permissions?.includes(permission)
       ) &&
         ['partially_awarded', 'awarded', 'completed'].includes(status) &&
-        pathname === '/procurement/aoq' && (
+        pathname.includes('/procurement/aoq') && (
           <Menu.Item
             leftSection={
               <IconArrowRightDashed
@@ -115,7 +116,7 @@ const NavigationMenus = ({
           'awarded',
           'completed',
         ].includes(status) &&
-        pathname === '/procurement/rfq' && (
+        pathname.includes('/procurement/rfq') && (
           <Menu.Item
             leftSection={
               <IconArrowLeftDashed
@@ -141,7 +142,7 @@ const NavigationMenus = ({
           'awarded',
           'completed',
         ].includes(status) &&
-        pathname === '/procurement/aoq' && (
+        pathname.includes('/procurement/aoq') && (
           <Menu.Item
             leftSection={
               <IconArrowLeftDashed
@@ -161,7 +162,7 @@ const NavigationMenus = ({
         (permission) => permissions?.includes(permission)
       ) &&
         ['partially_awarded', 'awarded', 'completed'].includes(status) &&
-        pathname === '/procurement/po' && (
+        pathname.includes('/procurement/po') && (
           <Menu.Item
             leftSection={
               <IconArrowLeftDashed
@@ -216,7 +217,7 @@ const PrActionsClient = ({
         [
           'budget:*',
           'supply:*',
-          ...getAllowedPermissions('pr', 'approve_cash_available'),
+          ...getAllowedPermissions('pr', 'approve-cash-available'),
         ].some((permission) => permissions?.includes(permission)) && (
           <Menu.Item
             leftSection={
@@ -249,58 +250,60 @@ const PrActionsClient = ({
             'supply:*',
             ...getAllowedPermissions('pr', 'approve'),
           ].some((permission) => permissions?.includes(permission)) && (
-            <Menu.Item
-              leftSection={
-                <IconThumbUpFilled
-                  color={'var(--mantine-color-green-9)'}
-                  size={18}
-                  stroke={1.5}
-                />
-              }
-              onClick={() =>
-                handleOpenActionModal &&
-                handleOpenActionModal(
-                  'approve',
-                  'Approve',
-                  'Are you sure you want to approve this Purchase Request?',
-                  'var(--mantine-color-green-9)',
-                  'Approve',
-                  `/purchase-requests/${id}/approve`
-                )
-              }
-            >
-              Approve
-            </Menu.Item>
-          )}
+              <Menu.Item
+                leftSection={
+                  <IconThumbUpFilled
+                    color={'var(--mantine-color-green-9)'}
+                    size={18}
+                    stroke={1.5}
+                  />
+                }
+                onClick={() =>
+                  handleOpenActionModal &&
+                  handleOpenActionModal(
+                    'approve',
+                    'Approve',
+                    'Are you sure you want to approve this Purchase Request?',
+                    'var(--mantine-color-green-9)',
+                    'Approve',
+                    `/purchase-requests/${id}/approve`
+                  )
+                }
+              >
+                Approve
+              </Menu.Item>
+            )}
 
           {[
             'head:*',
             'supply:*',
             ...getAllowedPermissions('pr', 'disapprove'),
           ].some((permission) => permissions?.includes(permission)) && (
-            <Menu.Item
-              leftSection={
-                <IconThumbDownFilled
-                  color={'var(--mantine-color-red-9)'}
-                  size={18}
-                  stroke={1.5}
-                />
-              }
-              onClick={() =>
-                handleOpenActionModal &&
-                handleOpenActionModal(
-                  'disapprove',
-                  'Disapprove',
-                  'Are you sure you want to disapprove this Purchase Request?',
-                  'var(--mantine-color-red-9)',
-                  'Disapprove',
-                  `/purchase-requests/${id}/disapprove`
-                )
-              }
-            >
-              Disapprove
-            </Menu.Item>
-          )}
+              <Menu.Item
+                leftSection={
+                  <IconThumbDownFilled
+                    color={'var(--mantine-color-red-9)'}
+                    size={18}
+                    stroke={1.5}
+                  />
+                }
+                onClick={() =>
+                  handleOpenActionModal &&
+                  handleOpenActionModal(
+                    'disapprove',
+                    'Disapprove',
+                    <DisapproveContent />,
+                    'var(--mantine-color-red-9)',
+                    'Disapprove',
+                    `/purchase-requests/${id}/disapprove`,
+                    undefined,
+                    true
+                  )
+                }
+              >
+                Disapprove
+              </Menu.Item>
+            )}
         </>
       )}
     </>
@@ -426,7 +429,7 @@ const ActionsClient = ({
 
   return (
     <>
-      {pathname === '/procurement/pr' && (
+      {pathname.includes('/procurement/pr') && (
         <PrActionsClient
           permissions={permissions}
           id={id}
@@ -435,7 +438,7 @@ const ActionsClient = ({
         />
       )}
 
-      {pathname === '/procurement/rfq' && (
+      {pathname.includes('/procurement/rfq') && (
         <RfqActionsClient
           permissions={permissions}
           id={id}
@@ -444,7 +447,7 @@ const ActionsClient = ({
         />
       )}
 
-      {pathname === '/procurement/aoq' && (
+      {pathname.includes('/procurement/aoq') && (
         <AoqActionsClient
           permissions={permissions}
           id={id}
@@ -495,12 +498,12 @@ const ActionsClient = ({
         'approved_cash_available',
         'cancelled',
       ].includes(status ?? '') && (
-        <>
-          <Menu.Divider />
-          <Menu.Label>Navigation</Menu.Label>
-          <NavigationMenus id={id} permissions={permissions} status={status} />
-        </>
-      )}
+          <>
+            <Menu.Divider />
+            <Menu.Label>Navigation</Menu.Label>
+            <NavigationMenus id={id} permissions={permissions} status={status} />
+          </>
+        )}
     </>
   );
 };

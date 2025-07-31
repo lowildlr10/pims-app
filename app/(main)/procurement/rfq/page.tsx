@@ -7,8 +7,8 @@ import { getCompany } from '@/actions/company';
 import RequestQuotationsClient from '@/components/RequestQuotations';
 
 export const metadata = {
-  title: 'Procurement System - Request Quotations',
-  description: 'Procurement System - Request Quotations',
+  title: 'PIMS - Request for Quotations',
+  description: 'PIMS - Request for Quotations',
 };
 
 const RequestQuotationPage = async () => {
@@ -26,7 +26,7 @@ const RequestQuotationPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Procurement - Request Quotations'}
+        title={'Request for Quotations'}
         permissions={permissions}
       >
         <RequestQuotationsClient user={user} permissions={permissions} />

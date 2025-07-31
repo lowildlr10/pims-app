@@ -67,11 +67,11 @@ export const LIBRARY_ALLOWED_PERMISSIONS = [
 export const USER_MANAGEMENT_ALLOWED_PERMISSIONS = [
   'super:*',
   'head:*',
-  'account-division:*',
+  'account-department:*',
   'account-section:*',
   'account-role:*',
   'account-user:*',
-  'account-division:view',
+  'account-department:view',
   'account-section:view',
   'account-role:view',
   'account-user:view',
@@ -176,7 +176,7 @@ export const LIBRARY_LINKS = [
     link: '/settings/libraries/bids-awards-committees',
   },
   {
-    label: 'Funding Soruces/Projects',
+    label: 'Funding Sources/Projects',
     allowedPermissions: [
       'super:*',
       'head:*',
@@ -289,14 +289,14 @@ export const LIBRARY_LINKS = [
 
 export const USER_MANAGEMENT_LINKS = [
   {
-    label: 'Division and Sections',
+    label: 'Department and Sections',
     allowedPermissions: [
       'super:*',
       'head:*',
-      'account-division:*',
-      'account-division:view',
+      'account-department:*',
+      'account-department:view',
     ],
-    link: '/settings/user-managements/divisions',
+    link: '/settings/user-managements/departments',
   },
   {
     label: 'Roles',
