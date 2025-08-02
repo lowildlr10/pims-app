@@ -21,26 +21,25 @@ type ModuleType =
   | 'dv'
   | 'inv-supply'
   | 'inv-issuance'
-  | 'payment'
+  | 'lib-account-class'
+  | 'lib-account'
   | 'lib-bid-committee'
+  | 'lib-fpp'
   | 'lib-fund-source'
   | 'lib-inv-class'
   | 'lib-item-class'
-  | 'lib-mfo-pap'
   | 'lib-mode-proc'
   | 'lib-paper-size'
   | 'lib-responsibility-center'
   | 'lib-signatory'
   | 'lib-signatory-detail'
   | 'lib-supplier'
-  | 'lib-uacs-class'
-  | 'lib-uacs-code'
   | 'lib-unit-issue'
   | 'super'
   | 'head'
   | 'supply'
   | 'budget'
-  | 'accounting'
+  | 'accountant'
   | 'cashier'
   | 'user';
 
@@ -193,7 +192,7 @@ type ItemClassificationType = {
   updated_at?: string;
 };
 
-type MfoPapType = {
+type FunctionProgramProjectType = {
   id?: string;
   code?: string;
   description?: string;
@@ -296,7 +295,7 @@ type SupplierType = {
   updated_at?: string;
 };
 
-type UacsCodeClassificationType = {
+type AccountClassificationType = {
   id?: string;
   classification_name?: string;
   active?: boolean;
@@ -304,13 +303,13 @@ type UacsCodeClassificationType = {
   updated_at?: string;
 };
 
-type UacsCodeType = {
+type AccountType = {
   id?: string;
   classification_id?: string;
   account_title?: string;
   code?: string;
   description?: string;
-  classification?: UacsCodeClassificationType;
+  classification?: AccountClassificationType;
   active?: boolean;
   created_at?: string;
   updated_at?: string;

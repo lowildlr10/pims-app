@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Group, LoadingOverlay, Paper, Stack } from '@mantine/core';
+import { Button, Group, Paper, Stack } from '@mantine/core';
 import React, { useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import API from '@/libs/API';
@@ -14,6 +14,7 @@ import RisFormClient from '../../../InventoryIssuances/Forms/RisForm';
 import IcsFormClient from '../../../InventoryIssuances/Forms/IcsForm';
 import AreFormClient from '../../../InventoryIssuances/Forms/AreForm';
 import Helper from '@/utils/Helpers';
+import CustomLoadingOverlay from '../../CustomLoadingOverlay';
 
 const CreateClient = ({ data, endpoint, content, backUrl }: CreateProps) => {
   const router = useRouter();
@@ -88,11 +89,7 @@ const CreateClient = ({ data, endpoint, content, backUrl }: CreateProps) => {
 
   return (
     <Stack>
-      <LoadingOverlay
-        visible={loading || pageLoading}
-        zIndex={1010}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
+      <CustomLoadingOverlay visible={loading || pageLoading} />
 
       <Stack mb={100}>
         <Paper shadow={'lg'} p={0}>

@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  Button,
-  Group,
-  LoadingOverlay,
-  Modal,
-  Paper,
-  ScrollArea,
-  Stack,
-} from '@mantine/core';
+import { Button, Group, Modal, Paper, Stack } from '@mantine/core';
 import React, { useEffect, useRef, useState } from 'react';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
@@ -28,6 +20,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Helper from '@/utils/Helpers';
 import useSWR from 'swr';
 import { API_REFRESH_INTERVAL } from '@/config/intervals';
+import CustomLoadingOverlay from '../../CustomLoadingOverlay';
 
 const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
   const router = useRouter();
@@ -121,11 +114,7 @@ const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
 
   return (
     <Stack>
-      <LoadingOverlay
-        visible={loading || dataLoading || pageLoading}
-        zIndex={1010}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
+      <CustomLoadingOverlay visible={loading || dataLoading || pageLoading} />
 
       <Stack mb={100}>
         <Paper shadow={'lg'} p={0}>

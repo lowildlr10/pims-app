@@ -2,16 +2,16 @@ import { getCompany } from '@/actions/company';
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import UacsCodesClient from '@/components/Libraries/UacsCodes';
+import AccountsClient from '@/components/Libraries/Accounts';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'PIMS - UACS Object Code',
-  description: 'PIMS - UACS Object Code',
+  title: 'PIMS - Accounts',
+  description: 'PIMS - Accounts',
 };
 
-const UacsObjectCodePage = async () => {
+const AccountPage = async () => {
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
@@ -25,11 +25,11 @@ const UacsObjectCodePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - UACS Object Code'}>
-        <UacsCodesClient permissions={permissions} />
+      <MainContainerClient title={'Library - Accounts'}>
+        <AccountsClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default UacsObjectCodePage;
+export default AccountPage;

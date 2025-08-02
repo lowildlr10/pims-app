@@ -147,7 +147,7 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
             size={size}
-            color={'var(--mantine-color-orange-9)'}
+            color={'var(--mantine-color-yellow-9)'}
             variant={'light'}
             leftSection={<IconAwardFilled size={18} stroke={1.5} />}
           >

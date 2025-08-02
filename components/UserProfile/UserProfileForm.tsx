@@ -5,7 +5,6 @@ import {
   Button,
   Group,
   InputBase,
-  LoadingOverlay,
   PasswordInput,
   Stack,
   TextInput,
@@ -20,6 +19,7 @@ import { Select } from '@mantine/core';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import DynamicAutocomplete from '../Generic/DynamicAutocomplete';
+import CustomLoadingOverlay from '../Generic/CustomLoadingOverlay';
 
 const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
   const [loading, setLoading] = useState(false);
@@ -83,11 +83,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
 
   return (
     <form onSubmit={form.onSubmit(() => handleUpdateProfile())}>
-      <LoadingOverlay
-        visible={loading}
-        zIndex={1000}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
+      <CustomLoadingOverlay visible={loading} />
       <Group justify={'center'} align={'flex-start'} gap={50}>
         <Stack flex={{ base: '100%', lg: '1' }}>
           <TextInput

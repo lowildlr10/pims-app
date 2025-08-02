@@ -7,11 +7,11 @@ import {
   FileButton,
   Group,
   Image,
-  LoadingOverlay,
   Tooltip,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect, useState } from 'react';
+import CustomLoadingOverlay from '../CustomLoadingOverlay';
 
 const SingleImageUploadClient = ({
   image,
@@ -145,11 +145,7 @@ const SingleImageUploadClient = ({
               fullWidth
               autoContrast
             >
-              <LoadingOverlay
-                visible={loading}
-                zIndex={1000}
-                overlayProps={{ radius: 'sm', blur: 2 }}
-              />
+              <CustomLoadingOverlay visible={loading} />
 
               {type === 'avatar' || type === 'logo' ? (
                 <>

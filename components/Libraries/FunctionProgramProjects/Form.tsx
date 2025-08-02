@@ -4,12 +4,13 @@ import { useForm } from '@mantine/form';
 
 const FormClient = forwardRef<
   HTMLFormElement,
-  ModalUacsCodeClassificationContentProps
+  ModalFunctionProgramProjectContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      classification_name: currentData?.classification_name ?? '',
+      code: currentData?.code ?? '',
+      description: currentData?.description ?? '',
       active: currentData?.active ?? false,
     }),
     [currentData]
@@ -39,15 +40,25 @@ const FormClient = forwardRef<
     >
       <Stack>
         <TextInput
-          label='Classification Name'
-          placeholder='Classification Name'
-          value={form.values.classification_name}
+          label='Code'
+          placeholder='Code'
+          value={form.values.code}
           onChange={(event) =>
-            form.setFieldValue('classification_name', event.currentTarget.value)
+            form.setFieldValue('code', event.currentTarget.value)
           }
-          error={form.errors.classification_name && ''}
+          error={form.errors.code && ''}
           size={'sm'}
           required
+        />
+        <TextInput
+          label='Description'
+          placeholder='Description'
+          value={form.values.description}
+          onChange={(event) =>
+            form.setFieldValue('description', event.currentTarget.value)
+          }
+          error={form.errors.description && ''}
+          size={'sm'}
         />
         <Switch
           label={'Status'}

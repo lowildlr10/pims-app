@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Group,
-  LoadingOverlay,
   Menu,
   Paper,
   Stack,
@@ -52,6 +51,7 @@ import useSWR from 'swr';
 import PrintModalClient from '../../Modal/PrintModal';
 import LogModalClient from '../../Modal/LogModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import CustomLoadingOverlay from '../../CustomLoadingOverlay';
 
 export const DetailActionsClient = ({
   permissions,
@@ -445,7 +445,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'canvassing', 'completed'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
         break;
 
@@ -463,7 +463,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
         break;
 
@@ -481,7 +481,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
         break;
 
@@ -511,7 +511,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
 
         setPrintEndpoint(
@@ -526,12 +526,7 @@ const DetailClient = ({
 
   return (
     <Stack>
-      <LoadingOverlay
-        visible={detailLoading || pageLoading}
-        zIndex={1010}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-        pos={'fixed'}
-      />
+      <CustomLoadingOverlay visible={detailLoading || pageLoading} />
 
       <Stack
         w={'100%'}

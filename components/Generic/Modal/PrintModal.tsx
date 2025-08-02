@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   Group,
-  LoadingOverlay,
   Modal,
   Stack,
   Switch,
@@ -23,6 +22,7 @@ import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
 import { useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
+import CustomLoadingOverlay from '../CustomLoadingOverlay';
 
 const PrintModalClient = ({
   title,
@@ -126,11 +126,7 @@ const PrintModalClient = ({
         <Group w={'100%'} align={'flex-start'}>
           <Stack flex={{ base: 1, md: 0.65, lg: 0.75 }}>
             <Card p={0} radius={'sm'} h={'calc(100vh - 8.2em)'} withBorder>
-              <LoadingOverlay
-                visible={loading}
-                zIndex={1000}
-                overlayProps={{ radius: 'sm', blur: 2 }}
-              />
+              <CustomLoadingOverlay visible={loading} />
 
               {opened && base64File && paperId && pageOrientation && (
                 <iframe

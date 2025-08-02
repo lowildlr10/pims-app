@@ -60,17 +60,17 @@ const FormClient = forwardRef<
       acceptance_id: currentData?.acceptance_id ?? '',
       items:
         currentData?.items &&
-          typeof currentData?.items !== undefined &&
-          currentData?.items.length > 0
+        typeof currentData?.items !== undefined &&
+        currentData?.items.length > 0
           ? currentData?.items?.map((item, index) => ({
-            key: randomId(),
-            id: item.id,
-            stock_no: item.pr_item?.stock_no ?? 1,
-            unit_issue: item.pr_item?.unit_issue?.unit_name ?? '-',
-            description: item.po_item?.description ?? '',
-            quantity: item.pr_item?.quantity,
-            accepted: item.accepted ?? false,
-          }))
+              key: randomId(),
+              id: item.id,
+              stock_no: item.pr_item?.stock_no ?? 1,
+              unit_issue: item.pr_item?.unit_issue?.unit_name ?? '-',
+              description: item.po_item?.description ?? '',
+              quantity: item.pr_item?.quantity,
+              accepted: item.accepted ?? false,
+            }))
           : [],
     };
   }, [currentData]);
@@ -768,13 +768,13 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.sig_inspection_id
                           ? [
-                            {
-                              value: currentData?.sig_inspection_id ?? '',
-                              label:
-                                currentData?.signatory_inspection?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_inspection_id ?? '',
+                                label:
+                                  currentData?.signatory_inspection?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.sig_inspection_id}
@@ -933,11 +933,11 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.acceptance_id
                           ? [
-                            {
-                              value: currentData?.acceptance_id ?? '',
-                              label: currentData?.acceptance?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.acceptance_id ?? '',
+                                label: currentData?.acceptance?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.acceptance_id}

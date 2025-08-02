@@ -201,15 +201,17 @@ export function LayoutSidebarClient({
       <AppShell.Navbar
         p='md'
         sx={(theme, u) => ({
-          transform: `${desktopOpened
-            ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
-            : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
-            } !important`,
-          [u.smallerThan('md')]: {
-            transform: `${mobileOpened
+          transform: `${
+            desktopOpened
               ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
               : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
-              } !important`,
+          } !important`,
+          [u.smallerThan('md')]: {
+            transform: `${
+              mobileOpened
+                ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
+                : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
+            } !important`,
           },
         })}
       >
@@ -217,6 +219,7 @@ export function LayoutSidebarClient({
           className={classes.links}
           grow
           my='md'
+          py={0}
           component={ScrollArea}
         >
           <div className={classes.linksInner}>{links}</div>

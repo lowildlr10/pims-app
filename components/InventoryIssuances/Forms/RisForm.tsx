@@ -1,14 +1,6 @@
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
-import {
-  ActionIcon,
-  Card,
-  Flex,
-  Group,
-  LoadingOverlay,
-  Skeleton,
-  Text,
-} from '@mantine/core';
+import { ActionIcon, Card, Flex, Group, Skeleton, Text } from '@mantine/core';
 import { NumberInput, Stack, Table, Textarea, TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
@@ -24,6 +16,7 @@ import React, {
 import DynamicSelect from '../../Generic/DynamicSelect';
 import Helper from '@/utils/Helpers';
 import dayjs from 'dayjs';
+import CustomLoadingOverlay from '@/components/Generic/CustomLoadingOverlay';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -101,37 +94,37 @@ const RisFormClient = forwardRef<
       received_date: currentData.received_date ?? '',
       items: !Helper.empty(currentData?.items)
         ? currentData?.items?.map((item) => ({
-          key: randomId(),
-          stock_no: item.stock_no,
-          inventory_supply_id: item.inventory_supply_id,
-          unit_issue: item.supply?.unit_issue?.unit_name ?? '',
-          description: item.description,
-          quantity: item.quantity,
-          available:
-            isCreate && !readOnly
-              ? item?.supply?.available
-              : !isCreate && !readOnly
-                ? (item?.supply?.available ?? 0) + (item?.quantity ?? 0)
-                : (item?.supply?.available ?? 0),
-          unit_cost: item.unit_cost,
-          total_cost: item.total_cost,
-        }))
+            key: randomId(),
+            stock_no: item.stock_no,
+            inventory_supply_id: item.inventory_supply_id,
+            unit_issue: item.supply?.unit_issue?.unit_name ?? '',
+            description: item.description,
+            quantity: item.quantity,
+            available:
+              isCreate && !readOnly
+                ? item?.supply?.available
+                : !isCreate && !readOnly
+                  ? (item?.supply?.available ?? 0) + (item?.quantity ?? 0)
+                  : (item?.supply?.available ?? 0),
+            unit_cost: item.unit_cost,
+            total_cost: item.total_cost,
+          }))
         : !Helper.empty(inventorySupplies)
           ? inventorySupplies
-            .map((supply, index) => ({
-              key: randomId(),
-              stock_no: index + 1,
-              inventory_supply_id: supply.id,
-              unit_issue: supply.unit_issue?.unit_name,
-              description: supply.name
-                ? `${supply.name}\n${supply.description}`
-                : supply.description,
-              quantity: undefined,
-              available: supply?.available ?? 0,
-              unit_cost: supply.unit_cost,
-              total_cost: 0,
-            }))
-            .filter((item) => item.available !== 0)
+              .map((supply, index) => ({
+                key: randomId(),
+                stock_no: index + 1,
+                inventory_supply_id: supply.id,
+                unit_issue: supply.unit_issue?.unit_name,
+                description: supply.name
+                  ? `${supply.name}\n${supply.description}`
+                  : supply.description,
+                quantity: undefined,
+                available: supply?.available ?? 0,
+                unit_cost: supply.unit_cost,
+                total_cost: 0,
+              }))
+              .filter((item) => item.available !== 0)
           : [],
     }),
     [currentData, inventorySupplies, poData]
@@ -392,11 +385,7 @@ const RisFormClient = forwardRef<
         }
       })}
     >
-      <LoadingOverlay
-        visible={loading}
-        zIndex={1000}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
+      <CustomLoadingOverlay visible={loading} />
 
       <Stack p={'md'} justify={'center'}>
         <Card
@@ -438,11 +427,11 @@ const RisFormClient = forwardRef<
                 defaultData={
                   currentData?.purchase_order_id
                     ? [
-                      {
-                        value: currentData?.purchase_order_id ?? '',
-                        label: currentData?.purchase_order?.po_no ?? '',
-                      },
-                    ]
+                        {
+                          value: currentData?.purchase_order_id ?? '',
+                          label: currentData?.purchase_order?.po_no ?? '',
+                        },
+                      ]
                     : undefined
                 }
                 value={poId}
@@ -590,15 +579,15 @@ const RisFormClient = forwardRef<
                           defaultData={
                             currentData?.responsibility_center_id
                               ? [
-                                {
-                                  value:
-                                    currentData?.responsibility_center_id ??
-                                    '',
-                                  label:
-                                    currentData?.responsibility_center
-                                      ?.code ?? '',
-                                },
-                              ]
+                                  {
+                                    value:
+                                      currentData?.responsibility_center_id ??
+                                      '',
+                                    label:
+                                      currentData?.responsibility_center
+                                        ?.code ?? '',
+                                  },
+                                ]
                               : undefined
                           }
                           column={'code'}
@@ -976,20 +965,20 @@ const RisFormClient = forwardRef<
                       column={'fullname'}
                       defaultData={
                         currentData?.requested_by_id ||
-                          poData?.purchase_request?.requestor?.id
+                        poData?.purchase_request?.requestor?.id
                           ? [
-                            {
-                              value:
-                                currentData?.requested_by_id ??
-                                poData?.purchase_request?.requestor?.id ??
-                                '',
-                              label:
-                                currentData?.requestor?.fullname ??
-                                poData?.purchase_request?.requestor
-                                  ?.fullname ??
-                                '',
-                            },
-                          ]
+                              {
+                                value:
+                                  currentData?.requested_by_id ??
+                                  poData?.purchase_request?.requestor?.id ??
+                                  '',
+                                label:
+                                  currentData?.requestor?.fullname ??
+                                  poData?.purchase_request?.requestor
+                                    ?.fullname ??
+                                  '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.requested_by_id}
@@ -1074,13 +1063,13 @@ const RisFormClient = forwardRef<
                       defaultData={
                         currentData?.sig_approved_by_id
                           ? [
-                            {
-                              value: currentData?.sig_approved_by_id ?? '',
-                              label:
-                                currentData?.signatory_approval?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_approved_by_id ?? '',
+                                label:
+                                  currentData?.signatory_approval?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       valueColumn={'signatory_id'}
@@ -1168,13 +1157,13 @@ const RisFormClient = forwardRef<
                       defaultData={
                         currentData?.sig_issued_by_id
                           ? [
-                            {
-                              value: currentData?.sig_issued_by_id ?? '',
-                              label:
-                                currentData?.signatory_issuer?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_issued_by_id ?? '',
+                                label:
+                                  currentData?.signatory_issuer?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       valueColumn={'signatory_id'}
@@ -1262,11 +1251,11 @@ const RisFormClient = forwardRef<
                       defaultData={
                         currentData?.received_by_id
                           ? [
-                            {
-                              value: currentData?.received_by_id ?? '',
-                              label: currentData?.recipient?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.received_by_id ?? '',
+                                label: currentData?.recipient?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       sx={{

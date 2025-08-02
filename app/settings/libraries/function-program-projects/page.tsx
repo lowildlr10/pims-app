@@ -2,16 +2,16 @@ import { getCompany } from '@/actions/company';
 import { getPermissions, getUser } from '@/actions/user';
 import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
-import UacsClassificationsClient from '@/components/Libraries/UacsClassifications';
+import FunctionProgramProjectClient from '@/components/Libraries/FunctionProgramProjects';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-  title: 'PIMS - UACS Object Code Classifications',
-  description: 'PIMS - UACS Object Code Classifications',
+  title: 'PIMS - Function, Program, and Projects',
+  description: 'PIMS - Function, Program, and Projects',
 };
 
-const UacsCodeClassificationsPage = async () => {
+const FunctionProgramProjectsPage = async () => {
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
@@ -25,11 +25,11 @@ const UacsCodeClassificationsPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - UACS Object Code Classifications'}>
-        <UacsClassificationsClient permissions={permissions} />
+      <MainContainerClient title={'Library - Function, Program, and Projects'}>
+        <FunctionProgramProjectClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default UacsCodeClassificationsPage;
+export default FunctionProgramProjectsPage;

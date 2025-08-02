@@ -1,14 +1,6 @@
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
-import {
-  ActionIcon,
-  Card,
-  Flex,
-  Group,
-  LoadingOverlay,
-  Skeleton,
-  Text,
-} from '@mantine/core';
+import { ActionIcon, Card, Flex, Group, Skeleton, Text } from '@mantine/core';
 import { NumberInput, Stack, Table, Textarea, TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
@@ -24,6 +16,7 @@ import React, {
 import DynamicSelect from '../../Generic/DynamicSelect';
 import Helper from '@/utils/Helpers';
 import dayjs from 'dayjs';
+import CustomLoadingOverlay from '@/components/Generic/CustomLoadingOverlay';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -101,39 +94,39 @@ const AreFormClient = forwardRef<
       received_date: currentData.received_date ?? '',
       items: !Helper.empty(currentData?.items)
         ? currentData?.items?.map((item) => ({
-          key: randomId(),
-          inventory_supply_id: item.inventory_supply_id,
-          quantity: item.quantity,
-          unit_issue: item.supply?.unit_issue?.unit_name ?? '',
-          description: item.description,
-          acquired_date: item.acquired_date ?? '',
-          property_no: item.property_no ?? '',
-          available:
-            isCreate && !readOnly
-              ? item?.supply?.available
-              : !isCreate && !readOnly
-                ? (item?.supply?.available ?? 0) + (item?.quantity ?? 0)
-                : (item?.supply?.available ?? 0),
-          unit_cost: item.unit_cost,
-          total_cost: item.total_cost,
-        }))
+            key: randomId(),
+            inventory_supply_id: item.inventory_supply_id,
+            quantity: item.quantity,
+            unit_issue: item.supply?.unit_issue?.unit_name ?? '',
+            description: item.description,
+            acquired_date: item.acquired_date ?? '',
+            property_no: item.property_no ?? '',
+            available:
+              isCreate && !readOnly
+                ? item?.supply?.available
+                : !isCreate && !readOnly
+                  ? (item?.supply?.available ?? 0) + (item?.quantity ?? 0)
+                  : (item?.supply?.available ?? 0),
+            unit_cost: item.unit_cost,
+            total_cost: item.total_cost,
+          }))
         : !Helper.empty(inventorySupplies)
           ? inventorySupplies
-            .map((supply, index) => ({
-              key: randomId(),
-              inventory_supply_id: supply.id,
-              quantity: undefined,
-              unit_issue: supply.unit_issue?.unit_name,
-              description: supply.name
-                ? `${supply.name}\n${supply.description}`
-                : supply.description,
-              acquired_date: undefined,
-              property_no: undefined,
-              available: supply?.available ?? 0,
-              unit_cost: supply.unit_cost,
-              total_cost: 0,
-            }))
-            .filter((item) => item.available !== 0)
+              .map((supply, index) => ({
+                key: randomId(),
+                inventory_supply_id: supply.id,
+                quantity: undefined,
+                unit_issue: supply.unit_issue?.unit_name,
+                description: supply.name
+                  ? `${supply.name}\n${supply.description}`
+                  : supply.description,
+                acquired_date: undefined,
+                property_no: undefined,
+                available: supply?.available ?? 0,
+                unit_cost: supply.unit_cost,
+                total_cost: 0,
+              }))
+              .filter((item) => item.available !== 0)
           : [],
     }),
     [currentData, inventorySupplies, poData]
@@ -424,11 +417,7 @@ const AreFormClient = forwardRef<
         }
       })}
     >
-      <LoadingOverlay
-        visible={loading}
-        zIndex={1000}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
+      <CustomLoadingOverlay visible={loading} />
 
       <Stack p={'md'} justify={'center'}>
         <Card
@@ -470,11 +459,11 @@ const AreFormClient = forwardRef<
                 defaultData={
                   currentData?.purchase_order_id
                     ? [
-                      {
-                        value: currentData?.purchase_order_id ?? '',
-                        label: currentData?.purchase_order?.po_no ?? '',
-                      },
-                    ]
+                        {
+                          value: currentData?.purchase_order_id ?? '',
+                          label: currentData?.purchase_order?.po_no ?? '',
+                        },
+                      ]
                     : undefined
                 }
                 value={poId}
@@ -806,11 +795,11 @@ const AreFormClient = forwardRef<
                       defaultData={
                         currentData?.received_by_id
                           ? [
-                            {
-                              value: currentData?.received_by_id ?? '',
-                              label: currentData?.recipient?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.received_by_id ?? '',
+                                label: currentData?.recipient?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       sx={{
@@ -895,13 +884,13 @@ const AreFormClient = forwardRef<
                       defaultData={
                         currentData?.sig_issued_by_id
                           ? [
-                            {
-                              value: currentData?.sig_issued_by_id ?? '',
-                              label:
-                                currentData?.signatory_issuer?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_issued_by_id ?? '',
+                                label:
+                                  currentData?.signatory_issuer?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       valueColumn={'signatory_id'}

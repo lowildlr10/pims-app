@@ -175,13 +175,13 @@ const NotificationMenuButtonClient = () => {
                             ? dayjs(notif.created_at).isSame(dayjs(), 'day')
                               ? `Today at ${dayjs(notif.created_at).format('h:mm A')}`
                               : dayjs(notif.created_at).isSame(
-                                dayjs().subtract(1, 'day'),
-                                'day'
-                              )
+                                    dayjs().subtract(1, 'day'),
+                                    'day'
+                                  )
                                 ? `Yesterday at ${dayjs(notif.created_at).format('h:mm A')}`
                                 : dayjs(notif.created_at).format(
-                                  'MMM D, YYYY [at] h:mm A'
-                                )
+                                    'MMM D, YYYY [at] h:mm A'
+                                  )
                             : 'Unknown time'}
                         </Text>
                       </Group>
