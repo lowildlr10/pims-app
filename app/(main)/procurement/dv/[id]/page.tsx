@@ -6,14 +6,14 @@ import React from 'react';
 import { getCompany } from '@/actions/company';
 import DetailClient from '@/components/Generic/CrudComponents/Details';
 
-const MODULE_TYPE: ModuleType = 'po';
+const MODULE_TYPE: ModuleType = 'dv';
 
 export const metadata = {
-  title: 'PIMS - Purchase Order Details',
-  description: 'PIMS - Purchase Order Details',
+  title: 'PIMS - Disbursement Voucher Details',
+  description: 'PIMS - Disbursement Voucher Details',
 };
 
-const PurchaseOrderDetailsPage = async ({
+const DisbursementVoucherDetailsPage = async ({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -33,27 +33,27 @@ const PurchaseOrderDetailsPage = async ({
       type={'main'}
     >
       <MainContainerClient
-        title={'Purchase Order Details'}
+        title={'Disbursement Voucher Details'}
         permissions={permissions}
       >
         <DetailClient
           permissions={permissions}
-          endpoint={`${'/purchase-orders'}/${id}`}
+          endpoint={`${'/disbursement-vouchers'}/${id}`}
           content={MODULE_TYPE}
           printConfig={{
-            title: 'Print Purchase Order',
+            title: 'Print Disbursement Voucher',
             endpoint: `/documents/${MODULE_TYPE}/prints/${id}`,
           }}
           logConfig={{
             id,
-            title: 'Purchase Order Logs',
+            title: 'Disbursement Voucher Logs',
             endpoint: '/logs',
           }}
-          backUrl={`/procurement/${MODULE_TYPE}?search=${id}`}
+          backUrl={`/procurement/${MODULE_TYPE}`}
         />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default PurchaseOrderDetailsPage;
+export default DisbursementVoucherDetailsPage;

@@ -51,7 +51,7 @@ const AbstractQuotationDetailsPage = async ({
             title: 'Abstract of Bids and Quotation Logs',
             endpoint: '/logs',
           }}
-          backUrl={`/procurement/${MODULE_TYPE}`}
+          backUrl={`/procurement/${MODULE_TYPE}?search=${id}`}
         />
       </MainContainerClient>
     </LayoutSidebarClient>

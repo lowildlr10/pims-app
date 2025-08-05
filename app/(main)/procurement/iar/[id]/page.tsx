@@ -38,7 +38,7 @@ const InspectionAcceptanceReportDetailsPage = async ({
       >
         <DetailClient
           permissions={permissions}
-          endpoint={`${'/inventories/supplies'}/${id}`}
+          endpoint={`${'/inspection-acceptance-reports'}/${id}`}
           content={MODULE_TYPE}
           printConfig={{
             title: 'Print Inspection and Acceptance Report',

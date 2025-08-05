@@ -43,7 +43,6 @@ import IcsFormClient from '../../../InventoryIssuances/Forms/IcsForm';
 import AreFormClient from '../../../InventoryIssuances/Forms/AreForm';
 import InventoryIssuanceStatusClient from '@/components/InventoryIssuances/Status';
 import InventoryIssuanceActionsClient from '@/components/InventoryIssuances/Actions';
-import Helper from '@/utils/Helpers';
 import { usePathname, useRouter } from 'next/navigation';
 import API from '@/libs/API';
 import { API_REFRESH_INTERVAL } from '@/config/intervals';
@@ -558,7 +557,11 @@ const DetailClient = ({
           )}
 
           {currentData && content === 'aoq' && (
-            <AbstractQuotionFormClient data={currentData} readOnly />
+            <AbstractQuotionFormClient
+              data={currentData}
+              refreshData={refreshDetail}
+              readOnly
+            />
           )}
 
           {currentData && content === 'po' && (

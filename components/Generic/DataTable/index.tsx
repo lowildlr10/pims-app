@@ -74,7 +74,6 @@ const DataTableClient = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace, push } = useRouter();
-  //const mobileView = useMediaQuery('(max-width: 900px)');
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   const [collapseStates, setCollapseStates] = useState<CollapseType>({});
@@ -295,11 +294,27 @@ const DataTableClient = ({
     }
   };
 
-  //if (mobileView) {
-  //  return (
-  //    <></>
-  //  );
-  //}
+  if (lgScreenAndBelow) {
+    return (
+      <Stack>
+        <DataTableActionsClient
+          mainModule={mainModule}
+          permissions={permissions}
+          search={tableSearch}
+          setSearch={setTableSearch}
+          showCreate={showCreate}
+          showSearch={showSearch}
+          createMenus={createMenus}
+          setPageLoading={setPageLoading}
+          defaultModalOnClick={defaultModalOnClick}
+          handleOpenCreateModal={(parentId, moduleType, otherParams) => {
+            handleOpenCreateModal(parentId, moduleType, otherParams);
+            setCurrentOpenedModuleType('main');
+          }}
+        />
+      </Stack>
+    );
+  }
 
   return (
     <Stack>
@@ -405,6 +420,7 @@ const DataTableClient = ({
                   ta={'center'}
                   colSpan={data.head?.length}
                   fz={lgScreenAndBelow ? 'sm' : 'md'}
+                  h={'calc(100vh - 28em)'}
                 >
                   No data.
                 </Table.Td>
@@ -490,7 +506,7 @@ const DataTableClient = ({
                                 setPageLoading(true);
                                 e.preventDefault();
 
-                                if (hasSubBody) {
+                                if (hasSubBody || subModule) {
                                   const searchParams = subModule
                                     ? `from=${subModule}`
                                     : '';

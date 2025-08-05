@@ -30,6 +30,7 @@ import dayjs from 'dayjs';
 import { Tooltip } from '@mantine/core';
 import { NumberFormatter } from '@mantine/core';
 import { Skeleton } from '@mantine/core';
+import Helper from '@/utils/Helpers';
 
 const defaultItemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -57,7 +58,7 @@ const defaultItemHeaders: PurchaseRequestItemHeader[] = [
 const FormClient = forwardRef<
   HTMLFormElement,
   ModalAbstractQuotationContentProps
->(({ data, isCreate, readOnly, handleCreateUpdate }, ref) => {
+>(({ data, isCreate, readOnly, refreshData, handleCreateUpdate }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
@@ -128,7 +129,11 @@ const FormClient = forwardRef<
 
   useEffect(() => {
     setCurrentData(data);
-  }, [data]);
+
+    if (!data?.items?.length && refreshData) {
+      refreshData();
+    }
+  }, [data, refreshData]);
 
   useEffect(() => {
     form.reset();
@@ -241,7 +246,7 @@ const FormClient = forwardRef<
             <Textarea
               variant={readOnly ? 'unstyled' : 'filled'}
               placeholder={'Description'}
-              defaultValue={item?.description ?? '-'}
+              defaultValue={item?.description ?? ''}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
               readOnly
@@ -267,10 +272,12 @@ const FormClient = forwardRef<
                     <strong>DESCRIPTION/SPECIFICATION OF ARTICLES</strong>
                     <br />
                     {item.description?.split('\n')?.map((description) => (
-                      <>
+                      <React.Fragment
+                        key={`${Helper.formatStringHasUnderscores(description)}_${randomId()}`}
+                      >
                         {description}
                         <br />
-                      </>
+                      </React.Fragment>
                     ))}
                   </>
                 }
@@ -315,10 +322,12 @@ const FormClient = forwardRef<
                     <strong>DESCRIPTION/SPECIFICATION OF ARTICLES</strong>
                     <br />
                     {item.description?.split('\n')?.map((description) => (
-                      <>
+                      <React.Fragment
+                        key={`${Helper.formatStringHasUnderscores(description)}_${randomId()}`}
+                      >
                         {description}
                         <br />
-                      </>
+                      </React.Fragment>
                     ))}
                   </>
                 }
@@ -418,17 +427,21 @@ const FormClient = forwardRef<
                   variant={readOnly ? 'unstyled' : 'default'}
                   placeholder={'Select an awardee here...'}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
-                  data={
-                    supplierHeaders &&
-                    supplierHeaders?.map((supplier) => ({
+                  data={[
+                    {
+                      value: '',
+                      label: 'No awardee...',
+                    },
+                    ...supplierHeaders?.map((supplier) => ({
                       value: supplier.supplier_id,
                       label: supplier.supplier_name,
-                    }))
-                  }
-                  value={item?.awardee_id}
+                    })),
+                  ]}
+                  defaultValue={item?.awardee_id ?? ''}
                   searchable
                   clearable
                   readOnly={readOnly}
+                  required={!readOnly}
                 />
               </Tooltip>
             ) : (
@@ -1099,9 +1112,11 @@ const FormClient = forwardRef<
                         variant={readOnly ? 'unstyled' : 'default'}
                         placeholder={readOnly ? '' : 'Enter BAC action here...'}
                         defaultValue={
-                          readOnly ? undefined : form.values.bac_action
+                          readOnly ? undefined : (form.values.bac_action ?? '')
                         }
-                        value={readOnly ? currentData?.bac_action : undefined}
+                        value={
+                          readOnly ? (currentData?.bac_action ?? '') : undefined
+                        }
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         autosize
                         readOnly={readOnly}

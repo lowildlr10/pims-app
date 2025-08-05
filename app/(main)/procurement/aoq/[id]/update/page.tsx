@@ -40,6 +40,7 @@ const AbstractQuotationUpdatePage = async ({
           endpoint={`/abstract-quotations/${id}`}
           content={MODULE_TYPE}
           backUrl={`/procurement/${MODULE_TYPE}/${id}`}
+          closeUrl={`/procurement/${MODULE_TYPE}`}
         />
       </MainContainerClient>
     </LayoutSidebarClient>

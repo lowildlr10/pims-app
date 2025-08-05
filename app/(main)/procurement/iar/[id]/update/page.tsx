@@ -6,7 +6,7 @@ import React from 'react';
 import { getCompany } from '@/actions/company';
 import UpdateClient from '@/components/Generic/CrudComponents/Update';
 
-const MODULE_TYPE: ModuleType = 'po';
+const MODULE_TYPE: ModuleType = 'iar';
 
 export const metadata = {
   title: 'PIMS - Update Inspection and Acceptance Report',
@@ -40,6 +40,7 @@ const InspectionAcceptanceReportUpdatePage = async ({
           endpoint={`/inspection-acceptance-reports/${id}`}
           content={MODULE_TYPE}
           backUrl={`/procurement/${MODULE_TYPE}/${id}`}
+          closeUrl={`/procurement/${MODULE_TYPE}`}
         />
       </MainContainerClient>
     </LayoutSidebarClient>

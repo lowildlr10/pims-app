@@ -229,7 +229,10 @@ export function LayoutSidebarClient({
           <UserButtonClient user={user} handleOpen={open} />
         </AppShell.Section>
       </AppShell.Navbar>
-      <AppShell.Main bg={'var(--mantine-color-gray-4)'} pl={'sm'}>
+      <AppShell.Main
+        bg={'var(--mantine-color-gray-4)'}
+        p={lgScreenAndBelow ? '50px 0 0 0' : '60px 0 0 0'}
+      >
         <Overlay
           color={'var(--mantine-color-black-7)'}
           backgroundOpacity={0.6}

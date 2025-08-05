@@ -6,14 +6,14 @@ export const PROCUREMENT_ALLOWED_PERMISSIONS = [
   'aoq:*',
   'po:*',
   'iar:*',
-  'ors:*',
+  'obr:*',
   'dv:*',
   'pr:view',
   'rfq:view',
   'aoq:view',
   'po:view',
   'iar:view',
-  'ors:view',
+  'obr:view',
   'dv:view',
 ];
 
@@ -117,9 +117,9 @@ export const PROCUREMENT_LINKS = [
     link: '/procurement/iar',
   },
   {
-    label: 'Obligation Request and Status',
-    allowedPermissions: ['super:*', 'head:*', 'ors:*', 'ors:view'],
-    link: '/procurement/ors',
+    label: 'Obligation Request',
+    allowedPermissions: ['super:*', 'head:*', 'obr:* ', 'obr:view'],
+    link: '/procurement/obr',
   },
   {
     label: 'Disbursement Voucher',

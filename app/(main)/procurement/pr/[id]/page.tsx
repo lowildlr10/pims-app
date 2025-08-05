@@ -34,11 +34,11 @@ const PurchaseRequestDetailsPage = async ({
     case 'rfq':
     case 'aoq':
     case 'po':
-      backUrl = `/procurement/${from}`;
+      backUrl = `/procurement/${from}?search=${id}`;
       break;
 
     default:
-      backUrl = '/procurement/pr';
+      backUrl = `/procurement/pr?search=${id}`;
       break;
   }
 

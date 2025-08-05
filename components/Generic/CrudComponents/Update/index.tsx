@@ -1,11 +1,11 @@
 'use client';
 
-import { Button, Group, Modal, Paper, Stack } from '@mantine/core';
+import { Button, Group, Paper, Stack } from '@mantine/core';
 import React, { useEffect, useRef, useState } from 'react';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
-import { IconCancel, IconPencil } from '@tabler/icons-react';
+import { IconCancel, IconPencil, IconX } from '@tabler/icons-react';
 import PurchaseRequestFormClient from '../../../PurchaseRequests/Form';
 import { useMediaQuery } from '@mantine/hooks';
 import RequestQuotionFormClient from '../../../RequestQuotations/Form';
@@ -22,7 +22,12 @@ import useSWR from 'swr';
 import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import CustomLoadingOverlay from '../../CustomLoadingOverlay';
 
-const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
+const UpdateClient = ({
+  content,
+  endpoint,
+  backUrl,
+  closeUrl,
+}: UpdateProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
@@ -52,12 +57,25 @@ const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
     setCurrentData(data?.data?.data);
   }, [data]);
 
-  const handleClose = (id?: string) => {
+  const handleCancel = (id?: string) => {
     if (backUrl) {
       router.push(backUrl);
     } else {
       if (!Helper.empty(id)) {
         const redirectPath = pathname.replace('/update', '');
+        router.push(redirectPath);
+      } else {
+        router.back();
+      }
+    }
+  };
+
+  const handleClose = (id?: string) => {
+    if (closeUrl) {
+      router.push(closeUrl);
+    } else {
+      if (!Helper.empty(id)) {
+        const redirectPath = pathname.replace('/', '');
         router.push(redirectPath);
       } else {
         router.back();
@@ -95,7 +113,7 @@ const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
         });
 
         setPayload({});
-        handleClose();
+        handleCancel();
       })
       .catch((err) => {
         const errors = getErrors(err);
@@ -232,10 +250,27 @@ const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
             onClick={(e) => {
               setPageLoading(true);
               e.preventDefault();
-              handleClose();
+              handleCancel();
             }}
           >
             Cancel
+          </Button>
+          <Button
+            variant={'outline'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
+            color={'var(--mantine-color-gray-8)'}
+            leftSection={<IconX size={18} />}
+            loading={pageLoading}
+            loaderProps={{
+              type: 'dots',
+            }}
+            onClick={(e) => {
+              setPageLoading(true);
+              e.preventDefault();
+              handleClose();
+            }}
+          >
+            Close
           </Button>
         </Group>
       </Stack>

@@ -40,6 +40,7 @@ const PurchaseRequestUpdatePage = async ({
           endpoint={`/purchase-requests/${id}`}
           content={MODULE_TYPE}
           backUrl={`/procurement/pr/${id}`}
+          closeUrl={`/procurement/${MODULE_TYPE}`}
         />
       </MainContainerClient>
     </LayoutSidebarClient>

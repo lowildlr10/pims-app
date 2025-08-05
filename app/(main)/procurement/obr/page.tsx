@@ -7,11 +7,11 @@ import { getCompany } from '@/actions/company';
 import InspectionAcceptanceReportsClient from '@/components/InspectionAcceptanceReports';
 
 export const metadata = {
-  title: 'PIMS - Disbursement Vouchers',
-  description: 'PIMS - Disbursement Vouchers',
+  title: 'PIMS - Obligation Requests',
+  description: 'PIMS - Obligation Requests',
 };
 
-const DisbursementVoucherPage = async () => {
+const ObligationRequestPage = async () => {
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
@@ -26,7 +26,7 @@ const DisbursementVoucherPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Disbursement Vouchers'}
+        title={'Obligation Requests'}
         permissions={permissions}
       >
         {/* <InspectionAcceptanceReportsClient
@@ -39,4 +39,4 @@ const DisbursementVoucherPage = async () => {
   );
 };
 
-export default DisbursementVoucherPage;
+export default ObligationRequestPage;

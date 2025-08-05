@@ -49,9 +49,9 @@ const FormClient = forwardRef<
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(() => {
     return {
-      iar_date: currentData?.iar_date ?? null,
+      iar_date: currentData?.iar_date ?? dayjs().format('YYYY-MM-DD'),
       invoice_no: currentData?.invoice_no ?? '',
-      invoice_date: currentData?.invoice_date ?? null,
+      invoice_date: currentData?.invoice_date ?? '',
       inspected_date: currentData?.inspected_date ?? null,
       received_date: currentData?.received_date ?? null,
       inspected: currentData?.inspected ?? false,
@@ -194,9 +194,6 @@ const FormClient = forwardRef<
             ...values,
             iar_date: values.iar_date
               ? dayjs(values.iar_date).format('YYYY-MM-DD')
-              : '',
-            invoice_date: values.invoice_date
-              ? dayjs(values.invoice_date).format('YYYY-MM-DD')
               : '',
             inspected_date: values.inspected_date
               ? dayjs(values.inspected_date).format('YYYY-MM-DD')
@@ -475,7 +472,7 @@ const FormClient = forwardRef<
                       {...form.getInputProps('invoice_no')}
                       variant={'unstyled'}
                       placeholder={
-                        readOnly ? 'None' : 'Enter invoice number here...'
+                        readOnly ? 'None' : 'Enter invoice number(s) here...'
                       }
                       defaultValue={
                         readOnly ? undefined : form.values.invoice_no
@@ -501,7 +498,7 @@ const FormClient = forwardRef<
                   <Group sx={{ flexWrap: 'nowrap' }}>
                     <Flex sx={{ flexBasis: 'auto' }}>
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
-                        Date:
+                        Invoice Date.
                       </Text>
                       {!readOnly && (
                         <Stack>
@@ -513,31 +510,20 @@ const FormClient = forwardRef<
                         </Stack>
                       )}
                     </Flex>
-                    <DateInput
+                    <TextInput
                       key={form.key('invoice_date')}
                       {...form.getInputProps('invoice_date')}
                       variant={'unstyled'}
-                      valueFormat={'YYYY-MM-DD'}
-                      defaultValue={
-                        readOnly
-                          ? undefined
-                          : form.values.invoice_date
-                            ? new Date(form.values.invoice_date)
-                            : undefined
-                      }
-                      value={
-                        readOnly
-                          ? form.values?.invoice_date
-                            ? new Date(form.values?.invoice_date)
-                            : undefined
-                          : undefined
-                      }
                       placeholder={
-                        readOnly ? 'None' : 'Enter the invoice date here...'
+                        readOnly ? 'None' : 'Enter invoice date(s) here...'
                       }
-                      error={form.errors.invoice_date && ''}
+                      defaultValue={
+                        readOnly ? undefined : form.values.invoice_date
+                      }
+                      value={readOnly ? form.values?.invoice_date : undefined}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
-                        flexBasis: '100%',
+                        flexBasis: '49%',
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
                           minHeight: '30px',
@@ -545,11 +531,6 @@ const FormClient = forwardRef<
                         },
                         flex: 1,
                       }}
-                      size={lgScreenAndBelow ? 'sm' : 'md'}
-                      leftSection={
-                        !readOnly ? <IconCalendar size={18} /> : undefined
-                      }
-                      clearable
                       required={!readOnly}
                       readOnly={readOnly}
                     />
@@ -824,15 +805,17 @@ const FormClient = forwardRef<
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
                         Date Received:
                       </Text>
-                      {!readOnly && acceptanceCompleted === true && (
-                        <Stack>
-                          <IconAsterisk
-                            size={7}
-                            color={'var(--mantine-color-red-8)'}
-                            stroke={2}
-                          />
-                        </Stack>
-                      )}
+                      {!readOnly &&
+                        (acceptanceCompleted === true ||
+                          acceptanceCompleted === false) && (
+                          <Stack>
+                            <IconAsterisk
+                              size={7}
+                              color={'var(--mantine-color-red-8)'}
+                              stroke={2}
+                            />
+                          </Stack>
+                        )}
                     </Flex>
                     <DateInput
                       key={form.key('received_date')}
@@ -872,7 +855,11 @@ const FormClient = forwardRef<
                       }
                       clearable
                       readOnly={readOnly}
-                      required={acceptanceCompleted !== undefined}
+                      required={
+                        !readOnly &&
+                        (acceptanceCompleted === true ||
+                          acceptanceCompleted === false)
+                      }
                     />
                   </Group>
                 </Stack>
@@ -946,7 +933,11 @@ const FormClient = forwardRef<
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                       }}
                       readOnly={readOnly}
-                      required={!readOnly && acceptanceCompleted !== undefined}
+                      required={
+                        !readOnly &&
+                        (acceptanceCompleted === true ||
+                          acceptanceCompleted === false)
+                      }
                     />
                   ) : (
                     <TextInput

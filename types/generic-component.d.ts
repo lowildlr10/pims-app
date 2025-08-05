@@ -435,6 +435,7 @@ type UpdateProps = {
   content: ModuleType;
   endpoint: string;
   backUrl?: string;
+  closeUrl?: string;
 };
 
 type UpdateModalProps = {

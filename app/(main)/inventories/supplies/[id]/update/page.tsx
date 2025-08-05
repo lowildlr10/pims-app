@@ -40,6 +40,7 @@ const InventoryPropertySupplyUpdatePage = async ({
           endpoint={`/inventories/supplies/${id}`}
           content={MODULE_TYPE}
           backUrl={`/inventories/supplies/${id}`}
+          closeUrl={`/inventories/supplies/${MODULE_TYPE}`}
         />
       </MainContainerClient>
     </LayoutSidebarClient>

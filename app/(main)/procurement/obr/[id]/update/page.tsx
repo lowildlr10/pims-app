@@ -4,16 +4,16 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import DetailClient from '@/components/Generic/CrudComponents/Details';
+import UpdateClient from '@/components/Generic/CrudComponents/Update';
 
-const MODULE_TYPE: ModuleType = 'po';
+const MODULE_TYPE: ModuleType = 'obr';
 
 export const metadata = {
-  title: 'PIMS - Purchase Order Details',
-  description: 'PIMS - Purchase Order Details',
+  title: 'PIMS - Update Obligation Request',
+  description: 'PIMS - Update Obligation Request',
 };
 
-const PurchaseOrderDetailsPage = async ({
+const ObligationRequestUpdatePage = async ({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -33,27 +33,18 @@ const PurchaseOrderDetailsPage = async ({
       type={'main'}
     >
       <MainContainerClient
-        title={'Purchase Order Details'}
+        title={'Update Obligation Request'}
         permissions={permissions}
       >
-        <DetailClient
-          permissions={permissions}
-          endpoint={`${'/purchase-orders'}/${id}`}
+        <UpdateClient
+          endpoint={`/obligation-requests/${id}`}
           content={MODULE_TYPE}
-          printConfig={{
-            title: 'Print Purchase Order',
-            endpoint: `/documents/${MODULE_TYPE}/prints/${id}`,
-          }}
-          logConfig={{
-            id,
-            title: 'Purchase Order Logs',
-            endpoint: '/logs',
-          }}
-          backUrl={`/procurement/${MODULE_TYPE}?search=${id}`}
+          backUrl={`/procurement/${MODULE_TYPE}/${id}`}
+          closeUrl={`/procurement/${MODULE_TYPE}`}
         />
       </MainContainerClient>
     </LayoutSidebarClient>
   );
 };
 
-export default PurchaseOrderDetailsPage;
+export default ObligationRequestUpdatePage;

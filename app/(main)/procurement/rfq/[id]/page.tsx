@@ -49,7 +49,7 @@ const RequestQuotationDetailsPage = async ({
             title: 'Request for Quotation Logs',
             endpoint: '/logs',
           }}
-          backUrl={`/procurement/${MODULE_TYPE}`}
+          backUrl={`/procurement/${MODULE_TYPE}?search=${id}`}
         />
       </MainContainerClient>
     </LayoutSidebarClient>
