@@ -12,6 +12,7 @@ import RequestQuotionFormClient from '../../../RequestQuotations/Form';
 import AbstractQuotionFormClient from '../../../AbstractQuotations/Form';
 import PurchaseOrderFormClient from '@/components/PurchaseOrders/Form';
 import InspectionAcceptanceReportFormClient from '@/components/InspectionAcceptanceReports/Form';
+import ObligationRequestFormClient from '@/components/ObligationRequests/Form';
 import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
 import RisFormClient from '../../../InventoryIssuances/Forms/RisForm';
 import IcsFormClient from '../../../InventoryIssuances/Forms/IcsForm';
@@ -21,6 +22,7 @@ import Helper from '@/utils/Helpers';
 import useSWR from 'swr';
 import { API_REFRESH_INTERVAL } from '@/config/intervals';
 import CustomLoadingOverlay from '../../CustomLoadingOverlay';
+import FullScreenSkeletonLoaderClient from '../../FullScreenSkeletonLoader';
 
 const UpdateClient = ({
   content,
@@ -132,11 +134,17 @@ const UpdateClient = ({
 
   return (
     <Stack>
-      <CustomLoadingOverlay visible={loading || dataLoading || pageLoading} />
+      <CustomLoadingOverlay
+        visible={
+          loading || dataLoading || pageLoading || Helper.empty(currentData)
+        }
+      />
 
       <Stack mb={100}>
         <Paper shadow={'lg'} p={0}>
-          {content === 'pr' && (
+          {Helper.empty(currentData) && <FullScreenSkeletonLoaderClient />}
+
+          {currentData && content === 'pr' && (
             <PurchaseRequestFormClient
               ref={formRef}
               data={currentData}
@@ -144,7 +152,7 @@ const UpdateClient = ({
             />
           )}
 
-          {content === 'rfq' && (
+          {currentData && content === 'rfq' && (
             <RequestQuotionFormClient
               ref={formRef}
               data={currentData}
@@ -152,7 +160,7 @@ const UpdateClient = ({
             />
           )}
 
-          {content === 'aoq' && (
+          {currentData && content === 'aoq' && (
             <AbstractQuotionFormClient
               ref={formRef}
               data={currentData}
@@ -160,7 +168,7 @@ const UpdateClient = ({
             />
           )}
 
-          {content === 'po' && (
+          {currentData && content === 'po' && (
             <PurchaseOrderFormClient
               ref={formRef}
               data={currentData}
@@ -168,7 +176,7 @@ const UpdateClient = ({
             />
           )}
 
-          {content === 'iar' && (
+          {currentData && content === 'iar' && (
             <InspectionAcceptanceReportFormClient
               ref={formRef}
               data={currentData}
@@ -176,7 +184,15 @@ const UpdateClient = ({
             />
           )}
 
-          {content === 'inv-supply' && (
+          {currentData && content === 'obr' && (
+            <ObligationRequestFormClient
+              ref={formRef}
+              data={currentData}
+              handleCreateUpdate={handleUpdate}
+            />
+          )}
+
+          {currentData && content === 'inv-supply' && (
             <InventorySupplyFormClient
               ref={formRef}
               data={currentData}
@@ -184,7 +200,7 @@ const UpdateClient = ({
             />
           )}
 
-          {content === 'inv-issuance' && (
+          {currentData && content === 'inv-issuance' && (
             <>
               {currentData?.document_type === 'ris' && (
                 <RisFormClient
@@ -241,7 +257,7 @@ const UpdateClient = ({
           <Button
             variant={'outline'}
             size={lgScreenAndBelow ? 'xs' : 'sm'}
-            color={'var(--mantine-color-gray-8)'}
+            color={'var(--mantine-color-primary-9)'}
             leftSection={<IconCancel size={18} />}
             loading={pageLoading}
             loaderProps={{

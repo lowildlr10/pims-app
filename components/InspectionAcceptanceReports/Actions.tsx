@@ -38,7 +38,7 @@ const NavigationMenus = ({
         Navigate to PO/JO
       </Menu.Item>
 
-      {['supply:*', ...getAllowedPermissions('ors', 'view')].some(
+      {['supply:*', ...getAllowedPermissions('obr', 'view')].some(
         (permission) => permissions?.includes(permission)
       ) &&
         ['inspected', 'partially_completed', 'completed'].includes(status) &&
@@ -52,12 +52,12 @@ const NavigationMenus = ({
               />
             }
             component={Link}
-            href={`/procurement/ors?search=${id}`}
+            href={`/procurement/obr?search=${id}`}
           >
-            Navigate to ORS
+            Navigate to OBR
           </Menu.Item>
         )}
-      {['supply:*', ...getAllowedPermissions('ors', 'view')].some(
+      {['supply:*', ...getAllowedPermissions('obr', 'view')].some(
         (permission) => permissions?.includes(permission)
       ) &&
         ['inspected', 'partially_completed', 'completed'].includes(status) &&

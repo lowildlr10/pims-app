@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
 import UpdateClient from '@/components/Generic/CrudComponents/Update';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const MODULE_TYPE: ModuleType = 'inv-issuance';
 
@@ -22,8 +23,15 @@ const InventoryIssuanceUpdatePage = async ({
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
+  const backUrl = `/inventories/issuances/${id}`;
+  const hasEditPermission = [
+    'supply:*',
+    ...getAllowedPermissions(MODULE_TYPE, 'update'),
+  ].some((permission) => permissions?.includes(permission));
 
   if (!user) redirect('/login');
+
+  if (!hasEditPermission) redirect(backUrl);
 
   return (
     <LayoutSidebarClient
@@ -39,7 +47,7 @@ const InventoryIssuanceUpdatePage = async ({
         <UpdateClient
           endpoint={`/inventories/issuances/${id}`}
           content={MODULE_TYPE}
-          backUrl={`/inventories/issuances/${id}`}
+          backUrl={backUrl}
           closeUrl={`/inventories/issuances/${MODULE_TYPE}`}
         />
       </MainContainerClient>

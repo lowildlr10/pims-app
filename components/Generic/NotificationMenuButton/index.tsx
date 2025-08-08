@@ -99,8 +99,14 @@ const NotificationMenuButtonClient = () => {
             }
             processing
           >
-            <ActionIcon size='lg' variant='transparent' color='white'>
-              <IconBellFilled size={lgScreenAndBelow ? 16 : 21} stroke={1.5} />
+            <ActionIcon
+              variant='transparent'
+              color='white'
+              size={lgScreenAndBelow ? 'md' : 'lg'}
+              pt={'xs'}
+              px={0}
+            >
+              <IconBellFilled size={lgScreenAndBelow ? 20 : 24} stroke={1.5} />
             </ActionIcon>
           </Indicator>
         </Box>

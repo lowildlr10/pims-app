@@ -35,6 +35,9 @@ import PurchaseOrderFormClient from '@/components/PurchaseOrders/Form';
 import InspectionAcceptanceReportFormClient from '@/components/InspectionAcceptanceReports/Form';
 import InspectionAcceptanceReportActionsClient from '@/components/InspectionAcceptanceReports/Actions';
 import InspectionAcceptanceReportStatusClient from '@/components/InspectionAcceptanceReports/Status';
+import ObligationRequestFormClient from '@/components/ObligationRequests/Form';
+import ObligationRequestActionsClient from '@/components/ObligationRequests/Actions';
+import ObligationRequestStatusClient from '@/components/ObligationRequests/Status';
 import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
 import InventorySupplyStatusClient from '@/components/InventorySupplies/Status';
 import InventorySupplyActionsClient from '@/components/InventorySupplies/Actions';
@@ -51,6 +54,8 @@ import PrintModalClient from '../../Modal/PrintModal';
 import LogModalClient from '../../Modal/LogModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import CustomLoadingOverlay from '../../CustomLoadingOverlay';
+import Helper from '@/utils/Helpers';
+import FullScreenSkeletonLoaderClient from '../../FullScreenSkeletonLoader';
 
 export const DetailActionsClient = ({
   permissions,
@@ -149,6 +154,13 @@ export const DetailActionsClient = ({
             status={(currentStatus as InspectionAcceptanceReportStatus) ?? ''}
           />
         );
+      case 'obr':
+        return (
+          <ObligationRequestStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as ObligationRequestStatus) ?? ''}
+          />
+        );
       case 'inv-supply':
         return (
           <InventorySupplyStatusClient
@@ -236,6 +248,15 @@ export const DetailActionsClient = ({
               id={data?.id ?? ''}
               status={data?.status ?? 'draft'}
               documentType={data?.purchase_order?.document_type ?? 'po'}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'obr' && (
+            <ObligationRequestActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              status={data?.status ?? 'draft'}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -484,6 +505,51 @@ const DetailClient = ({
         );
         break;
 
+      case 'iar':
+        hasPrintPermission = [
+          'supply:*',
+          ...getAllowedPermissions(content, 'print'),
+        ].some((permission) => permissions?.includes(permission));
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions(content, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setShowPrintButton(hasPrintPermission);
+
+        setShowEditButton(hasEditPermission);
+        break;
+
+      case 'obr':
+        hasPrintPermission = [
+          'budget:*',
+          ...getAllowedPermissions(content, 'print'),
+        ].some((permission) => permissions?.includes(permission));
+        hasEditPermission = [
+          'budget:*',
+          ...getAllowedPermissions(content, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setShowPrintButton(hasPrintPermission);
+
+        setShowEditButton(hasEditPermission);
+        break;
+
+      case 'dv':
+        hasPrintPermission = [
+          'accountant:*',
+          ...getAllowedPermissions(content, 'print'),
+        ].some((permission) => permissions?.includes(permission));
+        hasEditPermission = [
+          'accountant:*',
+          ...getAllowedPermissions(content, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setShowPrintButton(hasPrintPermission);
+
+        setShowEditButton(hasEditPermission);
+        break;
+
       case 'inv-supply':
         hasPrintPermission = false;
         hasEditPermission = [
@@ -525,7 +591,9 @@ const DetailClient = ({
 
   return (
     <Stack>
-      <CustomLoadingOverlay visible={detailLoading || pageLoading} />
+      <CustomLoadingOverlay
+        visible={detailLoading || pageLoading || Helper.empty(currentData)}
+      />
 
       <Stack
         w={'100%'}
@@ -548,6 +616,8 @@ const DetailClient = ({
 
       <Stack mb={100}>
         <Paper shadow={'lg'} p={0}>
+          {Helper.empty(currentData) && <FullScreenSkeletonLoaderClient />}
+
           {currentData && content === 'pr' && (
             <PurchaseRequestFormClient data={currentData} readOnly />
           )}
@@ -570,6 +640,10 @@ const DetailClient = ({
 
           {currentData && content === 'iar' && (
             <InspectionAcceptanceReportFormClient data={currentData} readOnly />
+          )}
+
+          {currentData && content === 'obr' && (
+            <ObligationRequestFormClient data={currentData} readOnly />
           )}
 
           {currentData && content === 'inv-supply' && (

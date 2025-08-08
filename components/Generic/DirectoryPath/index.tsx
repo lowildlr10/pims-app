@@ -42,7 +42,7 @@ const MenuLink = ({
       }
       sx={{ cursor: allowed ? 'pointer' : 'not-allowed', textWrap: 'nowrap' }}
       fw={pathname === link ? 500 : 'normal'}
-      fz={lgScreenAndBelow ? 'xs' : 'sm'}
+      fz={lgScreenAndBelow ? '0.85rem' : 'sm'}
       prefetch={false}
       onNavigate={(e) => {
         pathname !== link && nprogress.start();
@@ -61,10 +61,15 @@ export function DirectoryPathClient({ permissions }: DirectoryPathProps) {
   useEffect(() => {
     const activeMenu = document.querySelector('[data-active]');
     if (viewport.current && activeMenu instanceof HTMLElement) {
-      const offset = activeMenu.offsetLeft;
-      viewport.current.scrollTo({ left: offset - 16, behavior: 'auto' });
+      const anchorOffset = activeMenu.offsetLeft;
+      const anchorWidth = activeMenu.offsetWidth;
+      const viewportWidth = viewport.current.offsetWidth;
+      const scrollLeft = lgScreenAndBelow
+        ? anchorOffset - viewportWidth / 2 + anchorWidth / 2
+        : anchorOffset - 16;
+      viewport.current.scrollTo({ left: scrollLeft, behavior: 'auto' });
     }
-  }, [pathname]);
+  }, [pathname, lgScreenAndBelow]);
 
   const renderProcurementMenuContent =
     /^\/procurement\/[^/]+$/.test(pathname) &&
@@ -112,7 +117,7 @@ export function DirectoryPathClient({ permissions }: DirectoryPathProps) {
       w={'94vw'}
       offsetScrollbars
       scrollbarSize={4}
-      py={1}
+      pt={lgScreenAndBelow ? 3 : 2}
     >
       <Breadcrumbs
         separator={

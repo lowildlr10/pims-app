@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
 import DetailClient from '@/components/Generic/CrudComponents/Details';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const MODULE_TYPE: ModuleType = 'pr';
 
@@ -27,6 +28,10 @@ const PurchaseRequestDetailsPage = async ({
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
+  const hasShowPermission = [
+    'supply:*',
+    ...getAllowedPermissions(MODULE_TYPE, 'show'),
+  ].some((permission) => permissions?.includes(permission));
 
   if (!user) redirect('/login');
 
@@ -41,6 +46,8 @@ const PurchaseRequestDetailsPage = async ({
       backUrl = `/procurement/pr?search=${id}`;
       break;
   }
+
+  if (!hasShowPermission) redirect(backUrl);
 
   return (
     <LayoutSidebarClient

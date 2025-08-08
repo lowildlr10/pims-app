@@ -15,6 +15,7 @@ import classes from '@/styles/generic/navbarlinksgroup.module.css';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { nprogress } from '@mantine/nprogress';
+import { useMediaQuery } from '@mantine/hooks';
 
 export function LinksGroupClient({
   icon: Icon,
@@ -26,6 +27,7 @@ export function LinksGroupClient({
   links,
 }: LinksGroupProps) {
   const pathname = usePathname();
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const items = (hasLinks ? links : []).map(
@@ -46,7 +48,7 @@ export function LinksGroupClient({
               : undefined
           }
           c={pathname === link.link ? 'black' : undefined}
-          fz={{ base: 'sm', lg: 13, xl: 'sm' }}
+          fz={lgScreenAndBelow ? '0.85rem' : 'sm'}
           prefetch={false}
           onNavigate={(e) => pathname !== link.link && nprogress.start()}
         >
@@ -77,7 +79,7 @@ export function LinksGroupClient({
             href={link ?? '#'}
             underline={'never'}
             c={'inherit'}
-            fz={{ base: 'sm', lg: 13, xl: 'sm' }}
+            fz={lgScreenAndBelow ? '0.85rem' : 'sm'}
             prefetch={false}
             onNavigate={(e) =>
               !hasLinks && pathname !== link && nprogress.start()

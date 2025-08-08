@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
 import UpdateClient from '@/components/Generic/CrudComponents/Update';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const MODULE_TYPE: ModuleType = 'po';
 
@@ -22,8 +23,15 @@ const PurchaseOrderUpdatePage = async ({
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
+  const backUrl = `/procurement/${MODULE_TYPE}/${id}`;
+  const hasEditPermission = [
+    'supply:*',
+    ...getAllowedPermissions(MODULE_TYPE, 'update'),
+  ].some((permission) => permissions?.includes(permission));
 
   if (!user) redirect('/login');
+
+  if (!hasEditPermission) redirect(backUrl);
 
   return (
     <LayoutSidebarClient
@@ -39,7 +47,7 @@ const PurchaseOrderUpdatePage = async ({
         <UpdateClient
           endpoint={`/purchase-orders/${id}`}
           content={MODULE_TYPE}
-          backUrl={`/procurement/${MODULE_TYPE}/${id}`}
+          backUrl={backUrl}
           closeUrl={`/procurement/${MODULE_TYPE}`}
         />
       </MainContainerClient>
