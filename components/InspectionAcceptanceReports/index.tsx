@@ -42,7 +42,7 @@ const defaultTableData: TableDataType = {
     },
     {
       id: 'po_no',
-      label: 'PO/JO No',
+      label: 'PO No',
       width: '14%',
       sortable: true,
     },

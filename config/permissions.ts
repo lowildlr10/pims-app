@@ -180,7 +180,7 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
-        label: 'Receive PO/JO (For Delivery)',
+        label: 'Receive PO (For Delivery)',
         value: 'receive',
         checked: false,
       },
@@ -236,9 +236,9 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     ],
   },
   {
-    label: 'Obligation Request & Status',
-    description: 'Scope for Obligation Request & Status module',
-    module_type: 'ors',
+    label: 'Obligation Request',
+    description: 'Scope for Obligation Request module',
+    module_type: 'obr',
     checked: false,
     indeterminate: false,
     scopes: [

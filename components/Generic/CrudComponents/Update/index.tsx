@@ -144,7 +144,7 @@ const UpdateClient = ({
         <Paper shadow={'lg'} p={0}>
           {Helper.empty(currentData) && <FullScreenSkeletonLoaderClient />}
 
-          {currentData && content === 'pr' && (
+          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'pr' && (
             <PurchaseRequestFormClient
               ref={formRef}
               data={currentData}
@@ -152,7 +152,7 @@ const UpdateClient = ({
             />
           )}
 
-          {currentData && content === 'rfq' && (
+          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'rfq' && (
             <RequestQuotionFormClient
               ref={formRef}
               data={currentData}
@@ -160,7 +160,7 @@ const UpdateClient = ({
             />
           )}
 
-          {currentData && content === 'aoq' && (
+          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'aoq' && (
             <AbstractQuotionFormClient
               ref={formRef}
               data={currentData}
@@ -168,7 +168,7 @@ const UpdateClient = ({
             />
           )}
 
-          {currentData && content === 'po' && (
+          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'po' && (
             <PurchaseOrderFormClient
               ref={formRef}
               data={currentData}
@@ -176,7 +176,7 @@ const UpdateClient = ({
             />
           )}
 
-          {currentData && content === 'iar' && (
+          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'iar' && (
             <InspectionAcceptanceReportFormClient
               ref={formRef}
               data={currentData}
@@ -184,7 +184,7 @@ const UpdateClient = ({
             />
           )}
 
-          {currentData && content === 'obr' && (
+          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'obr' && (
             <ObligationRequestFormClient
               ref={formRef}
               data={currentData}
@@ -192,7 +192,7 @@ const UpdateClient = ({
             />
           )}
 
-          {currentData && content === 'inv-supply' && (
+          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'inv-supply' && (
             <InventorySupplyFormClient
               ref={formRef}
               data={currentData}
@@ -200,7 +200,7 @@ const UpdateClient = ({
             />
           )}
 
-          {currentData && content === 'inv-issuance' && (
+          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'inv-issuance' && (
             <>
               {currentData?.document_type === 'ris' && (
                 <RisFormClient

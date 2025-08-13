@@ -14,6 +14,7 @@ const DynamicMultiselect = ({
   variant,
   sx,
   label,
+  placeholder,
   limit,
   value,
   onChange,
@@ -45,9 +46,9 @@ const DynamicMultiselect = ({
         setData(
           res?.data?.length > 0
             ? res.data.map((item: any) => ({
-                value: item.id,
-                label: item[column ?? 'column'],
-              }))
+              value: item.id,
+              label: item[column ?? 'column'],
+            }))
             : [{ label: 'No data.', value: '' }]
         );
         setLoading(false);
@@ -72,12 +73,13 @@ const DynamicMultiselect = ({
       variant={variant}
       size={size}
       label={label}
-      placeholder={label}
+      placeholder={placeholder}
       limit={limit ?? undefined}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       data={data}
       value={inputValue}
       onChange={(value) => setInputValue(value ?? null)}
+      onFocus={() => handleFetchData()}
       nothingFoundMessage={'Nothing found...'}
       leftSection={
         loading && <Loader color={'var(--mantine-color-primary-9)'} size='xs' />

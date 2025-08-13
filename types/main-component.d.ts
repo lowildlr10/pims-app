@@ -147,6 +147,7 @@ type InspectionAcceptanceReportStatusProps = {
 type InspectionAcceptanceReportActionProps = {
   permissions?: string[];
   id: string;
+  poId: string;
   status: InspectionAcceptanceReportStatus;
   documentType: 'po' | 'jo';
   handleOpenActionModal?: OpenActionModalActionType;

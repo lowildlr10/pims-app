@@ -368,10 +368,13 @@ type PurchaseOrderStatus =
   | 'issued'
   | 'for_delivery'
   | 'delivered'
-  | 'inspection'
-  | 'obligation'
-  | 'disbursement'
-  | 'payment'
+  | 'for_inspection'
+  | 'inspected'
+  | 'for_obligation'
+  | 'obligated'
+  | 'for_disbursement'
+  | 'disbursed'
+  | 'for_payment'
   | 'completed';
 
 type InspectionAcceptanceReportStatus =
@@ -384,16 +387,16 @@ type InspectionAcceptanceReportStatus =
 type ObligationRequestStatus =
   | 'draft'
   | 'pending'
-  | 'inspected'
   | 'disapproved'
-  | 'approved';
+  | 'obligated';
 
 type DisbursementVoucherStatus =
   | 'draft'
   | 'pending'
-  | 'inspected'
   | 'disapproved'
-  | 'approved';
+  | 'disbursed'
+  | 'for_payment'
+  | 'paid';
 
 type InventorySupplyStatus = 'in-stock' | 'out-of-stock';
 
@@ -703,14 +706,16 @@ type InspectionAcceptanceReportType = {
 type ObligationRequestFppType = {
   id?: string;
   obligation_request_id?: string;
-  account_id?: string;
-  amount?: number;
+  fpp_id?: string;
+  fpp?: FunctionProgramProjectType;
 };
 
 type ObligationRequestAccountType = {
   id?: string;
   obligation_request_id?: string;
-  fpp_id?: string;
+  account_id?: string;
+  account?: AccountType;
+  amount?: number;
 };
 
 type ObligationRequestType = {
@@ -731,6 +736,7 @@ type ObligationRequestType = {
   office?: string;
   address?: string;
   responsibility_center_id?: string;
+  responsibility_center?: ResponsibilityCenterType;
   particulars?: string;
   total_amount?: number;
   compliance_status?: {
@@ -753,10 +759,10 @@ type ObligationRequestType = {
   created_at?: string;
   updated_at?: string;
   fpps?: ObligationRequestFppType[];
-  accounts?: ObligationRequestFppType[];
+  accounts?: ObligationRequestAccountType[];
 };
 
-type ObligationRequestType = {
+type DisbursementVoucherType = {
   id?: string;
   purchase_request_id?: string;
   purchase_request?: PurchaseRequestType;
@@ -771,6 +777,7 @@ type ObligationRequestType = {
   address?: string;
   office?: string;
   responsibility_center_id?: string;
+  responsibility_center?: ResponsibilityCenterType;
   explanation?: string;
   total_amount?: number;
   accountant_certified_choices?: {

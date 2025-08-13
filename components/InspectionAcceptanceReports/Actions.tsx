@@ -13,10 +13,12 @@ import InspectContent from './ActionModalContents/InspectContent';
 
 const NavigationMenus = ({
   id,
+  poId,
   permissions,
   status,
 }: {
   id: string;
+  poId: string;
   permissions?: string[];
   status: InspectionAcceptanceReportStatus;
 }) => {
@@ -35,7 +37,7 @@ const NavigationMenus = ({
         component={Link}
         href={`/procurement/po?search=${id}`}
       >
-        Navigate to PO/JO
+        Navigate to PO
       </Menu.Item>
 
       {['supply:*', ...getAllowedPermissions('obr', 'view')].some(
@@ -52,7 +54,7 @@ const NavigationMenus = ({
               />
             }
             component={Link}
-            href={`/procurement/obr?search=${id}`}
+            href={`/procurement/obr?search=${poId}`}
           >
             Navigate to OBR
           </Menu.Item>
@@ -83,6 +85,7 @@ const NavigationMenus = ({
 const ActionsClient = ({
   permissions,
   id,
+  poId,
   status,
   documentType,
   handleOpenActionModal,
@@ -157,7 +160,7 @@ const ActionsClient = ({
 
       <Menu.Divider />
       <Menu.Label>Navigation</Menu.Label>
-      <NavigationMenus id={id} permissions={permissions} status={status} />
+      <NavigationMenus id={id} poId={poId} permissions={permissions} status={status} />
     </>
   );
 };

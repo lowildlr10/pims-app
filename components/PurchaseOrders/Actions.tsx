@@ -32,10 +32,13 @@ const NavigationMenus = ({
       ) &&
         [
           'delivered',
-          'inspection',
-          'obligation',
-          'disbursement',
-          'payment',
+          'for_inspection',
+          'inspected',
+          'for_obligation',
+          'obligated',
+          'for_disbursement',
+          'disbursed',
+          'for_payment',
           'completed',
         ].includes(status) &&
         pathname.includes('/procurement/po') && (
@@ -115,8 +118,8 @@ const PoActionsClient = ({
               handleOpenActionModal &&
               handleOpenActionModal(
                 'pending',
-                'Pending PO/JO',
-                'Are you sure you want to set this Purchase/Job Order to pending?',
+                'Pending PO',
+                'Are you sure you want to set this Purchase Order to pending?',
                 'var(--mantine-color-gray-7)',
                 'Set to Pending',
                 `/purchase-orders/${id}/pending`
@@ -143,8 +146,8 @@ const PoActionsClient = ({
               handleOpenActionModal &&
               handleOpenActionModal(
                 'approve',
-                'Approve PO/JO',
-                'Are you sure you want to approve this Purchase/Job?',
+                'Approve PO',
+                'Are you sure you want to approve this Purchase Order?',
                 'var(--mantine-color-green-7)',
                 'Approve',
                 `/purchase-orders/${id}/approve`
@@ -171,8 +174,8 @@ const PoActionsClient = ({
               handleOpenActionModal &&
               handleOpenActionModal(
                 'issue',
-                'Issue PO/JO',
-                'Are you sure you want to issue this Purchase/Job to supplier?',
+                'Issue PO',
+                'Are you sure you want to issue this Purchase Order to supplier?',
                 'var(--mantine-color-yellow-7)',
                 'Issue',
                 `/purchase-orders/${id}/issue`
@@ -199,8 +202,8 @@ const PoActionsClient = ({
               handleOpenActionModal &&
               handleOpenActionModal(
                 'receive',
-                'Receive Back PO/JO',
-                'Are you sure you want to receive this Purchase/Job from supplier and set to "For Delivery"?',
+                'Receive Back PO',
+                'Are you sure you want to receive this Purchase Order from supplier and set to "For Delivery"?',
                 'var(--mantine-color-green-7)',
                 'Receive',
                 `/purchase-orders/${id}/receive`
@@ -227,8 +230,8 @@ const PoActionsClient = ({
               handleOpenActionModal &&
               handleOpenActionModal(
                 'delivered',
-                'PO/JO Delivered',
-                'Are you sure you want to set this Purchase/Job to "Delivered"?',
+                'PO Delivered',
+                'Are you sure you want to set this Purchase Order to "Delivered"?',
                 'var(--mantine-color-green-7)',
                 'Delivered',
                 `/purchase-orders/${id}/delivered`
@@ -241,22 +244,25 @@ const PoActionsClient = ({
 
       {[
         'delivered',
-        'inspection',
-        'obligation',
-        'disbursement',
-        'payment',
+        'for_inspection',
+        'inspected',
+        'for_obligation',
+        'obligated',
+        'for_disbursement',
+        'disbursed',
+        'for_payment',
         'completed',
       ].includes(status) && (
-        <>
-          <Menu.Item color={'var(--mantine-color-gray-5)'}>
-            No available action
-          </Menu.Item>
+          <>
+            <Menu.Item color={'var(--mantine-color-gray-5)'}>
+              No available action
+            </Menu.Item>
 
-          <Menu.Divider />
-          <Menu.Label>Navigation</Menu.Label>
-          <NavigationMenus id={id} permissions={permissions} status={status} />
-        </>
-      )}
+            <Menu.Divider />
+            <Menu.Label>Navigation</Menu.Label>
+            <NavigationMenus id={id} permissions={permissions} status={status} />
+          </>
+        )}
     </>
   );
 };

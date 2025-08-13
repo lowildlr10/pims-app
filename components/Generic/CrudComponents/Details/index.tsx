@@ -246,6 +246,7 @@ export const DetailActionsClient = ({
             <InspectionAcceptanceReportActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
+              poId={data?.purchase_order?.id ?? ''}
               status={data?.status ?? 'draft'}
               documentType={data?.purchase_order?.document_type ?? 'po'}
               handleOpenActionModal={handleOpenActionModal}
@@ -465,7 +466,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'canvassing', 'completed'].includes(status ?? '') &&
-            hasEditPermission
+          hasEditPermission
         );
         break;
 
@@ -483,7 +484,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-            hasEditPermission
+          hasEditPermission
         );
         break;
 
@@ -501,7 +502,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-            hasEditPermission
+          hasEditPermission
         );
         break;
 
@@ -576,7 +577,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-            hasEditPermission
+          hasEditPermission
         );
 
         setPrintEndpoint(
