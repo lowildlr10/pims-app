@@ -253,16 +253,16 @@ const PoActionsClient = ({
         'for_payment',
         'completed',
       ].includes(status) && (
-          <>
-            <Menu.Item color={'var(--mantine-color-gray-5)'}>
-              No available action
-            </Menu.Item>
+        <>
+          <Menu.Item color={'var(--mantine-color-gray-5)'}>
+            No available action
+          </Menu.Item>
 
-            <Menu.Divider />
-            <Menu.Label>Navigation</Menu.Label>
-            <NavigationMenus id={id} permissions={permissions} status={status} />
-          </>
-        )}
+          <Menu.Divider />
+          <Menu.Label>Navigation</Menu.Label>
+          <NavigationMenus id={id} permissions={permissions} status={status} />
+        </>
+      )}
     </>
   );
 };

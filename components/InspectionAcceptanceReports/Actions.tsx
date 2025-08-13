@@ -160,7 +160,12 @@ const ActionsClient = ({
 
       <Menu.Divider />
       <Menu.Label>Navigation</Menu.Label>
-      <NavigationMenus id={id} poId={poId} permissions={permissions} status={status} />
+      <NavigationMenus
+        id={id}
+        poId={poId}
+        permissions={permissions}
+        status={status}
+      />
     </>
   );
 };

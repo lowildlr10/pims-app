@@ -144,89 +144,137 @@ const UpdateClient = ({
         <Paper shadow={'lg'} p={0}>
           {Helper.empty(currentData) && <FullScreenSkeletonLoaderClient />}
 
-          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'pr' && (
-            <PurchaseRequestFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'pr' && (
+              <PurchaseRequestFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'rfq' && (
-            <RequestQuotionFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'rfq' && (
+              <RequestQuotionFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'aoq' && (
-            <AbstractQuotionFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'aoq' && (
+              <AbstractQuotionFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'po' && (
-            <PurchaseOrderFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'po' && (
+              <PurchaseOrderFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'iar' && (
-            <InspectionAcceptanceReportFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'iar' && (
+              <InspectionAcceptanceReportFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'obr' && (
-            <ObligationRequestFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'obr' && (
+              <ObligationRequestFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'inv-supply' && (
-            <InventorySupplyFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'inv-supply' && (
+              <InventorySupplyFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {!(loading || dataLoading || pageLoading || Helper.empty(currentData)) && content === 'inv-issuance' && (
-            <>
-              {currentData?.document_type === 'ris' && (
-                <RisFormClient
-                  ref={formRef}
-                  data={currentData}
-                  handleCreateUpdate={handleUpdate}
-                />
-              )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'inv-issuance' && (
+              <>
+                {currentData?.document_type === 'ris' && (
+                  <RisFormClient
+                    ref={formRef}
+                    data={currentData}
+                    handleCreateUpdate={handleUpdate}
+                  />
+                )}
 
-              {currentData?.document_type === 'ics' && (
-                <IcsFormClient
-                  ref={formRef}
-                  data={currentData}
-                  handleCreateUpdate={handleUpdate}
-                />
-              )}
+                {currentData?.document_type === 'ics' && (
+                  <IcsFormClient
+                    ref={formRef}
+                    data={currentData}
+                    handleCreateUpdate={handleUpdate}
+                  />
+                )}
 
-              {currentData?.document_type === 'are' && (
-                <AreFormClient
-                  ref={formRef}
-                  data={currentData}
-                  handleCreateUpdate={handleUpdate}
-                />
-              )}
-            </>
-          )}
+                {currentData?.document_type === 'are' && (
+                  <AreFormClient
+                    ref={formRef}
+                    data={currentData}
+                    handleCreateUpdate={handleUpdate}
+                  />
+                )}
+              </>
+            )}
         </Paper>
       </Stack>
 

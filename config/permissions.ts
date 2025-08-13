@@ -248,6 +248,26 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+      {
+        label: 'Pending for Obligation',
+        value: 'pending',
+        checked: false,
+      },
+      {
+        label: 'Disapprove',
+        value: 'disapprove',
+        checked: false,
+      },
+      {
+        label: 'Obligate',
+        value: 'obligate',
+        checked: false,
+      },
+      {
         label: 'Print',
         value: 'print',
         checked: false,
@@ -264,6 +284,36 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
       {
         label: 'View',
         value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+      {
+        label: 'Pending for Obligation',
+        value: 'pending',
+        checked: false,
+      },
+      {
+        label: 'Disapprove',
+        value: 'disapprove',
+        checked: false,
+      },
+      {
+        label: 'Disburse',
+        value: 'disburse',
+        checked: false,
+      },
+      {
+        label: 'Set to "For Payment"',
+        value: 'payment',
+        checked: false,
+      },
+      {
+        label: 'Set to "Paid"',
+        value: 'paid',
         checked: false,
       },
       {

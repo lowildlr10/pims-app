@@ -3,6 +3,7 @@ import {
   Checkbox,
   Flex,
   Group,
+  NumberFormatter,
   NumberInput,
   Stack,
   Table,
@@ -10,6 +11,7 @@ import {
   Textarea,
   TextInput,
   Title,
+  Tooltip,
 } from '@mantine/core';
 import React, {
   forwardRef,
@@ -21,12 +23,8 @@ import React, {
 import DynamicSelect from '../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
-import {
-  IconAsterisk,
-  IconCalendar
-} from '@tabler/icons-react';
+import { IconAsterisk, IconCalendar } from '@tabler/icons-react';
 import { DateInput } from '@mantine/dates';
-import dayjs from 'dayjs';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import Helper from '@/utils/Helpers';
@@ -74,7 +72,7 @@ const FormClient = forwardRef<
         general: false,
         mdf_20: false,
         gf_mdrrmf_5: false,
-        sef: false
+        sef: false,
       },
       payee_id: currentData?.payee_id ?? '',
       obr_no: currentData?.obr_no ?? '',
@@ -85,21 +83,22 @@ const FormClient = forwardRef<
       total_amount: currentData.total_amount,
       compliance_status: currentData?.compliance_status ?? {
         allotment_necessary: false,
-        document_valid: false
+        document_valid: false,
       },
       sig_head_id: currentData?.sig_head_id ?? '',
       head_signed_date: currentData?.head_signed_date ?? '',
       sig_budget_id: currentData?.sig_budget_id ?? '',
       budget_signed_date: currentData?.budget_signed_date ?? '',
-      fpps: !Helper.empty(currentData?.fpps) ? currentData?.fpps?.map(fpp => fpp.fpp_id) : [],
-      accounts:
-        !Helper.empty(currentData?.accounts)
-          ? currentData?.accounts?.map((account, index) => ({
+      fpps: !Helper.empty(currentData?.fpps)
+        ? currentData?.fpps?.map((fpp) => fpp.fpp_id)
+        : [],
+      accounts: !Helper.empty(currentData?.accounts)
+        ? currentData?.accounts?.map((account, index) => ({
             key: account.account_id,
             account_id: account.account_id,
-            amount: account.amount
+            amount: account.amount,
           }))
-          : [],
+        : [],
     }),
     [currentData]
   );
@@ -107,13 +106,25 @@ const FormClient = forwardRef<
     mode: 'uncontrolled',
     initialValues: currentForm,
   });
+  const [remainingAmount, setRemainingAmount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [selectedFunds, setSelectedFunds] = useState<string[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
-  const [selectedComplianceStatus, setSelectedComplianceStatus] = useState<string[]>([]);
+  const [selectedAccountObjects, setSelectedAccountObjects] = useState<
+    {
+      key: string;
+      obligation_request_id: string | undefined;
+      account_id: string;
+      amount: number | undefined;
+    }[]
+  >([]);
+  const [selectedComplianceStatus, setSelectedComplianceStatus] = useState<
+    string[]
+  >([]);
 
   const [loadingCompany, setLoadingCompany] = useState(false);
-  const [loadingResponsibilityCenter, setLoadingResponsibilityCenter] = useState(false);
+  const [loadingResponsibilityCenter, setLoadingResponsibilityCenter] =
+    useState(false);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
   const [company, setCompany] = useState<CompanyType>();
   const [responsibilityCenters, setResponsibilityCenters] = useState<
@@ -131,53 +142,65 @@ const FormClient = forwardRef<
 
   useEffect(() => {
     setCurrentData(data);
+    setRemainingAmount(currentData.purchase_order?.total_amount ?? 0);
+    setTotalAmount(currentData.purchase_order?.total_amount ?? 0);
   }, [data]);
-
-  useEffect(() => {
-    const purchaseOrderTotalAmount = currentData.purchase_order?.total_amount as number ?? 0;
-    const accountTotalAmount = form.getValues().accounts?.reduce(
-      (sum, account) => sum + (account?.amount ?? 0),
-      0
-    ) || 0;
-
-    setTotalAmount(
-      purchaseOrderTotalAmount + accountTotalAmount
-    )
-  }, [currentData, form]);
 
   useEffect(() => {
     if (Helper.empty(currentData)) return;
 
     const funding = currentData.funding ?? {};
-    const fundingKeys: (keyof typeof funding)[] = ['general', 'mdf_20', 'gf_mdrrmf_5', 'sef'];
-    const selectedFundings = fundingKeys.filter(key => funding[key]);
+    const fundingKeys: (keyof typeof funding)[] = [
+      'general',
+      'mdf_20',
+      'gf_mdrrmf_5',
+      'sef',
+    ];
+    const selectedFundings = fundingKeys.filter((key) => funding[key]);
 
     const compliance = currentData.compliance_status ?? {};
-    const complianceKeys: (keyof typeof compliance)[] = ['allotment_necessary', 'document_valid'];
-    const selectedCompliances = complianceKeys.filter(key => compliance[key]);
+    const complianceKeys: (keyof typeof compliance)[] = [
+      'allotment_necessary',
+      'document_valid',
+    ];
+    const selectedCompliances = complianceKeys.filter((key) => compliance[key]);
 
     if (selectedFundings.length) {
-      setSelectedFunds(prev => [...prev, ...selectedFundings]);
+      setSelectedFunds((prev) => [...prev, ...selectedFundings]);
     }
 
     if (selectedCompliances.length) {
-      setSelectedComplianceStatus(prev => [...prev, ...selectedCompliances]);
+      setSelectedComplianceStatus((prev) => [...prev, ...selectedCompliances]);
     }
 
     if (!Helper.empty(currentData?.accounts) || currentData?.accounts) {
-      setSelectedAccounts(
-        prev => [...prev, ...currentData?.accounts?.map(account => account.account_id) as string[]]
-      )
+      setSelectedAccounts((prev) => [
+        ...prev,
+        ...(currentData?.accounts?.map(
+          (account) => account.account_id
+        ) as string[]),
+      ]);
     }
   }, [currentData]);
 
   useEffect(() => {
-    form.setFieldValue('accounts', selectedAccounts.map(selAccount => ({
-      key: randomId(),
-      obligation_request_id: currentData.id,
-      account_id: selAccount,
-      amount: undefined
-    })));
+    const accountObjs = selectedAccounts
+      .map((selAccount, index) => ({
+        key: randomId(),
+        code: accounts.find((account) => account.id === selAccount)?.code,
+        obligation_request_id: currentData.id,
+        account_id: selAccount,
+        amount:
+          currentData.accounts?.find((account) => account.id === selAccount)
+            ?.amount ?? selectedAccountObjects[index]?.amount,
+      }))
+      .sort((a, b) => {
+        if (a.code === undefined) return 1;
+        if (b.code === undefined) return -1;
+        return a.code.localeCompare(b.code);
+      });
+
+    setSelectedAccountObjects(accountObjs);
   }, [selectedAccounts]);
 
   useEffect(() => {
@@ -229,11 +252,11 @@ const FormClient = forwardRef<
           setResponsibilityCenters(
             res?.data?.length > 0
               ? res.data?.map((item: any) => ({
-                value: item['id'],
-                label: item['description']
-                  ? `${item['code']}: ${item['description']}`
-                  : item['code'],
-              }))
+                  value: item['id'],
+                  label: item['description']
+                    ? `${item['code']}: ${item['description']}`
+                    : item['code'],
+                }))
               : [{ label: 'No data.', value: '' }]
           );
         })
@@ -290,13 +313,22 @@ const FormClient = forwardRef<
     fetch();
   }, []);
 
-  const renderDynamicTdContent = (
-    id: string,
-  ): ReactNode => {
+  const handleCalculateRemaining = () => {
+    if (Helper.empty(selectedAccountObjects)) return;
+    const accountTotalAmount =
+      selectedAccountObjects?.reduce(
+        (sum, account) => sum + Number(account?.amount ?? 0),
+        0
+      ) || 0;
+
+    setRemainingAmount(totalAmount - accountTotalAmount);
+  };
+
+  const renderDynamicTdContent = (id: string): ReactNode => {
     switch (id) {
       case 'responsibility_center':
         return (
-          <Table.Td rowSpan={selectedAccounts.length + 1}>
+          <Table.Td>
             {!readOnly ? (
               <DynamicSelect
                 key={form.key('responsibility_center_id')}
@@ -310,13 +342,13 @@ const FormClient = forwardRef<
                   responsibilityCenters ??
                   (currentData.responsibility_center_id
                     ? [
-                      {
-                        value: currentData.responsibility_center_id,
-                        label: currentData.responsibility_center?.description
-                          ? `${currentData.responsibility_center?.code}: ${currentData.responsibility_center?.description}`
-                          : currentData.responsibility_center?.code
-                      },
-                    ]
+                        {
+                          value: currentData.responsibility_center_id,
+                          label: currentData.responsibility_center?.description
+                            ? `${currentData.responsibility_center?.code}: ${currentData.responsibility_center?.description}`
+                            : currentData.responsibility_center?.code,
+                        },
+                      ]
                     : undefined)
                 }
                 value={form.values.responsibility_center_id}
@@ -344,14 +376,12 @@ const FormClient = forwardRef<
 
       case 'particulars':
         return (
-          <Table.Td rowSpan={selectedAccounts.length + 1}>
+          <Table.Td>
             <Textarea
               key={form.key('particulars')}
               {...form.getInputProps('particulars')}
               variant={readOnly ? 'unstyled' : 'default'}
-              placeholder={
-                readOnly ? 'None' : 'Enter particulars here...'
-              }
+              placeholder={readOnly ? 'None' : 'Enter particulars here...'}
               defaultValue={form?.values?.particulars}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
@@ -363,7 +393,7 @@ const FormClient = forwardRef<
 
       case 'fpps':
         return (
-          <Table.Td rowSpan={selectedAccounts.length + 1}>
+          <Table.Td>
             {!readOnly ? (
               <DynamicMultiselect
                 key={form.key('fpps')}
@@ -440,18 +470,82 @@ const FormClient = forwardRef<
       case 'amount':
         return (
           <Table.Td>
-            <NumberInput
-              variant={readOnly ? 'unstyled' : 'default'}
-              placeholder={'Amount'}
-              value={currentData.purchase_order?.total_amount}
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              min={0}
-              clampBehavior={'strict'}
-              decimalScale={2}
-              fixedDecimalScale
-              thousandSeparator={','}
-              readOnly
-            />
+            <Stack>
+              {Helper.empty(selectedAccountObjects) && (
+                <NumberInput
+                  variant={readOnly ? 'unstyled' : 'filled'}
+                  placeholder={'Amount'}
+                  value={totalAmount}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  min={0}
+                  clampBehavior={'strict'}
+                  decimalScale={2}
+                  fixedDecimalScale
+                  thousandSeparator={','}
+                  readOnly
+                />
+              )}
+
+              {!loadingAccounts &&
+                selectedAccountObjects?.map((selAccount, index) => {
+                  const account = accounts?.find(
+                    (account) => account.id === selAccount.account_id
+                  );
+                  const amount =
+                    selectedAccountObjects?.[index]?.amount ??
+                    selAccount.amount ??
+                    undefined;
+
+                  return (
+                    <Stack key={selAccount.key}>
+                      <Tooltip
+                        label={
+                          <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                            Remaining:{' '}
+                            <NumberFormatter
+                              decimalScale={2}
+                              fixedDecimalScale
+                              thousandSeparator={','}
+                              value={remainingAmount}
+                            />
+                          </Text>
+                        }
+                      >
+                        <NumberInput
+                          variant={readOnly ? 'unstyled' : 'default'}
+                          label={`Amount for ${account?.code ?? 'Account'}`}
+                          placeholder='Enter amount here...'
+                          size={lgScreenAndBelow ? 'sm' : 'md'}
+                          min={0}
+                          max={remainingAmount}
+                          clampBehavior='strict'
+                          decimalScale={2}
+                          fixedDecimalScale
+                          thousandSeparator=','
+                          value={amount}
+                          onChange={(value) => {
+                            setSelectedAccountObjects((prev) =>
+                              prev.map((acc) =>
+                                acc.account_id === account?.id
+                                  ? { ...acc, amount: (value ?? 0) as number }
+                                  : acc
+                              )
+                            );
+                          }}
+                          onBlur={() => handleCalculateRemaining()}
+                          readOnly={readOnly}
+                        />
+                      </Tooltip>
+                      <input
+                        key={form.key(`accounts.${index}.account_id`)}
+                        {...form.getInputProps(`accounts.${index}.account_id`)}
+                        type={'hidden'}
+                        defaultValue={selAccount?.account_id}
+                      />
+                    </Stack>
+                  );
+                })}
+            </Stack>
           </Table.Td>
         );
 
@@ -464,25 +558,27 @@ const FormClient = forwardRef<
     <form
       ref={ref}
       onSubmit={form.onSubmit((values) => {
-        // if (handleCreateUpdate) {
-        //   handleCreateUpdate({
-        //     ...values,
-        //     department_id: departmentId,
-        //     section_id: sectionId,
-        //     pr_date: values.pr_date
-        //       ? dayjs(values.pr_date).format('YYYY-MM-DD')
-        //       : '',
-        //     sai_date: values.sai_date
-        //       ? dayjs(values.sai_date).format('YYYY-MM-DD')
-        //       : '',
-        //     alobs_date: values.alobs_date
-        //       ? dayjs(values.alobs_date).format('YYYY-MM-DD')
-        //       : '',
-        //     items: values.items ?? [],
-        //   });
-        // }
-
-        console.log(values);
+        if (handleCreateUpdate) {
+          handleCreateUpdate({
+            ...values,
+            funding: {
+              general: selectedFunds.includes('general'),
+              mdf_20: selectedFunds.includes('mdf_20'),
+              gf_mdrrmf_5: selectedFunds.includes('gf_mdrrmf_5'),
+              sef: selectedFunds.includes('sef'),
+            },
+            compliance_status: {
+              allotment_necessary: selectedComplianceStatus.includes(
+                'allotment_necessary'
+              ),
+              document_valid:
+                selectedComplianceStatus.includes('document_valid'),
+            },
+            fpps: values.fpps ?? [],
+            accounts: selectedAccountObjects ?? [],
+            total_amount: totalAmount,
+          });
+        }
       })}
     >
       <Stack justify={'center'}>
@@ -506,18 +602,14 @@ const FormClient = forwardRef<
             >
               <Text>Republic of the Philippines</Text>
               <Title order={lgScreenAndBelow ? 4 : 3}>
-                {
-                  !Helper.empty(company) || loadingCompany
-                    ? (`Province of ${company?.province ?? '________'}`)
-                    : 'Loading...'
-                }
+                {!Helper.empty(company) || loadingCompany
+                  ? `Province of ${company?.province ?? '________'}`
+                  : 'Loading...'}
               </Title>
               <Title order={lgScreenAndBelow ? 3 : 2}>
-                {
-                  !Helper.empty(company) || loadingCompany
-                    ? (company?.municipality ?? '________')
-                    : 'Loading...'
-                }
+                {!Helper.empty(company) || loadingCompany
+                  ? (company?.municipality ?? '________')
+                  : 'Loading...'}
               </Title>
             </Stack>
             <Stack
@@ -534,17 +626,17 @@ const FormClient = forwardRef<
                 onChange={setSelectedFunds}
                 readOnly={readOnly}
               >
-                <Group mt="xs">
+                <Group mt='xs'>
                   <Stack>
                     <Checkbox
                       value='general'
-                      label="General"
+                      label='General'
                       radius={'xl'}
                       variant={'outline'}
                     />
                     <Checkbox
                       value='mdf_20'
-                      label="20% MDF"
+                      label='20% MDF'
                       radius={'xl'}
                       variant={'outline'}
                     />
@@ -552,13 +644,13 @@ const FormClient = forwardRef<
                   <Stack>
                     <Checkbox
                       value='gf_mdrrmf_5'
-                      label="GF - 5% MDRRMF"
+                      label='GF - 5% MDRRMF'
                       radius={'xl'}
                       variant={'outline'}
                     />
                     <Checkbox
                       value='sef'
-                      label="SEF"
+                      label='SEF'
                       radius={'xl'}
                       variant={'outline'}
                     />
@@ -579,9 +671,7 @@ const FormClient = forwardRef<
               flex={lgScreenAndBelow ? 1 : '0 0 60%'}
               py={3}
             >
-              <Title order={lgScreenAndBelow ? 3 : 2}>
-                OBLIGATION REQUEST
-              </Title>
+              <Title order={lgScreenAndBelow ? 3 : 2}>OBLIGATION REQUEST</Title>
             </Stack>
             <Stack
               justify={'center'}
@@ -604,21 +694,12 @@ const FormClient = forwardRef<
               justify={'center'}
               align={'flex-start'}
               flex={lgScreenAndBelow ? 1 : '0 0 15%'}
-              p={4}
+              p={'sm'}
             >
               <Group gap={1} align={'flex-start'}>
                 <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
                   Payee/ Office:
                 </Text>
-                {!readOnly && (
-                  <Stack>
-                    <IconAsterisk
-                      size={7}
-                      color={'var(--mantine-color-red-8)'}
-                      stroke={2}
-                    />
-                  </Stack>
-                )}
               </Group>
             </Stack>
             <Stack
@@ -626,10 +707,10 @@ const FormClient = forwardRef<
               justify={'center'}
               align={'flex-start'}
               flex={lgScreenAndBelow ? 1 : '0 0 85%'}
-              p={4}
+              p={'sm'}
             >
               <TextInput
-                variant={!readOnly ? 'unstyled' : 'filled'}
+                variant={!readOnly ? 'filled' : 'unstyled'}
                 placeholder={'None'}
                 value={currentData?.payee?.supplier_name ?? ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -639,7 +720,7 @@ const FormClient = forwardRef<
                   input: {
                     minHeight: '30px',
                     height: '30px',
-                    width: '100%'
+                    width: '100%',
                   },
                 }}
                 flex={1}
@@ -657,26 +738,22 @@ const FormClient = forwardRef<
               justify={'center'}
               align={'flex-start'}
               flex={lgScreenAndBelow ? 1 : '0 0 15%'}
-              p={4}
+              p={'sm'}
             >
-              <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-                Office:
-              </Text>
+              <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Office:</Text>
             </Stack>
             <Stack
               bd={'1px solid var(--mantine-color-gray-8)'}
               justify={'center'}
               align={'flex-start'}
               flex={lgScreenAndBelow ? 1 : '0 0 85%'}
-              p={4}
+              p={'sm'}
             >
               <TextInput
                 key={form.key('office')}
                 {...form.getInputProps('office')}
                 variant={'unstyled'}
-                placeholder={
-                  !readOnly ? 'Enter the office here...' : 'None'
-                }
+                placeholder={!readOnly ? 'Enter the office here...' : 'None'}
                 defaultValue={readOnly ? undefined : form.values.office}
                 value={readOnly ? currentData?.office : undefined}
                 error={form.errors.sai_no && ''}
@@ -703,18 +780,16 @@ const FormClient = forwardRef<
               justify={'flex-start'}
               align={'flex-start'}
               flex={lgScreenAndBelow ? 1 : '0 0 15%'}
-              p={4}
+              p={'sm'}
             >
-              <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-                Address:
-              </Text>
+              <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Address:</Text>
             </Stack>
             <Stack
               bd={'1px solid var(--mantine-color-gray-8)'}
               justify={'flex-start'}
               align={'flex-start'}
               flex={lgScreenAndBelow ? 1 : '0 0 85%'}
-              p={4}
+              p={'sm'}
             >
               <Textarea
                 key={form.key('address')}
@@ -780,80 +855,22 @@ const FormClient = forwardRef<
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                <Table.Tr
-                  sx={{ verticalAlign: 'top' }}
-                >
+                <Table.Tr sx={{ verticalAlign: 'top' }}>
                   {itemHeaders.map((header) => {
                     return (
-                      <React.Fragment
-                        key={`field-${header.id}`}
-                      >
+                      <React.Fragment key={`field-${header.id}`}>
                         {renderDynamicTdContent(header.id)}
                       </React.Fragment>
                     );
                   })}
                 </Table.Tr>
 
-                {!loadingAccounts && form.getValues().accounts?.map((selAccount, index) => {
-                  const account = accounts?.find(account => account.id === selAccount.account_id);
-
-                  return (
-                    <Table.Tr key={selAccount.key}>
-                      <Table.Td
-                        fz={lgScreenAndBelow ? 'sm' : 'md'}
-                        fw={500}
-                        ta={'center'}
-                      >
-                        <Group gap={1} align={'flex-start'}>
-                          {account?.code}{' '}
-                          {!readOnly && (
-                            <Stack>
-                              <IconAsterisk
-                                size={7}
-                                color={'var(--mantine-color-red-8)'}
-                                stroke={2}
-                              />
-                            </Stack>
-                          )}
-                        </Group>
-                        <input
-                          key={form.key(`accounts.${index}.account_id`)}
-                          {...form.getInputProps(`accounts.${index}.account_id`)}
-                          type={'hidden'}
-                          defaultValue={selAccount?.account_id}
-                        />
-                      </Table.Td>
-                      <Table.Td>
-                        <NumberInput
-                          key={form.key(`accounts.${index}.amount`)}
-                          {...form.getInputProps(`accounts.${index}.amount`)}
-                          variant={readOnly ? 'unstyled' : 'default'}
-                          placeholder={'Amount'}
-                          defaultValue={selAccount.amount}
-                          size={lgScreenAndBelow ? 'sm' : 'md'}
-                          min={0}
-                          clampBehavior={'strict'}
-                          decimalScale={2}
-                          fixedDecimalScale
-                          thousandSeparator={','}
-                          onBlur={(e) => form.replaceListItem('accounts', index, {
-                            key: randomId(),
-                            obligation_request_id: currentData?.id,
-                            account_id: selAccount?.account_id,
-                            amount: parseFloat(e.currentTarget.value.replace(/,/g, ''))
-                          })}
-                          readOnly={readOnly}
-                          required={!readOnly}
-                        />
-                      </Table.Td>
-                    </Table.Tr>
-                  );
-                })}
-
                 <Table.Tr>
                   <Table.Td></Table.Td>
                   <Table.Td>
-                    <Title ta={'center'} order={lgScreenAndBelow ? 5 : 4}>TOTAL</Title>
+                    <Title ta={'center'} order={lgScreenAndBelow ? 5 : 4}>
+                      TOTAL
+                    </Title>
                   </Table.Td>
                   <Table.Td></Table.Td>
                   <Table.Td></Table.Td>
@@ -889,26 +906,24 @@ const FormClient = forwardRef<
               p={lgScreenAndBelow ? 'sm' : 'md'}
             >
               <Stack gap={1}>
-                <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-                  A. Certified:
-                </Text>
+                <Text size={lgScreenAndBelow ? 'sm' : 'md'}>A. Certified:</Text>
                 <Checkbox.Group
                   value={selectedComplianceStatus}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   onChange={setSelectedComplianceStatus}
                   readOnly={readOnly}
                 >
-                  <Group mt="xs">
+                  <Group mt='xs'>
                     <Stack>
                       <Checkbox
                         value='allotment_necessary'
-                        label="Charges to appropriation / allotment necessary, lawful and under my direct supervision"
+                        label='Charges to appropriation / allotment necessary, lawful and under my direct supervision'
                         radius={'xl'}
                         variant={'outline'}
                       />
                       <Checkbox
                         value='document_valid'
-                        label="Supporting documents valid, proper and legal"
+                        label='Supporting documents valid, proper and legal'
                         radius={'xl'}
                         variant={'outline'}
                       />
@@ -935,13 +950,13 @@ const FormClient = forwardRef<
                     defaultData={
                       currentData?.sig_head_id
                         ? [
-                          {
-                            value: currentData?.sig_head_id ?? '',
-                            label:
-                              currentData?.signatory_head?.user
-                                ?.fullname ?? '',
-                          },
-                        ]
+                            {
+                              value: currentData?.sig_head_id ?? '',
+                              label:
+                                currentData?.signatory_head?.user?.fullname ??
+                                '',
+                            },
+                          ]
                         : undefined
                     }
                     valueColumn={'signatory_id'}
@@ -959,9 +974,7 @@ const FormClient = forwardRef<
                     label={'Head, Requesting Office/Authorized Representative:'}
                     variant={'unstyled'}
                     placeholder={'None'}
-                    value={
-                      currentData?.signatory_head?.user?.fullname ?? ''
-                    }
+                    value={currentData?.signatory_head?.user?.fullname ?? ''}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1016,7 +1029,8 @@ const FormClient = forwardRef<
               gap={1}
             >
               <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-                B. Certified:<br />
+                B. Certified:
+                <br />
                 Existence of available appropriation
               </Text>
 
@@ -1038,13 +1052,13 @@ const FormClient = forwardRef<
                     defaultData={
                       currentData?.sig_budget_id
                         ? [
-                          {
-                            value: currentData?.sig_budget_id ?? '',
-                            label:
-                              currentData?.signatory_budget?.user
-                                ?.fullname ?? '',
-                          },
-                        ]
+                            {
+                              value: currentData?.sig_budget_id ?? '',
+                              label:
+                                currentData?.signatory_budget?.user?.fullname ??
+                                '',
+                            },
+                          ]
                         : undefined
                     }
                     valueColumn={'signatory_id'}
@@ -1062,9 +1076,7 @@ const FormClient = forwardRef<
                     label={'Head, Budget Unit/Authorized Representative:'}
                     variant={'unstyled'}
                     placeholder={'None'}
-                    value={
-                      currentData?.signatory_budget?.user?.fullname ?? ''
-                    }
+                    value={currentData?.signatory_budget?.user?.fullname ?? ''}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',

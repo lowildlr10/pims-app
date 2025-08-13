@@ -246,7 +246,11 @@ type SignatoryDetailTypeType =
   | 'approved_by'
   | 'issued_by'
   | 'received_from'
-  | 'received_from';
+  | 'received_from'
+  | 'head'
+  | 'budget'
+  | 'accountant'
+  | 'treasurer';
 
 type SignatoryDocumentType =
   | 'pr'
@@ -254,7 +258,7 @@ type SignatoryDocumentType =
   | 'aoq'
   | 'po'
   | 'iar'
-  | 'ors'
+  | 'obr'
   | 'dv'
   | 'ris'
   | 'are'

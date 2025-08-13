@@ -250,60 +250,60 @@ const PrActionsClient = ({
             'supply:*',
             ...getAllowedPermissions('pr', 'approve'),
           ].some((permission) => permissions?.includes(permission)) && (
-              <Menu.Item
-                leftSection={
-                  <IconThumbUpFilled
-                    color={'var(--mantine-color-green-9)'}
-                    size={18}
-                    stroke={1.5}
-                  />
-                }
-                onClick={() =>
-                  handleOpenActionModal &&
-                  handleOpenActionModal(
-                    'approve',
-                    'Approve',
-                    'Are you sure you want to approve this Purchase Request?',
-                    'var(--mantine-color-green-9)',
-                    'Approve',
-                    `/purchase-requests/${id}/approve`
-                  )
-                }
-              >
-                Approve
-              </Menu.Item>
-            )}
+            <Menu.Item
+              leftSection={
+                <IconThumbUpFilled
+                  color={'var(--mantine-color-green-9)'}
+                  size={18}
+                  stroke={1.5}
+                />
+              }
+              onClick={() =>
+                handleOpenActionModal &&
+                handleOpenActionModal(
+                  'approve',
+                  'Approve',
+                  'Are you sure you want to approve this Purchase Request?',
+                  'var(--mantine-color-green-9)',
+                  'Approve',
+                  `/purchase-requests/${id}/approve`
+                )
+              }
+            >
+              Approve
+            </Menu.Item>
+          )}
 
           {[
             'head:*',
             'supply:*',
             ...getAllowedPermissions('pr', 'disapprove'),
           ].some((permission) => permissions?.includes(permission)) && (
-              <Menu.Item
-                leftSection={
-                  <IconThumbDownFilled
-                    color={'var(--mantine-color-red-9)'}
-                    size={18}
-                    stroke={1.5}
-                  />
-                }
-                onClick={() =>
-                  handleOpenActionModal &&
-                  handleOpenActionModal(
-                    'disapprove',
-                    'Disapprove',
-                    <DisapproveContent />,
-                    'var(--mantine-color-red-9)',
-                    'Disapprove',
-                    `/purchase-requests/${id}/disapprove`,
-                    undefined,
-                    true
-                  )
-                }
-              >
-                Disapprove
-              </Menu.Item>
-            )}
+            <Menu.Item
+              leftSection={
+                <IconThumbDownFilled
+                  color={'var(--mantine-color-red-9)'}
+                  size={18}
+                  stroke={1.5}
+                />
+              }
+              onClick={() =>
+                handleOpenActionModal &&
+                handleOpenActionModal(
+                  'disapprove',
+                  'Disapprove',
+                  <DisapproveContent />,
+                  'var(--mantine-color-red-9)',
+                  'Disapprove',
+                  `/purchase-requests/${id}/disapprove`,
+                  undefined,
+                  true
+                )
+              }
+            >
+              Disapprove
+            </Menu.Item>
+          )}
         </>
       )}
     </>

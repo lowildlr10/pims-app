@@ -46,9 +46,9 @@ const DynamicMultiselect = ({
         setData(
           res?.data?.length > 0
             ? res.data.map((item: any) => ({
-              value: item.id,
-              label: item[column ?? 'column'],
-            }))
+                value: item.id,
+                label: item[column ?? 'column'],
+              }))
             : [{ label: 'No data.', value: '' }]
         );
         setLoading(false);

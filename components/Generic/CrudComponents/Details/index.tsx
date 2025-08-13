@@ -466,7 +466,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'canvassing', 'completed'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
         break;
 
@@ -484,7 +484,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
         break;
 
@@ -502,7 +502,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
         break;
 
@@ -577,7 +577,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
 
         setPrintEndpoint(
