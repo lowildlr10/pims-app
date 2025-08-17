@@ -42,7 +42,7 @@ const DisapproveContent = forwardRef<
     >
       <Stack>
         <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-          Are you sure you want to disapprove this Obligation Request?
+          Are you sure you want to disapprove this Disbursement Voucher?
         </Text>
 
         <Textarea

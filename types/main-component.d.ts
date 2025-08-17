@@ -178,6 +178,7 @@ type ObligationRequestStatusProps = {
 type ObligationRequestActionProps = {
   permissions?: string[];
   id: string;
+  poId: string;
   status: ObligationRequestStatus;
   handleOpenActionModal?: OpenActionModalActionType;
 };
@@ -207,6 +208,7 @@ type DisbursementVoucherStatusProps = {
 type DisbursementVoucherActionProps = {
   permissions?: string[];
   id: string;
+  poId: string;
   status: DisbursementVoucherStatus;
   handleOpenActionModal?: OpenActionModalActionType;
 };

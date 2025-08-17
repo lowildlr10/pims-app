@@ -1,12 +1,9 @@
 import Helper from '@/utils/Helpers';
 import { Badge, Loader, Tooltip } from '@mantine/core';
 import {
-  IconAwardFilled,
-  IconCancel,
-  IconChecklist,
-  IconDiscountCheckFilled,
+  IconCashBanknoteMove,
+  IconChecks,
   IconFileIsr,
-  IconFileSearch,
   IconThumbDownFilled,
   IconThumbUpFilled,
 } from '@tabler/icons-react';
@@ -15,7 +12,7 @@ import React from 'react';
 const StatusClient = ({
   size = 'md',
   status,
-}: ObligationRequestStatusProps) => {
+}: DisbursementVoucherStatusProps) => {
   switch (status) {
     case 'draft':
       return (
@@ -47,14 +44,14 @@ const StatusClient = ({
         </Tooltip>
       );
 
-    case 'approved':
+    case 'for_payment':
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
             size={size}
-            color={'var(--mantine-color-green-9)'}
+            color={'var(--mantine-color-orange-7)'}
             variant={'light'}
-            leftSection={<IconThumbUpFilled size={18} stroke={1.5} />}
+            leftSection={<IconCashBanknoteMove size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>
@@ -69,6 +66,20 @@ const StatusClient = ({
             color={'var(--mantine-color-red-9)'}
             variant={'light'}
             leftSection={<IconThumbDownFilled size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'paid':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-green-9)'}
+            variant={'light'}
+            leftSection={<IconChecks size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>

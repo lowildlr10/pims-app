@@ -1,13 +1,17 @@
 import {
-  ActionIcon,
+  Alert,
   Card,
+  Checkbox,
+  Flex,
   Group,
+  NumberFormatter,
   NumberInput,
   Stack,
   Table,
   Text,
   Textarea,
   TextInput,
+  Title,
 } from '@mantine/core';
 import React, {
   forwardRef,
@@ -19,107 +23,65 @@ import React, {
 import DynamicSelect from '../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
-import { Button } from '@mantine/core';
 import {
   IconAsterisk,
+  IconCalendar,
   IconExclamationCircleFilled,
-  IconPlus,
-  IconTrash,
 } from '@tabler/icons-react';
 import { DateInput } from '@mantine/dates';
-import dayjs from 'dayjs';
 import API from '@/libs/API';
-import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
-import { Alert } from '@mantine/core';
+import Helper from '@/utils/Helpers';
 
 const itemHeaders: PurchaseRequestItemHeader[] = [
   {
-    id: 'quantity',
-    label: 'QTY',
-    width: '12%',
+    id: 'explanation',
+    label: 'Explanation',
+    width: '80%',
     required: true,
   },
   {
-    id: 'unit_issue',
-    label: 'Unit of Issue',
-    width: '11%',
-    required: true,
-  },
-  {
-    id: 'description',
-    label: 'Description',
-    width: '33%',
-    required: true,
-  },
-  {
-    id: 'stock_no',
-    label: 'Stock No',
-    width: '11%',
-  },
-  {
-    id: 'estimated_unit_cost',
-    label: 'Estimated Unit Cost',
-    width: '16%',
-    required: true,
-  },
-  {
-    id: 'estimated_cost',
-    label: 'Estimated Cost',
-    width: '16%',
-    required: true,
-  },
-  {
-    id: 'delete',
-    label: '',
-    width: '2%',
+    id: 'amount',
+    label: 'Amount',
+    width: '20%',
   },
 ];
 
 const FormClient = forwardRef<
   HTMLFormElement,
-  ModalPurchaseRequestContentProps
+  ModalDisbursementVoucherContentProps
 >(({ data, readOnly, handleCreateUpdate }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
-      department_id: currentData?.department_id ?? '',
-      section_id: currentData?.section_id ?? '',
-      pr_date: currentData?.pr_date ?? dayjs().format('YYYY-MM-DD'),
-      sai_no: currentData?.sai_no ?? '',
-      sai_date: currentData?.sai_date ?? '',
-      alobs_no: currentData?.alobs_no ?? '',
-      alobs_date: currentData?.alobs_date ?? '',
-      funding_source_id: currentData?.funding_source_id ?? '',
-      purpose: currentData?.purpose ?? '',
-      requested_by_id: currentData?.requested_by_id ?? '',
-      sig_cash_availability_id: currentData?.sig_cash_availability_id ?? '',
-      sig_approved_by_id: currentData?.sig_approved_by_id ?? '',
-      items:
-        currentData?.items &&
-        typeof currentData?.items !== undefined &&
-        currentData?.items.length > 0
-          ? currentData?.items?.map((item, index) => ({
-              key: randomId(),
-              quantity: item.quantity,
-              unit_issue_id: item.unit_issue_id,
-              description: item.description,
-              stock_no: item.stock_no,
-              estimated_unit_cost: item.estimated_unit_cost,
-              estimated_cost: item.estimated_cost,
-            }))
-          : [
-              {
-                key: randomId(),
-                quantity: undefined,
-                unit_issue_id: undefined,
-                description: undefined,
-                stock_no: 1,
-                estimated_unit_cost: undefined,
-                estimated_cost: undefined,
-              },
-            ],
+      dv_no: currentData?.dv_no ?? '',
+      mode_payment: currentData?.mode_payment,
+      payee_id: currentData?.payee_id ?? '',
+      address: currentData?.address ?? '',
+      office: currentData?.office ?? '',
+      responsibility_center_id: currentData?.responsibility_center_id ?? '',
+      explanation: currentData?.explanation ?? '',
+      total_amount: currentData.total_amount,
+      accountant_certified_choices:
+        currentData?.accountant_certified_choices ?? {
+          allotment_obligated: false,
+          document_complete: false,
+        },
+      sig_accountant_id: currentData?.sig_accountant_id ?? '',
+      accountant_signed_date: currentData?.accountant_signed_date ?? '',
+      sig_treasurer_id: currentData?.sig_treasurer_id ?? '',
+      treasurer_signed_date: currentData?.treasurer_signed_date ?? '',
+      sig_head_id: currentData?.sig_head_id ?? '',
+      head_signed_date: currentData?.head_signed_date ?? '',
+      check_no: currentData?.check_no ?? '',
+      bank_name: currentData?.bank_name ?? '',
+      check_date: currentData?.check_date ?? '',
+      received_name: currentData?.received_name ?? '',
+      received_date: currentData?.received_date ?? '',
+      or_other_document: currentData?.or_other_document ?? '',
+      jev_no: currentData?.jev_no ?? '',
+      jev_date: currentData?.jev_date ?? '',
     }),
     [currentData]
   );
@@ -127,26 +89,24 @@ const FormClient = forwardRef<
     mode: 'uncontrolled',
     initialValues: currentForm,
   });
-  const [location, setLocation] = useState('Loading...');
-  const [companyType, setCompanyType] = useState('Loading...');
-  const [departmentId, setDepartmentId] = useState(
-    currentData?.department_id ?? null
-  );
-  const [sectionId, setSectionId] = useState(currentData?.section_id ?? null);
-  const [unitIssues, setUnitIssues] = useState<string[]>([]);
-  const [loadingUnitIssues, setLoadingUnitIssues] = useState(false);
-  const [unitIssueData, setUnitIssueData] = useState<
+  const [modePayment, setModePayment] = useState<
+    'check' | 'cash' | 'other' | undefined
+  >(currentForm?.mode_payment);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [
+    selectedAccountantCertifiedChoices,
+    setSelectedAccountantCertifiedChoices,
+  ] = useState<string[]>([]);
+  const [loadingCompany, setLoadingCompany] = useState(false);
+  const [loadingResponsibilityCenter, setLoadingResponsibilityCenter] =
+    useState(false);
+  const [company, setCompany] = useState<CompanyType>();
+  const [responsibilityCenters, setResponsibilityCenters] = useState<
     {
       value: string;
       label: string;
     }[]
-  >();
-
-  useEffect(() => {
-    setCurrentData(data);
-    setDepartmentId(data?.department_id ?? '');
-    setSectionId(data?.section_id ?? '');
-  }, [data]);
+  >([]);
 
   useEffect(() => {
     form.reset();
@@ -154,154 +114,114 @@ const FormClient = forwardRef<
   }, [currentForm]);
 
   useEffect(() => {
-    handleFetchUnitIssueData();
-  }, []);
+    setCurrentData(data);
+    setTotalAmount(currentData.purchase_order?.total_amount ?? 0);
+    setModePayment(currentData?.mode_payment);
+  }, [data]);
 
   useEffect(() => {
-    if (!currentData?.items || currentData?.items.length === 0) return;
+    if (Helper.empty(currentData)) return;
 
-    setUnitIssues(
-      currentData?.items.map((item) => item.unit_issue?.unit_name ?? '')
+    const accountantCertifiedChoices =
+      currentData.accountant_certified_choices ?? {};
+    const accountantCertifiedChoicesKeys: (keyof typeof accountantCertifiedChoices)[] =
+      ['allotment_obligated', 'document_complete'];
+    const selectedCertifiedChoices = accountantCertifiedChoicesKeys.filter(
+      (key) => accountantCertifiedChoices[key]
     );
-  }, [currentData?.items]);
+
+    if (selectedCertifiedChoices.length) {
+      setSelectedAccountantCertifiedChoices(selectedCertifiedChoices);
+    }
+  }, [currentData]);
 
   useEffect(() => {
-    API.get('/companies')
-      .then((res) => {
-        const company: CompanyType = res?.data?.company;
-        setLocation(
-          `${company?.municipality}, ${company?.province}`.toUpperCase()
-        );
-        setCompanyType(company?.company_type ?? '');
-      })
-      .catch((err) => {
-        const errors = getErrors(err);
+    setLoadingCompany(true);
 
-        errors.forEach((error) => {
-          notify({
-            title: 'Failed',
-            message: error,
-            color: 'red',
-          });
-        });
-      });
+    let retries = 3;
+
+    const fetch = () => {
+      API.get('/companies', {
+        paginated: false,
+        show_all: true,
+        sort_direction: 'asc',
+      })
+        .then((res) => {
+          const company: CompanyType = res?.data?.company;
+          setCompany(company);
+        })
+        .catch(() => {
+          if (retries > 0) {
+            retries -= 1;
+            fetch();
+          } else {
+            notify({
+              title: 'Failed',
+              message: 'Failed after multiple retries',
+              color: 'red',
+            });
+            setLoadingCompany(false);
+          }
+        })
+        .finally(() => setLoadingCompany(false));
+    };
+
+    fetch();
   }, []);
 
-  const handleFetchUnitIssueData = () => {
-    setLoadingUnitIssues(true);
+  useEffect(() => {
+    setLoadingResponsibilityCenter(true);
 
-    API.get('/libraries/unit-issues', {
-      paginated: false,
-      show_all: true,
-      sort_direction: 'asc',
-    })
-      .then((res) => {
-        setUnitIssueData(
-          res?.data?.length > 0
-            ? res.data?.map((item: any) => ({
-                value: item['id'],
-                label: item['unit_name'],
-              }))
-            : [{ label: 'No data.', value: '' }]
-        );
-        setLoadingUnitIssues(false);
+    let retries = 3;
+
+    const fetch = () => {
+      API.get('/libraries/responsibility-centers', {
+        paginated: false,
+        show_all: true,
+        sort_direction: 'asc',
       })
-      .catch((err) => {
-        const errors = getErrors(err);
+        .then((res) => {
+          setResponsibilityCenters(
+            res?.data?.length > 0
+              ? res.data?.map((item: any) => ({
+                  value: item['id'],
+                  label: item['description']
+                    ? `${item['code']}: ${item['description']}`
+                    : item['code'],
+                }))
+              : [{ label: 'No data.', value: '' }]
+          );
+        })
+        .catch(() => {
+          if (retries > 0) {
+            retries -= 1;
+            fetch();
+          } else {
+            notify({
+              title: 'Failed',
+              message: 'Failed after multiple retries',
+              color: 'red',
+            });
+            setLoadingResponsibilityCenter(false);
+          }
+        })
+        .finally(() => setLoadingResponsibilityCenter(false));
+    };
 
-        errors.forEach((error) => {
-          notify({
-            title: 'Failed',
-            message: error,
-            color: 'red',
-          });
-        });
+    fetch();
+  }, []);
 
-        setLoadingUnitIssues(false);
-      });
-  };
-
-  const renderDynamicTdContent = (
-    id: string,
-    item: PurchaseRequestItemsFieldType,
-    index: number
-  ): ReactNode => {
+  const renderDynamicTdContent = (id: string): ReactNode => {
     switch (id) {
-      case 'quantity':
-        return (
-          <Table.Td>
-            <NumberInput
-              key={form.key(`items.${index}.quantity`)}
-              {...form.getInputProps(`items.${index}.quantity`)}
-              variant={readOnly ? 'unstyled' : 'default'}
-              placeholder={`Quantity`}
-              defaultValue={item?.quantity}
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              min={0}
-              clampBehavior={'strict'}
-              allowDecimal={false}
-              required={!readOnly}
-              readOnly={readOnly}
-            />
-          </Table.Td>
-        );
-
-      case 'unit_issue':
-        return (
-          <Table.Td>
-            {!readOnly ? (
-              <DynamicSelect
-                key={form.key(`items.${index}.unit_issue_id`)}
-                {...form.getInputProps(`items.${index}.unit_issue_id`)}
-                variant={readOnly ? 'unstyled' : 'default'}
-                placeholder={'Unit of Issue'}
-                endpoint={'/libraries/unit-issues'}
-                endpointParams={{ paginated: false, show_all: true }}
-                column={'unit_name'}
-                defaultData={
-                  unitIssueData ??
-                  (item?.unit_issue_id
-                    ? [
-                        {
-                          value: item?.unit_issue_id,
-                          label: unitIssues[index],
-                        },
-                      ]
-                    : undefined)
-                }
-                value={item?.unit_issue_id}
-                size={lgScreenAndBelow ? 'sm' : 'md'}
-                required={!readOnly}
-                readOnly={readOnly}
-                disableFetch
-                isLoading={loadingUnitIssues}
-              />
-            ) : (
-              <TextInput
-                variant={'unstyled'}
-                placeholder={'None'}
-                defaultValue={unitIssues[index]}
-                size={lgScreenAndBelow ? 'sm' : 'md'}
-                flex={1}
-                readOnly
-              />
-            )}
-          </Table.Td>
-        );
-
-      case 'description':
+      case 'explanation':
         return (
           <Table.Td>
             <Textarea
-              key={form.key(`items.${index}.description`)}
-              {...form.getInputProps(`items.${index}.description`)}
+              key={form.key('explanation')}
+              {...form.getInputProps('explanation')}
               variant={readOnly ? 'unstyled' : 'default'}
-              placeholder={
-                item?.description?.trim() === '' || !item?.description?.trim()
-                  ? 'Description'
-                  : item?.description?.trim()
-              }
-              defaultValue={item?.description}
+              placeholder={readOnly ? 'None' : 'Enter explanation here...'}
+              defaultValue={form?.values?.explanation}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
               required={!readOnly}
@@ -310,68 +230,23 @@ const FormClient = forwardRef<
           </Table.Td>
         );
 
-      case 'stock_no':
+      case 'amount':
         return (
           <Table.Td>
-            <NumberInput
-              key={form.key(`items.${index}.stock_no`)}
-              {...form.getInputProps(`items.${index}.stock_no`)}
-              variant={readOnly ? 'unstyled' : 'default'}
-              placeholder={`Stock No ${
-                item?.stock_no?.toString() !== ''
-                  ? `: ${item?.stock_no?.toString()}`
-                  : ''
-              }`}
-              defaultValue={item?.stock_no}
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              min={0}
-              clampBehavior={'strict'}
-              allowDecimal={false}
-              required={!readOnly}
-              readOnly={readOnly}
-            />
-          </Table.Td>
-        );
-
-      case 'estimated_unit_cost':
-        return (
-          <Table.Td>
-            <NumberInput
-              key={form.key(`items.${index}.estimated_unit_cost`)}
-              {...form.getInputProps(`items.${index}.estimated_unit_cost`)}
-              variant={readOnly ? 'unstyled' : 'default'}
-              placeholder={`Estimated Unit Cost`}
-              defaultValue={item?.estimated_unit_cost}
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              min={0}
-              clampBehavior={'strict'}
-              decimalScale={2}
-              fixedDecimalScale
-              thousandSeparator={','}
-              required={!readOnly}
-              readOnly={readOnly}
-            />
-          </Table.Td>
-        );
-
-      case 'estimated_cost':
-        return (
-          <Table.Td>
-            <NumberInput
-              key={form.key(`items.${index}.estimated_cost`)}
-              {...form.getInputProps(`items.${index}.estimated_cost`)}
-              variant={readOnly ? 'unstyled' : 'default'}
-              placeholder={`Estimated Cost`}
-              defaultValue={item?.estimated_cost}
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              min={0}
-              clampBehavior={'strict'}
-              decimalScale={2}
-              fixedDecimalScale
-              thousandSeparator={','}
-              required={!readOnly}
-              readOnly={readOnly}
-            />
+            <Stack>
+              <NumberInput
+                variant={readOnly ? 'unstyled' : 'filled'}
+                placeholder={'Amount'}
+                value={currentData.purchase_order?.total_amount}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                min={0}
+                clampBehavior={'strict'}
+                decimalScale={2}
+                fixedDecimalScale
+                thousandSeparator={','}
+                readOnly
+              />
+            </Stack>
           </Table.Td>
         );
 
@@ -387,23 +262,22 @@ const FormClient = forwardRef<
         if (handleCreateUpdate) {
           handleCreateUpdate({
             ...values,
-            department_id: departmentId,
-            section_id: sectionId,
-            pr_date: values.pr_date
-              ? dayjs(values.pr_date).format('YYYY-MM-DD')
-              : '',
-            sai_date: values.sai_date
-              ? dayjs(values.sai_date).format('YYYY-MM-DD')
-              : '',
-            alobs_date: values.alobs_date
-              ? dayjs(values.alobs_date).format('YYYY-MM-DD')
-              : '',
-            items: values.items ?? [],
+            accountant_certified_choices: {
+              allotment_obligated: selectedAccountantCertifiedChoices.includes(
+                'allotment_obligated'
+              ),
+              document_complete:
+                selectedAccountantCertifiedChoices.includes(
+                  'document_complete'
+                ),
+            },
+            mode_payment: modePayment,
+            total_amount: totalAmount,
           });
         }
       })}
     >
-      <Stack p={'md'} justify={'center'}>
+      <Stack justify={'center'}>
         {['disapproved', 'draft'].includes(currentData?.status ?? '') &&
           currentData?.disapproved_reason && (
             <Alert
@@ -425,710 +299,1067 @@ const FormClient = forwardRef<
           <Stack
             bd={'1px solid var(--mantine-color-gray-8)'}
             justify={'center'}
-            gap={0}
+            align={'center'}
+            flex={lgScreenAndBelow ? 1 : '0 0 70%'}
+            p={lgScreenAndBelow ? 'sm' : 'md'}
+            gap={3}
+          >
+            <Text>Republic of the Philippines</Text>
+            <Title order={lgScreenAndBelow ? 5 : 4}>
+              {!Helper.empty(company) || loadingCompany
+                ? `Province of ${company?.province ?? '________'}`
+                : 'Loading...'}
+            </Title>
+            <Title order={lgScreenAndBelow ? 3 : 2}>
+              {!Helper.empty(company) || loadingCompany
+                ? (company?.municipality ?? '________')
+                : 'Loading...'}
+            </Title>
+          </Stack>
+
+          <Flex
+            direction={lgScreenAndBelow ? 'column' : 'row'}
+            sx={{ flexGrow: 1 }}
           >
             <Stack
               bd={'1px solid var(--mantine-color-gray-8)'}
               justify={'center'}
               align={'center'}
-              pt={'lg'}
-              pb={'sm'}
-              gap={1}
+              flex={lgScreenAndBelow ? 1 : '0 0 60%'}
+              py={3}
             >
-              <Text fz={lgScreenAndBelow ? 'h4' : 'h3'} fw={600}>
-                Purchase Request
-              </Text>
-              <Text
-                fz={lgScreenAndBelow ? 'h6' : 'h5'}
-                fw={600}
-                td={'underline'}
-              >
-                {location}
-              </Text>
-              <Text fz={lgScreenAndBelow ? 'h6' : 'h5'} fw={600}>
-                {companyType}
+              <Text size={lgScreenAndBelow ? 'lg' : 'xl'}>
+                DISBURSEMENT VOUCHER
               </Text>
             </Stack>
-            <Group
-              w={'100%'}
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
               justify={'center'}
               align={'flex-start'}
-              gap={0}
-              bd={'1px solid var(--mantine-color-gray-8)'}
+              flex={lgScreenAndBelow ? 1 : '0 0 40%'}
+              p={3}
             >
-              <Stack p={'md'} flex={0.35}>
-                <Group>
-                  <Group gap={1} align={'flex-start'}>
-                    <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
-                      Department:
-                    </Text>
-                    {!readOnly && (
-                      <Stack>
-                        <IconAsterisk
-                          size={7}
-                          color={'var(--mantine-color-red-8)'}
-                          stroke={2}
-                        />
-                      </Stack>
-                    )}
-                  </Group>
-                  <Stack justify={'center'} flex={1}>
-                    {!readOnly ? (
-                      <DynamicSelect
-                        variant='unstyled'
-                        endpoint='/accounts/departments'
-                        endpointParams={{ paginated: false, show_all: true }}
-                        column='department_name'
-                        valueColumn='id'
-                        defaultData={
-                          currentData?.department_id
-                            ? [
-                                {
-                                  value: currentData.department_id,
-                                  label:
-                                    currentData?.department?.department_name ??
-                                    '',
-                                },
-                              ]
-                            : undefined
-                        }
-                        value={departmentId}
-                        onChange={(value) => {
-                          setDepartmentId(value);
-                          setSectionId(null);
-                        }}
-                        size={lgScreenAndBelow ? 'sm' : 'md'}
-                        placeholder='Select a department...'
-                        sx={{
-                          borderBottom: '2px solid var(--mantine-color-gray-5)',
-                          input: {
-                            minHeight: '30px',
-                            height: '30px',
-                          },
-                        }}
-                        required={!readOnly}
-                        readOnly={readOnly}
-                      />
-                    ) : (
-                      <TextInput
-                        variant={'unstyled'}
-                        placeholder={'None'}
-                        value={currentData?.department?.department_name ?? ''}
-                        size={lgScreenAndBelow ? 'sm' : 'md'}
-                        sx={{
-                          borderBottom: '2px solid var(--mantine-color-gray-5)',
-                          input: {
-                            minHeight: '30px',
-                            height: '30px',
-                          },
-                        }}
-                        flex={1}
-                        readOnly
-                      />
-                    )}
-                  </Stack>
-                </Group>
-                <Group>
-                  <Group gap={1} align={'flex-start'}>
-                    <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Section:</Text>
-                  </Group>
-                  <Stack justify={'center'} flex={1}>
-                    {!readOnly ? (
-                      <DynamicSelect
-                        variant={'unstyled'}
-                        endpoint={'/accounts/sections'}
-                        endpointParams={{
-                          paginated: false,
-                          show_all: true,
-                          filter_by_department: true,
-                          department_id: departmentId,
-                        }}
-                        column={'section_name'}
-                        defaultData={
-                          currentData?.section_id
-                            ? [
-                                {
-                                  value: currentData?.section_id ?? '',
-                                  label:
-                                    currentData?.section?.section_name ?? '',
-                                },
-                              ]
-                            : []
-                        }
-                        value={sectionId}
-                        size={lgScreenAndBelow ? 'sm' : 'md'}
-                        placeholder={
-                          !readOnly
-                            ? departmentId
-                              ? 'Select a section...'
-                              : 'Please select a department first...'
-                            : 'None'
-                        }
-                        sx={{
-                          borderBottom: '2px solid var(--mantine-color-gray-5)',
-                          input: {
-                            minHeight: '30px',
-                            height: '30px',
-                          },
-                        }}
-                        onChange={(value) => setSectionId(value ?? '')}
-                        readOnly={readOnly || !departmentId}
-                      />
-                    ) : (
-                      <TextInput
-                        variant={'unstyled'}
-                        placeholder={'None'}
-                        value={currentData?.section?.section_name ?? ''}
-                        size={lgScreenAndBelow ? 'sm' : 'md'}
-                        sx={{
-                          borderBottom: '2px solid var(--mantine-color-gray-5)',
-                          input: {
-                            minHeight: '30px',
-                            height: '30px',
-                          },
-                        }}
-                        flex={1}
-                        readOnly
-                      />
-                    )}
-                  </Stack>
-                </Group>
-              </Stack>
+              <TextInput
+                variant={'unstyled'}
+                size={lgScreenAndBelow ? 'md' : 'lg'}
+                value={currentData?.dv_no}
+                label={'No.'}
+                placeholder={'None'}
+              />
+            </Stack>
+          </Flex>
 
-              <Stack
-                p={'md'}
-                flex={0.65}
-                sx={{ borderLeft: '1px solid var(--mantine-color-gray-8)' }}
-              >
-                <Group>
-                  <Text size={lgScreenAndBelow ? 'sm' : 'md'}>PR No.</Text>
-                  <TextInput
-                    variant={'unstyled'}
-                    placeholder={'Autogenerated'}
-                    defaultValue={readOnly ? undefined : currentData?.pr_no}
-                    value={readOnly ? currentData?.pr_no : undefined}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                      input: {
-                        minHeight: '30px',
-                        height: '30px',
-                      },
-                    }}
-                    flex={1}
-                    readOnly
-                  />
-                  <Group gap={1} align={'flex-start'}>
-                    <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Date:</Text>
-                    {!readOnly && (
-                      <Stack>
-                        <IconAsterisk
-                          size={7}
-                          color={'var(--mantine-color-red-8)'}
-                          stroke={2}
-                        />
-                      </Stack>
-                    )}
-                  </Group>
-                  <DateInput
-                    key={form.key('pr_date')}
-                    {...form.getInputProps('pr_date')}
-                    variant={'unstyled'}
-                    valueFormat={'YYYY-MM-DD'}
-                    defaultValue={
-                      form.values.pr_date
-                        ? new Date(form.values?.pr_date)
-                        : undefined
-                    }
-                    placeholder={'Enter the PR Date here...'}
-                    error={form.errors.pr_date && ''}
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                      input: {
-                        minHeight: '30px',
-                        height: '30px',
-                      },
-                    }}
-                    flex={1}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    highlightToday
-                    clearable
-                    required={!readOnly}
-                    readOnly={readOnly}
-                  />
-                </Group>
-                <Group>
-                  <Text size={lgScreenAndBelow ? 'sm' : 'md'}>SAI No.</Text>
-                  <TextInput
-                    key={form.key('sai_no')}
-                    {...form.getInputProps('sai_no')}
-                    variant={'unstyled'}
-                    placeholder={
-                      !readOnly ? 'Enter the SAI number here...' : 'None'
-                    }
-                    defaultValue={readOnly ? undefined : form.values.sai_no}
-                    value={readOnly ? currentData?.sai_no : undefined}
-                    error={form.errors.sai_no && ''}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                      input: {
-                        minHeight: '30px',
-                        height: '30px',
-                      },
-                    }}
-                    flex={1}
-                    readOnly={readOnly}
-                  />
-                  <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Date:</Text>
-                  <DateInput
-                    key={form.key('sai_date')}
-                    {...form.getInputProps('sai_date')}
-                    variant={'unstyled'}
-                    valueFormat={'YYYY-MM-DD'}
-                    defaultValue={
-                      readOnly
-                        ? undefined
-                        : form.values.sai_date
-                          ? new Date(form.values.sai_date)
-                          : undefined
-                    }
-                    value={
-                      readOnly
-                        ? currentData?.sai_date
-                          ? new Date(currentData?.sai_date)
-                          : undefined
-                        : undefined
-                    }
-                    placeholder={
-                      !readOnly ? 'Enter the SAI date here...' : 'None'
-                    }
-                    error={form.errors.sai_date && ''}
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                      input: {
-                        minHeight: '30px',
-                        height: '30px',
-                      },
-                    }}
-                    flex={1}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    highlightToday
-                    clearable
-                    readOnly={readOnly}
-                  />
-                </Group>
-                <Group>
-                  <Text size={lgScreenAndBelow ? 'sm' : 'md'}>ALOBS No.</Text>
-                  <TextInput
-                    key={form.key('alobs_no')}
-                    {...form.getInputProps('alobs_no')}
-                    variant={'unstyled'}
-                    placeholder={
-                      !readOnly ? 'Enter the ALOBS number here...' : 'None'
-                    }
-                    defaultValue={readOnly ? undefined : form.values.alobs_no}
-                    value={readOnly ? currentData?.alobs_no : undefined}
-                    error={form.errors.alobs_no && ''}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                      input: {
-                        minHeight: '30px',
-                        height: '30px',
-                      },
-                    }}
-                    flex={1}
-                    readOnly={readOnly}
-                  />
-                  <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Date:</Text>
-                  <DateInput
-                    key={form.key('alobs_date')}
-                    {...form.getInputProps('alobs_date')}
-                    variant={'unstyled'}
-                    valueFormat={'YYYY-MM-DD'}
-                    defaultValue={
-                      readOnly
-                        ? undefined
-                        : form.values.alobs_date
-                          ? new Date(form.values.alobs_date)
-                          : undefined
-                    }
-                    value={
-                      readOnly
-                        ? currentData?.alobs_date
-                          ? new Date(currentData?.alobs_date)
-                          : undefined
-                        : undefined
-                    }
-                    placeholder={
-                      !readOnly ? 'Enter the ALOBS date here...' : 'None'
-                    }
-                    error={form.errors.alobs_date && ''}
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                      input: {
-                        minHeight: '30px',
-                        height: '30px',
-                      },
-                    }}
-                    flex={1}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    highlightToday
-                    clearable
-                    readOnly={readOnly}
-                  />
-                </Group>
-              </Stack>
-            </Group>
-
-            {(readOnly ||
-              ['', 'draft', 'disapproved'].includes(
-                currentData?.status ?? ''
-              )) && (
-              <Stack>
-                <Table
-                  withColumnBorders
-                  withRowBorders
-                  verticalSpacing={'sm'}
-                  withTableBorder
-                  m={0}
-                  borderColor={'var(--mantine-color-gray-8)'}
-                >
-                  <Table.Thead>
-                    <Table.Tr>
-                      {itemHeaders.map((header) => {
-                        if (readOnly && header.id === 'delete') return;
-
-                        if (!readOnly && header.id === 'estimated_cost') return;
-
-                        return (
-                          <Table.Th
-                            key={header.id}
-                            w={header?.width ?? undefined}
-                            fz={lgScreenAndBelow ? 'sm' : 'md'}
-                          >
-                            <Group gap={1} align={'flex-start'}>
-                              {header.label}{' '}
-                              {header?.required && !readOnly && (
-                                <Stack>
-                                  <IconAsterisk
-                                    size={7}
-                                    color={'var(--mantine-color-red-8)'}
-                                    stroke={2}
-                                  />
-                                </Stack>
-                              )}
-                            </Group>
-                          </Table.Th>
-                        );
-                      })}
-                    </Table.Tr>
-                  </Table.Thead>
-                  <Table.Tbody>
-                    {form.getValues()?.items?.map((item, index) => (
-                      <Table.Tr
-                        key={`item-${item.key}`}
-                        sx={{ verticalAlign: 'top' }}
-                      >
-                        {itemHeaders.map((header) => {
-                          if (
-                            header.id === 'delete' ||
-                            (!readOnly && header.id === 'estimated_cost')
-                          ) {
-                            return null;
-                          }
-
-                          return (
-                            <React.Fragment
-                              key={`field-${item.key}-${header.id}`}
-                            >
-                              {renderDynamicTdContent(header.id, item, index)}
-                            </React.Fragment>
-                          );
-                        })}
-
-                        {!readOnly && (
-                          <Table.Td>
-                            <ActionIcon
-                              w={'100%'}
-                              color={'var(--mantine-color-red-7)'}
-                              variant={'light'}
-                              disabled={form.getValues().items.length === 1}
-                              onClick={() => {
-                                if (form.getValues().items.length === 1) return;
-                                form.removeListItem('items', index);
-                              }}
-                            >
-                              <IconTrash size={18} stroke={2} />
-                            </ActionIcon>
-                          </Table.Td>
-                        )}
-                      </Table.Tr>
-                    ))}
-                  </Table.Tbody>
-
-                  {!readOnly && (
-                    <Table.Tfoot>
-                      <Table.Tr>
-                        <Table.Td colSpan={readOnly ? 7 : 6}>
-                          <Button
-                            size={lgScreenAndBelow ? 'sm' : 'md'}
-                            variant={'light'}
-                            color={'var(--mantine-color-primary-9)'}
-                            leftSection={<IconPlus size={18} stroke={2} />}
-                            onClick={() =>
-                              form.insertListItem('items', {
-                                key: randomId(),
-                                quantity: undefined,
-                                unit_issue_id: undefined,
-                                description: undefined,
-                                stock_no:
-                                  (form.getValues().items[
-                                    form.getValues().items.length - 1
-                                  ]?.stock_no ?? 1) + 1,
-                                estimated_unit_cost: undefined,
-                                estimated_cost: undefined,
-                              })
-                            }
-                            fullWidth
-                          >
-                            Add Item
-                          </Button>
-                        </Table.Td>
-                      </Table.Tr>
-                    </Table.Tfoot>
-                  )}
-                </Table>
-              </Stack>
-            )}
-
-            <Group
-              align={'flex-start'}
+          <Flex
+            direction={lgScreenAndBelow ? 'column' : 'row'}
+            sx={{ flexGrow: 1 }}
+          >
+            <Stack
               bd={'1px solid var(--mantine-color-gray-8)'}
-              p={'md'}
-              grow
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 15%'}
+              p={'sm'}
+            >
+              <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Mode of Payment</Text>
+            </Stack>
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 85%'}
+              p={lgScreenAndBelow ? 'sm' : 'md'}
+            >
+              <Flex
+                w={'100%'}
+                direction={lgScreenAndBelow ? 'column' : 'row'}
+                gap={'sm'}
+              >
+                <Checkbox
+                  label='Check'
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  variant='outline'
+                  radius='xl'
+                  checked={modePayment === 'check'}
+                  flex={1}
+                  onChange={(e) => {
+                    !readOnly &&
+                      setModePayment(
+                        e.currentTarget.checked ? 'check' : undefined
+                      );
+                  }}
+                />
+                <Checkbox
+                  label='Cash'
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  variant='outline'
+                  radius='xl'
+                  checked={modePayment === 'cash'}
+                  flex={1}
+                  onChange={(e) => {
+                    !readOnly &&
+                      setModePayment(
+                        e.currentTarget.checked ? 'cash' : undefined
+                      );
+                  }}
+                />
+                <Checkbox
+                  label='Other'
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  variant='outline'
+                  radius='xl'
+                  checked={modePayment === 'other'}
+                  flex={1}
+                  onChange={(e) => {
+                    !readOnly &&
+                      setModePayment(
+                        e.currentTarget.checked ? 'other' : undefined
+                      );
+                  }}
+                />
+              </Flex>
+            </Stack>
+          </Flex>
+
+          <Flex
+            direction={lgScreenAndBelow ? 'column' : 'row'}
+            sx={{ flexGrow: 1 }}
+          >
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 15%'}
+              p={'sm'}
+            >
+              <Group gap={1} align={'flex-start'}>
+                <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Payee</Text>
+              </Group>
+            </Stack>
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 35%'}
+              p={'sm'}
+            >
+              <TextInput
+                variant={!readOnly ? 'filled' : 'unstyled'}
+                placeholder={'None'}
+                value={currentData?.payee?.supplier_name ?? ''}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                w={'100%'}
+                my={0}
+                sx={{
+                  borderBottom: '2px solid var(--mantine-color-gray-5)',
+                  input: {
+                    width: '100%',
+                  },
+                }}
+                readOnly
+              />
+            </Stack>
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 25%'}
+              p={'sm'}
+            >
+              <TextInput
+                variant={!readOnly ? 'filled' : 'unstyled'}
+                placeholder={'None'}
+                label={'TIN/Employee No.'}
+                value={currentData?.payee?.tin_no ?? ''}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                w={'100%'}
+                sx={{
+                  borderBottom: '2px solid var(--mantine-color-gray-5)',
+                  input: {
+                    minHeight: '30px',
+                    height: '30px',
+                    width: '100%',
+                  },
+                }}
+                readOnly
+              />
+            </Stack>
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 25%'}
+              p={'sm'}
+            >
+              <TextInput
+                variant={!readOnly ? 'filled' : 'unstyled'}
+                placeholder={'None'}
+                label={'Obligation Request No.'}
+                value={currentData?.obligation_request?.obr_no ?? ''}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                w={'100%'}
+                sx={{
+                  borderBottom: '2px solid var(--mantine-color-gray-5)',
+                  input: {
+                    minHeight: '30px',
+                    height: '30px',
+                    width: '100%',
+                  },
+                }}
+                readOnly
+              />
+            </Stack>
+          </Flex>
+
+          <Flex
+            direction={lgScreenAndBelow ? 'column' : 'row'}
+            sx={{ flexGrow: 1 }}
+          >
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 15%'}
+              p={'sm'}
+            >
+              <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Address</Text>
+            </Stack>
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 35%'}
+              p={'sm'}
             >
               <Textarea
-                key={form.key('purpose')}
-                {...form.getInputProps('purpose')}
-                variant={readOnly ? 'unstyled' : 'default'}
-                label={'Purpose'}
-                placeholder={'Enter the purpose here...'}
-                defaultValue={readOnly ? undefined : form.values.purpose}
-                value={readOnly ? currentData?.purpose : undefined}
+                key={form.key('address')}
+                {...form.getInputProps('address')}
+                variant={'unstyled'}
+                placeholder={'Enter the address here...'}
+                defaultValue={readOnly ? undefined : form.values.address}
+                value={readOnly ? currentData?.address : undefined}
                 error={form.errors.purpose && ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
+                w={'100%'}
+                sx={{
+                  borderBottom: '2px solid var(--mantine-color-gray-5)',
+                  input: {
+                    minHeight: '30px',
+                    height: '30px',
+                  },
+                }}
                 autosize
                 autoCapitalize={'sentences'}
-                required={!readOnly}
                 readOnly={readOnly}
               />
-
+            </Stack>
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 30%'}
+              p={'sm'}
+            >
+              <TextInput
+                key={form.key('office')}
+                {...form.getInputProps('office')}
+                variant={'unstyled'}
+                label={'Office/Unit/Project:'}
+                placeholder={!readOnly ? 'Enter the office here...' : 'None'}
+                defaultValue={readOnly ? undefined : form.values.office}
+                value={readOnly ? currentData?.office : undefined}
+                error={form.errors.sai_no && ''}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                sx={{
+                  borderBottom: '2px solid var(--mantine-color-gray-5)',
+                  input: {
+                    minHeight: '30px',
+                    height: '30px',
+                  },
+                }}
+                w={'100%'}
+                readOnly={readOnly}
+              />
+            </Stack>
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'center'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 20%'}
+              p={'sm'}
+            >
               {!readOnly ? (
                 <DynamicSelect
-                  key={form.key('funding_source_id')}
-                  {...form.getInputProps('funding_source_id')}
-                  variant={readOnly ? 'unstyled' : 'default'}
-                  label={'Funding Source / Project'}
-                  placeholder={
-                    !readOnly ? 'Select a funding source or project...' : 'None'
-                  }
-                  endpoint={'/libraries/funding-sources'}
-                  endpointParams={{
-                    paginated: false,
-                    show_all: true,
-                  }}
-                  column={'title'}
+                  key={form.key('responsibility_center_id')}
+                  {...form.getInputProps('responsibility_center_id')}
+                  variant={'unstyled'}
+                  placeholder={'Select a responsibility center...'}
+                  label={'Responsibility Code:'}
+                  endpoint={'/libraries/responsibility-centers'}
+                  endpointParams={{ paginated: false, show_all: true }}
+                  column={'code'}
                   defaultData={
-                    currentData?.funding_source_id
+                    responsibilityCenters ??
+                    (currentData.responsibility_center_id
                       ? [
                           {
-                            value: currentData?.funding_source_id ?? '',
-                            label: currentData?.funding_source?.title ?? '',
+                            value: currentData.responsibility_center_id,
+                            label: currentData.responsibility_center
+                              ?.description
+                              ? `${currentData.responsibility_center?.code}: ${currentData.responsibility_center?.description}`
+                              : currentData.responsibility_center?.code,
                           },
                         ]
-                      : undefined
+                      : undefined)
                   }
-                  defaultValue={form.values.funding_source_id}
+                  value={form.values.responsibility_center_id}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
+                  sx={{
+                    width: '100%',
+                    borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    input: {
+                      minHeight: '30px',
+                      height: '30px',
+                    },
+                  }}
+                  required={!readOnly}
                   readOnly={readOnly}
+                  isLoading={loadingResponsibilityCenter}
                 />
               ) : (
                 <TextInput
-                  label={'Funding Source / Project'}
                   variant={'unstyled'}
                   placeholder={'None'}
-                  value={currentData?.funding_source?.title ?? ''}
+                  label={'Code:'}
+                  defaultValue={
+                    currentData.responsibility_center?.description
+                      ? `${currentData.responsibility_center?.code}: ${currentData.responsibility_center?.description}`
+                      : currentData.responsibility_center?.code
+                  }
+                  sx={{
+                    borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    input: {
+                      minHeight: '30px',
+                      height: '30px',
+                    },
+                  }}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   flex={1}
                   readOnly
                 />
               )}
-            </Group>
+            </Stack>
+          </Flex>
 
-            <Group align={'flex-start'} gap={0} grow>
-              <Stack bd={'1px solid var(--mantine-color-gray-8)'} p={'md'}>
-                {!readOnly ? (
-                  <DynamicSelect
-                    key={form.key('requested_by_id')}
-                    {...form.getInputProps('requested_by_id')}
-                    variant={'unstyled'}
-                    label={'Requested By'}
-                    placeholder={'Select a requestor...'}
-                    endpoint={'/accounts/users'}
-                    endpointParams={{
-                      paginated: false,
-                      show_all: true,
-                      document: 'pr',
-                    }}
-                    column={'fullname'}
-                    defaultData={
-                      currentData?.requested_by_id
-                        ? [
-                            {
-                              value: currentData?.requested_by_id ?? '',
-                              label: currentData?.requestor?.fullname ?? '',
-                            },
-                          ]
-                        : undefined
-                    }
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                    }}
-                    defaultValue={form.values.requested_by_id}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    required={!readOnly}
-                    readOnly={readOnly}
-                  />
-                ) : (
-                  <TextInput
-                    label={'Requested By'}
-                    variant={'unstyled'}
-                    placeholder={'None'}
-                    value={currentData?.requestor?.fullname ?? ''}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                    }}
-                    flex={1}
-                    readOnly
-                  />
-                )}
-              </Stack>
+          <Stack>
+            <Table
+              withColumnBorders
+              withRowBorders
+              verticalSpacing={'sm'}
+              withTableBorder
+              m={0}
+              borderColor={'var(--mantine-color-gray-8)'}
+            >
+              <Table.Thead>
+                <Table.Tr>
+                  {itemHeaders.map((header) => {
+                    return (
+                      <Table.Th
+                        key={header.id}
+                        w={header?.width ?? undefined}
+                        fz={lgScreenAndBelow ? 'sm' : 'md'}
+                      >
+                        <Group gap={1} align={'flex-start'}>
+                          {header.label}{' '}
+                          {header?.required && !readOnly && (
+                            <Stack>
+                              <IconAsterisk
+                                size={7}
+                                color={'var(--mantine-color-red-8)'}
+                                stroke={2}
+                              />
+                            </Stack>
+                          )}
+                        </Group>
+                      </Table.Th>
+                    );
+                  })}
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                <Table.Tr sx={{ verticalAlign: 'top' }}>
+                  {itemHeaders.map((header) => {
+                    return (
+                      <React.Fragment key={`field-${header.id}`}>
+                        {renderDynamicTdContent(header.id)}
+                      </React.Fragment>
+                    );
+                  })}
+                </Table.Tr>
 
-              <Stack bd={'1px solid var(--mantine-color-gray-8)'} p={'md'}>
-                {!readOnly ? (
-                  <DynamicSelect
-                    key={form.key('sig_cash_availability_id')}
-                    {...form.getInputProps('sig_cash_availability_id')}
-                    variant={'unstyled'}
-                    label={'Cash Availability'}
-                    placeholder={!readOnly ? 'Select a signatory...' : 'None'}
-                    endpoint={'/libraries/signatories'}
-                    endpointParams={{
-                      paginated: false,
-                      show_all: true,
-                      document: 'pr',
-                      signatory_type: 'cash_availability',
-                    }}
-                    defaultData={
-                      currentData?.sig_cash_availability_id
-                        ? [
-                            {
-                              value:
-                                currentData?.sig_cash_availability_id ?? '',
-                              label:
-                                currentData?.signatory_cash_available?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
-                        : undefined
-                    }
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                    }}
-                    valueColumn={'signatory_id'}
-                    column={'fullname_designation'}
-                    defaultValue={form.values.sig_cash_availability_id}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    required={!readOnly}
-                    readOnly={readOnly}
-                  />
-                ) : (
-                  <TextInput
-                    label={'Cash Availability'}
-                    variant={'unstyled'}
-                    placeholder={'None'}
-                    value={
-                      currentData?.signatory_cash_available?.user?.fullname ??
-                      ''
-                    }
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                    }}
-                    flex={1}
-                    readOnly
-                  />
-                )}
-              </Stack>
-
-              <Stack bd={'1px solid var(--mantine-color-gray-8)'} p={'md'}>
-                {!readOnly ? (
-                  <DynamicSelect
-                    key={form.key('sig_approved_by_id')}
-                    {...form.getInputProps('sig_approved_by_id')}
-                    variant={'unstyled'}
-                    label={'Approved By'}
-                    placeholder={!readOnly ? 'Select a signatory...' : 'None'}
-                    endpoint={'/libraries/signatories'}
-                    endpointParams={{
-                      paginated: false,
-                      show_all: true,
-                      document: 'pr',
-                      signatory_type: 'approved_by',
-                    }}
-                    valueColumn={'signatory_id'}
-                    column={'fullname_designation'}
-                    defaultData={
-                      currentData?.sig_approved_by_id
-                        ? [
-                            {
-                              value: currentData?.sig_approved_by_id ?? '',
-                              label:
-                                currentData?.signatory_approval?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
-                        : undefined
-                    }
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                    }}
-                    defaultValue={form.values.sig_approved_by_id}
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    required={!readOnly}
-                    readOnly={readOnly}
-                  />
-                ) : (
-                  <TextInput
-                    label={'Approved By'}
-                    variant={'unstyled'}
-                    placeholder={'None'}
-                    value={
-                      currentData?.signatory_approval?.user?.fullname ?? ''
-                    }
-                    size={lgScreenAndBelow ? 'sm' : 'md'}
-                    sx={{
-                      borderBottom: '2px solid var(--mantine-color-gray-5)',
-                    }}
-                    readOnly
-                  />
-                )}
-              </Stack>
-            </Group>
+                <Table.Tr>
+                  <Table.Td>
+                    <Text ta={'right'} size={lgScreenAndBelow ? 'sm' : 'md'}>
+                      Amount Due
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <NumberInput
+                      variant={readOnly ? 'unstyled' : 'default'}
+                      placeholder={'Amount'}
+                      value={totalAmount}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      min={0}
+                      clampBehavior={'strict'}
+                      decimalScale={2}
+                      fixedDecimalScale
+                      thousandSeparator={','}
+                      onChange={(value) => setTotalAmount(value as number)}
+                      readOnly={readOnly}
+                    />
+                  </Table.Td>
+                </Table.Tr>
+              </Table.Tbody>
+            </Table>
           </Stack>
+
+          <Flex
+            direction={lgScreenAndBelow ? 'column' : 'row'}
+            sx={{ flexGrow: 1 }}
+          >
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'space-between'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 50%'}
+              p={lgScreenAndBelow ? 'sm' : 'md'}
+            >
+              <Stack gap={1}>
+                <Text size={lgScreenAndBelow ? 'sm' : 'md'}>A. Certified:</Text>
+                <Checkbox.Group
+                  value={selectedAccountantCertifiedChoices}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  onChange={setSelectedAccountantCertifiedChoices}
+                  readOnly={readOnly}
+                >
+                  <Group mt='xs'>
+                    <Stack>
+                      <Checkbox
+                        value='allotment_obligated'
+                        label='Allotment obligated for the purpose as indicated above'
+                        radius={'xl'}
+                        variant={'outline'}
+                      />
+                      <Checkbox
+                        value='document_complete'
+                        label='Supporting documents complete and proper'
+                        radius={'xl'}
+                        variant={'outline'}
+                      />
+                    </Stack>
+                  </Group>
+                </Checkbox.Group>
+              </Stack>
+
+              <Stack w={'100%'} mt={'md'}>
+                {!readOnly ? (
+                  <DynamicSelect
+                    key={form.key('sig_accountant_id')}
+                    {...form.getInputProps('sig_accountant_id')}
+                    variant={'unstyled'}
+                    label={'Head, Accounting Unit/ Authorized Representative:'}
+                    placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                    endpoint={'/libraries/signatories'}
+                    endpointParams={{
+                      paginated: false,
+                      show_all: true,
+                      document: 'dv',
+                      signatory_type: 'accountant',
+                    }}
+                    defaultData={
+                      currentData?.sig_accountant_id
+                        ? [
+                            {
+                              value: currentData?.sig_accountant_id ?? '',
+                              label:
+                                currentData?.signatory_head?.user?.fullname ??
+                                '',
+                            },
+                          ]
+                        : undefined
+                    }
+                    valueColumn={'signatory_id'}
+                    column={'fullname_designation'}
+                    value={form.values.sig_accountant_id}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    }}
+                    required={!readOnly}
+                    readOnly={readOnly}
+                  />
+                ) : (
+                  <TextInput
+                    label={'Head, Accounting Unit/ Authorized Representative:'}
+                    variant={'unstyled'}
+                    placeholder={'None'}
+                    value={
+                      currentData?.signatory_accountant?.user?.fullname ?? ''
+                    }
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    }}
+                    readOnly
+                  />
+                )}
+
+                <DateInput
+                  key={form.key('accountant_signed_date')}
+                  {...form.getInputProps('accountant_signed_date')}
+                  variant={'unstyled'}
+                  label={'Date'}
+                  valueFormat={'YYYY-MM-DD'}
+                  defaultValue={
+                    readOnly
+                      ? undefined
+                      : form.values.accountant_signed_date
+                        ? new Date(form.values.accountant_signed_date)
+                        : undefined
+                  }
+                  value={
+                    readOnly
+                      ? currentData?.accountant_signed_date
+                        ? new Date(currentData?.accountant_signed_date)
+                        : undefined
+                      : undefined
+                  }
+                  placeholder={
+                    readOnly
+                      ? 'None'
+                      : 'Enter the accountant signed date here...'
+                  }
+                  error={form.errors.accountant_signed_date && ''}
+                  flex={1}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  leftSection={
+                    !readOnly ? <IconCalendar size={18} /> : undefined
+                  }
+                  clearable
+                  sx={{
+                    borderBottom: '2px solid var(--mantine-color-gray-5)',
+                  }}
+                  readOnly={readOnly}
+                />
+              </Stack>
+            </Stack>
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'space-between'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 50%'}
+              p={lgScreenAndBelow ? 'sm' : 'md'}
+              gap={1}
+            >
+              <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                B. Certified:
+                <br />
+                Funds Available
+              </Text>
+
+              <Stack w={'100%'} mt={'md'}>
+                {!readOnly ? (
+                  <DynamicSelect
+                    key={form.key('sig_treasurer_id')}
+                    {...form.getInputProps('sig_treasurer_id')}
+                    variant={'unstyled'}
+                    label={'Treasurer/Authorized Representative:'}
+                    placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                    endpoint={'/libraries/signatories'}
+                    endpointParams={{
+                      paginated: false,
+                      show_all: true,
+                      document: 'dv',
+                      signatory_type: 'treasurer',
+                    }}
+                    defaultData={
+                      currentData?.sig_treasurer_id
+                        ? [
+                            {
+                              value: currentData?.sig_treasurer_id ?? '',
+                              label:
+                                currentData?.signatory_treasurer?.user
+                                  ?.fullname ?? '',
+                            },
+                          ]
+                        : undefined
+                    }
+                    valueColumn={'signatory_id'}
+                    column={'fullname_designation'}
+                    value={form.values.sig_treasurer_id}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    }}
+                    required={!readOnly}
+                    readOnly={readOnly}
+                  />
+                ) : (
+                  <TextInput
+                    label={'Treasurer/Authorized Representative:'}
+                    variant={'unstyled'}
+                    placeholder={'None'}
+                    value={
+                      currentData?.signatory_treasurer?.user?.fullname ?? ''
+                    }
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    }}
+                    readOnly
+                  />
+                )}
+
+                <DateInput
+                  key={form.key('treasurer_signed_date')}
+                  {...form.getInputProps('treasurer_signed_date')}
+                  variant={'unstyled'}
+                  label={'Date'}
+                  valueFormat={'YYYY-MM-DD'}
+                  defaultValue={
+                    readOnly
+                      ? undefined
+                      : form.values.treasurer_signed_date
+                        ? new Date(form.values.treasurer_signed_date)
+                        : undefined
+                  }
+                  value={
+                    readOnly
+                      ? currentData?.treasurer_signed_date
+                        ? new Date(currentData?.treasurer_signed_date)
+                        : undefined
+                      : undefined
+                  }
+                  placeholder={
+                    readOnly
+                      ? 'None'
+                      : 'Enter the treasurer signed date here...'
+                  }
+                  error={form.errors.treasurer_signed_date && ''}
+                  flex={1}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  leftSection={
+                    !readOnly ? <IconCalendar size={18} /> : undefined
+                  }
+                  clearable
+                  sx={{
+                    borderBottom: '2px solid var(--mantine-color-gray-5)',
+                  }}
+                  readOnly={readOnly}
+                />
+              </Stack>
+            </Stack>
+          </Flex>
+
+          <Flex
+            direction={lgScreenAndBelow ? 'column' : 'row'}
+            sx={{ flexGrow: 1 }}
+          >
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'flex-start'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 50%'}
+              p={lgScreenAndBelow ? 'sm' : 'md'}
+            >
+              <Stack gap={1}>
+                <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                  C. Approved for Payment:
+                </Text>
+              </Stack>
+
+              <Stack w={'100%'} mt={'md'}>
+                {!readOnly ? (
+                  <DynamicSelect
+                    key={form.key('sig_head_id')}
+                    {...form.getInputProps('sig_head_id')}
+                    variant={'unstyled'}
+                    label={'Agency Head / Authorized Representative:'}
+                    placeholder={!readOnly ? 'Select a signatory...' : 'None'}
+                    endpoint={'/libraries/signatories'}
+                    endpointParams={{
+                      paginated: false,
+                      show_all: true,
+                      document: 'dv',
+                      signatory_type: 'head',
+                    }}
+                    defaultData={
+                      currentData?.sig_head_id
+                        ? [
+                            {
+                              value: currentData?.sig_head_id ?? '',
+                              label:
+                                currentData?.signatory_head?.user?.fullname ??
+                                '',
+                            },
+                          ]
+                        : undefined
+                    }
+                    valueColumn={'signatory_id'}
+                    column={'fullname_designation'}
+                    value={form.values.sig_head_id}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    }}
+                    required={!readOnly}
+                    readOnly={readOnly}
+                  />
+                ) : (
+                  <TextInput
+                    label={'Agency Head / Authorized Representative:'}
+                    variant={'unstyled'}
+                    placeholder={'None'}
+                    value={currentData?.signatory_head?.user?.fullname ?? ''}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    }}
+                    readOnly
+                  />
+                )}
+
+                <DateInput
+                  key={form.key('head_signed_date')}
+                  {...form.getInputProps('head_signed_date')}
+                  variant={'unstyled'}
+                  label={'Date'}
+                  valueFormat={'YYYY-MM-DD'}
+                  defaultValue={
+                    readOnly
+                      ? undefined
+                      : form.values.head_signed_date
+                        ? new Date(form.values.head_signed_date)
+                        : undefined
+                  }
+                  value={
+                    readOnly
+                      ? currentData?.head_signed_date
+                        ? new Date(currentData?.head_signed_date)
+                        : undefined
+                      : undefined
+                  }
+                  placeholder={
+                    readOnly ? 'None' : 'Enter the head signed date here...'
+                  }
+                  error={form.errors.head_signed_date && ''}
+                  flex={1}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  leftSection={
+                    !readOnly ? <IconCalendar size={18} /> : undefined
+                  }
+                  clearable
+                  sx={{
+                    borderBottom: '2px solid var(--mantine-color-gray-5)',
+                  }}
+                  w={'100%'}
+                  readOnly={readOnly}
+                />
+              </Stack>
+            </Stack>
+            <Stack
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              justify={'flex-start'}
+              align={'flex-start'}
+              flex={lgScreenAndBelow ? 1 : '0 0 50%'}
+              p={lgScreenAndBelow ? 'sm' : 'md'}
+              gap={'xs'}
+            >
+              <Stack gap={1}>
+                <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                  D. Received Payment:
+                </Text>
+              </Stack>
+
+              <Stack w={'100%'} gap={0}>
+                <Flex
+                  direction={lgScreenAndBelow ? 'column' : 'row'}
+                  sx={{
+                    flexGrow: 1,
+                    margin: lgScreenAndBelow ? '0px -13px' : '0 -17px 0 -17px',
+                  }}
+                >
+                  <Stack
+                    bd={'1px solid var(--mantine-color-gray-8)'}
+                    justify={'center'}
+                    align={'flex-start'}
+                    flex={lgScreenAndBelow ? 1 : '0 0 30%'}
+                    p={'sm'}
+                  >
+                    <TextInput
+                      key={form.key('check_no')}
+                      {...form.getInputProps('check_no')}
+                      variant={!readOnly ? 'default' : 'unstyled'}
+                      label={'Check No.'}
+                      placeholder={
+                        !readOnly ? 'Enter the check no. here...' : 'None'
+                      }
+                      defaultValue={readOnly ? undefined : form.values.check_no}
+                      value={readOnly ? currentData?.check_no : undefined}
+                      error={form.errors.check_no && ''}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      w={'100%'}
+                      readOnly={readOnly}
+                    />
+                  </Stack>
+                  <Stack
+                    bd={'1px solid var(--mantine-color-gray-8)'}
+                    justify={'center'}
+                    align={'flex-start'}
+                    flex={lgScreenAndBelow ? 1 : '0 0 40%'}
+                    p={'sm'}
+                  >
+                    <TextInput
+                      key={form.key('bank_name')}
+                      {...form.getInputProps('bank_name')}
+                      variant={!readOnly ? 'default' : 'unstyled'}
+                      label={'Bank Name'}
+                      placeholder={
+                        !readOnly ? 'Enter the bank name here...' : 'None'
+                      }
+                      defaultValue={
+                        readOnly ? undefined : form.values.bank_name
+                      }
+                      value={readOnly ? currentData?.bank_name : undefined}
+                      error={form.errors.bank_name && ''}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      w={'100%'}
+                      readOnly={readOnly}
+                    />
+                  </Stack>
+                  <Stack
+                    bd={'1px solid var(--mantine-color-gray-8)'}
+                    justify={'center'}
+                    align={'flex-start'}
+                    flex={lgScreenAndBelow ? 1 : '0 0 30%'}
+                    p={'sm'}
+                  >
+                    <DateInput
+                      key={form.key('check_date')}
+                      {...form.getInputProps('check_date')}
+                      variant={!readOnly ? 'default' : 'unstyled'}
+                      label={'Check Date'}
+                      valueFormat={'YYYY-MM-DD'}
+                      defaultValue={
+                        readOnly
+                          ? undefined
+                          : form.values.check_date
+                            ? new Date(form.values.check_date)
+                            : undefined
+                      }
+                      value={
+                        readOnly
+                          ? currentData?.check_date
+                            ? new Date(currentData?.check_date)
+                            : undefined
+                          : undefined
+                      }
+                      placeholder={
+                        readOnly ? 'None' : 'Enter the check date here...'
+                      }
+                      error={form.errors.check_date && ''}
+                      flex={1}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      leftSection={
+                        !readOnly ? <IconCalendar size={18} /> : undefined
+                      }
+                      w={'100%'}
+                      clearable
+                      readOnly={readOnly}
+                    />
+                  </Stack>
+                </Flex>
+
+                <Flex
+                  direction={lgScreenAndBelow ? 'column' : 'row'}
+                  sx={{
+                    flexGrow: 1,
+                    margin: lgScreenAndBelow ? '0px -13px' : '0 -17px 0 -17px',
+                  }}
+                >
+                  <Stack
+                    bd={'1px solid var(--mantine-color-gray-8)'}
+                    justify={'center'}
+                    align={'flex-start'}
+                    flex={lgScreenAndBelow ? 1 : '0 0 70%'}
+                    p={'sm'}
+                  >
+                    <TextInput
+                      key={form.key('received_name')}
+                      {...form.getInputProps('received_name')}
+                      variant={!readOnly ? 'default' : 'unstyled'}
+                      label={'Printed Name'}
+                      placeholder={
+                        !readOnly ? 'Enter the printed name here...' : 'None'
+                      }
+                      defaultValue={
+                        readOnly ? undefined : form.values.received_name
+                      }
+                      value={readOnly ? currentData?.received_name : undefined}
+                      error={form.errors.received_name && ''}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      w={'100%'}
+                      readOnly={readOnly}
+                    />
+                  </Stack>
+                  <Stack
+                    bd={'1px solid var(--mantine-color-gray-8)'}
+                    justify={'center'}
+                    align={'flex-start'}
+                    flex={lgScreenAndBelow ? 1 : '0 0 30%'}
+                    p={'sm'}
+                  >
+                    <DateInput
+                      key={form.key('received_date')}
+                      {...form.getInputProps('received_date')}
+                      variant={!readOnly ? 'default' : 'unstyled'}
+                      label={'Received Date'}
+                      valueFormat={'YYYY-MM-DD'}
+                      defaultValue={
+                        readOnly
+                          ? undefined
+                          : form.values.received_date
+                            ? new Date(form.values.received_date)
+                            : undefined
+                      }
+                      value={
+                        readOnly
+                          ? currentData?.received_date
+                            ? new Date(currentData?.received_date)
+                            : undefined
+                          : undefined
+                      }
+                      placeholder={
+                        readOnly ? 'None' : 'Enter the received date here...'
+                      }
+                      error={form.errors.received_date && ''}
+                      flex={1}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      leftSection={
+                        !readOnly ? <IconCalendar size={18} /> : undefined
+                      }
+                      w={'100%'}
+                      clearable
+                      readOnly={readOnly}
+                    />
+                  </Stack>
+                </Flex>
+
+                <Flex
+                  direction={lgScreenAndBelow ? 'column' : 'row'}
+                  sx={{
+                    flexGrow: 1,
+                    margin: lgScreenAndBelow
+                      ? '0px -13px -13px -13px'
+                      : '0 -17px -17px -17px',
+                  }}
+                >
+                  <Stack
+                    bd={'1px solid var(--mantine-color-gray-8)'}
+                    justify={'center'}
+                    align={'flex-start'}
+                    flex={lgScreenAndBelow ? 1 : '0 0 40%'}
+                    p={'sm'}
+                  >
+                    <TextInput
+                      key={form.key('or_other_document')}
+                      {...form.getInputProps('or_other_document')}
+                      variant={!readOnly ? 'default' : 'unstyled'}
+                      label={'OR/Other Documents'}
+                      placeholder={
+                        !readOnly
+                          ? 'Enter the OR or other documents here...'
+                          : 'None'
+                      }
+                      defaultValue={
+                        readOnly ? undefined : form.values.or_other_document
+                      }
+                      value={
+                        readOnly ? currentData?.or_other_document : undefined
+                      }
+                      error={form.errors.or_other_document && ''}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      w={'100%'}
+                      readOnly={readOnly}
+                    />
+                  </Stack>
+                  <Stack
+                    bd={'1px solid var(--mantine-color-gray-8)'}
+                    justify={'center'}
+                    align={'flex-start'}
+                    flex={lgScreenAndBelow ? 1 : '0 0 30%'}
+                    p={'sm'}
+                  >
+                    <TextInput
+                      key={form.key('jev_no')}
+                      {...form.getInputProps('jev_no')}
+                      variant={!readOnly ? 'default' : 'unstyled'}
+                      label={'JEV No.'}
+                      placeholder={
+                        !readOnly ? 'Enter the JEV no. here...' : 'None'
+                      }
+                      defaultValue={readOnly ? undefined : form.values.jev_no}
+                      value={readOnly ? currentData?.jev_no : undefined}
+                      error={form.errors.jev_no && ''}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      w={'100%'}
+                      readOnly={readOnly}
+                    />
+                  </Stack>
+                  <Stack
+                    bd={'1px solid var(--mantine-color-gray-8)'}
+                    justify={'center'}
+                    align={'flex-start'}
+                    flex={lgScreenAndBelow ? 1 : '0 0 30%'}
+                    p={'sm'}
+                  >
+                    <DateInput
+                      key={form.key('jev_date')}
+                      {...form.getInputProps('jev_date')}
+                      variant={!readOnly ? 'default' : 'unstyled'}
+                      label={'JEV Date'}
+                      valueFormat={'YYYY-MM-DD'}
+                      defaultValue={
+                        readOnly
+                          ? undefined
+                          : form.values.jev_date
+                            ? new Date(form.values.jev_date)
+                            : undefined
+                      }
+                      value={
+                        readOnly
+                          ? currentData?.jev_date
+                            ? new Date(currentData?.jev_date)
+                            : undefined
+                          : undefined
+                      }
+                      placeholder={
+                        readOnly ? 'None' : 'Enter the JEV date here...'
+                      }
+                      error={form.errors.jev_date && ''}
+                      flex={1}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      leftSection={
+                        !readOnly ? <IconCalendar size={18} /> : undefined
+                      }
+                      w={'100%'}
+                      clearable
+                      readOnly={readOnly}
+                    />
+                  </Stack>
+                </Flex>
+              </Stack>
+            </Stack>
+          </Flex>
         </Card>
       </Stack>
     </form>

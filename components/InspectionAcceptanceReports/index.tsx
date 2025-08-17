@@ -207,6 +207,7 @@ const InspectionAcceptanceReportsClient = ({
               <ActionsClient
                 permissions={permissions ?? []}
                 id={body.id ?? ''}
+                poId={body.purchase_order_id ?? ''}
                 status={body.status ?? 'draft'}
                 documentType={purchaseOrder?.document_type ?? 'po'}
                 handleOpenActionModal={handleOpenActionModal}

@@ -205,6 +205,7 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
               <ActionsClient
                 permissions={permissions ?? []}
                 id={body.id ?? ''}
+                poId={body.purchase_order_id ?? ''}
                 status={body.status ?? 'draft'}
                 handleOpenActionModal={handleOpenActionModal}
               />

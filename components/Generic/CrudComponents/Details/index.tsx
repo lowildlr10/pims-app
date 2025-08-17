@@ -38,6 +38,9 @@ import InspectionAcceptanceReportStatusClient from '@/components/InspectionAccep
 import ObligationRequestFormClient from '@/components/ObligationRequests/Form';
 import ObligationRequestActionsClient from '@/components/ObligationRequests/Actions';
 import ObligationRequestStatusClient from '@/components/ObligationRequests/Status';
+import DisbursementVoucherFormClient from '@/components/DisbursementVouchers/Form';
+import DisbursementVoucherActionsClient from '@/components/DisbursementVouchers/Actions';
+import DisbursementVoucherStatusClient from '@/components/DisbursementVouchers/Status';
 import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
 import InventorySupplyStatusClient from '@/components/InventorySupplies/Status';
 import InventorySupplyActionsClient from '@/components/InventorySupplies/Actions';
@@ -161,6 +164,13 @@ export const DetailActionsClient = ({
             status={(currentStatus as ObligationRequestStatus) ?? ''}
           />
         );
+      case 'dv':
+        return (
+          <DisbursementVoucherStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as DisbursementVoucherStatus) ?? ''}
+          />
+        );
       case 'inv-supply':
         return (
           <InventorySupplyStatusClient
@@ -257,6 +267,17 @@ export const DetailActionsClient = ({
             <ObligationRequestActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
+              poId={data?.purchase_order_id ?? ''}
+              status={data?.status ?? 'draft'}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'dv' && (
+            <DisbursementVoucherActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              poId={data?.purchase_order_id ?? ''}
               status={data?.status ?? 'draft'}
               handleOpenActionModal={handleOpenActionModal}
             />
@@ -645,6 +666,10 @@ const DetailClient = ({
 
           {currentData && content === 'obr' && (
             <ObligationRequestFormClient data={currentData} readOnly />
+          )}
+
+          {currentData && content === 'dv' && (
+            <DisbursementVoucherFormClient data={currentData} readOnly />
           )}
 
           {currentData && content === 'inv-supply' && (

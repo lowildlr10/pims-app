@@ -13,6 +13,7 @@ import AbstractQuotionFormClient from '../../../AbstractQuotations/Form';
 import PurchaseOrderFormClient from '@/components/PurchaseOrders/Form';
 import InspectionAcceptanceReportFormClient from '@/components/InspectionAcceptanceReports/Form';
 import ObligationRequestFormClient from '@/components/ObligationRequests/Form';
+import DisbursementVoucherFormClient from '@/components/DisbursementVouchers/Form';
 import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
 import RisFormClient from '../../../InventoryIssuances/Forms/RisForm';
 import IcsFormClient from '../../../InventoryIssuances/Forms/IcsForm';
@@ -114,6 +115,7 @@ const UpdateClient = ({
           color: 'green',
         });
 
+        refreshData();
         setPayload({});
         handleCancel();
       })
@@ -222,6 +224,20 @@ const UpdateClient = ({
           ) &&
             content === 'obr' && (
               <ObligationRequestFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
+
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'dv' && (
+              <DisbursementVoucherFormClient
                 ref={formRef}
                 data={currentData}
                 handleCreateUpdate={handleUpdate}

@@ -8,13 +8,12 @@ import DataTableClient from '../Generic/DataTable';
 import StatusClient from './Status';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import Helper from '@/utils/Helpers';
-import { Tooltip } from '@mantine/core';
+import { Group, Text, Tooltip } from '@mantine/core';
 import { ActionIcon } from '@mantine/core';
-import { IconLibrary } from '@tabler/icons-react';
+import { IconLibrary, IconMessageExclamation } from '@tabler/icons-react';
 import { Menu } from '@mantine/core';
 import ActionsClient from './Actions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
-import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const MAIN_MODULE: ModuleType = 'dv';
 
@@ -42,8 +41,8 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'particulars_formatted',
-      label: 'Particulars',
+      id: 'explanation_formatted',
+      label: 'Explanation',
       width: '44%',
       sortable: true,
     },
@@ -153,7 +152,7 @@ const DisbursementVouchersClient = ({ user, permissions }: MainProps) => {
   }, [activeData]);
 
   useEffect(() => {
-    const obrData = data?.data?.map((body: ObligationRequestType) => {
+    const obrData = data?.data?.map((body: DisbursementVoucherType) => {
       const { purchase_order, payee, ...obrData } = body;
 
       return {
@@ -165,9 +164,21 @@ const DisbursementVouchersClient = ({ user, permissions }: MainProps) => {
           />
         ),
         po_no: purchase_order?.po_no ?? '-',
-        particulars_formatted: Helper.shortenText(
-          body.particulars ?? '-',
-          lgScreenAndBelow ? 80 : 150
+        explanation_formatted: body.explanation ? (
+          Helper.shortenText(body.explanation, lgScreenAndBelow ? 80 : 150)
+        ) : (
+          <Group gap={3}>
+            <IconMessageExclamation
+              color={'var(--mantine-color-red-7)'}
+              size={lgScreenAndBelow ? 16 : 18}
+            />
+            <Text
+              size={lgScreenAndBelow ? 'xs' : 'sm'}
+              c={'var(--mantine-color-red-7)'}
+            >
+              Explanation not provided...
+            </Text>
+          </Group>
         ),
         payee_name: body.payee?.supplier_name ?? '-',
         action: (
@@ -194,6 +205,7 @@ const DisbursementVouchersClient = ({ user, permissions }: MainProps) => {
               <ActionsClient
                 permissions={permissions ?? []}
                 id={body.id ?? ''}
+                poId={body.purchase_order_id ?? ''}
                 status={body.status ?? 'draft'}
                 handleOpenActionModal={handleOpenActionModal}
               />

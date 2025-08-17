@@ -18,7 +18,9 @@ import {
   IconArrowForward,
   IconAwardFilled,
   IconCancel,
+  IconCashBanknoteMove,
   IconCheck,
+  IconChecks,
   IconDiscountCheckFilled,
   IconPackageImport,
   IconShoppingCartSearch,
@@ -156,6 +158,7 @@ const ActionModalClient = ({
           />
         );
 
+      case 'obligate':
       case 'complete':
         return (
           <IconCheck
@@ -204,6 +207,24 @@ const ActionModalClient = ({
       case 'inspect':
         return (
           <IconShoppingCartSearch
+            color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'disburse':
+        return (
+          <IconCashBanknoteMove
+            color={'var(--mantine-color-orange-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'paid':
+        return (
+          <IconChecks
             color={'var(--mantine-color-green-3)'}
             size={18}
             stroke={1.5}

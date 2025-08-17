@@ -1,12 +1,7 @@
 import Helper from '@/utils/Helpers';
 import { Badge, Loader, Tooltip } from '@mantine/core';
 import {
-  IconAwardFilled,
-  IconCancel,
-  IconChecklist,
-  IconDiscountCheckFilled,
   IconFileIsr,
-  IconFileSearch,
   IconThumbDownFilled,
   IconThumbUpFilled,
 } from '@tabler/icons-react';
@@ -47,7 +42,7 @@ const StatusClient = ({
         </Tooltip>
       );
 
-    case 'approved':
+    case 'obligated':
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge

@@ -56,7 +56,10 @@ type ActionType =
   | 'receive'
   | 'for_delivery'
   | 'delivered'
-  | 'inspect';
+  | 'inspect'
+  | 'obligate'
+  | 'disburse'
+  | 'paid';
 
 type CompanyType = {
   id?: string;
@@ -398,7 +401,6 @@ type DisbursementVoucherStatus =
   | 'draft'
   | 'pending'
   | 'disapproved'
-  | 'disbursed'
   | 'for_payment'
   | 'paid';
 
@@ -753,6 +755,7 @@ type ObligationRequestType = {
   sig_budget_id?: string;
   signatory_budget?: SignatoryType;
   budget_signed_date?: string;
+  disapproved_reason?: string;
   status?: ObligationRequestStatus;
   status_timestamps?: {
     draft_at?: string;
@@ -795,6 +798,7 @@ type DisbursementVoucherType = {
   signatory_treasurer?: SignatoryType;
   treasurer_signed_date?: string;
   sig_head_id?: string;
+  head_signed_date?: string;
   signatory_head?: SignatoryType;
   check_no?: string;
   bank_name?: string;
@@ -803,7 +807,8 @@ type DisbursementVoucherType = {
   received_date?: string;
   or_other_document?: string;
   jev_no?: string;
-  jevt_date?: string;
+  jev_date?: string;
+  disapproved_reason?: string;
   status?: DisbursementVoucherStatus;
   status_timestamps?: {
     draft_at?: string;
@@ -813,8 +818,6 @@ type DisbursementVoucherType = {
   };
   created_at?: string;
   updated_at?: string;
-  fpps?: ObligationRequestFppType[];
-  accounts?: ObligationRequestFppType[];
 };
 
 type InventorySupplyType = {

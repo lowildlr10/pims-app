@@ -1,4 +1,5 @@
 import {
+  Alert,
   Card,
   Checkbox,
   Flex,
@@ -23,7 +24,11 @@ import React, {
 import DynamicSelect from '../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
 import { randomId, useMediaQuery } from '@mantine/hooks';
-import { IconAsterisk, IconCalendar } from '@tabler/icons-react';
+import {
+  IconAsterisk,
+  IconCalendar,
+  IconExclamationCircleFilled,
+} from '@tabler/icons-react';
 import { DateInput } from '@mantine/dates';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
@@ -115,6 +120,7 @@ const FormClient = forwardRef<
       key: string;
       obligation_request_id: string | undefined;
       account_id: string;
+      code?: string;
       amount: number | undefined;
     }[]
   >([]);
@@ -126,6 +132,7 @@ const FormClient = forwardRef<
   const [loadingResponsibilityCenter, setLoadingResponsibilityCenter] =
     useState(false);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
+  const [loadingFpps, setLoadingFpps] = useState(false);
   const [company, setCompany] = useState<CompanyType>();
   const [responsibilityCenters, setResponsibilityCenters] = useState<
     {
@@ -133,6 +140,7 @@ const FormClient = forwardRef<
       label: string;
     }[]
   >([]);
+  const [fpps, setFpps] = useState<FunctionProgramProjectType[]>([]);
   const [accounts, setAccounts] = useState<AccountType[]>([]);
 
   useEffect(() => {
@@ -166,16 +174,15 @@ const FormClient = forwardRef<
     const selectedCompliances = complianceKeys.filter((key) => compliance[key]);
 
     if (selectedFundings.length) {
-      setSelectedFunds((prev) => [...prev, ...selectedFundings]);
+      setSelectedFunds(selectedFundings);
     }
 
     if (selectedCompliances.length) {
-      setSelectedComplianceStatus((prev) => [...prev, ...selectedCompliances]);
+      setSelectedComplianceStatus(selectedCompliances);
     }
 
     if (!Helper.empty(currentData?.accounts) || currentData?.accounts) {
       setSelectedAccounts((prev) => [
-        ...prev,
         ...(currentData?.accounts?.map(
           (account) => account.account_id
         ) as string[]),
@@ -191,8 +198,9 @@ const FormClient = forwardRef<
         obligation_request_id: currentData.id,
         account_id: selAccount,
         amount:
-          currentData.accounts?.find((account) => account.id === selAccount)
-            ?.amount ?? selectedAccountObjects[index]?.amount,
+          currentData.accounts?.find(
+            (account) => account.account_id === selAccount
+          )?.amount ?? selectedAccountObjects[index]?.amount,
       }))
       .sort((a, b) => {
         if (a.code === undefined) return 1;
@@ -201,7 +209,7 @@ const FormClient = forwardRef<
       });
 
     setSelectedAccountObjects(accountObjs);
-  }, [selectedAccounts]);
+  }, [selectedAccounts, accounts]);
 
   useEffect(() => {
     setLoadingCompany(true);
@@ -274,6 +282,40 @@ const FormClient = forwardRef<
           }
         })
         .finally(() => setLoadingResponsibilityCenter(false));
+    };
+
+    fetch();
+  }, []);
+
+  useEffect(() => {
+    setLoadingFpps(true);
+
+    let retries = 3;
+
+    const fetch = () => {
+      API.get('/libraries/function-program-projects', {
+        paginated: false,
+        show_all: true,
+        sort_direction: 'asc',
+      })
+        .then((res) => {
+          const fpps: FunctionProgramProjectType[] = res?.data;
+          setFpps(fpps);
+        })
+        .catch(() => {
+          if (retries > 0) {
+            retries -= 1;
+            fetch();
+          } else {
+            notify({
+              title: 'Failed',
+              message: 'Failed after multiple retries',
+              color: 'red',
+            });
+            setLoadingFpps(false);
+          }
+        })
+        .finally(() => setLoadingFpps(false));
     };
 
     fetch();
@@ -412,18 +454,25 @@ const FormClient = forwardRef<
                 readOnly={readOnly}
               />
             ) : (
-              <Textarea
-                variant={readOnly ? 'unstyled' : 'default'}
-                placeholder={'None'}
-                value={
-                  currentData?.fpps
-                    ?.map((fpp, i) => fpp.fpp?.code)
-                    .join('\n') ?? '-'
-                }
-                size={lgScreenAndBelow ? 'sm' : 'md'}
-                autosize
-                readOnly
-              />
+              <Stack>
+                {currentData.fpps?.map((selFpp) => {
+                  const code = fpps.find(
+                    (fpp) => fpp.id == selFpp.fpp_id
+                  )?.code;
+
+                  return (
+                    <Stack key={selFpp.fpp_id}>
+                      <Text
+                        size={lgScreenAndBelow ? 'sm' : 'md'}
+                        w={'100%'}
+                        flex={1}
+                      >
+                        {code}
+                      </Text>
+                    </Stack>
+                  );
+                })}
+              </Stack>
             )}
           </Table.Td>
         );
@@ -451,18 +500,19 @@ const FormClient = forwardRef<
                 readOnly={readOnly}
               />
             ) : (
-              <Textarea
-                variant={readOnly ? 'unstyled' : 'default'}
-                placeholder={'None'}
-                value={
-                  currentData?.accounts
-                    ?.map((account, i) => account.account_id)
-                    .join('\n') ?? '-'
-                }
-                size={lgScreenAndBelow ? 'sm' : 'md'}
-                autosize
-                readOnly
-              />
+              <Stack>
+                {selectedAccountObjects?.map((account) => (
+                  <Stack key={account.account_id}>
+                    <Text
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      w={'100%'}
+                      flex={1}
+                    >
+                      {account?.code}
+                    </Text>
+                  </Stack>
+                ))}
+              </Stack>
             )}
           </Table.Td>
         );
@@ -510,31 +560,47 @@ const FormClient = forwardRef<
                             />
                           </Text>
                         }
+                        disabled={readOnly}
                       >
-                        <NumberInput
-                          variant={readOnly ? 'unstyled' : 'default'}
-                          label={`Amount for ${account?.code ?? 'Account'}`}
-                          placeholder='Enter amount here...'
-                          size={lgScreenAndBelow ? 'sm' : 'md'}
-                          min={0}
-                          max={remainingAmount}
-                          clampBehavior='strict'
-                          decimalScale={2}
-                          fixedDecimalScale
-                          thousandSeparator=','
-                          value={amount}
-                          onChange={(value) => {
-                            setSelectedAccountObjects((prev) =>
-                              prev.map((acc) =>
-                                acc.account_id === account?.id
-                                  ? { ...acc, amount: (value ?? 0) as number }
-                                  : acc
-                              )
-                            );
-                          }}
-                          onBlur={() => handleCalculateRemaining()}
-                          readOnly={readOnly}
-                        />
+                        {!readOnly ? (
+                          <NumberInput
+                            variant={readOnly ? 'unstyled' : 'default'}
+                            label={
+                              !readOnly
+                                ? `Amount for ${account?.code ?? 'Account'}`
+                                : undefined
+                            }
+                            placeholder='Enter amount here...'
+                            size={lgScreenAndBelow ? 'sm' : 'md'}
+                            min={0}
+                            max={remainingAmount}
+                            clampBehavior='strict'
+                            decimalScale={2}
+                            fixedDecimalScale
+                            thousandSeparator=','
+                            value={amount}
+                            onChange={(value) => {
+                              setSelectedAccountObjects((prev) =>
+                                prev.map((acc) =>
+                                  acc.account_id === account?.id
+                                    ? { ...acc, amount: (value ?? 0) as number }
+                                    : acc
+                                )
+                              );
+                            }}
+                            onBlur={() => handleCalculateRemaining()}
+                            readOnly={readOnly}
+                          />
+                        ) : (
+                          <Stack fz={lgScreenAndBelow ? 'sm' : 'md'}>
+                            <NumberFormatter
+                              decimalScale={2}
+                              fixedDecimalScale
+                              thousandSeparator=','
+                              value={amount}
+                            />
+                          </Stack>
+                        )}
                       </Tooltip>
                       <input
                         key={form.key(`accounts.${index}.account_id`)}
@@ -582,6 +648,18 @@ const FormClient = forwardRef<
       })}
     >
       <Stack justify={'center'}>
+        {['disapproved', 'draft'].includes(currentData?.status ?? '') &&
+          currentData?.disapproved_reason && (
+            <Alert
+              variant='light'
+              color={'var(--mantine-color-red-9)'}
+              title='Reason for Disapproval'
+              icon={<IconExclamationCircleFilled size={24} />}
+            >
+              {currentData.disapproved_reason}
+            </Alert>
+          )}
+
         <Card
           shadow={'xs'}
           padding={lgScreenAndBelow ? 'md' : 'lg'}
