@@ -35,7 +35,7 @@ const DisapproveContent = forwardRef<
       onSubmit={form.onSubmit((values) => {
         if (handleAction) {
           handleAction({
-            disapproved_reason: values.disapproved_reason ?? null
+            disapproved_reason: values.disapproved_reason ?? null,
           });
         }
       })}

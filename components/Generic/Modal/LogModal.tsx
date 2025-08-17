@@ -5,25 +5,33 @@ import {
   Group,
   Modal,
   Pagination,
+  Paper,
   ScrollArea,
+  Spoiler,
   Stack,
   Text,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { IconRefresh, IconX } from '@tabler/icons-react';
+import { IconCalendarClock, IconRefresh, IconX } from '@tabler/icons-react';
 import useSWR from 'swr';
 import API from '@/libs/API';
 import { API_REFRESH_INTERVAL } from '@/config/intervals';
-import { LoadingOverlay } from '@mantine/core';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useMediaQuery } from '@mantine/hooks';
+import CustomLoadingOverlay from '../CustomLoadingOverlay';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
-const LogCard = ({ fullname, message, logType, loggedAt }: LogCardProps) => {
+const LogCard = ({
+  fullname,
+  message,
+  details,
+  logType,
+  loggedAt,
+}: LogCardProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   return (
@@ -35,7 +43,7 @@ const LogCard = ({ fullname, message, logType, loggedAt }: LogCardProps) => {
     >
       <Group justify='space-between' mt='md' mb='xs'>
         <Text size={lgScreenAndBelow ? 'sm' : 'md'} fw={500}>
-          {fullname ?? '-'}
+          {fullname ?? 'PIMS - System Generated'}
         </Text>
         <Badge
           size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -51,13 +59,42 @@ const LogCard = ({ fullname, message, logType, loggedAt }: LogCardProps) => {
 
       <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>{message}</Text>
 
-      <Text
-        size={lgScreenAndBelow ? 'xs' : 'sm'}
-        c='dimmed'
-        pt={lgScreenAndBelow ? 'xs' : 'sm'}
+      {details && (
+        <Paper
+          p={lgScreenAndBelow ? 'xs' : 'sm'}
+          pb={5}
+          mt={lgScreenAndBelow ? 'xs' : 'sm'}
+          shadow={'xs'}
+          bd={'1px solid var(--mantine-color-gray-4)'}
+        >
+          <Spoiler
+            fz={lgScreenAndBelow ? 'xs' : '0.75rem'}
+            fs={'italic'}
+            maxHeight={50}
+            showLabel={
+              <Text size={lgScreenAndBelow ? 'xs' : '0.75rem'}>Show more</Text>
+            }
+            hideLabel={
+              <Text size={lgScreenAndBelow ? 'xs' : '0.75rem'}>Hide</Text>
+            }
+          >
+            <Text fw={500} size={lgScreenAndBelow ? 'xs' : '0.75rem'}>
+              Additional Details:
+            </Text>
+            {details}
+          </Spoiler>
+        </Paper>
+      )}
+
+      <Group
+        fz={lgScreenAndBelow ? 'xs' : 'sm'}
+        c={'dimmed'}
+        mt={lgScreenAndBelow ? 'sm' : 'md'}
+        gap={5}
       >
-        {loggedAt}
-      </Text>
+        <IconCalendarClock size={lgScreenAndBelow ? 12 : 14} />
+        <Text size={lgScreenAndBelow ? 'xs' : 'sm'}>{loggedAt}</Text>
+      </Group>
     </Card>
   );
 };
@@ -118,11 +155,7 @@ const LogModalClient = ({
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <LoadingOverlay
-        visible={isLoading}
-        zIndex={1000}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
+      <CustomLoadingOverlay visible={isLoading} />
 
       {opened && (
         <Stack mb={60} p={'sm'}>
@@ -140,17 +173,13 @@ const LogModalClient = ({
             data?.data.map((log) => (
               <LogCard
                 key={log.id}
-                fullname={log.user?.fullname ?? '-'}
+                fullname={log.user?.fullname}
                 message={log.message ?? '-'}
+                details={log.details ?? ''}
                 logType={log.log_type ?? 'log'}
                 loggedAt={
                   log.logged_at
-                    ? dayjs
-                      .duration(
-                        dayjs(log.logged_at).diff(dayjs()),
-                        'milliseconds'
-                      )
-                      .humanize(true)
+                    ? dayjs(log.logged_at).format('ddd, MMM D YYYY, h:mm A')
                     : '-'
                 }
               />

@@ -4,6 +4,7 @@ import {
   IconArrowForward,
   IconFileIsr,
   IconPackageImport,
+  IconShoppingCartCopy,
   IconShoppingCartSearch,
   IconThumbUpFilled,
   IconTruckDelivery,
@@ -98,7 +99,7 @@ const StatusClient = ({ size = 'md', status }: PurchaseOrderStatusProps) => {
         </Tooltip>
       );
 
-    case 'inspection':
+    case 'for_inspection':
       return (
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
@@ -106,6 +107,20 @@ const StatusClient = ({ size = 'md', status }: PurchaseOrderStatusProps) => {
             color={'var(--mantine-color-indigo-7)'}
             variant={'light'}
             leftSection={<IconShoppingCartSearch size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'inspected':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-green-9)'}
+            variant={'light'}
+            leftSection={<IconShoppingCartCopy size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>

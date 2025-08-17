@@ -130,15 +130,17 @@ const PaperSizesClient = ({ permissions }: LibraryProps) => {
   }, [activeData]);
 
   useEffect(() => {
-    setShowCreate([
-      'supply:*',
-      ...getAllowedPermissions(MAIN_MODULE, 'create'),
-    ].some((permission) => permissions?.includes(permission)));
+    setShowCreate(
+      ['supply:*', ...getAllowedPermissions(MAIN_MODULE, 'create')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
 
-    setActiveDataEditable([
-      'supply:*',
-      ...getAllowedPermissions(MAIN_MODULE, 'update'),
-    ].some((permission) => permissions?.includes(permission)));
+    setActiveDataEditable(
+      ['supply:*', ...getAllowedPermissions(MAIN_MODULE, 'update')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
   }, [permissions]);
 
   useEffect(() => {

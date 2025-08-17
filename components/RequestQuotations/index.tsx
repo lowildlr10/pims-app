@@ -253,10 +253,11 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
   }, [activeData]);
 
   useEffect(() => {
-    setShowCreateSubItem([
-      'supply:*',
-      ...getAllowedPermissions(SUB_MODULE, 'create'),
-    ].some((permission) => permissions?.includes(permission)));
+    setShowCreateSubItem(
+      ['supply:*', ...getAllowedPermissions(SUB_MODULE, 'create')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
   }, [permissions]);
 
   useEffect(() => {

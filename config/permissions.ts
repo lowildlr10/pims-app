@@ -180,7 +180,7 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
-        label: 'Receive PO/JO (For Delivery)',
+        label: 'Receive PO (For Delivery)',
         value: 'receive',
         checked: false,
       },
@@ -236,15 +236,35 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     ],
   },
   {
-    label: 'Obligation Request & Status',
-    description: 'Scope for Obligation Request & Status module',
-    module_type: 'ors',
+    label: 'Obligation Request',
+    description: 'Scope for Obligation Request module',
+    module_type: 'obr',
     checked: false,
     indeterminate: false,
     scopes: [
       {
         label: 'View',
         value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+      {
+        label: 'Pending for Obligation',
+        value: 'pending',
+        checked: false,
+      },
+      {
+        label: 'Disapprove',
+        value: 'disapprove',
+        checked: false,
+      },
+      {
+        label: 'Obligate',
+        value: 'obligate',
         checked: false,
       },
       {
@@ -264,6 +284,31 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
       {
         label: 'View',
         value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+      {
+        label: 'Pending for Obligation',
+        value: 'pending',
+        checked: false,
+      },
+      {
+        label: 'Disapprove',
+        value: 'disapprove',
+        checked: false,
+      },
+      {
+        label: 'Disburse',
+        value: 'disburse',
+        checked: false,
+      },
+      {
+        label: 'Set to "Paid"',
+        value: 'paid',
         checked: false,
       },
       {
@@ -422,9 +467,81 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
 
   // System libraries
   {
+    label: 'Account Classification Library',
+    description: 'Scope for Account Classification Library module',
+    module_type: 'lib-account-class',
+    checked: false,
+    indeterminate: false,
+    scopes: [
+      {
+        label: 'View',
+        value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Create',
+        value: 'create',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+    ],
+  },
+  {
+    label: 'Account Library',
+    description: 'Scope for Account Library module',
+    module_type: 'lib-account',
+    checked: false,
+    indeterminate: false,
+    scopes: [
+      {
+        label: 'View',
+        value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Create',
+        value: 'create',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+    ],
+  },
+  {
     label: 'Bids and Awards Committee Library',
     description: 'Scope for Bids and Awards Committee Library module',
     module_type: 'lib-bid-committee',
+    checked: false,
+    indeterminate: false,
+    scopes: [
+      {
+        label: 'View',
+        value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Create',
+        value: 'create',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+    ],
+  },
+  {
+    label: 'Function, Program, and Projects Library',
+    description: 'Scope for Function, Program, and Projects Library module',
+    module_type: 'lib-fpp',
     checked: false,
     indeterminate: false,
     scopes: [
@@ -473,30 +590,6 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     label: 'Item Classification Library',
     description: 'Scope for Item Classification Library module',
     module_type: 'lib-item-class',
-    checked: false,
-    indeterminate: false,
-    scopes: [
-      {
-        label: 'View',
-        value: 'view',
-        checked: false,
-      },
-      {
-        label: 'Create',
-        value: 'create',
-        checked: false,
-      },
-      {
-        label: 'Update',
-        value: 'update',
-        checked: false,
-      },
-    ],
-  },
-  {
-    label: 'MFO/PAP Library',
-    description: 'Scope for MFO/PAP Library module',
-    module_type: 'lib-mfo-pap',
     checked: false,
     indeterminate: false,
     scopes: [
@@ -614,54 +707,6 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     ],
   },
   {
-    label: 'UACS Code Classification Library',
-    description: 'Scope for UACS Code Classification Library module',
-    module_type: 'lib-uacs-class',
-    checked: false,
-    indeterminate: false,
-    scopes: [
-      {
-        label: 'View',
-        value: 'view',
-        checked: false,
-      },
-      {
-        label: 'Create',
-        value: 'create',
-        checked: false,
-      },
-      {
-        label: 'Update',
-        value: 'update',
-        checked: false,
-      },
-    ],
-  },
-  {
-    label: 'UACS Code Library',
-    description: 'Scope for UACS Code Library module',
-    module_type: 'lib-uacs-code',
-    checked: false,
-    indeterminate: false,
-    scopes: [
-      {
-        label: 'View',
-        value: 'view',
-        checked: false,
-      },
-      {
-        label: 'Create',
-        value: 'create',
-        checked: false,
-      },
-      {
-        label: 'Update',
-        value: 'update',
-        checked: false,
-      },
-    ],
-  },
-  {
     label: 'Unit of Issue Library',
     description: 'Scope for Unit of Issue Library module',
     module_type: 'lib-unit-issue',
@@ -758,9 +803,9 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     ],
   },
   {
-    label: 'Accounting',
-    description: 'Scope for Accounting role',
-    module_type: 'accounting',
+    label: 'Accountant',
+    description: 'Scope for Accountant role',
+    module_type: 'accountant',
     checked: false,
     indeterminate: false,
     scopes: [

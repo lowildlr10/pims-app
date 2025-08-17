@@ -26,7 +26,7 @@ const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
     base_url: '/procurement/pr',
   },
   sub: {
-    title: 'Purchase/Job Order Details',
+    title: 'Purchase Order Details',
     endpoint: '/purchase-orders',
     base_url: '/procurement/po',
   },
@@ -86,7 +86,7 @@ const defaultTableData: TableDataType = {
   subHead: [
     {
       id: 'po_no',
-      label: 'PO/JO No',
+      label: 'PO No',
       width: '12%',
       sortable: true,
     },

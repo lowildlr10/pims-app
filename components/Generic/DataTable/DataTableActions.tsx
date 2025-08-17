@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActionIcon, Button, Group, Menu, Paper, Tooltip } from '@mantine/core';
 import { IconPencilPlus, IconRefresh, IconSearch } from '@tabler/icons-react';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import SearchModalClient from '../Modal/SearchModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { usePathname } from 'next/navigation';
@@ -22,6 +22,7 @@ const DataTableActionsClient = ({
   handleOpenCreateModal,
 }: DataTableActionsProps) => {
   const pathname = usePathname();
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [refreshLoading, setRefreshLoading] = useState(false);
   const [currentSearch, setCurrentSearch] = useState(search);
   const [
@@ -48,7 +49,9 @@ const DataTableActionsClient = ({
                     size={'xs'}
                     radius={'sm'}
                     color={'var(--mantine-color-primary-9)'}
-                    leftSection={<IconPencilPlus size={14} />}
+                    leftSection={
+                      <IconPencilPlus size={lgScreenAndBelow ? 12 : 14} />
+                    }
                   >
                     Create
                   </Button>
@@ -91,7 +94,9 @@ const DataTableActionsClient = ({
                     size={'xs'}
                     radius={'sm'}
                     color={'var(--mantine-color-primary-9)'}
-                    leftSection={<IconPencilPlus size={14} />}
+                    leftSection={
+                      <IconPencilPlus size={lgScreenAndBelow ? 12 : 14} />
+                    }
                     onClick={() =>
                       handleOpenCreateModal &&
                       handleOpenCreateModal(null, mainModule ?? null)
@@ -107,7 +112,9 @@ const DataTableActionsClient = ({
                     size={'xs'}
                     radius={'sm'}
                     color={'var(--mantine-color-primary-9)'}
-                    leftSection={<IconPencilPlus size={14} />}
+                    leftSection={
+                      <IconPencilPlus size={lgScreenAndBelow ? 12 : 14} />
+                    }
                     component={Link}
                     onClick={() => setPageLoading?.(true)}
                   >
@@ -130,7 +137,9 @@ const DataTableActionsClient = ({
                   radius={'xl'}
                   color={'var(--mantine-color-primary-9)'}
                   size={'xs'}
-                  leftSection={<IconSearch size={14} stroke={3} />}
+                  leftSection={
+                    <IconSearch size={lgScreenAndBelow ? 12 : 14} stroke={3} />
+                  }
                   onClick={openSearchModal}
                 >
                   &quot;
@@ -147,7 +156,7 @@ const DataTableActionsClient = ({
                   color={'var(--mantine-color-primary-9)'}
                   onClick={openSearchModal}
                 >
-                  <IconSearch size={14} stroke={3} />
+                  <IconSearch size={lgScreenAndBelow ? 12 : 14} stroke={3} />
                 </ActionIcon>
               )}
             </Tooltip>
@@ -156,7 +165,7 @@ const DataTableActionsClient = ({
           <Tooltip label={'Refresh'} withArrow>
             <ActionIcon
               variant={'outline'}
-              size='md'
+              size={'md'}
               radius='xl'
               color={'var(--mantine-color-primary-9)'}
               loading={refreshLoading}
@@ -165,7 +174,7 @@ const DataTableActionsClient = ({
                 window.location.href = pathname;
               }}
             >
-              <IconRefresh size={14} stroke={3} />
+              <IconRefresh size={lgScreenAndBelow ? 12 : 14} stroke={3} />
             </ActionIcon>
           </Tooltip>
         </Group>

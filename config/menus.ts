@@ -6,14 +6,14 @@ export const PROCUREMENT_ALLOWED_PERMISSIONS = [
   'aoq:*',
   'po:*',
   'iar:*',
-  'ors:*',
+  'obr:*',
   'dv:*',
   'pr:view',
   'rfq:view',
   'aoq:view',
   'po:view',
   'iar:view',
-  'ors:view',
+  'obr:view',
   'dv:view',
 ];
 
@@ -41,26 +41,26 @@ export const LIBRARY_ALLOWED_PERMISSIONS = [
   'lib-bid-committee:*',
   'lib-fund-source:*',
   'lib-item-class:*',
-  'lib-mfo-pap:*',
+  'lib-fpp:*',
   'lib-mode-proc:*',
   'lib-paper-size:*',
   'lib-responsibility-center:*',
   'lib-signatory:*',
   'lib-supplier:*',
-  'lib-uacs-class:*',
-  'lib-uacs-code:*',
+  'lib-account-class:*',
+  'lib-account:*',
   'lib-unit-issue:*',
   'lib-bid-committee:view',
   'lib-fund-source:view',
   'lib-item-class:view',
-  'lib-mfo-pap:view',
+  'lib-fpp:view',
   'lib-mode-proc:view',
   'lib-paper-size:view',
   'lib-responsibility-center:view',
   'lib-signatory:view',
   'lib-supplier:view',
-  'lib-uacs-class:view',
-  'lib-uacs-code:view',
+  'lib-account-class:view',
+  'lib-account:view',
   'lib-unit-issue:view',
 ];
 
@@ -117,9 +117,9 @@ export const PROCUREMENT_LINKS = [
     link: '/procurement/iar',
   },
   {
-    label: 'Obligation Request and Status',
-    allowedPermissions: ['super:*', 'head:*', 'ors:*', 'ors:view'],
-    link: '/procurement/ors',
+    label: 'Obligation Request',
+    allowedPermissions: ['super:*', 'head:*', 'obr:* ', 'obr:view'],
+    link: '/procurement/obr',
   },
   {
     label: 'Disbursement Voucher',
@@ -166,6 +166,26 @@ export const PAYMENT_LINKS = [
 
 export const LIBRARY_LINKS = [
   {
+    label: 'Account Classifications',
+    allowedPermissions: [
+      'super:*',
+      'head:*',
+      'lib-account-class:*',
+      'lib-account-class:view',
+    ],
+    link: '/settings/libraries/account-classifications',
+  },
+  {
+    label: 'Accounts',
+    allowedPermissions: [
+      'super:*',
+      'head:*',
+      'lib-account:*',
+      'lib-account:view',
+    ],
+    link: '/settings/libraries/accounts',
+  },
+  {
     label: 'Bids and Awards Committees',
     allowedPermissions: [
       'super:*',
@@ -174,6 +194,11 @@ export const LIBRARY_LINKS = [
       'lib-bid-committee:view',
     ],
     link: '/settings/libraries/bids-awards-committees',
+  },
+  {
+    label: 'Function, Program, and Projects',
+    allowedPermissions: ['super:*', 'head:*', 'lib-fpp:*', 'lib-fpp:view'],
+    link: '/settings/libraries/function-program-projects',
   },
   {
     label: 'Funding Sources/Projects',
@@ -194,16 +219,6 @@ export const LIBRARY_LINKS = [
       'lib-item-class:view',
     ],
     link: '/settings/libraries/item-classifications',
-  },
-  {
-    label: 'MFO/PAP',
-    allowedPermissions: [
-      'super:*',
-      'head:*',
-      'lib-mfo-pap:*',
-      'lib-mfo-pap:view',
-    ],
-    link: '/settings/libraries/mfo-pap',
   },
   {
     label: 'Modes of Procurement',
@@ -254,26 +269,6 @@ export const LIBRARY_LINKS = [
       'lib-supplier:view',
     ],
     link: '/settings/libraries/suppliers',
-  },
-  {
-    label: 'UACS Code Classifications',
-    allowedPermissions: [
-      'super:*',
-      'head:*',
-      'lib-uacs-class:*',
-      'lib-uacs-class:view',
-    ],
-    link: '/settings/libraries/uacs-code-classifications',
-  },
-  {
-    label: 'UACS Object Codes',
-    allowedPermissions: [
-      'super:*',
-      'head:*',
-      'lib-uacs-code:*',
-      'lib-uacs-code:view',
-    ],
-    link: '/settings/libraries/uacs-object-codes',
   },
   {
     label: 'Unit of Issues',

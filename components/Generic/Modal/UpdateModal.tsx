@@ -1,11 +1,4 @@
-import {
-  Button,
-  Group,
-  LoadingOverlay,
-  Modal,
-  ScrollArea,
-  Stack,
-} from '@mantine/core';
+import { Button, Group, Modal, ScrollArea, Stack } from '@mantine/core';
 import React, { useEffect, useRef, useState } from 'react';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
@@ -17,12 +10,12 @@ import { IconCancel, IconPencil } from '@tabler/icons-react';
 import UserFormClient from '../../UserManagement/Users/Form';
 import FundingSourceFormClient from '../../Libraries/FundingSources/Form';
 import ItemClassificationFormClient from '../../Libraries/ItemClassifications/Form';
-import MfoPapFormClient from '../../Libraries/MfoPaps/Form';
+import FunctionProgramProjectFormClient from '../../Libraries/FunctionProgramProjects/Form';
 import ProcurementModeFormClient from '../../Libraries/ProcurementModes/Form';
 import PaperSizeFormClient from '../../Libraries/PaperSizes/Form';
 import SupplierFormClient from '../../Libraries/Suppliers/Form';
-import UacsCodeClassificationFormClient from '../../Libraries/UacsClassifications/Form';
-import UacsCodeFormClient from '../../Libraries/UacsCodes/Form';
+import AccountClassificationFormClient from '../../Libraries/AccountClassifications/Form';
+import AccountFormClient from '../../Libraries/Accounts/Form';
 import UnitIssueFormClient from '../../Libraries/UnitIssues/Form';
 import SignatoryFormClient from '../../Libraries/Signatories/Form';
 import BidsAwardsCommitteeFormClient from '../../Libraries/BidsAwardsCommittees/Form';
@@ -37,6 +30,7 @@ import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
 import RisFormClient from '../../InventoryIssuances/Forms/RisForm';
 import IcsFormClient from '../../InventoryIssuances/Forms/IcsForm';
 import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
+import CustomLoadingOverlay from '../CustomLoadingOverlay';
 
 const UpdateModalClient = ({
   title,
@@ -130,11 +124,7 @@ const UpdateModalClient = ({
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <LoadingOverlay
-        visible={loading}
-        zIndex={1000}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
+      <CustomLoadingOverlay visible={loading} />
 
       <Stack mb={50}>
         {opened && content === 'account-department' && (
@@ -200,8 +190,8 @@ const UpdateModalClient = ({
           />
         )}
 
-        {opened && content === 'lib-mfo-pap' && (
-          <MfoPapFormClient
+        {opened && content === 'lib-fpp' && (
+          <FunctionProgramProjectFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -254,8 +244,8 @@ const UpdateModalClient = ({
           />
         )}
 
-        {opened && content === 'lib-uacs-class' && (
-          <UacsCodeClassificationFormClient
+        {opened && content === 'lib-account-class' && (
+          <AccountClassificationFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}
@@ -263,8 +253,8 @@ const UpdateModalClient = ({
           />
         )}
 
-        {opened && content === 'lib-uacs-code' && (
-          <UacsCodeFormClient
+        {opened && content === 'lib-account' && (
+          <AccountFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}

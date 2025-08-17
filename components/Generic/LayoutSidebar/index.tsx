@@ -3,12 +3,16 @@
 import {
   AppShell,
   Avatar,
+  Box,
   Burger,
   Group,
   Loader,
   Overlay,
   ScrollArea,
+  Stack,
+  Text,
   Title,
+  Tooltip,
 } from '@mantine/core';
 import { useDisclosure, useHeadroom, useMediaQuery } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
@@ -141,19 +145,24 @@ export function LayoutSidebarClient({
     <AppShell
       header={{ height: lgScreenAndBelow ? 50 : 60 }}
       navbar={{
-        width: 300,
+        width: 320,
         breakpoint: 'md',
         collapsed: {
           mobile: !mobileOpened && pinned,
           desktop: !desktopOpened && pinned,
         },
       }}
-      // mih={{ base: 'auto', lg: '100vh' }}
       padding={'sm'}
       transitionDuration={300}
       transitionTimingFunction='ease'
+      layout='alt'
     >
-      <AppShell.Header bg={'var(--mantine-color-primary-9)'} c={'white'}>
+      <AppShell.Header
+        bg={'var(--mantine-color-primary-9)'}
+        c={'white'}
+        bd={0}
+        left={!desktopOpened ? 0 : undefined}
+      >
         <Group h='100%' px={'md'} justify={'space-between'}>
           <Group>
             <Burger
@@ -161,36 +170,15 @@ export function LayoutSidebarClient({
               opened={mobileOpened}
               onClick={toggleMobile}
               hiddenFrom={'md'}
-              size={lgScreenAndBelow ? 'xs' : 'sm'}
+              size={lgScreenAndBelow ? '0.95rem' : 'sm'}
             />
             <Burger
               color={'white'}
               opened={desktopOpened}
               onClick={toggleDesktop}
               visibleFrom={'md'}
-              size={lgScreenAndBelow ? 'xs' : 'sm'}
+              size={lgScreenAndBelow ? '0.95rem' : 'sm'}
             />
-            <Group px={'xs'} gap={7} align={'center'}>
-              {loading ? (
-                <Loader
-                  color={'var(--mantine-color-tertiary-0)'}
-                  type={'bars'}
-                  size={lgScreenAndBelow ? 'xs' : 'sm'}
-                />
-              ) : (
-                <Avatar
-                  variant={'filled'}
-                  size={lgScreenAndBelow ? 'xs' : 'sm'}
-                  radius={'xs'}
-                  src={logo}
-                  alt={company?.company_name ?? 'Company'}
-                />
-              )}
-
-              <Title order={lgScreenAndBelow ? 5 : 3} fw={600}>
-                PIMS
-              </Title>
-            </Group>
           </Group>
 
           <Group>
@@ -199,34 +187,132 @@ export function LayoutSidebarClient({
         </Group>
       </AppShell.Header>
       <AppShell.Navbar
-        p='md'
+        px={'md'}
         sx={(theme, u) => ({
-          transform: `${desktopOpened
-            ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
-            : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
-            } !important`,
-          [u.smallerThan('md')]: {
-            transform: `${mobileOpened
+          transform: `${
+            desktopOpened
               ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
               : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
-              } !important`,
+          } !important`,
+          [u.smallerThan('md')]: {
+            transform: `${
+              mobileOpened
+                ? 'translateX(calc(var(--app-shell-navbar-width) * 0))'
+                : 'translateX(calc(var(--app-shell-navbar-width) * -1))'
+            } !important`,
           },
         })}
       >
         <AppShell.Section
+          mx={'-16px'}
+          py={'md'}
+          px={'md'}
+          sx={{
+            borderBottom: '1px solid var(--mantine-color-gray-3)',
+          }}
+        >
+          <Group wrap='nowrap' align='flex-start'>
+            <Box>
+              {loading ? (
+                <Loader
+                  color='var(--mantine-color-tertiary-0)'
+                  type='bars'
+                  size={mobileOpened ? '0.95rem' : 'sm'}
+                />
+              ) : (
+                <Avatar
+                  variant='filled'
+                  size={mobileOpened ? 38 : 45}
+                  radius='xs'
+                  src={logo}
+                  alt={company?.company_name ?? 'Company'}
+                />
+              )}
+            </Box>
+
+            <Stack gap={0} style={{ whiteSpace: 'nowrap' }}>
+              <Tooltip label={company.company_name}>
+                <Title
+                  order={4}
+                  c='var(--mantine-color-gray-7)'
+                  fz={mobileOpened ? '0.9rem' : '1.05rem'}
+                  sx={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    width: mobileOpened ? 'calc(100vw - 10em)' : '220px',
+                  }}
+                >
+                  {company.company_name}
+                </Title>
+              </Tooltip>
+
+              <Title
+                order={6}
+                c='var(--mantine-color-gray-6)'
+                fz={mobileOpened ? '0.8rem' : '0.9rem'}
+                sx={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  width: mobileOpened ? 'calc(100vw - 10em)' : '220px',
+                }}
+              >
+                {company.head?.fullname ?? company.company_type}
+              </Title>
+            </Stack>
+
+            {mobileOpened && (
+              <Burger
+                opened={mobileOpened}
+                onClick={toggleMobile}
+                hiddenFrom={'md'}
+                size={mobileOpened ? '0.95rem' : 'sm'}
+              />
+            )}
+          </Group>
+        </AppShell.Section>
+
+        <AppShell.Section
+          mx={'-16px'}
+          py={'xs'}
+          sx={{
+            borderBottom: '1px solid var(--mantine-color-gray-3)',
+          }}
+        >
+          <Text
+            size={'0.7rem'}
+            c={'var(--mantine-color-gray-7)'}
+            fs={'italic'}
+            px={'xl'}
+            ta={'center'}
+          >
+            Procurement and Inventory
+            <br />
+            Management System <small>v1.0.0</small>
+          </Text>
+        </AppShell.Section>
+
+        <AppShell.Section
           className={classes.links}
           grow
-          my='md'
+          my={0}
+          py={0}
           component={ScrollArea}
         >
-          <div className={classes.linksInner}>{links}</div>
+          <Stack className={classes.linksInner} gap={0} py={0}>
+            {links}
+          </Stack>
         </AppShell.Section>
 
         <AppShell.Section className={classes.footer}>
           <UserButtonClient user={user} handleOpen={open} />
         </AppShell.Section>
       </AppShell.Navbar>
-      <AppShell.Main bg={'var(--mantine-color-gray-4)'} pl={'sm'}>
+      <AppShell.Main
+        bg={'var(--mantine-color-gray-4)'}
+        p={lgScreenAndBelow ? '50px 0 0 0' : '60px 0 0 0'}
+      >
         <Overlay
           color={'var(--mantine-color-black-7)'}
           backgroundOpacity={0.6}
@@ -235,14 +321,15 @@ export function LayoutSidebarClient({
           onClick={() => {
             toggleDesktop();
           }}
-          display={{ base: 'none', lg: desktopOpened ? 'initial' : 'none' }}
+          display={{ base: 'none', sm: desktopOpened ? 'initial' : 'none' }}
           sx={{
-            animation: desktopOpened
-              ? `${keyframes`
+            animation:
+              desktopOpened || mobileOpened
+                ? `${keyframes`
                 0%,100% { opacity: 0 }
                 100% { opacity: 1 }
               `} 0.2s linear`
-              : `${keyframes`
+                : `${keyframes`
                 100%,0% { opacity: 1 }
                 9% { opacity: 0 }
               `} 0.3s linear`,

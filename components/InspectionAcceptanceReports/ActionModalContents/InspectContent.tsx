@@ -1,9 +1,10 @@
 'use client';
 
+import CustomLoadingOverlay from '@/components/Generic/CustomLoadingOverlay';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import Helper from '@/utils/Helpers';
-import { LoadingOverlay, NumberInput, Skeleton, Textarea } from '@mantine/core';
+import { NumberInput, Skeleton, Textarea } from '@mantine/core';
 import { Table } from '@mantine/core';
 import { Group } from '@mantine/core';
 import { Select } from '@mantine/core';
@@ -96,9 +97,9 @@ const InspectContent = forwardRef<
           setClassificationData(
             res?.data?.length > 0
               ? res.data?.map((item: any) => ({
-                value: item['id'],
-                label: item['classification_name'],
-              }))
+                  value: item['id'],
+                  label: item['classification_name'],
+                }))
               : [{ label: 'No data.', value: '' }]
           );
         })
@@ -197,11 +198,7 @@ const InspectContent = forwardRef<
       })}
     >
       <Stack>
-        <LoadingOverlay
-          visible={loading}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
+        <CustomLoadingOverlay visible={loading} />
 
         <Stack>
           <Table

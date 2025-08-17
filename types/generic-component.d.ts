@@ -144,13 +144,13 @@ type FormDataType = CompanyType &
   BidsAwardsCommitteeType &
   FundingSourceType &
   ItemClassificationType &
-  MfoPapType &
+  FunctionProgramProjectType &
   PaperSizeType &
   ProcurementModeType &
   ResponsibilityCenterType &
   SignatoryType &
   SupplierType &
-  UacsCodeType &
+  AccountType &
   RoleType &
   DepartmentType &
   SectionType &
@@ -398,6 +398,7 @@ type PrintModalProps = {
 type LogCardProps = {
   fullname?: string;
   message: string;
+  details?: string;
   logType: 'log' | 'error';
   loggedAt: string;
 };
@@ -434,6 +435,7 @@ type UpdateProps = {
   content: ModuleType;
   endpoint: string;
   backUrl?: string;
+  closeUrl?: string;
 };
 
 type UpdateModalProps = {
@@ -492,8 +494,8 @@ type ModalItemClassificationContentProps = {
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
-type ModalMfoPapContentProps = {
-  data: MfoPapType;
+type ModalFunctionProgramProjectContentProps = {
+  data: FunctionProgramProjectType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
@@ -528,14 +530,14 @@ type ModalSupplierContentProps = {
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
-type ModalUacsCodeClassificationContentProps = {
-  data: UacsCodeClassificationType;
+type ModalAccountClassificationContentProps = {
+  data: AccountClassificationType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
-type ModalUacsCodeContentProps = {
-  data: UacsCodeType;
+type ModalAccountContentProps = {
+  data: AccountType;
   handleCreateUpdate?: () => void;
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };

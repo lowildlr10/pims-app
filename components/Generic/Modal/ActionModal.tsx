@@ -7,7 +7,6 @@ import {
   Button,
   Group,
   Loader,
-  LoadingOverlay,
   Modal,
   ScrollArea,
   Stack,
@@ -19,7 +18,9 @@ import {
   IconArrowForward,
   IconAwardFilled,
   IconCancel,
+  IconCashBanknoteMove,
   IconCheck,
+  IconChecks,
   IconDiscountCheckFilled,
   IconPackageImport,
   IconShoppingCartSearch,
@@ -36,6 +37,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import CustomLoadingOverlay from '../CustomLoadingOverlay';
 
 const ActionModalClient = ({
   title,
@@ -156,6 +158,7 @@ const ActionModalClient = ({
           />
         );
 
+      case 'obligate':
       case 'complete':
         return (
           <IconCheck
@@ -210,6 +213,24 @@ const ActionModalClient = ({
           />
         );
 
+      case 'disburse':
+        return (
+          <IconCashBanknoteMove
+            color={'var(--mantine-color-orange-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'paid':
+        return (
+          <IconChecks
+            color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
       default:
         return <></>;
     }
@@ -229,22 +250,18 @@ const ActionModalClient = ({
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <LoadingOverlay
-        visible={loading}
-        zIndex={1000}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
+      <CustomLoadingOverlay visible={loading} pos={'absolute'} />
 
       {opened && (
         <Stack mb={70} px={'sm'}>
           {isValidElement(children) && formRef
             ? cloneElement(
-              children as ReactElement<any> & { ref?: React.Ref<any> },
-              {
-                ref: formRef,
-                handleAction,
-              }
-            )
+                children as ReactElement<any> & { ref?: React.Ref<any> },
+                {
+                  ref: formRef,
+                  handleAction,
+                }
+              )
             : children}
         </Stack>
       )}

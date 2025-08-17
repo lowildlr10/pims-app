@@ -68,7 +68,7 @@ export default async function LoginLayout({
           defaultColorScheme={'light'}
         >
           <MantineEmotionProvider>
-            <Notifications />
+            <Notifications zIndex={1100} />
             {children}
           </MantineEmotionProvider>
         </MantineProvider>

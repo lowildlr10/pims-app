@@ -132,8 +132,8 @@ type ItemClassificationsResponse = {
   current_page: number;
 };
 
-type MfoPapsResponse = {
-  data: MfoPapType[];
+type FunctionProgramProjectsResponse = {
+  data: FunctionProgramProjectType[];
   from: number;
   to: number;
   total: number;
@@ -192,8 +192,8 @@ type SuppliersResponse = {
   current_page: number;
 };
 
-type UacsClassificationsResponse = {
-  data: UacsCodeClassificationType[];
+type AccountClassificationsResponse = {
+  data: AccountClassificationType[];
   from: number;
   to: number;
   total: number;
@@ -202,8 +202,8 @@ type UacsClassificationsResponse = {
   current_page: number;
 };
 
-type UacsCodesResponse = {
-  data: UacsCodeType[];
+type AccountsResponse = {
+  data: AccountType[];
   from: number;
   to: number;
   total: number;

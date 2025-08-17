@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
 import CreateClient from '@/components/Generic/CrudComponents/Create';
+import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
 const MODULE_TYPE: ModuleType = 'pr';
 
@@ -17,8 +18,15 @@ const PurchaseRequestCreatePage = async () => {
   const company: CompanyType = await getCompany();
   const user: UserType = await getUser();
   const permissions: string[] = await getPermissions();
+  const backUrl = `/procurement/${MODULE_TYPE}`;
+  const hasCreatePermission = [
+    'supply:*',
+    ...getAllowedPermissions(MODULE_TYPE, 'create'),
+  ].some((permission) => permissions?.includes(permission));
 
   if (!user) redirect('/login');
+
+  if (!hasCreatePermission) redirect(backUrl);
 
   return (
     <LayoutSidebarClient
@@ -34,7 +42,7 @@ const PurchaseRequestCreatePage = async () => {
         <CreateClient
           endpoint={'/purchase-requests'}
           content={MODULE_TYPE}
-          backUrl={'/procurement/pr'}
+          backUrl={backUrl}
         />
       </MainContainerClient>
     </LayoutSidebarClient>

@@ -7,7 +7,6 @@ import {
   Divider,
   Flex,
   Group,
-  LoadingOverlay,
   ScrollArea,
   Stack,
   Text,
@@ -32,6 +31,7 @@ import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import CustomColorPickerClient from '../Generic/CustomColorPicker';
 import DynamicSelect from '../Generic/DynamicSelect';
 import { useMediaAsset } from '@/hooks/useMediaAsset';
+import CustomLoadingOverlay from '../Generic/CustomLoadingOverlay';
 
 const CompanyProfileClient = ({
   company,
@@ -179,10 +179,8 @@ const CompanyProfileClient = ({
       scrollbars={'y'}
     >
       <form onSubmit={form.onSubmit(() => handleUpdateProfile())}>
-        <LoadingOverlay
+        <CustomLoadingOverlay
           visible={loading || logoLoading || backgroundImageLoading}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
         />
         <Stack mb={'12em'} gap={'8em'}>
           <Stack>

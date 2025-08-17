@@ -4,6 +4,7 @@ import {
   IconAwardFilled,
   IconCancel,
   IconChecklist,
+  IconCircleCheckFilled,
   IconDiscountCheckFilled,
   IconFileIsr,
   IconFileSearch,
@@ -147,7 +148,7 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
         <Tooltip label={Helper.formatStringHasUnderscores(status)}>
           <Badge
             size={size}
-            color={'var(--mantine-color-orange-9)'}
+            color={'var(--mantine-color-yellow-9)'}
             variant={'light'}
             leftSection={<IconAwardFilled size={18} stroke={1.5} />}
           >
@@ -164,6 +165,20 @@ const StatusClient = ({ size = 'md', status }: PurchaseRequestStatusProps) => {
             color={'var(--mantine-color-green-9)'}
             variant={'light'}
             leftSection={<IconAwardFilled size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'completed':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-green-9)'}
+            variant={'light'}
+            leftSection={<IconCircleCheckFilled size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>

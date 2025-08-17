@@ -200,10 +200,11 @@ const InventoryIssuancesClient = ({ user, permissions }: MainProps) => {
   }, [activeData]);
 
   useEffect(() => {
-    setShowCreate([
-      'supply:*',
-      ...getAllowedPermissions(SUB_MODULE, 'create'),
-    ].some((permission) => permissions?.includes(permission)));
+    setShowCreate(
+      ['supply:*', ...getAllowedPermissions(SUB_MODULE, 'create')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
   }, [permissions]);
 
   useEffect(() => {

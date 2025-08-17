@@ -16,7 +16,7 @@ interface UseMediaAssetResult {
 }
 
 const DEFAULT_FALLBACKS: Record<MediaType, string> = {
-  logo: '/images/logo-fallback.png',
+  logo: '/images/logo-black-fallback.png',
   avatar: '',
   signature: '/images/signature-fallback.png',
   'login-background': '/images/background-fallback.png',

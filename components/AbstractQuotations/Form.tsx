@@ -7,6 +7,7 @@ import {
   Flex,
   Group,
   NumberInput,
+  Select,
   Stack,
   Table,
   Text,
@@ -28,8 +29,8 @@ import { DateInput } from '@mantine/dates';
 import dayjs from 'dayjs';
 import { Tooltip } from '@mantine/core';
 import { NumberFormatter } from '@mantine/core';
-import { Select } from '@mantine/core';
 import { Skeleton } from '@mantine/core';
+import Helper from '@/utils/Helpers';
 
 const defaultItemHeaders: PurchaseRequestItemHeader[] = [
   {
@@ -57,7 +58,7 @@ const defaultItemHeaders: PurchaseRequestItemHeader[] = [
 const FormClient = forwardRef<
   HTMLFormElement,
   ModalAbstractQuotationContentProps
->(({ data, isCreate, readOnly, handleCreateUpdate }, ref) => {
+>(({ data, isCreate, readOnly, refreshData, handleCreateUpdate }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
@@ -79,40 +80,40 @@ const FormClient = forwardRef<
       sig_member_3_id: currentData?.sig_member_3_id ?? '',
       items:
         currentData?.items &&
-          typeof currentData?.items !== undefined &&
-          currentData?.items.length > 0
+        typeof currentData?.items !== undefined &&
+        currentData?.items.length > 0
           ? currentData?.items?.map((item, index) => ({
-            key: randomId(),
-            pr_item_id: item?.pr_item_id,
-            stock_no: item.pr_item?.stock_no ?? 1,
-            quantity: item.pr_item?.quantity,
-            unit_issue: item.pr_item?.unit_issue?.unit_name,
-            description: item.pr_item?.description ?? '-',
-            details: item.details?.map((detail) => ({
               key: randomId(),
-              supplier_id: detail.supplier_id,
-              supplier_name: detail.supplier?.supplier_name,
-              brand_model: detail?.brand_model ?? '',
-              unit_cost:
-                typeof detail?.unit_cost === 'string'
-                  ? parseFloat(detail?.unit_cost ?? '0')
-                  : (detail?.unit_cost ?? 0),
-              total_cost:
-                typeof detail?.total_cost === 'string'
-                  ? parseFloat(detail?.total_cost ?? '0')
-                  : (detail?.total_cost ?? 0),
-            })),
-            awardee_id: item?.awardee_id ?? '',
-            awardee_name: item.awardee?.supplier_name ?? '',
-            document_type: item?.document_type ?? undefined,
-            included:
-              item?.included ??
-              (item.pr_item?.awarded_to_id === undefined ||
+              pr_item_id: item?.pr_item_id,
+              stock_no: item.pr_item?.stock_no ?? 1,
+              quantity: item.pr_item?.quantity,
+              unit_issue: item.pr_item?.unit_issue?.unit_name,
+              description: item.pr_item?.description ?? '-',
+              details: item.details?.map((detail) => ({
+                key: randomId(),
+                supplier_id: detail.supplier_id,
+                supplier_name: detail.supplier?.supplier_name,
+                brand_model: detail?.brand_model ?? '',
+                unit_cost:
+                  typeof detail?.unit_cost === 'string'
+                    ? parseFloat(detail?.unit_cost ?? '0')
+                    : (detail?.unit_cost ?? 0),
+                total_cost:
+                  typeof detail?.total_cost === 'string'
+                    ? parseFloat(detail?.total_cost ?? '0')
+                    : (detail?.total_cost ?? 0),
+              })),
+              awardee_id: item?.awardee_id ?? '',
+              awardee_name: item.awardee?.supplier_name ?? '',
+              document_type: item?.document_type ?? 'po',
+              included:
+                item?.included ??
+                (item.pr_item?.awarded_to_id === undefined ||
                 item.pr_item?.awarded_to_id === null ||
                 !!item.pr_item.awarded_to_id === false
-                ? true
-                : false),
-          }))
+                  ? true
+                  : false),
+            }))
           : [],
     }),
     [currentData]
@@ -128,7 +129,11 @@ const FormClient = forwardRef<
 
   useEffect(() => {
     setCurrentData(data);
-  }, [data]);
+
+    if (!data?.items?.length && refreshData) {
+      refreshData();
+    }
+  }, [data, refreshData]);
 
   useEffect(() => {
     form.reset();
@@ -174,11 +179,11 @@ const FormClient = forwardRef<
         label: 'Awardee',
         width: '350px',
       },
-      {
-        id: 'include_checkbox',
-        label: 'Unawarded',
-        width: '3px',
-      },
+      // {
+      //   id: 'include_checkbox',
+      //   label: 'Unawarded',
+      //   width: '3px',
+      // },
     ]);
   }, [supplierHeaders]);
 
@@ -241,7 +246,7 @@ const FormClient = forwardRef<
             <Textarea
               variant={readOnly ? 'unstyled' : 'filled'}
               placeholder={'Description'}
-              defaultValue={item?.description ?? '-'}
+              defaultValue={item?.description ?? ''}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
               readOnly
@@ -267,10 +272,12 @@ const FormClient = forwardRef<
                     <strong>DESCRIPTION/SPECIFICATION OF ARTICLES</strong>
                     <br />
                     {item.description?.split('\n')?.map((description) => (
-                      <>
+                      <React.Fragment
+                        key={`${Helper.formatStringHasUnderscores(description)}_${randomId()}`}
+                      >
                         {description}
                         <br />
-                      </>
+                      </React.Fragment>
                     ))}
                   </>
                 }
@@ -315,10 +322,12 @@ const FormClient = forwardRef<
                     <strong>DESCRIPTION/SPECIFICATION OF ARTICLES</strong>
                     <br />
                     {item.description?.split('\n')?.map((description) => (
-                      <>
+                      <React.Fragment
+                        key={`${Helper.formatStringHasUnderscores(description)}_${randomId()}`}
+                      >
                         {description}
                         <br />
-                      </>
+                      </React.Fragment>
                     ))}
                   </>
                 }
@@ -395,11 +404,10 @@ const FormClient = forwardRef<
                 offset={30}
                 multiline
               >
-                <DynamicSelect
+                {/* <DynamicSelect
                   key={form.key(`items.${index}.awardee_id`)}
                   {...form.getInputProps(`items.${index}.awardee_id`)}
                   variant={readOnly ? 'unstyled' : 'default'}
-                  label={'Awardee'}
                   placeholder={'Select an awardee here...'}
                   defaultData={
                     supplierHeaders &&
@@ -412,11 +420,32 @@ const FormClient = forwardRef<
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   readOnly={readOnly}
                   disableFetch
+                /> */}
+                <Select
+                  key={form.key(`items.${index}.awardee_id`)}
+                  {...form.getInputProps(`items.${index}.awardee_id`)}
+                  variant={readOnly ? 'unstyled' : 'default'}
+                  placeholder={'Select an awardee here...'}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  data={[
+                    {
+                      value: '',
+                      label: 'No awardee...',
+                    },
+                    ...supplierHeaders?.map((supplier) => ({
+                      value: supplier.supplier_id,
+                      label: supplier.supplier_name,
+                    })),
+                  ]}
+                  defaultValue={item?.awardee_id ?? ''}
+                  searchable
+                  clearable
+                  readOnly={readOnly}
+                  required={!readOnly}
                 />
               </Tooltip>
             ) : (
               <TextInput
-                label={'Awardee'}
                 variant={'unstyled'}
                 placeholder={'None'}
                 defaultValue={item.awardee_name}
@@ -426,7 +455,7 @@ const FormClient = forwardRef<
               />
             )}
 
-            <Select
+            {/* <Select
               key={form.key(`items.${index}.document_type`)}
               {...form.getInputProps(`items.${index}.document_type`)}
               variant={readOnly ? 'unstyled' : 'default'}
@@ -441,7 +470,7 @@ const FormClient = forwardRef<
               mt={'md'}
               searchable
               readOnly={readOnly}
-            />
+            /> */}
           </Table.Td>
         );
 
@@ -497,8 +526,8 @@ const FormClient = forwardRef<
                 label={'Bids and Awards Committee'}
                 variant={
                   readOnly ||
-                    currentData?.status === 'approved' ||
-                    currentData?.status === 'awarded'
+                  currentData?.status === 'approved' ||
+                  currentData?.status === 'awarded'
                     ? 'filled'
                     : 'default'
                 }
@@ -511,13 +540,13 @@ const FormClient = forwardRef<
                 defaultData={
                   currentData?.bids_awards_committee_id
                     ? [
-                      {
-                        value: currentData?.bids_awards_committee_id ?? '',
-                        label:
-                          currentData?.bids_awards_committee
-                            ?.committee_name ?? '',
-                      },
-                    ]
+                        {
+                          value: currentData?.bids_awards_committee_id ?? '',
+                          label:
+                            currentData?.bids_awards_committee
+                              ?.committee_name ?? '',
+                        },
+                      ]
                     : undefined
                 }
                 value={form.values.bids_awards_committee_id}
@@ -555,8 +584,8 @@ const FormClient = forwardRef<
                 label={'Mode of Procurement'}
                 variant={
                   readOnly ||
-                    currentData?.status === 'approved' ||
-                    currentData?.status === 'awarded'
+                  currentData?.status === 'approved' ||
+                  currentData?.status === 'awarded'
                     ? 'filled'
                     : 'default'
                 }
@@ -569,11 +598,11 @@ const FormClient = forwardRef<
                 defaultData={
                   currentData?.mode_procurement_id
                     ? [
-                      {
-                        value: currentData?.mode_procurement_id ?? '',
-                        label: currentData?.mode_procurement?.mode_name ?? '',
-                      },
-                    ]
+                        {
+                          value: currentData?.mode_procurement_id ?? '',
+                          label: currentData?.mode_procurement?.mode_name ?? '',
+                        },
+                      ]
                     : undefined
                 }
                 value={form.values.mode_procurement_id}
@@ -864,9 +893,9 @@ const FormClient = forwardRef<
                         const supplierHeader =
                           header.id === 'supplier'
                             ? supplierHeaders.find(
-                              (supplier) =>
-                                supplier.supplier_id === header?.label
-                            )
+                                (supplier) =>
+                                  supplier.supplier_id === header?.label
+                              )
                             : undefined;
 
                         if (readOnly && header.id === 'include_checkbox')
@@ -987,7 +1016,7 @@ const FormClient = forwardRef<
                           );
                         })}
 
-                        {!readOnly && (
+                        {/* {!readOnly && (
                           <Table.Td valign={'top'} ta={'center'} pt={'sm'}>
                             <Checkbox
                               key={form.key(`items.${index}.included`)}
@@ -1016,7 +1045,7 @@ const FormClient = forwardRef<
                               value={item.pr_item_id}
                             />
                           </Table.Td>
-                        )}
+                        )} */}
                       </Table.Tr>
                     ))}
 
@@ -1083,9 +1112,11 @@ const FormClient = forwardRef<
                         variant={readOnly ? 'unstyled' : 'default'}
                         placeholder={readOnly ? '' : 'Enter BAC action here...'}
                         defaultValue={
-                          readOnly ? undefined : form.values.bac_action
+                          readOnly ? undefined : (form.values.bac_action ?? '')
                         }
-                        value={readOnly ? currentData?.bac_action : undefined}
+                        value={
+                          readOnly ? (currentData?.bac_action ?? '') : undefined
+                        }
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         autosize
                         readOnly={readOnly}
@@ -1117,8 +1148,8 @@ const FormClient = forwardRef<
                       label={'BAC-TWG Chairperson'}
                       variant={
                         readOnly ||
-                          currentData?.status === 'approved' ||
-                          currentData?.status === 'awarded'
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
                           ? 'filled'
                           : 'unstyled'
                       }
@@ -1142,14 +1173,14 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.sig_twg_chairperson_id
                           ? [
-                            {
-                              value:
-                                currentData?.sig_twg_chairperson_id ?? '',
-                              label:
-                                currentData?.signatory_twg_chairperson?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value:
+                                  currentData?.sig_twg_chairperson_id ?? '',
+                                label:
+                                  currentData?.signatory_twg_chairperson?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.sig_twg_chairperson_id}
@@ -1186,8 +1217,8 @@ const FormClient = forwardRef<
                       label={'TWG Member'}
                       variant={
                         readOnly ||
-                          currentData?.status === 'approved' ||
-                          currentData?.status === 'awarded'
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
                           ? 'filled'
                           : 'unstyled'
                       }
@@ -1211,13 +1242,13 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.sig_twg_member_1_id
                           ? [
-                            {
-                              value: currentData?.sig_twg_member_1_id ?? '',
-                              label:
-                                currentData?.signatory_twg_member_1?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_twg_member_1_id ?? '',
+                                label:
+                                  currentData?.signatory_twg_member_1?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.sig_twg_member_1_id}
@@ -1254,8 +1285,8 @@ const FormClient = forwardRef<
                       label={'TWG Member'}
                       variant={
                         readOnly ||
-                          currentData?.status === 'approved' ||
-                          currentData?.status === 'awarded'
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
                           ? 'filled'
                           : 'unstyled'
                       }
@@ -1279,13 +1310,13 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.sig_twg_member_2_id
                           ? [
-                            {
-                              value: currentData?.sig_twg_member_2_id ?? '',
-                              label:
-                                currentData?.signatory_twg_member_2?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_twg_member_2_id ?? '',
+                                label:
+                                  currentData?.signatory_twg_member_2?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.sig_twg_member_2_id}
@@ -1336,8 +1367,8 @@ const FormClient = forwardRef<
                       label={'Chairman & Presiding Officer'}
                       variant={
                         readOnly ||
-                          currentData?.status === 'approved' ||
-                          currentData?.status === 'awarded'
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
                           ? 'filled'
                           : 'unstyled'
                       }
@@ -1361,13 +1392,13 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.sig_chairman_id
                           ? [
-                            {
-                              value: currentData?.sig_chairman_id ?? '',
-                              label:
-                                currentData?.signatory_chairman?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_chairman_id ?? '',
+                                label:
+                                  currentData?.signatory_chairman?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.sig_chairman_id}
@@ -1403,8 +1434,8 @@ const FormClient = forwardRef<
                       label={'Vice Chairman'}
                       variant={
                         readOnly ||
-                          currentData?.status === 'approved' ||
-                          currentData?.status === 'awarded'
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
                           ? 'filled'
                           : 'unstyled'
                       }
@@ -1428,13 +1459,13 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.sig_vice_chairman_id
                           ? [
-                            {
-                              value: currentData?.sig_vice_chairman_id ?? '',
-                              label:
-                                currentData?.signatory_vice_chairman?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_vice_chairman_id ?? '',
+                                label:
+                                  currentData?.signatory_vice_chairman?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.sig_vice_chairman_id}
@@ -1485,8 +1516,8 @@ const FormClient = forwardRef<
                       label={'Member'}
                       variant={
                         readOnly ||
-                          currentData?.status === 'approved' ||
-                          currentData?.status === 'awarded'
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
                           ? 'filled'
                           : 'unstyled'
                       }
@@ -1510,13 +1541,13 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.sig_member_1_id
                           ? [
-                            {
-                              value: currentData?.sig_member_1_id ?? '',
-                              label:
-                                currentData?.signatory_member_1?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_member_1_id ?? '',
+                                label:
+                                  currentData?.signatory_member_1?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.sig_member_1_id}
@@ -1552,8 +1583,8 @@ const FormClient = forwardRef<
                       label={'Member'}
                       variant={
                         readOnly ||
-                          currentData?.status === 'approved' ||
-                          currentData?.status === 'awarded'
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
                           ? 'filled'
                           : 'unstyled'
                       }
@@ -1577,13 +1608,13 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.sig_member_2_id
                           ? [
-                            {
-                              value: currentData?.sig_member_2_id ?? '',
-                              label:
-                                currentData?.signatory_member_2?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_member_2_id ?? '',
+                                label:
+                                  currentData?.signatory_member_2?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.sig_member_2_id}
@@ -1619,8 +1650,8 @@ const FormClient = forwardRef<
                       label={'Member'}
                       variant={
                         readOnly ||
-                          currentData?.status === 'approved' ||
-                          currentData?.status === 'awarded'
+                        currentData?.status === 'approved' ||
+                        currentData?.status === 'awarded'
                           ? 'filled'
                           : 'unstyled'
                       }
@@ -1644,13 +1675,13 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.sig_member_3_id
                           ? [
-                            {
-                              value: currentData?.sig_member_3_id ?? '',
-                              label:
-                                currentData?.signatory_member_3?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_member_3_id ?? '',
+                                label:
+                                  currentData?.signatory_member_3?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       value={form.values.sig_member_3_id}

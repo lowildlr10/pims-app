@@ -17,30 +17,29 @@ type ModuleType =
   | 'aoq'
   | 'po'
   | 'iar'
-  | 'ors'
+  | 'obr'
   | 'dv'
   | 'inv-supply'
   | 'inv-issuance'
-  | 'payment'
+  | 'lib-account-class'
+  | 'lib-account'
   | 'lib-bid-committee'
+  | 'lib-fpp'
   | 'lib-fund-source'
   | 'lib-inv-class'
   | 'lib-item-class'
-  | 'lib-mfo-pap'
   | 'lib-mode-proc'
   | 'lib-paper-size'
   | 'lib-responsibility-center'
   | 'lib-signatory'
   | 'lib-signatory-detail'
   | 'lib-supplier'
-  | 'lib-uacs-class'
-  | 'lib-uacs-code'
   | 'lib-unit-issue'
   | 'super'
   | 'head'
   | 'supply'
   | 'budget'
-  | 'accounting'
+  | 'accountant'
   | 'cashier'
   | 'user';
 
@@ -57,7 +56,10 @@ type ActionType =
   | 'receive'
   | 'for_delivery'
   | 'delivered'
-  | 'inspect';
+  | 'inspect'
+  | 'obligate'
+  | 'disburse'
+  | 'paid';
 
 type CompanyType = {
   id?: string;
@@ -193,7 +195,7 @@ type ItemClassificationType = {
   updated_at?: string;
 };
 
-type MfoPapType = {
+type FunctionProgramProjectType = {
   id?: string;
   code?: string;
   description?: string;
@@ -247,7 +249,11 @@ type SignatoryDetailTypeType =
   | 'approved_by'
   | 'issued_by'
   | 'received_from'
-  | 'received_from';
+  | 'received_from'
+  | 'head'
+  | 'budget'
+  | 'accountant'
+  | 'treasurer';
 
 type SignatoryDocumentType =
   | 'pr'
@@ -255,7 +261,7 @@ type SignatoryDocumentType =
   | 'aoq'
   | 'po'
   | 'iar'
-  | 'ors'
+  | 'obr'
   | 'dv'
   | 'ris'
   | 'are'
@@ -296,7 +302,7 @@ type SupplierType = {
   updated_at?: string;
 };
 
-type UacsCodeClassificationType = {
+type AccountClassificationType = {
   id?: string;
   classification_name?: string;
   active?: boolean;
@@ -304,13 +310,13 @@ type UacsCodeClassificationType = {
   updated_at?: string;
 };
 
-type UacsCodeType = {
+type AccountType = {
   id?: string;
   classification_id?: string;
   account_title?: string;
   code?: string;
   description?: string;
-  classification?: UacsCodeClassificationType;
+  classification?: AccountClassificationType;
   active?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -369,10 +375,13 @@ type PurchaseOrderStatus =
   | 'issued'
   | 'for_delivery'
   | 'delivered'
-  | 'inspection'
-  | 'obligation'
-  | 'disbursement'
-  | 'payment'
+  | 'for_inspection'
+  | 'inspected'
+  | 'for_obligation'
+  | 'obligated'
+  | 'for_disbursement'
+  | 'disbursed'
+  | 'for_payment'
   | 'completed';
 
 type InspectionAcceptanceReportStatus =
@@ -381,6 +390,19 @@ type InspectionAcceptanceReportStatus =
   | 'inspected'
   | 'partially_accepted'
   | 'accepted';
+
+type ObligationRequestStatus =
+  | 'draft'
+  | 'pending'
+  | 'disapproved'
+  | 'obligated';
+
+type DisbursementVoucherStatus =
+  | 'draft'
+  | 'pending'
+  | 'disapproved'
+  | 'for_payment'
+  | 'paid';
 
 type InventorySupplyStatus = 'in-stock' | 'out-of-stock';
 
@@ -429,6 +451,7 @@ type PurchaseRequestType = {
   disapproved_reason?: string;
   status?: PurchaseRequestStatus;
   status_timestamps?: {
+    draft_at?: string;
     pending_at?: string;
     approved_cash_available_at?: string;
     approved_at?: string;
@@ -491,6 +514,7 @@ type RequestQuotationType = {
   purpose?: string;
   status?: RequestQuotationStatus;
   status_timestamps?: {
+    draft_at?: string;
     canvassing_at?: string;
     completed_at?: string;
     cancelled_at?: string;
@@ -566,6 +590,7 @@ type AbstractQuotationType = {
   signatory_member_3?: SignatoryType;
   status?: AbstractQuotationStatus;
   status_timestamps?: {
+    draft_at?: string;
     pending_at?: string;
     approved_at?: string;
     awarded_at?: string;
@@ -625,6 +650,7 @@ type PurchaseOrderType = {
   document_type?: 'po' | 'jo';
   status?: PurchaseOrderStatus;
   status_timestamps?: {
+    draft_at?: string;
     pending_at?: string;
     approved_at?: string;
     issued_at?: string;
@@ -673,6 +699,7 @@ type InspectionAcceptanceReportType = {
   acceptance?: UserType;
   status?: InspectionAcceptanceReportStatus;
   status_timestamps?: {
+    draft_at?: string;
     pending_at?: string;
     inspected_at?: string;
     accepted_at?: string;
@@ -680,6 +707,117 @@ type InspectionAcceptanceReportType = {
   created_at?: string;
   updated_at?: string;
   items?: InspectionAcceptanceReportItemType[];
+};
+
+type ObligationRequestFppType = {
+  id?: string;
+  obligation_request_id?: string;
+  fpp_id?: string;
+  fpp?: FunctionProgramProjectType;
+};
+
+type ObligationRequestAccountType = {
+  id?: string;
+  obligation_request_id?: string;
+  account_id?: string;
+  account?: AccountType;
+  amount?: number;
+};
+
+type ObligationRequestType = {
+  id?: string;
+  purchase_request_id?: string;
+  purchase_request?: PurchaseRequestType;
+  purchase_order_id?: string;
+  purchase_order?: PurchaseOrderType;
+  funding?: {
+    general?: boolean;
+    mdf_20?: boolean;
+    gf_mdrrmf_5?: boolean;
+    sef?: boolean;
+  };
+  payee_id?: string;
+  payee?: SupplierType;
+  obr_no?: string;
+  office?: string;
+  address?: string;
+  responsibility_center_id?: string;
+  responsibility_center?: ResponsibilityCenterType;
+  particulars?: string;
+  total_amount?: number;
+  compliance_status?: {
+    allotment_necessary?: boolean;
+    document_valid?: boolean;
+  };
+  sig_head_id?: string;
+  signatory_head?: SignatoryType;
+  head_signed_date?: string;
+  sig_budget_id?: string;
+  signatory_budget?: SignatoryType;
+  budget_signed_date?: string;
+  disapproved_reason?: string;
+  status?: ObligationRequestStatus;
+  status_timestamps?: {
+    draft_at?: string;
+    pending_at?: string;
+    disapproved_at?: string;
+    approved_at?: string;
+  };
+  created_at?: string;
+  updated_at?: string;
+  fpps?: ObligationRequestFppType[];
+  accounts?: ObligationRequestAccountType[];
+};
+
+type DisbursementVoucherType = {
+  id?: string;
+  purchase_request_id?: string;
+  purchase_request?: PurchaseRequestType;
+  purchase_order_id?: string;
+  purchase_order?: PurchaseOrderType;
+  obligation_request_id?: string;
+  obligation_request?: ObligationRequestType;
+  dv_no?: string;
+  mode_payment?: 'check' | 'cash' | 'other';
+  payee_id?: string;
+  payee?: SupplierType;
+  address?: string;
+  office?: string;
+  responsibility_center_id?: string;
+  responsibility_center?: ResponsibilityCenterType;
+  explanation?: string;
+  total_amount?: number;
+  accountant_certified_choices?: {
+    allotment_obligated?: boolean;
+    document_complete?: boolean;
+  };
+  sig_accountant_id?: string;
+  signatory_accountant?: SignatoryType;
+  accountant_signed_date?: string;
+  sig_treasurer_id?: string;
+  signatory_treasurer?: SignatoryType;
+  treasurer_signed_date?: string;
+  sig_head_id?: string;
+  head_signed_date?: string;
+  signatory_head?: SignatoryType;
+  check_no?: string;
+  bank_name?: string;
+  check_date?: string;
+  received_name?: string;
+  received_date?: string;
+  or_other_document?: string;
+  jev_no?: string;
+  jev_date?: string;
+  disapproved_reason?: string;
+  status?: DisbursementVoucherStatus;
+  status_timestamps?: {
+    draft_at?: string;
+    pending_at?: string;
+    disapproved_at?: string;
+    approved_at?: string;
+  };
+  created_at?: string;
+  updated_at?: string;
 };
 
 type InventorySupplyType = {
@@ -749,6 +887,7 @@ type InventoryIssuanceType = {
   received_date?: string;
   status?: InventoryIssuanceStatus;
   status_timestamps?: {
+    draft_at?: string;
     pending_at?: string;
     approved_at?: string;
     issued_at?: string;
