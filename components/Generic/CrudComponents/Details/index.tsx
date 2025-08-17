@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Group,
-  LoadingOverlay,
   Menu,
   Paper,
   Stack,
@@ -36,6 +35,12 @@ import PurchaseOrderFormClient from '@/components/PurchaseOrders/Form';
 import InspectionAcceptanceReportFormClient from '@/components/InspectionAcceptanceReports/Form';
 import InspectionAcceptanceReportActionsClient from '@/components/InspectionAcceptanceReports/Actions';
 import InspectionAcceptanceReportStatusClient from '@/components/InspectionAcceptanceReports/Status';
+import ObligationRequestFormClient from '@/components/ObligationRequests/Form';
+import ObligationRequestActionsClient from '@/components/ObligationRequests/Actions';
+import ObligationRequestStatusClient from '@/components/ObligationRequests/Status';
+import DisbursementVoucherFormClient from '@/components/DisbursementVouchers/Form';
+import DisbursementVoucherActionsClient from '@/components/DisbursementVouchers/Actions';
+import DisbursementVoucherStatusClient from '@/components/DisbursementVouchers/Status';
 import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
 import InventorySupplyStatusClient from '@/components/InventorySupplies/Status';
 import InventorySupplyActionsClient from '@/components/InventorySupplies/Actions';
@@ -44,7 +49,6 @@ import IcsFormClient from '../../../InventoryIssuances/Forms/IcsForm';
 import AreFormClient from '../../../InventoryIssuances/Forms/AreForm';
 import InventoryIssuanceStatusClient from '@/components/InventoryIssuances/Status';
 import InventoryIssuanceActionsClient from '@/components/InventoryIssuances/Actions';
-import Helper from '@/utils/Helpers';
 import { usePathname, useRouter } from 'next/navigation';
 import API from '@/libs/API';
 import { API_REFRESH_INTERVAL } from '@/config/intervals';
@@ -52,6 +56,9 @@ import useSWR from 'swr';
 import PrintModalClient from '../../Modal/PrintModal';
 import LogModalClient from '../../Modal/LogModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import CustomLoadingOverlay from '../../CustomLoadingOverlay';
+import Helper from '@/utils/Helpers';
+import FullScreenSkeletonLoaderClient from '../../FullScreenSkeletonLoader';
 
 export const DetailActionsClient = ({
   permissions,
@@ -150,6 +157,20 @@ export const DetailActionsClient = ({
             status={(currentStatus as InspectionAcceptanceReportStatus) ?? ''}
           />
         );
+      case 'obr':
+        return (
+          <ObligationRequestStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as ObligationRequestStatus) ?? ''}
+          />
+        );
+      case 'dv':
+        return (
+          <DisbursementVoucherStatusClient
+            size={lgScreenAndBelow ? 'sm' : 'lg'}
+            status={(currentStatus as DisbursementVoucherStatus) ?? ''}
+          />
+        );
       case 'inv-supply':
         return (
           <InventorySupplyStatusClient
@@ -235,8 +256,29 @@ export const DetailActionsClient = ({
             <InspectionAcceptanceReportActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
+              poId={data?.purchase_order?.id ?? ''}
               status={data?.status ?? 'draft'}
               documentType={data?.purchase_order?.document_type ?? 'po'}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'obr' && (
+            <ObligationRequestActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              poId={data?.purchase_order_id ?? ''}
+              status={data?.status ?? 'draft'}
+              handleOpenActionModal={handleOpenActionModal}
+            />
+          )}
+
+          {content === 'dv' && (
+            <DisbursementVoucherActionsClient
+              permissions={permissions ?? []}
+              id={data?.id ?? ''}
+              poId={data?.purchase_order_id ?? ''}
+              status={data?.status ?? 'draft'}
               handleOpenActionModal={handleOpenActionModal}
             />
           )}
@@ -445,7 +487,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'canvassing', 'completed'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
         break;
 
@@ -463,7 +505,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
         break;
 
@@ -481,8 +523,53 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
+        break;
+
+      case 'iar':
+        hasPrintPermission = [
+          'supply:*',
+          ...getAllowedPermissions(content, 'print'),
+        ].some((permission) => permissions?.includes(permission));
+        hasEditPermission = [
+          'supply:*',
+          ...getAllowedPermissions(content, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setShowPrintButton(hasPrintPermission);
+
+        setShowEditButton(hasEditPermission);
+        break;
+
+      case 'obr':
+        hasPrintPermission = [
+          'budget:*',
+          ...getAllowedPermissions(content, 'print'),
+        ].some((permission) => permissions?.includes(permission));
+        hasEditPermission = [
+          'budget:*',
+          ...getAllowedPermissions(content, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setShowPrintButton(hasPrintPermission);
+
+        setShowEditButton(hasEditPermission);
+        break;
+
+      case 'dv':
+        hasPrintPermission = [
+          'accountant:*',
+          ...getAllowedPermissions(content, 'print'),
+        ].some((permission) => permissions?.includes(permission));
+        hasEditPermission = [
+          'accountant:*',
+          ...getAllowedPermissions(content, 'update'),
+        ].some((permission) => permissions?.includes(permission));
+
+        setShowPrintButton(hasPrintPermission);
+
+        setShowEditButton(hasEditPermission);
         break;
 
       case 'inv-supply':
@@ -511,7 +598,7 @@ const DetailClient = ({
 
         setShowEditButton(
           ['draft', 'pending', 'approved'].includes(status ?? '') &&
-          hasEditPermission
+            hasEditPermission
         );
 
         setPrintEndpoint(
@@ -526,11 +613,8 @@ const DetailClient = ({
 
   return (
     <Stack>
-      <LoadingOverlay
-        visible={detailLoading || pageLoading}
-        zIndex={1010}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-        pos={'fixed'}
+      <CustomLoadingOverlay
+        visible={detailLoading || pageLoading || Helper.empty(currentData)}
       />
 
       <Stack
@@ -554,6 +638,8 @@ const DetailClient = ({
 
       <Stack mb={100}>
         <Paper shadow={'lg'} p={0}>
+          {Helper.empty(currentData) && <FullScreenSkeletonLoaderClient />}
+
           {currentData && content === 'pr' && (
             <PurchaseRequestFormClient data={currentData} readOnly />
           )}
@@ -563,7 +649,11 @@ const DetailClient = ({
           )}
 
           {currentData && content === 'aoq' && (
-            <AbstractQuotionFormClient data={currentData} readOnly />
+            <AbstractQuotionFormClient
+              data={currentData}
+              refreshData={refreshDetail}
+              readOnly
+            />
           )}
 
           {currentData && content === 'po' && (
@@ -572,6 +662,14 @@ const DetailClient = ({
 
           {currentData && content === 'iar' && (
             <InspectionAcceptanceReportFormClient data={currentData} readOnly />
+          )}
+
+          {currentData && content === 'obr' && (
+            <ObligationRequestFormClient data={currentData} readOnly />
+          )}
+
+          {currentData && content === 'dv' && (
+            <DisbursementVoucherFormClient data={currentData} readOnly />
           )}
 
           {currentData && content === 'inv-supply' && (

@@ -16,8 +16,11 @@ const MainContainerClient = ({
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   return (
-    // <Paper shadow='sm' p='xl' h={{ base: '100%', lg: 'calc(100vh - 6em)' }}>
-    <Paper shadow='sm' p='xl'>
+    <Paper
+      shadow='sm'
+      p={lgScreenAndBelow ? 'md' : 'xl'}
+      mih={lgScreenAndBelow ? 'calc(100vh - 50px)' : 'calc(100vh - 60px)'}
+    >
       <Group>
         <Stack gap={0}>
           {secondaryTtile && (

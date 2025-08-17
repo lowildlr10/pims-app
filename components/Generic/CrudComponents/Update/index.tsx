@@ -1,25 +1,19 @@
 'use client';
 
-import {
-  Button,
-  Group,
-  LoadingOverlay,
-  Modal,
-  Paper,
-  ScrollArea,
-  Stack,
-} from '@mantine/core';
+import { Button, Group, Paper, Stack } from '@mantine/core';
 import React, { useEffect, useRef, useState } from 'react';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
-import { IconCancel, IconPencil } from '@tabler/icons-react';
+import { IconCancel, IconPencil, IconX } from '@tabler/icons-react';
 import PurchaseRequestFormClient from '../../../PurchaseRequests/Form';
 import { useMediaQuery } from '@mantine/hooks';
 import RequestQuotionFormClient from '../../../RequestQuotations/Form';
 import AbstractQuotionFormClient from '../../../AbstractQuotations/Form';
 import PurchaseOrderFormClient from '@/components/PurchaseOrders/Form';
 import InspectionAcceptanceReportFormClient from '@/components/InspectionAcceptanceReports/Form';
+import ObligationRequestFormClient from '@/components/ObligationRequests/Form';
+import DisbursementVoucherFormClient from '@/components/DisbursementVouchers/Form';
 import InventorySupplyFormClient from '@/components/InventorySupplies/Form';
 import RisFormClient from '../../../InventoryIssuances/Forms/RisForm';
 import IcsFormClient from '../../../InventoryIssuances/Forms/IcsForm';
@@ -28,8 +22,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import Helper from '@/utils/Helpers';
 import useSWR from 'swr';
 import { API_REFRESH_INTERVAL } from '@/config/intervals';
+import CustomLoadingOverlay from '../../CustomLoadingOverlay';
+import FullScreenSkeletonLoaderClient from '../../FullScreenSkeletonLoader';
 
-const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
+const UpdateClient = ({
+  content,
+  endpoint,
+  backUrl,
+  closeUrl,
+}: UpdateProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
@@ -59,12 +60,25 @@ const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
     setCurrentData(data?.data?.data);
   }, [data]);
 
-  const handleClose = (id?: string) => {
+  const handleCancel = (id?: string) => {
     if (backUrl) {
       router.push(backUrl);
     } else {
       if (!Helper.empty(id)) {
         const redirectPath = pathname.replace('/update', '');
+        router.push(redirectPath);
+      } else {
+        router.back();
+      }
+    }
+  };
+
+  const handleClose = (id?: string) => {
+    if (closeUrl) {
+      router.push(closeUrl);
+    } else {
+      if (!Helper.empty(id)) {
+        const redirectPath = pathname.replace('/', '');
         router.push(redirectPath);
       } else {
         router.back();
@@ -101,8 +115,9 @@ const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
           color: 'green',
         });
 
+        refreshData();
         setPayload({});
-        handleClose();
+        handleCancel();
       })
       .catch((err) => {
         const errors = getErrors(err);
@@ -121,89 +136,161 @@ const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
 
   return (
     <Stack>
-      <LoadingOverlay
-        visible={loading || dataLoading || pageLoading}
-        zIndex={1010}
-        overlayProps={{ radius: 'sm', blur: 2 }}
+      <CustomLoadingOverlay
+        visible={
+          loading || dataLoading || pageLoading || Helper.empty(currentData)
+        }
       />
 
       <Stack mb={100}>
         <Paper shadow={'lg'} p={0}>
-          {content === 'pr' && (
-            <PurchaseRequestFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {Helper.empty(currentData) && <FullScreenSkeletonLoaderClient />}
 
-          {content === 'rfq' && (
-            <RequestQuotionFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'pr' && (
+              <PurchaseRequestFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {content === 'aoq' && (
-            <AbstractQuotionFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'rfq' && (
+              <RequestQuotionFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {content === 'po' && (
-            <PurchaseOrderFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'aoq' && (
+              <AbstractQuotionFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {content === 'iar' && (
-            <InspectionAcceptanceReportFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'po' && (
+              <PurchaseOrderFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {content === 'inv-supply' && (
-            <InventorySupplyFormClient
-              ref={formRef}
-              data={currentData}
-              handleCreateUpdate={handleUpdate}
-            />
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'iar' && (
+              <InspectionAcceptanceReportFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-          {content === 'inv-issuance' && (
-            <>
-              {currentData?.document_type === 'ris' && (
-                <RisFormClient
-                  ref={formRef}
-                  data={currentData}
-                  handleCreateUpdate={handleUpdate}
-                />
-              )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'obr' && (
+              <ObligationRequestFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-              {currentData?.document_type === 'ics' && (
-                <IcsFormClient
-                  ref={formRef}
-                  data={currentData}
-                  handleCreateUpdate={handleUpdate}
-                />
-              )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'dv' && (
+              <DisbursementVoucherFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
 
-              {currentData?.document_type === 'are' && (
-                <AreFormClient
-                  ref={formRef}
-                  data={currentData}
-                  handleCreateUpdate={handleUpdate}
-                />
-              )}
-            </>
-          )}
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'inv-supply' && (
+              <InventorySupplyFormClient
+                ref={formRef}
+                data={currentData}
+                handleCreateUpdate={handleUpdate}
+              />
+            )}
+
+          {!(
+            loading ||
+            dataLoading ||
+            pageLoading ||
+            Helper.empty(currentData)
+          ) &&
+            content === 'inv-issuance' && (
+              <>
+                {currentData?.document_type === 'ris' && (
+                  <RisFormClient
+                    ref={formRef}
+                    data={currentData}
+                    handleCreateUpdate={handleUpdate}
+                  />
+                )}
+
+                {currentData?.document_type === 'ics' && (
+                  <IcsFormClient
+                    ref={formRef}
+                    data={currentData}
+                    handleCreateUpdate={handleUpdate}
+                  />
+                )}
+
+                {currentData?.document_type === 'are' && (
+                  <AreFormClient
+                    ref={formRef}
+                    data={currentData}
+                    handleCreateUpdate={handleUpdate}
+                  />
+                )}
+              </>
+            )}
         </Paper>
       </Stack>
 
@@ -234,8 +321,25 @@ const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
           <Button
             variant={'outline'}
             size={lgScreenAndBelow ? 'xs' : 'sm'}
-            color={'var(--mantine-color-gray-8)'}
+            color={'var(--mantine-color-primary-9)'}
             leftSection={<IconCancel size={18} />}
+            loading={pageLoading}
+            loaderProps={{
+              type: 'dots',
+            }}
+            onClick={(e) => {
+              setPageLoading(true);
+              e.preventDefault();
+              handleCancel();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant={'outline'}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
+            color={'var(--mantine-color-gray-8)'}
+            leftSection={<IconX size={18} />}
             loading={pageLoading}
             loaderProps={{
               type: 'dots',
@@ -246,7 +350,7 @@ const UpdateClient = ({ content, endpoint, backUrl }: UpdateProps) => {
               handleClose();
             }}
           >
-            Cancel
+            Close
           </Button>
         </Group>
       </Stack>

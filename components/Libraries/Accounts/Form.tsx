@@ -3,7 +3,7 @@ import React, { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 import DynamicSelect from '../../Generic/DynamicSelect';
 
-const FormClient = forwardRef<HTMLFormElement, ModalUacsCodeContentProps>(
+const FormClient = forwardRef<HTMLFormElement, ModalAccountContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
     const [currentData, setCurrentData] = useState(data);
     const currentForm = useMemo(
@@ -43,7 +43,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalUacsCodeContentProps>(
       >
         <Stack>
           <DynamicSelect
-            endpoint={'/libraries/uacs-code-classifications'}
+            endpoint={'/libraries/account-classifications'}
             endpointParams={{
               paginated: false,
               show_all: true,

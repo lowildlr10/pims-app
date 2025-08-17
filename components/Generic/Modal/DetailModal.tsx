@@ -226,6 +226,7 @@ export const DetailActionsClient = ({
             <InspectionAcceptanceReportActionsClient
               permissions={permissions ?? []}
               id={data?.id ?? ''}
+              poId={data?.purchase_order_id ?? ''}
               status={data?.status ?? 'draft'}
               documentType={data?.purchase_order?.document_type ?? 'po'}
               handleOpenActionModal={handleOpenActionModal}

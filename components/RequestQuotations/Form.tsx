@@ -94,19 +94,19 @@ const FormClient = forwardRef<
       sig_approval_id: currentData?.sig_approval_id ?? '',
       items:
         currentData?.items &&
-          typeof currentData?.items !== undefined &&
-          currentData?.items.length > 0
+        typeof currentData?.items !== undefined &&
+        currentData?.items.length > 0
           ? currentData?.items?.map((item, index) => ({
-            key: randomId(),
-            pr_item_id: item?.pr_item_id,
-            stock_no: item.pr_item?.stock_no ?? 1,
-            quantity: item.pr_item?.quantity,
-            description: item.pr_item?.description ?? '-',
-            brand_model: item.brand_model ?? '',
-            unit_cost: item?.unit_cost ?? undefined,
-            total_cost: item?.total_cost ?? undefined,
-            included: item?.included ?? true,
-          }))
+              key: randomId(),
+              pr_item_id: item?.pr_item_id,
+              stock_no: item.pr_item?.stock_no ?? 1,
+              quantity: item.pr_item?.quantity,
+              description: item.pr_item?.description ?? '-',
+              brand_model: item.brand_model ?? '',
+              unit_cost: item?.unit_cost ?? undefined,
+              total_cost: item?.total_cost ?? undefined,
+              included: item?.included ?? true,
+            }))
           : [],
       vat_registered: currentData?.vat_registered,
       canvassers:
@@ -219,10 +219,11 @@ const FormClient = forwardRef<
           <Table.Td>
             <NumberInput
               variant={readOnly ? 'unstyled' : 'filled'}
-              placeholder={`Item No ${item?.stock_no?.toString() !== ''
+              placeholder={`Item No ${
+                item?.stock_no?.toString() !== ''
                   ? `: ${item?.stock_no?.toString()}`
                   : ''
-                }`}
+              }`}
               defaultValue={item?.stock_no}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -238,10 +239,11 @@ const FormClient = forwardRef<
           <Table.Td>
             <NumberInput
               variant={readOnly ? 'unstyled' : 'filled'}
-              placeholder={`Quantity ${item?.quantity?.toString() !== ''
+              placeholder={`Quantity ${
+                item?.quantity?.toString() !== ''
                   ? `: ${item?.quantity?.toString()}`
                   : ''
-                }`}
+              }`}
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               min={0}
@@ -665,12 +667,12 @@ const FormClient = forwardRef<
                       defaultData={
                         currentData?.supplier_id
                           ? [
-                            {
-                              value: currentData?.supplier_id ?? '',
-                              label:
-                                currentData?.supplier?.supplier_name ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.supplier_id ?? '',
+                                label:
+                                  currentData?.supplier?.supplier_name ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       defaultValue={form.values.supplier_id}
@@ -802,13 +804,13 @@ const FormClient = forwardRef<
                     defaultData={
                       currentData?.sig_approval_id
                         ? [
-                          {
-                            value: currentData?.sig_approval_id ?? '',
-                            label:
-                              currentData?.signatory_approval?.user
-                                ?.fullname ?? '',
-                          },
-                        ]
+                            {
+                              value: currentData?.sig_approval_id ?? '',
+                              label:
+                                currentData?.signatory_approval?.user
+                                  ?.fullname ?? '',
+                            },
+                          ]
                         : undefined
                     }
                     valueColumn={'signatory_id'}

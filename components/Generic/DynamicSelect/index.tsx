@@ -3,7 +3,6 @@ import { Select, Loader } from '@mantine/core';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
-import Helper from '@/utils/Helpers';
 
 const DynamicSelect: React.FC<DynamicSelectProps> = ({
   name,

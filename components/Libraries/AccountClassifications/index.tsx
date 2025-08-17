@@ -10,25 +10,25 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
-const MAIN_MODULE: ModuleType = 'lib-uacs-class';
+const MAIN_MODULE: ModuleType = 'lib-account-class';
 
 const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    title: 'Create UACS Code Classification',
-    endpoint: '/libraries/uacs-code-classifications',
+    title: 'Create Account Classification',
+    endpoint: '/libraries/account-classifications',
   },
 };
 
 const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    title: 'Update UACS Code Classification',
-    endpoint: '/libraries/uacs-code-classifications',
+    title: 'Update Account Classification',
+    endpoint: '/libraries/account-classifications',
   },
 };
 
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    endpoint: '/libraries/uacs-code-classifications',
+    endpoint: '/libraries/account-classifications',
   },
 };
 
@@ -44,7 +44,7 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
+const AccountClassificationsClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -60,9 +60,9 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
   const [showCreate, setShowCreate] = useState(false);
   const [activeDataEditable, setActiveDataEditable] = useState(false);
 
-  const { data, isLoading, mutate } = useSWR<UacsClassificationsResponse>(
+  const { data, isLoading, mutate } = useSWR<AccountClassificationsResponse>(
     [
-      `/libraries/uacs-code-classifications`,
+      `/libraries/account-classifications`,
       search,
       page,
       perPage,
@@ -114,19 +114,21 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
   }, [activeData]);
 
   useEffect(() => {
-    setShowCreate([
-      'supply:*',
-      ...getAllowedPermissions(MAIN_MODULE, 'create'),
-    ].some((permission) => permissions?.includes(permission)));
+    setShowCreate(
+      ['supply:*', ...getAllowedPermissions(MAIN_MODULE, 'create')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
 
-    setActiveDataEditable([
-      'supply:*',
-      ...getAllowedPermissions(MAIN_MODULE, 'update'),
-    ].some((permission) => permissions?.includes(permission)));
+    setActiveDataEditable(
+      ['supply:*', ...getAllowedPermissions(MAIN_MODULE, 'update')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
   }, [permissions]);
 
   useEffect(() => {
-    const _data = data?.data?.map((body: UacsCodeClassificationType) => {
+    const _data = data?.data?.map((body: AccountClassificationType) => {
       return {
         ...body,
         classification_name_formatted: (
@@ -187,4 +189,4 @@ const UacsClassificationsClient = ({ permissions }: LibraryProps) => {
   );
 };
 
-export default UacsClassificationsClient;
+export default AccountClassificationsClient;

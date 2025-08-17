@@ -13,7 +13,7 @@ export function NProgressClient() {
 
     const timeout = setTimeout(() => {
       nprogress.complete();
-    }, 300);
+    }, 400);
 
     return () => clearTimeout(timeout);
   }, [pathname, searchParams]);

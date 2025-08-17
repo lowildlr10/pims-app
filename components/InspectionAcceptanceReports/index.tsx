@@ -42,7 +42,7 @@ const defaultTableData: TableDataType = {
     },
     {
       id: 'po_no',
-      label: 'PO/JO No',
+      label: 'PO No',
       width: '14%',
       sortable: true,
     },
@@ -207,6 +207,7 @@ const InspectionAcceptanceReportsClient = ({
               <ActionsClient
                 permissions={permissions ?? []}
                 id={body.id ?? ''}
+                poId={body.purchase_order_id ?? ''}
                 status={body.status ?? 'draft'}
                 documentType={purchaseOrder?.document_type ?? 'po'}
                 handleOpenActionModal={handleOpenActionModal}

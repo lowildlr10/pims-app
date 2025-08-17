@@ -10,25 +10,25 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
-const MAIN_MODULE: ModuleType = 'lib-mfo-pap';
+const MAIN_MODULE: ModuleType = 'lib-fpp';
 
 const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    title: 'Create MFO/PAP',
-    endpoint: '/libraries/mfo-paps',
+    title: 'Create Function, Program, and Projects',
+    endpoint: '/libraries/function-program-projects',
   },
 };
 
 const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
     title: 'Update Bids and Awards Committee',
-    endpoint: '/libraries/mfo-paps',
+    endpoint: '/libraries/function-program-projects',
   },
 };
 
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    endpoint: '/libraries/mfo-paps',
+    endpoint: '/libraries/function-program-projects',
   },
 };
 
@@ -50,7 +50,7 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const MfoPapsClient = ({ permissions }: LibraryProps) => {
+const FunctionProgramProjectsClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -66,9 +66,9 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
   const [showCreate, setShowCreate] = useState(false);
   const [activeDataEditable, setActiveDataEditable] = useState(false);
 
-  const { data, isLoading, mutate } = useSWR<MfoPapsResponse>(
+  const { data, isLoading, mutate } = useSWR<FunctionProgramProjectsResponse>(
     [
-      `/libraries/mfo-paps`,
+      `/libraries/function-program-projects`,
       search,
       page,
       perPage,
@@ -120,19 +120,21 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
   }, [activeData]);
 
   useEffect(() => {
-    setShowCreate([
-      'supply:*',
-      ...getAllowedPermissions(MAIN_MODULE, 'create'),
-    ].some((permission) => permissions?.includes(permission)));
+    setShowCreate(
+      ['supply:*', ...getAllowedPermissions(MAIN_MODULE, 'create')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
 
-    setActiveDataEditable([
-      'supply:*',
-      ...getAllowedPermissions(MAIN_MODULE, 'update'),
-    ].some((permission) => permissions?.includes(permission)));
+    setActiveDataEditable(
+      ['supply:*', ...getAllowedPermissions(MAIN_MODULE, 'update')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
   }, [permissions]);
 
   useEffect(() => {
-    const _data = data?.data?.map((body: MfoPapType) => {
+    const _data = data?.data?.map((body: FunctionProgramProjectType) => {
       return {
         ...body,
         code_formatted: (
@@ -193,4 +195,4 @@ const MfoPapsClient = ({ permissions }: LibraryProps) => {
   );
 };
 
-export default MfoPapsClient;
+export default FunctionProgramProjectsClient;

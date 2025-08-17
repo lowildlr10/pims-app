@@ -99,8 +99,14 @@ const NotificationMenuButtonClient = () => {
             }
             processing
           >
-            <ActionIcon size='lg' variant='transparent' color='white'>
-              <IconBellFilled size={lgScreenAndBelow ? 16 : 21} stroke={1.5} />
+            <ActionIcon
+              variant='transparent'
+              color='white'
+              size={lgScreenAndBelow ? 'md' : 'lg'}
+              pt={'xs'}
+              px={0}
+            >
+              <IconBellFilled size={lgScreenAndBelow ? 20 : 24} stroke={1.5} />
             </ActionIcon>
           </Indicator>
         </Box>
@@ -175,13 +181,13 @@ const NotificationMenuButtonClient = () => {
                             ? dayjs(notif.created_at).isSame(dayjs(), 'day')
                               ? `Today at ${dayjs(notif.created_at).format('h:mm A')}`
                               : dayjs(notif.created_at).isSame(
-                                dayjs().subtract(1, 'day'),
-                                'day'
-                              )
+                                    dayjs().subtract(1, 'day'),
+                                    'day'
+                                  )
                                 ? `Yesterday at ${dayjs(notif.created_at).format('h:mm A')}`
                                 : dayjs(notif.created_at).format(
-                                  'MMM D, YYYY [at] h:mm A'
-                                )
+                                    'MMM D, YYYY [at] h:mm A'
+                                  )
                             : 'Unknown time'}
                         </Text>
                       </Group>

@@ -94,18 +94,18 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
         sig_approval_id: currentData?.sig_approval_id ?? '',
         items:
           currentData?.items &&
-            typeof currentData?.items !== undefined &&
-            currentData?.items.length > 0
+          typeof currentData?.items !== undefined &&
+          currentData?.items.length > 0
             ? currentData?.items?.map((item, index) => ({
-              key: randomId(),
-              pr_item_id: item?.pr_item_id,
-              stock_no: item.pr_item?.stock_no ?? 1,
-              unit_issue: item.pr_item?.unit_issue?.unit_name ?? '-',
-              description: item.description ?? '',
-              quantity: item.pr_item?.quantity,
-              unit_cost: item?.unit_cost ?? 0,
-              total_cost: item?.total_cost ?? 0,
-            }))
+                key: randomId(),
+                pr_item_id: item?.pr_item_id,
+                stock_no: item.pr_item?.stock_no ?? 1,
+                unit_issue: item.pr_item?.unit_issue?.unit_name ?? '-',
+                description: item.description ?? '',
+                quantity: item.pr_item?.quantity,
+                unit_cost: item?.unit_cost ?? 0,
+                total_cost: item?.total_cost ?? 0,
+              }))
             : [],
       };
     }, [currentData]);
@@ -1009,13 +1009,13 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
                       defaultData={
                         currentData?.sig_approval_id
                           ? [
-                            {
-                              value: currentData?.sig_approval_id ?? '',
-                              label:
-                                currentData?.signatory_approval?.user
-                                  ?.fullname ?? '',
-                            },
-                          ]
+                              {
+                                value: currentData?.sig_approval_id ?? '',
+                                label:
+                                  currentData?.signatory_approval?.user
+                                    ?.fullname ?? '',
+                              },
+                            ]
                           : undefined
                       }
                       valueColumn={'signatory_id'}

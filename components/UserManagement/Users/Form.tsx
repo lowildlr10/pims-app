@@ -167,12 +167,11 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
             defaultData={
               currentData?.department_id
                 ? [
-                  {
-                    value: currentData.department_id,
-                    label:
-                      currentData?.department?.department_name ?? '',
-                  },
-                ]
+                    {
+                      value: currentData.department_id,
+                      label: currentData?.department?.department_name ?? '',
+                    },
+                  ]
                 : undefined
             }
             value={departmentId}
@@ -195,18 +194,16 @@ const FormClient = forwardRef<HTMLFormElement, ModalUserContentProps>(
             column={'section_name'}
             label={'Section'}
             placeholder={
-              departmentId
-                ? 'Section'
-                : 'Please select a department first'
+              departmentId ? 'Section' : 'Please select a department first'
             }
             defaultData={
               currentData?.section_id
                 ? [
-                  {
-                    value: currentData?.section_id ?? '',
-                    label: currentData?.section?.section_name ?? '',
-                  },
-                ]
+                    {
+                      value: currentData?.section_id ?? '',
+                      label: currentData?.section?.section_name ?? '',
+                    },
+                  ]
                 : undefined
             }
             value={sectionId}

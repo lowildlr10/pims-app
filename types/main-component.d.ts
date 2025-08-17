@@ -89,6 +89,7 @@ type ModalAbstractQuotationContentProps = {
   data: AbstractQuotationType;
   isCreate?: boolean;
   readOnly?: boolean;
+  refreshData?: () => void;
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
@@ -146,6 +147,7 @@ type InspectionAcceptanceReportStatusProps = {
 type InspectionAcceptanceReportActionProps = {
   permissions?: string[];
   id: string;
+  poId: string;
   status: InspectionAcceptanceReportStatus;
   documentType: 'po' | 'jo';
   handleOpenActionModal?: OpenActionModalActionType;
@@ -153,6 +155,66 @@ type InspectionAcceptanceReportActionProps = {
 
 type ModalInspectionAcceptanceReportContentProps = {
   data: InspectionAcceptanceReportType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
+};
+
+type ObligationRequestResponse = {
+  data: ObligationRequestType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type ObligationRequestStatusProps = {
+  size?: string;
+  status?: ObligationRequestStatus;
+};
+
+type ObligationRequestActionProps = {
+  permissions?: string[];
+  id: string;
+  poId: string;
+  status: ObligationRequestStatus;
+  handleOpenActionModal?: OpenActionModalActionType;
+};
+
+type ModalObligationRequestContentProps = {
+  data: ObligationRequestType;
+  isCreate?: boolean;
+  readOnly?: boolean;
+  handleCreateUpdate?: (uncontrolledPayload?: object) => void;
+};
+
+type DisbursementVoucherResponse = {
+  data: DisbursementVoucherType[];
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type DisbursementVoucherStatusProps = {
+  size?: string;
+  status?: DisbursementVoucherStatus;
+};
+
+type DisbursementVoucherActionProps = {
+  permissions?: string[];
+  id: string;
+  poId: string;
+  status: DisbursementVoucherStatus;
+  handleOpenActionModal?: OpenActionModalActionType;
+};
+
+type ModalDisbursementVoucherContentProps = {
+  data: DisbursementVoucherType;
   isCreate?: boolean;
   readOnly?: boolean;
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;

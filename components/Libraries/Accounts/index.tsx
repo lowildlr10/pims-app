@@ -10,25 +10,25 @@ import { IconExclamationCircleFilled } from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
-const MAIN_MODULE: ModuleType = 'lib-uacs-code';
+const MAIN_MODULE: ModuleType = 'lib-account';
 
 const CREATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    title: 'Create UACS Object Code',
-    endpoint: '/libraries/uacs-codes',
+    title: 'Create Account',
+    endpoint: '/libraries/accounts',
   },
 };
 
 const UPDATE_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    title: 'Update UACS Object Code',
-    endpoint: '/libraries/uacs-codes',
+    title: 'Update Account',
+    endpoint: '/libraries/accounts',
   },
 };
 
 const DETAIL_ITEM_CONFIG: CreateUpdateDetailItemTableType = {
   main: {
-    endpoint: '/libraries/uacs-codes',
+    endpoint: '/libraries/accounts',
   },
 };
 
@@ -62,7 +62,7 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const UacsCodesClient = ({ permissions }: LibraryProps) => {
+const AccountsClient = ({ permissions }: LibraryProps) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -78,9 +78,9 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
   const [showCreate, setShowCreate] = useState(false);
   const [activeDataEditable, setActiveDataEditable] = useState(false);
 
-  const { data, isLoading, mutate } = useSWR<UacsCodesResponse>(
+  const { data, isLoading, mutate } = useSWR<AccountsResponse>(
     [
-      `/libraries/uacs-codes`,
+      `/libraries/accounts`,
       search,
       page,
       perPage,
@@ -132,19 +132,21 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
   }, [activeData]);
 
   useEffect(() => {
-    setShowCreate([
-      'supply:*',
-      ...getAllowedPermissions(MAIN_MODULE, 'create'),
-    ].some((permission) => permissions?.includes(permission)));
+    setShowCreate(
+      ['supply:*', ...getAllowedPermissions(MAIN_MODULE, 'create')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
 
-    setActiveDataEditable([
-      'supply:*',
-      ...getAllowedPermissions(MAIN_MODULE, 'update'),
-    ].some((permission) => permissions?.includes(permission)));
+    setActiveDataEditable(
+      ['supply:*', ...getAllowedPermissions(MAIN_MODULE, 'update')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
   }, [permissions]);
 
   useEffect(() => {
-    const _data = data?.data?.map((body: UacsCodeType) => {
+    const _data = data?.data?.map((body: AccountType) => {
       return {
         ...body,
         code_formatted: (
@@ -206,4 +208,4 @@ const UacsCodesClient = ({ permissions }: LibraryProps) => {
   );
 };
 
-export default UacsCodesClient;
+export default AccountsClient;

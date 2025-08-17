@@ -96,6 +96,48 @@ export const SIGNATORIES_CONFIG: SignatoryDetailsFieldType[] = [
     ],
   },
   {
+    document: 'obr',
+    label: 'Obligation Request Document',
+    details: [
+      {
+        checked: false,
+        label: 'Budget',
+        signatory_type: 'budget',
+        position: '',
+      },
+      {
+        checked: false,
+        label: 'Head',
+        signatory_type: 'head',
+        position: '',
+      },
+    ],
+  },
+  {
+    document: 'dv',
+    label: 'Disbursement Vocher Document',
+    details: [
+      {
+        checked: false,
+        label: 'Accountant',
+        signatory_type: 'accountant',
+        position: '',
+      },
+      {
+        checked: false,
+        label: 'Treasurer',
+        signatory_type: 'treasurer',
+        position: '',
+      },
+      {
+        checked: false,
+        label: 'Head',
+        signatory_type: 'head',
+        position: '',
+      },
+    ],
+  },
+  {
     document: 'ris',
     label: 'Requisition and Issue Slip Document',
     details: [

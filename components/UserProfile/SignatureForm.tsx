@@ -1,12 +1,13 @@
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
-import { Button, LoadingOverlay, Paper, Stack, Switch } from '@mantine/core';
+import { Button, Paper, Stack, Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
 import { useMediaAsset } from '@/hooks/useMediaAsset';
+import CustomLoadingOverlay from '../Generic/CustomLoadingOverlay';
 
 const SignatureFormClient = ({ user }: SignatureFormProps) => {
   const {
@@ -59,11 +60,7 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
 
   return (
     <form onSubmit={form.onSubmit(() => handleUpdateSignature())}>
-      <LoadingOverlay
-        visible={loading || signatureLoading}
-        zIndex={1000}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
+      <CustomLoadingOverlay visible={loading || signatureLoading} />
       <Stack justify={'flex-start'} gap={'xl'} px={'xl'}>
         <Paper>
           <SingleImageUploadClient
