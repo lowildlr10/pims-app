@@ -307,11 +307,6 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
-        label: 'Set to "For Payment"',
-        value: 'payment',
-        checked: false,
-      },
-      {
         label: 'Set to "Paid"',
         value: 'paid',
         checked: false,
