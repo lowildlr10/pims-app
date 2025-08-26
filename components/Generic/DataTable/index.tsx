@@ -125,14 +125,14 @@ const DataTableClient = ({
   } = useSWR<DetailResponse>(
     fetchDetails && currentId
       ? [
-          currentOpenedModuleType === 'main'
-            ? (detailItemData?.main?.endpoint ?? '')
-              ? `${detailItemData?.main?.endpoint ?? ''}/${currentId}`
-              : null
-            : (detailItemData?.sub?.endpoint ?? '')
-              ? `${detailItemData?.sub?.endpoint ?? ''}/${currentId}`
-              : null,
-        ]
+        currentOpenedModuleType === 'main'
+          ? (detailItemData?.main?.endpoint ?? '')
+            ? `${detailItemData?.main?.endpoint ?? ''}/${currentId}`
+            : null
+          : (detailItemData?.sub?.endpoint ?? '')
+            ? `${detailItemData?.sub?.endpoint ?? ''}/${currentId}`
+            : null,
+      ]
       : null,
     ([url]: GeneralResponse) => API.get(url),
     {
@@ -448,19 +448,19 @@ const DataTableClient = ({
                           fz={'xs'}
                           label={
                             mainItemsClickable &&
-                            getAllowedPermissions(mainModule, 'view')?.some(
-                              (permission) => permissions.includes(permission)
-                            ) &&
-                            defaultModalOnClick === 'details'
+                              getAllowedPermissions(mainModule, 'view')?.some(
+                                (permission) => permissions.includes(permission)
+                              ) &&
+                              defaultModalOnClick === 'details'
                               ? 'Click to show details'
                               : mainItemsClickable &&
-                                  getAllowedPermissions(
-                                    mainModule,
-                                    'update'
-                                  )?.some((permission) =>
-                                    permissions.includes(permission)
-                                  ) &&
-                                  defaultModalOnClick === 'update'
+                                getAllowedPermissions(
+                                  mainModule,
+                                  'update'
+                                )?.some((permission) =>
+                                  permissions.includes(permission)
+                                ) &&
+                                defaultModalOnClick === 'update'
                                 ? 'Click to update'
                                 : undefined
                           }
@@ -554,7 +554,7 @@ const DataTableClient = ({
                     sx={{
                       borderBottom:
                         (hasSubBody || subModule) &&
-                        collapseStates[body.id ?? '']
+                          collapseStates[body.id ?? '']
                           ? '2px solid var(--mantine-color-tertiary-9)'
                           : undefined,
                     }}
@@ -642,25 +642,25 @@ const DataTableClient = ({
                                             fz={'xs'}
                                             label={
                                               subItemsClickable &&
-                                              getAllowedPermissions(
-                                                subModule,
-                                                'view'
-                                              )?.some((permission) =>
-                                                permissions.includes(permission)
-                                              ) &&
-                                              defaultModalOnClick === 'details'
+                                                getAllowedPermissions(
+                                                  subModule,
+                                                  'view'
+                                                )?.some((permission) =>
+                                                  permissions.includes(permission)
+                                                ) &&
+                                                defaultModalOnClick === 'details'
                                                 ? 'Click to show details'
                                                 : subItemsClickable &&
-                                                    getAllowedPermissions(
-                                                      subModule,
-                                                      'update'
-                                                    )?.some((permission) =>
-                                                      permissions.includes(
-                                                        permission
-                                                      )
-                                                    ) &&
-                                                    defaultModalOnClick ===
-                                                      'update'
+                                                  getAllowedPermissions(
+                                                    subModule,
+                                                    'update'
+                                                  )?.some((permission) =>
+                                                    permissions.includes(
+                                                      permission
+                                                    )
+                                                  ) &&
+                                                  defaultModalOnClick ===
+                                                  'update'
                                                   ? 'Click to update'
                                                   : undefined
                                             }
@@ -671,11 +671,7 @@ const DataTableClient = ({
                                           >
                                             <Table.Td
                                               valign={'top'}
-                                              fz={{
-                                                base: 11,
-                                                lg: 'xs',
-                                                xl: 'sm',
-                                              }}
+                                              fz={lgScreenAndBelow ? 'xs' : 'sm'}
                                               onClick={(e) => {
                                                 if (
                                                   subHead?.clickable === false
@@ -702,7 +698,7 @@ const DataTableClient = ({
                                                     )
                                                   ) &&
                                                   defaultModalOnClick ===
-                                                    'update'
+                                                  'update'
                                                 ) {
                                                   setCurrentId(subBody.id);
                                                   setCurrentOpenedModuleType(
@@ -724,7 +720,7 @@ const DataTableClient = ({
                                                     )
                                                   ) &&
                                                   defaultModalOnClick ===
-                                                    'details'
+                                                  'details'
                                                 ) {
                                                   setPageLoading(true);
                                                   e.preventDefault();
