@@ -662,6 +662,8 @@ type PurchaseOrderType = {
   updated_at?: string;
   items?: PurchaseOrderItemType[];
   supplies?: InventorySupplyType[];
+  obligation_request?: ObligationRequestType;
+  disbursement_voucher?: DisbursementVoucherType;
   issuances?: InventoryIssuanceType[];
 };
 
@@ -896,4 +898,5 @@ type InventoryIssuanceType = {
   created_at?: string;
   updated_at?: string;
   items?: InventoryIssuanceItemType[];
+  purchase_order?: PurchaseOrderType;
 };
