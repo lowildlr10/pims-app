@@ -905,7 +905,7 @@ const AreFormClient = forwardRef<
                     />
                   ) : (
                     <TextInput
-                      label={'Issued by:'}
+                      label={'Received From:'}
                       variant={'unstyled'}
                       placeholder={'None'}
                       value={

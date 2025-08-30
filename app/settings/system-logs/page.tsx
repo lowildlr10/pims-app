@@ -21,7 +21,7 @@ const SystemLogPage = async () => {
   const backUrl = '/';
   const hasShowPermission = [
     'supply:*',
-    ...getAllowedPermissions(MODULE_TYPE, 'show'),
+    ...getAllowedPermissions(MODULE_TYPE, 'view'),
   ].some((permission) => permissions?.includes(permission));
 
   if (!user) redirect('/login');

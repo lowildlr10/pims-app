@@ -26,7 +26,7 @@ const InventoryIssuanceDetailsPage = async ({
   const backUrl = `/inventories/issuances?search=${id}`;
   const hasShowPermission = [
     'supply:*',
-    ...getAllowedPermissions(MODULE_TYPE, 'show'),
+    ...getAllowedPermissions(MODULE_TYPE, 'view'),
   ].some((permission) => permissions?.includes(permission));
 
   if (!user) redirect('/login');

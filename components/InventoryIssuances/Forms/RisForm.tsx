@@ -75,12 +75,19 @@ const RisFormClient = forwardRef<
     () => ({
       document_type: currentData?.document_type ?? '',
       purchase_order_id: currentData?.purchase_order_id ?? '',
-      responsibility_center_id: currentData?.responsibility_center_id ?? '',
+      responsibility_center_id: isCreate
+        ? (poData?.obligation_request?.responsibility_center_id ??
+          poData?.disbursement_voucher?.responsibility_center_id ??
+          '')
+        : (currentData?.responsibility_center_id ?? ''),
       inventory_date:
         currentData.inventory_date ?? dayjs().format('YYYY-MM-DD'),
-      sai_no: currentData.sai_no ?? poData?.purchase_request?.sai_no ?? '',
-      sai_date:
-        currentData.sai_date ?? poData?.purchase_request?.sai_date ?? '',
+      sai_no: isCreate
+        ? (poData?.purchase_request?.sai_no ?? currentData.sai_no ?? '')
+        : (currentData.sai_no ?? ''),
+      sai_date: isCreate
+        ? (poData?.purchase_request?.sai_date ?? currentData.sai_date ?? '')
+        : (currentData.sai_date ?? ''),
       requested_by_id:
         currentData?.requested_by_id ??
         poData?.purchase_request?.requested_by_id ??
@@ -515,7 +522,13 @@ const RisFormClient = forwardRef<
                       <TextInput
                         variant={readOnly ? 'unstyled' : 'filled'}
                         placeholder={'None'}
-                        value={companyData?.company_name ?? '-'}
+                        value={
+                          currentData?.purchase_order?.purchase_request
+                            ?.department?.department_name ??
+                          poData?.purchase_request?.department
+                            ?.department_name ??
+                          '-'
+                        }
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         flex={1}
                         sx={{

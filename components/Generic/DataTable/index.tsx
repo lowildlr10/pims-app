@@ -671,11 +671,9 @@ const DataTableClient = ({
                                           >
                                             <Table.Td
                                               valign={'top'}
-                                              fz={{
-                                                base: 11,
-                                                lg: 'xs',
-                                                xl: 'sm',
-                                              }}
+                                              fz={
+                                                lgScreenAndBelow ? 'xs' : 'sm'
+                                              }
                                               onClick={(e) => {
                                                 if (
                                                   subHead?.clickable === false

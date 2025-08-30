@@ -21,7 +21,7 @@ const ObligationRequestPage = async () => {
   const backUrl = '/';
   const hasShowPermission = [
     'budget:*',
-    ...getAllowedPermissions(MODULE_TYPE, 'show'),
+    ...getAllowedPermissions(MODULE_TYPE, 'view'),
   ].some((permission) => permissions?.includes(permission));
 
   if (!user) redirect('/login');
