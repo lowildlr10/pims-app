@@ -13,13 +13,17 @@ type PurchaseRequestWorkflowType = {
   disapproved: number;
   approved: number;
   for_canvassing: number;
+  for_abstract: number;
   completed: number;
 };
 
 type PurchaseOrderWorkflowType = {
   draft: number;
+  pending: number;
+  approved: number;
   issued: number;
   for_delivery: number;
+  delivered: number;
   for_inspection: number;
   completed: number;
 };
