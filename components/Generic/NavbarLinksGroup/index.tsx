@@ -50,7 +50,7 @@ export function LinksGroupClient({
           c={pathname === link.link ? 'black' : undefined}
           fz={lgScreenAndBelow ? '0.85rem' : 'sm'}
           prefetch={false}
-          onNavigate={(e) => pathname !== link.link && nprogress.start()}
+          // onNavigate={(e) => pathname !== link.link && nprogress.start()}
         >
           {link.label}
         </Anchor>
@@ -81,9 +81,9 @@ export function LinksGroupClient({
             c={'inherit'}
             fz={lgScreenAndBelow ? '0.85rem' : 'sm'}
             prefetch={false}
-            onNavigate={(e) =>
-              !hasLinks && pathname !== link && nprogress.start()
-            }
+            // onNavigate={(e) =>
+            //   !hasLinks && pathname !== link && nprogress.start()
+            // }
           >
             <Group justify='space-between' gap={0}>
               <Flex align={'center'}>

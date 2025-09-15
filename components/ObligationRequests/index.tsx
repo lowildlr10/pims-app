@@ -14,6 +14,8 @@ import { IconLibrary, IconMessageExclamation } from '@tabler/icons-react';
 import { Menu } from '@mantine/core';
 import ActionsClient from './Actions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import StatusFilterALert from '../Generic/StatusFilterAlert';
 
 const MAIN_MODULE: ModuleType = 'obr';
 
@@ -69,6 +71,9 @@ const defaultTableData: TableDataType = {
 };
 
 const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -98,6 +103,8 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
     { open: openActionModal, close: closeActionModal },
   ] = useDisclosure(false);
 
+  const [status, setStatus] = useState('');
+
   const { data, isLoading, mutate } = useSWR<ObligationRequestResponse>(
     [
       `/obligation-requests`,
@@ -107,6 +114,7 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
       columnSort,
       sortDirection,
       paginated,
+      status,
     ],
     ([
       url,
@@ -116,6 +124,7 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
       columnSort,
       sortDirection,
       paginated,
+      status,
     ]: GeneralResponse) =>
       API.get(url, {
         search,
@@ -124,6 +133,7 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
         column_sort: columnSort,
         sort_direction: sortDirection,
         paginated,
+        status,
       }),
     {
       refreshInterval: API_REFRESH_INTERVAL,
@@ -221,6 +231,15 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
     }));
   }, [data, lgScreenAndBelow, permissions]);
 
+  useEffect(() => {
+    const status = searchParams.get('status');
+
+    if (status) {
+      setStatus(status);
+      replace(pathname);
+    }
+  }, []);
+
   const handleOpenActionModal = (
     actionType: ActionType,
     title: string,
@@ -249,6 +268,8 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
 
   return (
     <>
+      {!Helper.empty(status) && <StatusFilterALert status={status} />}
+
       <ActionModalClient
         title={title}
         color={color}

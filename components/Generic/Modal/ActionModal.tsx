@@ -250,7 +250,7 @@ const ActionModalClient = ({
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <CustomLoadingOverlay visible={loading} pos={'absolute'} />
+      <CustomLoadingOverlay visible={loading} h={'100%'} />
 
       {opened && (
         <Stack mb={70} px={'sm'}>

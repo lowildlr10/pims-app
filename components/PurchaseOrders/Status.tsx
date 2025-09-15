@@ -2,6 +2,9 @@ import Helper from '@/utils/Helpers';
 import { Badge, Loader, Tooltip } from '@mantine/core';
 import {
   IconArrowForward,
+  IconCashBanknoteMove,
+  IconCheck,
+  IconCircleCheckFilled,
   IconFileIsr,
   IconPackageImport,
   IconShoppingCartCopy,
@@ -121,6 +124,80 @@ const StatusClient = ({ size = 'md', status }: PurchaseOrderStatusProps) => {
             color={'var(--mantine-color-green-9)'}
             variant={'light'}
             leftSection={<IconShoppingCartCopy size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'for_obligation':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-indigo-7)'}
+            variant={'light'}
+            leftSection={
+              <Loader size={12} color={'var(--mantine-color-indigo-7)'} />
+            }
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'obligated':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-green-9)'}
+            variant={'light'}
+            leftSection={<IconCheck size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'for_disbursement':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-indigo-7)'}
+            variant={'light'}
+            leftSection={
+              <Loader size={12} color={'var(--mantine-color-indigo-7)'} />
+            }
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'for_payment':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-orange-7)'}
+            variant={'light'}
+            leftSection={<IconCashBanknoteMove size={18} stroke={1.5} />}
+          >
+            {Helper.formatStringHasUnderscores(status)}
+          </Badge>
+        </Tooltip>
+      );
+
+    case 'completed':
+      return (
+        <Tooltip label={Helper.formatStringHasUnderscores(status)}>
+          <Badge
+            size={size}
+            color={'var(--mantine-color-green-9)'}
+            variant={'light'}
+            leftSection={<IconCircleCheckFilled size={18} stroke={1.5} />}
           >
             {Helper.formatStringHasUnderscores(status)}
           </Badge>
