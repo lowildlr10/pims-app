@@ -35,7 +35,7 @@ const StatsCard = ({
     <Stack>
       <Paper withBorder p='lg' radius='md'>
         <Group justify='apart'>
-          <ThemeIcon color={color} variant='light' size={45} radius='md'>
+          <ThemeIcon color={color} variant='light' size={55} radius='md'>
             {icon}
           </ThemeIcon>
           <Stack gap={4}>
@@ -43,18 +43,18 @@ const StatsCard = ({
               c='dimmed'
               tt='uppercase'
               fw={600}
-              fz='xs'
+              fz='sm'
               className={classes.label}
             >
               {title}
             </Text>
 
             {!loading ? (
-              <Text fw={700} size={'1.5rem'}>
+              <Text fw={700} size={'1.75rem'}>
                 <NumberFormatter value={value} thousandSeparator />
               </Text>
             ) : (
-              <Skeleton height={23} radius='sm' />
+              <Skeleton height={'1.75rem'} radius='sm' />
             )}
           </Stack>
         </Group>

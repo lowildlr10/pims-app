@@ -9,6 +9,8 @@ type DashboardProps = {
 type PurchaseRequestWorkflowType = {
   draft: number;
   pending: number;
+  approved_cash_available: number;
+  disapproved: number;
   approved: number;
   for_canvassing: number;
   completed: number;

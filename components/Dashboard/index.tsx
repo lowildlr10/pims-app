@@ -102,7 +102,7 @@ const AccountingWorkflow = ({
         <WorkflowButton
           color='var(--mantine-color-red-7)'
           name='Disapproved'
-          value={workflow?.pending ?? 0}
+          value={workflow?.disapproved ?? 0}
           href='/procurement/dv?status=disapproved'
         />
         <WorkflowButton
@@ -180,6 +180,18 @@ const PurchaseOrderWorkflow = ({
           href='/procurement/po?status=draft'
         />
         <WorkflowButton
+          color='var(--mantine-color-gray-7)'
+          name='Pending'
+          value={workflow?.pending ?? 0}
+          href='/procurement/po?status=pending'
+        />
+        <WorkflowButton
+          color='var(--mantine-color-teal-7)'
+          name='Approved'
+          value={workflow?.approved ?? 0}
+          href='/procurement/po?status=approved'
+        />
+        <WorkflowButton
           color='var(--mantine-color-yellow-7)'
           name='Issued'
           value={workflow?.issued ?? 0}
@@ -190,6 +202,12 @@ const PurchaseOrderWorkflow = ({
           name='For Delivery'
           value={workflow?.for_delivery ?? 0}
           href='/procurement/po?status=for_delivery'
+        />
+        <WorkflowButton
+          color='var(--mantine-color-teal-7)'
+          name='Delivered'
+          value={workflow?.delivered ?? 0}
+          href='/procurement/po?status=delivered'
         />
         <WorkflowButton
           color='var(--mantine-color-blue-7)'
@@ -234,6 +252,18 @@ const PurchaseRequestWorkflow = ({
           href='/procurement/pr?status=pending'
         />
         <WorkflowButton
+          color='var(--mantine-color-red-7)'
+          name='Disapproved'
+          value={workflow?.disapproved ?? 0}
+          href='/procurement/pr?status=disapproved'
+        />
+        <WorkflowButton
+          color='var(--mantine-color-teal-7)'
+          name='Approved (Cash Availability)'
+          value={workflow?.approved_cash_available ?? 0}
+          href='/procurement/pr?status=approved_cash_available'
+        />
+        <WorkflowButton
           color='var(--mantine-color-teal-7)'
           name='Approved'
           value={workflow?.approved ?? 0}
@@ -244,6 +274,12 @@ const PurchaseRequestWorkflow = ({
           name='For Canvassing'
           value={workflow?.for_canvassing ?? 0}
           href='/procurement/pr?status=for_canvassing'
+        />
+        <WorkflowButton
+          color='var(--mantine-color-blue-7)'
+          name='For Abstract'
+          value={workflow?.for_abstract ?? 0}
+          href='/procurement/pr?status=for_abstract'
         />
         <WorkflowButton
           color='var(--mantine-color-green-7)'
@@ -267,7 +303,7 @@ const WorkflowSkeleton = () => {
         mb={lgScreenAndBelow ? 'md' : 'lg'}
       />
       <Stack mt={lgScreenAndBelow ? 'md' : 'lg'}>
-        {Array.from({ length: 5 }).map((_, i) => (
+        {Array.from({ length: 8 }).map((_, i) => (
           <Skeleton key={i} height={50} radius='md' />
         ))}
       </Stack>

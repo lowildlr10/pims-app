@@ -573,8 +573,9 @@ const DetailClient = ({
         setShowPrintButton(hasPrintPermission);
 
         setShowEditButton(
-          ['draft', 'pending', 'disapproved'].includes(status ?? '') &&
-            hasEditPermission
+          ['draft', 'pending', 'disapproved', 'for_payment'].includes(
+            status ?? ''
+          ) && hasEditPermission
         );
         break;
 
