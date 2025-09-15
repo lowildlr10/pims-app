@@ -6,6 +6,60 @@ type DashboardProps = {
   user: UserType;
 };
 
+type PurchaseRequestWorkflowType = {
+  draft: number;
+  pending: number;
+  approved_cash_available: number;
+  disapproved: number;
+  approved: number;
+  for_canvassing: number;
+  for_abstract: number;
+  completed: number;
+};
+
+type PurchaseOrderWorkflowType = {
+  draft: number;
+  pending: number;
+  approved: number;
+  issued: number;
+  for_delivery: number;
+  delivered: number;
+  for_inspection: number;
+  completed: number;
+};
+
+type BudgetWorkflowType = {
+  draft: number;
+  pending: number;
+  disapproved: number;
+  obligated: number;
+};
+
+type AccountingWorkflowType = {
+  draft: number;
+  pending: number;
+  disapproved: number;
+  for_payment: number;
+  paid: number;
+};
+
+type DashboardResponse = {
+  data: {
+    active: number;
+    pending_approval: number;
+    disapproved: number;
+    completed: number;
+    show_pr_workflow: boolean;
+    pr_workflow: PurchaseRequestWorkflowType;
+    show_po_workflow: boolean;
+    po_workflow: PurchaseOrderWorkflowType;
+    show_budget_workflow: boolean;
+    budget_workflow: BudgetWorkflowType;
+    show_accounting_workflow: boolean;
+    accounting_workflow: AccountingWorkflowType;
+  };
+};
+
 type PurchaseRequestsResponse = {
   data: PurchaseRequestType[];
   from: number;

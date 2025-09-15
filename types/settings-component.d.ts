@@ -50,6 +50,7 @@ type GeneralResponse = [
   columnSort: string,
   sortDirection: string,
   paginated: boolean,
+  status?: string,
 ];
 
 type DetailResponse = {

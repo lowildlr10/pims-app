@@ -15,6 +15,8 @@ import PurchaseRequestActionsClient from '../PurchaseRequests/Actions';
 import ActionsClient from './Actions';
 import ActionModalClient from '../Generic/Modal/ActionModal';
 import { IconLibrary } from '@tabler/icons-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import StatusFilterALert from '../Generic/StatusFilterAlert';
 
 const MAIN_MODULE: ModuleType = 'pr';
 const SUB_MODULE: ModuleType = 'po';
@@ -131,6 +133,9 @@ const defaultTableData: TableDataType = {
 };
 
 const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -160,6 +165,8 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
     { open: openActionModal, close: closeActionModal },
   ] = useDisclosure(false);
 
+  const [status, setStatus] = useState('');
+
   const { data, isLoading, mutate } = useSWR<PurchaseOrdersResponse>(
     [
       `/purchase-orders`,
@@ -169,6 +176,7 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
       columnSort,
       sortDirection,
       paginated,
+      status,
     ],
     ([
       url,
@@ -178,6 +186,7 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
       columnSort,
       sortDirection,
       paginated,
+      status,
     ]: GeneralResponse) =>
       API.get(url, {
         search,
@@ -186,6 +195,7 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
         column_sort: columnSort,
         sort_direction: sortDirection,
         paginated,
+        status,
       }),
     {
       refreshInterval: API_REFRESH_INTERVAL,
@@ -332,6 +342,15 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
     }));
   }, [data, lgScreenAndBelow]);
 
+  useEffect(() => {
+    const status = searchParams.get('status');
+
+    if (status) {
+      setStatus(status);
+      replace(pathname);
+    }
+  }, []);
+
   const handleOpenActionModal = (
     actionType: ActionType,
     title: string,
@@ -360,6 +379,8 @@ const PurchaseOrdersClient = ({ user, permissions }: MainProps) => {
 
   return (
     <>
+      {!Helper.empty(status) && <StatusFilterALert status={status} />}
+
       <ActionModalClient
         title={title}
         color={color}

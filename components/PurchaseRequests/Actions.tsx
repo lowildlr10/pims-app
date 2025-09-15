@@ -219,28 +219,61 @@ const PrActionsClient = ({
           'supply:*',
           ...getAllowedPermissions('pr', 'approve-cash-available'),
         ].some((permission) => permissions?.includes(permission)) && (
-          <Menu.Item
-            leftSection={
-              <IconDiscountCheckFilled
-                color={'var(--mantine-color-green-7)'}
-                size={18}
-                stroke={1.5}
-              />
-            }
-            onClick={() =>
-              handleOpenActionModal &&
-              handleOpenActionModal(
-                'approve_cash_available',
-                'Approve for Cash Availability',
-                'Are you sure you want to approve this Purchase Request for cash availability?',
-                'var(--mantine-color-green-7)',
-                'Approve',
-                `/purchase-requests/${id}/approve-cash-availability`
-              )
-            }
-          >
-            Approve for Cash Availability
-          </Menu.Item>
+          <>
+            <Menu.Item
+              leftSection={
+                <IconDiscountCheckFilled
+                  color={'var(--mantine-color-green-7)'}
+                  size={18}
+                  stroke={1.5}
+                />
+              }
+              onClick={() =>
+                handleOpenActionModal &&
+                handleOpenActionModal(
+                  'approve_cash_available',
+                  'Approve for Cash Availability',
+                  'Are you sure you want to approve this Purchase Request for cash availability?',
+                  'var(--mantine-color-green-7)',
+                  'Approve',
+                  `/purchase-requests/${id}/approve-cash-availability`
+                )
+              }
+            >
+              Approve for Cash Availability
+            </Menu.Item>
+
+            {[
+              'head:*',
+              'supply:*',
+              ...getAllowedPermissions('pr', 'disapprove'),
+            ].some((permission) => permissions?.includes(permission)) && (
+              <Menu.Item
+                leftSection={
+                  <IconThumbDownFilled
+                    color={'var(--mantine-color-red-9)'}
+                    size={18}
+                    stroke={1.5}
+                  />
+                }
+                onClick={() =>
+                  handleOpenActionModal &&
+                  handleOpenActionModal(
+                    'disapprove',
+                    'Disapprove',
+                    <DisapproveContent />,
+                    'var(--mantine-color-red-9)',
+                    'Disapprove',
+                    `/purchase-requests/${id}/disapprove`,
+                    undefined,
+                    true
+                  )
+                }
+              >
+                Disapprove
+              </Menu.Item>
+            )}
+          </>
         )}
 
       {status === 'approved_cash_available' && (

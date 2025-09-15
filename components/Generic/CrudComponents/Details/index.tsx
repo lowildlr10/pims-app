@@ -554,7 +554,10 @@ const DetailClient = ({
 
         setShowPrintButton(hasPrintPermission);
 
-        setShowEditButton(hasEditPermission);
+        setShowEditButton(
+          ['draft', 'pending', 'disapproved'].includes(status ?? '') &&
+            hasEditPermission
+        );
         break;
 
       case 'dv':
@@ -569,7 +572,11 @@ const DetailClient = ({
 
         setShowPrintButton(hasPrintPermission);
 
-        setShowEditButton(hasEditPermission);
+        setShowEditButton(
+          ['draft', 'pending', 'disapproved', 'for_payment'].includes(
+            status ?? ''
+          ) && hasEditPermission
+        );
         break;
 
       case 'inv-supply':
@@ -609,7 +616,7 @@ const DetailClient = ({
       default:
         break;
     }
-  }, [currentData]);
+  }, [currentData, status]);
 
   return (
     <Stack>
