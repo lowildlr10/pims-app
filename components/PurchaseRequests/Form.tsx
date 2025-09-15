@@ -3,6 +3,7 @@ import {
   Card,
   Group,
   NumberInput,
+  Select,
   Stack,
   Table,
   Text,
@@ -250,31 +251,30 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             {!readOnly ? (
-              <DynamicSelect
+              <Select
                 key={form.key(`items.${index}.unit_issue_id`)}
                 {...form.getInputProps(`items.${index}.unit_issue_id`)}
                 variant={readOnly ? 'unstyled' : 'default'}
                 placeholder={'Unit of Issue'}
-                endpoint={'/libraries/unit-issues'}
-                endpointParams={{ paginated: false, show_all: true }}
-                column={'unit_name'}
-                defaultData={
-                  unitIssueData ??
-                  (item?.unit_issue_id
-                    ? [
-                        {
-                          value: item?.unit_issue_id,
-                          label: unitIssues[index],
-                        },
-                      ]
-                    : undefined)
+                data={
+                  !loadingUnitIssues
+                    ? (unitIssueData ??
+                      (item?.unit_issue_id
+                        ? [
+                            {
+                              value: item?.unit_issue_id,
+                              label: unitIssues[index],
+                            },
+                          ]
+                        : undefined))
+                    : undefined
                 }
-                value={item?.unit_issue_id}
+                defaultValue={item?.unit_issue_id}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
+                clearable
+                searchable
                 required={!readOnly}
                 readOnly={readOnly}
-                disableFetch
-                isLoading={loadingUnitIssues}
               />
             ) : (
               <TextInput
