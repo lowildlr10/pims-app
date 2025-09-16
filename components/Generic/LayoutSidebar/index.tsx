@@ -143,7 +143,7 @@ export function LayoutSidebarClient({
 
   return (
     <AppShell
-      header={{ height: lgScreenAndBelow ? 50 : 60 }}
+      header={{ height: lgScreenAndBelow ? 45 : 50 }}
       navbar={{
         width: 320,
         breakpoint: 'md',
@@ -170,14 +170,14 @@ export function LayoutSidebarClient({
               opened={mobileOpened}
               onClick={toggleMobile}
               hiddenFrom={'md'}
-              size={lgScreenAndBelow ? '0.95rem' : 'sm'}
+              size={lgScreenAndBelow ? '0.85rem' : '1rem'}
             />
             <Burger
               color={'white'}
               opened={desktopOpened}
               onClick={toggleDesktop}
               visibleFrom={'md'}
-              size={lgScreenAndBelow ? '0.95rem' : 'sm'}
+              size={lgScreenAndBelow ? '0.85rem' : '1rem'}
             />
           </Group>
 
@@ -311,7 +311,7 @@ export function LayoutSidebarClient({
       </AppShell.Navbar>
       <AppShell.Main
         bg={'var(--mantine-color-gray-4)'}
-        p={lgScreenAndBelow ? '50px 0 0 0' : '60px 0 0 0'}
+        p={lgScreenAndBelow ? '45px 0 0 0' : '50px 0 0 0'}
       >
         <Overlay
           color={'var(--mantine-color-black-7)'}

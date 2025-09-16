@@ -243,7 +243,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
       setStatus(status);
       replace(pathname);
     }
-  }, []);
+  }, [searchParams]);
 
   const handleOpenActionModal = (
     actionType: ActionType,

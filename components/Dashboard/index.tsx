@@ -21,6 +21,7 @@ import {
   IconFileDescription,
   IconPlus,
   IconRefresh,
+  IconSettings2,
   IconThumbDown,
 } from '@tabler/icons-react';
 import useSWR from 'swr';
@@ -340,6 +341,16 @@ const DashboardClient = ({ user }: DashboardProps) => {
             New Request
           </Button>
         </Link>
+        <Link href={'/settings/user-profile'}>
+          <Button
+            variant='outline'
+            color='var(--mantine-color-primary-9)'
+            leftSection={<IconSettings2 size={15} stroke={1.5} />}
+            size={lgScreenAndBelow ? 'xs' : 'sm'}
+          >
+            Settings
+          </Button>
+        </Link>
         <Button
           variant='light'
           color='var(--mantine-color-primary-9)'
@@ -351,11 +362,16 @@ const DashboardClient = ({ user }: DashboardProps) => {
           Refresh
         </Button>
       </Group>
-      <Stack gap={'3em'}>
+      <Stack gap={'3em'} mt={'md'}>
         <SimpleGrid cols={{ base: 1, xs: 2, lg: 4 }}>
           <StatsCard
             title={'Active Requests'}
-            icon={<IconFileDescription size={28} stroke={1.5} />}
+            icon={
+              <IconFileDescription
+                size={lgScreenAndBelow ? 23 : 28}
+                stroke={1.5}
+              />
+            }
             color={'var(--mantine-color-primary-9)'}
             value={data?.data.active ?? 0}
             href={
@@ -367,7 +383,9 @@ const DashboardClient = ({ user }: DashboardProps) => {
           <StatsCard
             title={'Pending Approval'}
             color={'var(--mantine-color-yellow-9)'}
-            icon={<IconClockHour3 size={28} stroke={1.5} />}
+            icon={
+              <IconClockHour3 size={lgScreenAndBelow ? 23 : 28} stroke={1.5} />
+            }
             value={data?.data.pending_approval ?? 0}
             href={'/procurement/pr?status=pending,approved_cash_available'}
             loading={isLoading}
@@ -375,14 +393,18 @@ const DashboardClient = ({ user }: DashboardProps) => {
           <StatsCard
             title={'Disapproved'}
             color={'var(--mantine-color-red-9)'}
-            icon={<IconThumbDown size={28} stroke={1.5} />}
+            icon={
+              <IconThumbDown size={lgScreenAndBelow ? 23 : 28} stroke={1.5} />
+            }
             value={data?.data.disapproved ?? 0}
             href={'/procurement/pr?status=disapproved'}
             loading={isLoading}
           />
           <StatsCard
             title={'Completed Requests'}
-            icon={<IconCircleCheck size={28} stroke={1.5} />}
+            icon={
+              <IconCircleCheck size={lgScreenAndBelow ? 23 : 28} stroke={1.5} />
+            }
             color={'var(--mantine-color-green-7)'}
             value={data?.data.completed ?? 0}
             href={'/procurement/pr?status=completed'}

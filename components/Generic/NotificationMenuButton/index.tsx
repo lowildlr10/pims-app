@@ -1,6 +1,8 @@
 'use client';
 
 import API from '@/libs/API';
+import { getErrors } from '@/libs/Errors';
+import { notify } from '@/libs/Notification';
 import Helper from '@/utils/Helpers';
 import {
   Anchor,
@@ -15,6 +17,8 @@ import {
   Transition,
   ActionIcon,
   Box,
+  UnstyledButton,
+  Loader,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
@@ -24,7 +28,7 @@ import {
   IconX,
 } from '@tabler/icons-react';
 import dayjs from 'dayjs';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import useSWRInfinite from 'swr/infinite';
 
@@ -38,8 +42,11 @@ const getKey = (pageIndex: number, previousPageData: any) => {
 };
 
 const NotificationMenuButtonClient = () => {
+  const { push, refresh } = useRouter();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [opened, setOpened] = useState(false);
+  const [readAllLoading, setReadAllLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -78,6 +85,75 @@ const NotificationMenuButtonClient = () => {
     }
   };
 
+  const handleReadNotification = (id: string, href: string) => {
+    API.put(`/notifications/${id}/read`)
+      .then((res) => {
+        push(href);
+        refresh();
+        mutate();
+        setOpened(false);
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed!',
+            message: error,
+            color: 'red',
+          });
+        });
+      });
+  };
+
+  const handleReadAllNotifications = () => {
+    setReadAllLoading(true);
+
+    API.put(`/notifications/read/all`)
+      .then((res) => {
+        mutate();
+        setOpened(false);
+        setReadAllLoading(false);
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed!',
+            message: error,
+            color: 'red',
+          });
+        });
+
+        setReadAllLoading(false);
+      });
+  };
+
+  const handleDeleteAllNotifications = () => {
+    setDeleteLoading(true);
+
+    API.put(`/notifications/delete/all`)
+      .then((res) => {
+        mutate();
+        setOpened(false);
+        setDeleteLoading(false);
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed!',
+            message: error,
+            color: 'red',
+          });
+        });
+
+        setDeleteLoading(false);
+      });
+  };
+
   return (
     <Menu
       shadow='md'
@@ -89,7 +165,7 @@ const NotificationMenuButtonClient = () => {
         <Box mx='sm'>
           <Indicator
             inline
-            size={lgScreenAndBelow ? 5 : 8}
+            size={lgScreenAndBelow ? 4 : 7}
             offset={7}
             position='bottom-end'
             color='var(--mantine-color-red-7)'
@@ -106,7 +182,7 @@ const NotificationMenuButtonClient = () => {
               pt={'xs'}
               px={0}
             >
-              <IconBellFilled size={lgScreenAndBelow ? 20 : 24} stroke={1.5} />
+              <IconBellFilled size={lgScreenAndBelow ? 17 : 20} stroke={1.5} />
             </ActionIcon>
           </Indicator>
         </Box>
@@ -132,7 +208,7 @@ const NotificationMenuButtonClient = () => {
 
         <Menu.Item
           component={ScrollArea}
-          h={lgScreenAndBelow ? 'calc(100vh - 10em)' : 400}
+          h={lgScreenAndBelow ? 'calc(100vh - 12.2em)' : 400}
           p='5px'
           m={0}
           bg='var(--mantine-color-gray-0)'
@@ -141,7 +217,7 @@ const NotificationMenuButtonClient = () => {
           viewportRef={scrollRef}
           onScrollPositionChange={handleScroll}
         >
-          <Stack gap={3} w={'100%'} align={'center'}>
+          <Stack gap={3} w={'100%'} align={'center'} justify='stretch'>
             {notifications.length === 0 && (
               <Stack w={'100%'} align={'center'} my={'md'}>
                 <IconCircleDashedCheck
@@ -156,11 +232,13 @@ const NotificationMenuButtonClient = () => {
 
             {notifications.length > 0 &&
               notifications.map((notif: any, index: number) => (
-                <Anchor
-                  key={notif.id ?? index}
-                  href={notif?.data?.href ?? '#'}
+                <UnstyledButton
+                  key={notif.message ?? index}
                   style={{ textDecoration: 'none' }}
-                  component={Link}
+                  w={'100%'}
+                  onClick={() =>
+                    handleReadNotification(notif.id, notif?.data?.href ?? '#')
+                  }
                 >
                   <Blockquote
                     color={
@@ -214,7 +292,7 @@ const NotificationMenuButtonClient = () => {
                       />
                     </Stack>
                   </Blockquote>
-                </Anchor>
+                </UnstyledButton>
               ))}
 
             <Transition
@@ -241,8 +319,43 @@ const NotificationMenuButtonClient = () => {
 
         <Menu.Divider />
 
-        <Menu.Item fz={lgScreenAndBelow ? 'xs' : 'sm'} ta='center'>
-          Clear All
+        <Menu.Item
+          fz={lgScreenAndBelow ? 'xs' : 'sm'}
+          ta='center'
+          closeMenuOnClick={false}
+          onClick={() => handleReadAllNotifications()}
+        >
+          {readAllLoading ? (
+            <Stack align='center' justify='center'>
+              <Loader
+                color='var(--mantine-color-gray-5)'
+                type='dots'
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+              />
+            </Stack>
+          ) : (
+            <>Mark All as Read</>
+          )}
+        </Menu.Item>
+
+        <Menu.Item
+          fz={lgScreenAndBelow ? 'xs' : 'sm'}
+          ta='center'
+          color='var(--mantine-color-red-7)'
+          closeMenuOnClick={false}
+          onClick={() => handleDeleteAllNotifications()}
+        >
+          {deleteLoading ? (
+            <Stack align='center' justify='center'>
+              <Loader
+                color='var(--mantine-color-red-5)'
+                type='dots'
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+              />
+            </Stack>
+          ) : (
+            <>Delete All Notifications</>
+          )}
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

@@ -659,6 +659,30 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     ],
   },
   {
+    label: 'Responsibility Center Library',
+    description: 'Scope for Responsibility Center Library module',
+    module_type: 'lib-responsibility-center',
+    checked: false,
+    indeterminate: false,
+    scopes: [
+      {
+        label: 'View',
+        value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Create',
+        value: 'create',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+    ],
+  },
+  {
     label: 'Signatory Library',
     description: 'Scope for Signatory Library module',
     module_type: 'lib-signatory',
