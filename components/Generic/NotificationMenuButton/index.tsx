@@ -1,6 +1,8 @@
 'use client';
 
 import API from '@/libs/API';
+import { getErrors } from '@/libs/Errors';
+import { notify } from '@/libs/Notification';
 import Helper from '@/utils/Helpers';
 import {
   Anchor,
@@ -15,6 +17,7 @@ import {
   Transition,
   ActionIcon,
   Box,
+  UnstyledButton,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
@@ -24,7 +27,7 @@ import {
   IconX,
 } from '@tabler/icons-react';
 import dayjs from 'dayjs';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import useSWRInfinite from 'swr/infinite';
 
@@ -38,6 +41,7 @@ const getKey = (pageIndex: number, previousPageData: any) => {
 };
 
 const NotificationMenuButtonClient = () => {
+  const { push, refresh } = useRouter();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [opened, setOpened] = useState(false);
 
@@ -78,6 +82,62 @@ const NotificationMenuButtonClient = () => {
     }
   };
 
+  const handleReadNotification = (id: string, href: string) => {
+    API.put(`/notifications/${id}/read`)
+      .then((res) => {
+        push(href);
+        refresh();
+        mutate();
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed!',
+            message: error,
+            color: 'red',
+          });
+        });
+      });
+  };
+
+  const handleReadAllNotifications = () => {
+    API.put(`/notifications/read/all`)
+      .then((res) => {
+        mutate();
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed!',
+            message: error,
+            color: 'red',
+          });
+        });
+      });
+  };
+
+  const handleDeleteAllNotifications = () => {
+    API.put(`/notifications/delete/all`)
+      .then((res) => {
+        mutate();
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed!',
+            message: error,
+            color: 'red',
+          });
+        });
+      });
+  };
+
   return (
     <Menu
       shadow='md'
@@ -89,7 +149,7 @@ const NotificationMenuButtonClient = () => {
         <Box mx='sm'>
           <Indicator
             inline
-            size={lgScreenAndBelow ? 5 : 8}
+            size={lgScreenAndBelow ? 4 : 7}
             offset={7}
             position='bottom-end'
             color='var(--mantine-color-red-7)'
@@ -106,7 +166,7 @@ const NotificationMenuButtonClient = () => {
               pt={'xs'}
               px={0}
             >
-              <IconBellFilled size={lgScreenAndBelow ? 20 : 24} stroke={1.5} />
+              <IconBellFilled size={lgScreenAndBelow ? 17 : 20} stroke={1.5} />
             </ActionIcon>
           </Indicator>
         </Box>
@@ -156,11 +216,12 @@ const NotificationMenuButtonClient = () => {
 
             {notifications.length > 0 &&
               notifications.map((notif: any, index: number) => (
-                <Anchor
-                  key={notif.id ?? index}
-                  href={notif?.data?.href ?? '#'}
+                <UnstyledButton
+                  key={notif.message ?? index}
                   style={{ textDecoration: 'none' }}
-                  component={Link}
+                  onClick={() =>
+                    handleReadNotification(notif.id, notif?.data?.href ?? '#')
+                  }
                 >
                   <Blockquote
                     color={
@@ -214,7 +275,7 @@ const NotificationMenuButtonClient = () => {
                       />
                     </Stack>
                   </Blockquote>
-                </Anchor>
+                </UnstyledButton>
               ))}
 
             <Transition
@@ -241,8 +302,23 @@ const NotificationMenuButtonClient = () => {
 
         <Menu.Divider />
 
-        <Menu.Item fz={lgScreenAndBelow ? 'xs' : 'sm'} ta='center'>
-          Clear All
+        <Menu.Item
+          fz={lgScreenAndBelow ? 'xs' : 'sm'}
+          ta='center'
+          closeMenuOnClick={false}
+          onClick={() => handleReadAllNotifications()}
+        >
+          Mark All as Read
+        </Menu.Item>
+
+        <Menu.Item
+          fz={lgScreenAndBelow ? 'xs' : 'sm'}
+          ta='center'
+          color='red'
+          closeMenuOnClick={false}
+          onClick={() => handleDeleteAllNotifications()}
+        >
+          Delete All Notifications
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

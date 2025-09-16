@@ -180,7 +180,7 @@ const DataTableClient = ({
       setTableSearch(search);
       replace(pathname);
     }
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     data.body?.forEach((body: any) => {

@@ -19,7 +19,7 @@ const MainContainerClient = ({
     <Paper
       shadow='sm'
       p={lgScreenAndBelow ? 'md' : 'xl'}
-      mih={lgScreenAndBelow ? 'calc(100vh - 50px)' : 'calc(100vh - 60px)'}
+      mih={lgScreenAndBelow ? 'calc(100vh - 45px)' : 'calc(100vh - 50px)'}
     >
       <Group>
         <Stack gap={0}>
