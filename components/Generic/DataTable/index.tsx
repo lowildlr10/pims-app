@@ -294,57 +294,19 @@ const DataTableClient = ({
     }
   };
 
-  if (lgScreenAndBelow) {
+  const dynamicMainTable = () => {
     return (
-      <Stack>
-        <DataTableActionsClient
-          mainModule={mainModule}
-          permissions={permissions}
-          search={tableSearch}
-          setSearch={setTableSearch}
-          showCreate={showCreate}
-          showSearch={showSearch}
-          createMenus={createMenus}
-          setPageLoading={setPageLoading}
-          defaultModalOnClick={defaultModalOnClick}
-          handleOpenCreateModal={(parentId, moduleType, otherParams) => {
-            handleOpenCreateModal(parentId, moduleType, otherParams);
-            setCurrentOpenedModuleType('main');
-          }}
-        />
-      </Stack>
-    );
-  }
-
-  return (
-    <Stack>
-      <DataTableActionsClient
-        mainModule={mainModule}
-        permissions={permissions}
-        search={tableSearch}
-        setSearch={setTableSearch}
-        showCreate={showCreate}
-        showSearch={showSearch}
-        createMenus={createMenus}
-        setPageLoading={setPageLoading}
-        defaultModalOnClick={defaultModalOnClick}
-        handleOpenCreateModal={(parentId, moduleType, otherParams) => {
-          handleOpenCreateModal(parentId, moduleType, otherParams);
-          setCurrentOpenedModuleType('main');
-        }}
-      />
-
       <Table
         verticalSpacing={'sm'}
-        stickyHeaderOffset={lgScreenAndBelow ? 48 : 58}
-        stickyHeader
+        stickyHeaderOffset={lgScreenAndBelow ? 39 : 49}
+        stickyHeader={!lgScreenAndBelow}
         highlightOnHover
         withTableBorder
         sx={{ borderTopLeftRadius: '5px', borderTopRightRadius: '5px' }}
       >
         <Table.Thead>
           <Table.Tr
-            bg={'var(--mantine-color-primary-9)'}
+            bg={'var(--mantine-color-primary-8)'}
             c={'white'}
             h={lgScreenAndBelow ? '2.55rem' : '3rem'}
           >
@@ -354,7 +316,7 @@ const DataTableClient = ({
                 w={head.width ?? undefined}
                 p={head.sortable ? 0 : undefined}
                 ta={head.align ?? undefined}
-                bg={'var(--mantine-color-primary-9)'}
+                bg={'var(--mantine-color-primary-8)'}
                 fz={lgScreenAndBelow ? 'xs' : 'sm'}
               >
                 {head.sortable ? (
@@ -588,12 +550,12 @@ const DataTableClient = ({
                               verticalSpacing={'sm'}
                               highlightOnHover
                               withTableBorder
-                              stickyHeaderOffset={lgScreenAndBelow ? 87 : 105}
-                              stickyHeader
+                              stickyHeaderOffset={lgScreenAndBelow ? 77 : 96}
+                              stickyHeader={!lgScreenAndBelow}
                             >
                               <Table.Thead sx={{ zIndex: 2 }}>
                                 <Table.Tr
-                                  bg={'var(--mantine-color-secondary-9)'}
+                                  bg={'var(--mantine-color-secondary-8)'}
                                   c={'white'}
                                 >
                                   {data.subHead?.map((subHead) => (
@@ -603,7 +565,7 @@ const DataTableClient = ({
                                       fw={500}
                                       ta={subHead.align ?? undefined}
                                       fz={lgScreenAndBelow ? 'xs' : 'sm'}
-                                      bg={'var(--mantine-color-secondary-9)'}
+                                      bg={'var(--mantine-color-secondary-8)'}
                                     >
                                       {subHead.label}
                                     </Table.Th>
@@ -766,14 +728,9 @@ const DataTableClient = ({
                                         p={0}
                                       >
                                         <Button
-                                          variant={'outline'}
-                                          size={
-                                            lgScreenAndBelow
-                                              ? 'compact-xs'
-                                              : 'xs'
-                                          }
+                                          size={lgScreenAndBelow ? 'xs' : 'sm'}
                                           color={
-                                            'var(--mantine-color-primary-9)'
+                                            'var(--mantine-color-primary-6)'
                                           }
                                           leftSection={<IconPlus size={12} />}
                                           onClick={(e) => {
@@ -822,6 +779,37 @@ const DataTableClient = ({
             ))}
         </Table.Tbody>
       </Table>
+    );
+  };
+
+  return (
+    <Stack>
+      <DataTableActionsClient
+        mainModule={mainModule}
+        permissions={permissions}
+        search={tableSearch}
+        setSearch={setTableSearch}
+        showCreate={showCreate}
+        showSearch={showSearch}
+        createMenus={createMenus}
+        setPageLoading={setPageLoading}
+        defaultModalOnClick={defaultModalOnClick}
+        handleOpenCreateModal={(parentId, moduleType, otherParams) => {
+          handleOpenCreateModal(parentId, moduleType, otherParams);
+          setCurrentOpenedModuleType('main');
+        }}
+      />
+
+      {lgScreenAndBelow ? (
+        <Table.ScrollContainer
+          minWidth={900}
+          maxHeight={'calc(100vh - 21.5em)'}
+        >
+          <>{dynamicMainTable()}</>
+        </Table.ScrollContainer>
+      ) : (
+        <>{dynamicMainTable()}</>
+      )}
 
       <CustomLoadingOverlay visible={detailLoading || pageLoading} />
 

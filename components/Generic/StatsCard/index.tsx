@@ -15,6 +15,7 @@ import React, { ReactNode } from 'react';
 import classes from './index.module.css';
 import { IconArrowRight, IconFile } from '@tabler/icons-react';
 import Link from 'next/link';
+import { useMediaQuery } from '@mantine/hooks';
 
 const StatsCard = ({
   title,
@@ -31,11 +32,18 @@ const StatsCard = ({
   color?: string;
   loading?: boolean;
 }) => {
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
+
   return (
     <Stack>
       <Paper withBorder p='lg' radius='md'>
         <Group justify='apart'>
-          <ThemeIcon color={color} variant='light' size={55} radius='md'>
+          <ThemeIcon
+            color={color}
+            variant='light'
+            size={lgScreenAndBelow ? 48 : 55}
+            radius='md'
+          >
             {icon}
           </ThemeIcon>
           <Stack gap={4}>
@@ -43,24 +51,31 @@ const StatsCard = ({
               c='dimmed'
               tt='uppercase'
               fw={600}
-              fz='sm'
+              fz={lgScreenAndBelow ? 'xs' : 'sm'}
               className={classes.label}
             >
               {title}
             </Text>
 
             {!loading ? (
-              <Text fw={700} size={'1.75rem'}>
+              <Text fw={700} size={lgScreenAndBelow ? '1.55rem' : '1.75rem'}>
                 <NumberFormatter value={value} thousandSeparator />
               </Text>
             ) : (
-              <Skeleton height={'1.75rem'} radius='sm' />
+              <Skeleton
+                height={lgScreenAndBelow ? '1.55rem' : '1.75rem'}
+                radius='sm'
+              />
             )}
           </Stack>
         </Group>
         <Group align='flex-end' justify='end'>
           <Link href={href}>
-            <Button variant='transparent' size='xs' p={0}>
+            <Button
+              variant='transparent'
+              size={lgScreenAndBelow ? '0.75rem' : 'xs'}
+              p={0}
+            >
               View&nbsp;
               <IconArrowRight size={15} />
             </Button>

@@ -18,6 +18,7 @@ import {
   ActionIcon,
   Box,
   UnstyledButton,
+  Loader,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
@@ -44,6 +45,8 @@ const NotificationMenuButtonClient = () => {
   const { push, refresh } = useRouter();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [opened, setOpened] = useState(false);
+  const [readAllLoading, setReadAllLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -88,6 +91,7 @@ const NotificationMenuButtonClient = () => {
         push(href);
         refresh();
         mutate();
+        setOpened(false);
       })
       .catch((err) => {
         const errors = getErrors(err);
@@ -103,9 +107,13 @@ const NotificationMenuButtonClient = () => {
   };
 
   const handleReadAllNotifications = () => {
+    setReadAllLoading(true);
+
     API.put(`/notifications/read/all`)
       .then((res) => {
         mutate();
+        setOpened(false);
+        setReadAllLoading(false);
       })
       .catch((err) => {
         const errors = getErrors(err);
@@ -117,13 +125,19 @@ const NotificationMenuButtonClient = () => {
             color: 'red',
           });
         });
+
+        setReadAllLoading(false);
       });
   };
 
   const handleDeleteAllNotifications = () => {
+    setDeleteLoading(true);
+
     API.put(`/notifications/delete/all`)
       .then((res) => {
         mutate();
+        setOpened(false);
+        setDeleteLoading(false);
       })
       .catch((err) => {
         const errors = getErrors(err);
@@ -135,6 +149,8 @@ const NotificationMenuButtonClient = () => {
             color: 'red',
           });
         });
+
+        setDeleteLoading(false);
       });
   };
 
@@ -192,7 +208,7 @@ const NotificationMenuButtonClient = () => {
 
         <Menu.Item
           component={ScrollArea}
-          h={lgScreenAndBelow ? 'calc(100vh - 10em)' : 400}
+          h={lgScreenAndBelow ? 'calc(100vh - 12.2em)' : 400}
           p='5px'
           m={0}
           bg='var(--mantine-color-gray-0)'
@@ -201,7 +217,7 @@ const NotificationMenuButtonClient = () => {
           viewportRef={scrollRef}
           onScrollPositionChange={handleScroll}
         >
-          <Stack gap={3} w={'100%'} align={'center'}>
+          <Stack gap={3} w={'100%'} align={'center'} justify='stretch'>
             {notifications.length === 0 && (
               <Stack w={'100%'} align={'center'} my={'md'}>
                 <IconCircleDashedCheck
@@ -219,6 +235,7 @@ const NotificationMenuButtonClient = () => {
                 <UnstyledButton
                   key={notif.message ?? index}
                   style={{ textDecoration: 'none' }}
+                  w={'100%'}
                   onClick={() =>
                     handleReadNotification(notif.id, notif?.data?.href ?? '#')
                   }
@@ -308,17 +325,37 @@ const NotificationMenuButtonClient = () => {
           closeMenuOnClick={false}
           onClick={() => handleReadAllNotifications()}
         >
-          Mark All as Read
+          {readAllLoading ? (
+            <Stack align='center' justify='center'>
+              <Loader
+                color='var(--mantine-color-gray-5)'
+                type='dots'
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+              />
+            </Stack>
+          ) : (
+            <>Mark All as Read</>
+          )}
         </Menu.Item>
 
         <Menu.Item
           fz={lgScreenAndBelow ? 'xs' : 'sm'}
           ta='center'
-          color='red'
+          color='var(--mantine-color-red-7)'
           closeMenuOnClick={false}
           onClick={() => handleDeleteAllNotifications()}
         >
-          Delete All Notifications
+          {deleteLoading ? (
+            <Stack align='center' justify='center'>
+              <Loader
+                color='var(--mantine-color-red-5)'
+                type='dots'
+                size={lgScreenAndBelow ? 'xs' : 'sm'}
+              />
+            </Stack>
+          ) : (
+            <>Delete All Notifications</>
+          )}
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>
