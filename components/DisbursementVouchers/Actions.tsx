@@ -111,7 +111,7 @@ const DvActionsClient = ({
         )}
 
       {status === 'pending' &&
-        ['budget:*', ...getAllowedPermissions('dv', 'disapprove')].some(
+        ['accountant:*', ...getAllowedPermissions('dv', 'disapprove')].some(
           (permission) => permissions?.includes(permission)
         ) && (
           <Menu.Item

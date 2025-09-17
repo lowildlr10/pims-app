@@ -4,151 +4,202 @@ import {
   Paper,
   Stack,
   Switch,
+  Text,
   TextInput,
   Title,
 } from '@mantine/core';
-import React, { forwardRef, useEffect, useMemo, useState } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useListState } from '@mantine/hooks';
 import { PERMISSIONS_CONFIG } from '@/config/permissions';
 
+type CheckboxState = {
+  checked: boolean;
+  indeterminate: boolean;
+};
+
+type PermissionCheckboxProps = {
+  permission: PermissionsFieldType;
+  state: CheckboxState;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+const PermissionCheckbox = ({
+  permission,
+  state,
+  onChange,
+}: PermissionCheckboxProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.indeterminate = state.indeterminate;
+    }
+  }, [state.indeterminate]);
+
+  return (
+    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+      <input
+        ref={inputRef}
+        type='checkbox'
+        checked={state.checked}
+        name={permission.module_type}
+        onChange={onChange}
+        style={{
+          width: 19,
+          height: 19,
+          borderRadius: '10em',
+          accentColor: 'var(--mantine-color-primary-9)',
+          cursor: 'pointer',
+          border: '1px solid var(--mantine-color-gray-4)',
+        }}
+      />
+
+      <div>
+        <Text fw={500}>{permission.label}</Text>
+        {permission.description && (
+          <Text size='sm' c='dimmed'>
+            {permission.description}
+          </Text>
+        )}
+      </div>
+    </label>
+  );
+};
+
 const FormClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
-    const [currentData, setCurrentData] = useState(data);
-    const currentForm = useMemo(
-      () => ({
-        role_name: currentData?.role_name ?? '',
-        permissions: JSON.stringify(currentData?.permissions ?? []),
-        active: currentData?.active ?? false,
-      }),
-      [currentData]
-    );
+    const [moduleCheckboxStates, setModuleCheckboxStates] = useState<
+      Record<number, { checked: boolean; indeterminate: boolean }>
+    >({});
+
+    // init form directly from props
     const form = useForm({
       mode: 'controlled',
-      initialValues: currentForm,
+      initialValues: {
+        role_name: data?.role_name ?? '',
+        permissions: JSON.stringify(data?.permissions ?? []),
+        active: data?.active ?? false,
+      },
     });
-    const [trackCheckAll, setTrackCheckAll] = useState<boolean>(true);
+
+    // permissions state
     const [permissionFields, handlers] =
       useListState<PermissionsFieldType>(PERMISSIONS_CONFIG);
 
+    // sync form when `data` changes
     useEffect(() => {
-      setCurrentData(data);
-    }, [data]);
+      if (!data) return;
 
-    useEffect(() => {
-      form.reset();
-      form.setValues(currentForm);
-    }, [currentForm]);
+      const newStates: Record<
+        number,
+        { checked: boolean; indeterminate: boolean }
+      > = {};
 
-    useEffect(() => {
-      setPayload(form.values);
-    }, [form.values]);
+      form.setValues({
+        role_name: data.role_name ?? '',
+        permissions: JSON.stringify(data.permissions ?? []),
+        active: data.active ?? false,
+      });
 
-    useEffect(() => {
-      if (currentData?.permissions) {
-        currentData.permissions.forEach((permission) => {
-          const [permissionModule, permissionScopes] = permission.split(':');
-          const scopes = permissionScopes.split(',');
-
-          handlers.setState((current) =>
-            current.map((value) => {
-              const isMatchingModule = value.module_type === permissionModule;
-              const isAllScopesSelected =
-                isMatchingModule && permissionScopes.includes('*');
-              const isIndeterminate =
-                isMatchingModule && scopes.length > 0 && !isAllScopesSelected;
-
-              return {
-                ...value,
-                checked: isAllScopesSelected,
-                indeterminate: isIndeterminate,
-                scopes: isMatchingModule
-                  ? value.scopes.map((scope: ScopeFieldType) => ({
-                      ...scope,
-                      checked:
-                        scopes.includes(scope.value) || isAllScopesSelected,
-                    }))
-                  : value.scopes,
-              };
-            })
+      handlers.setState(
+        PERMISSIONS_CONFIG.map((value, index) => {
+          const match = (data.permissions ?? []).find((p) =>
+            p.startsWith(`${value.module_type}:`)
           );
-        });
-      }
-    }, [currentData]);
+          if (!match) {
+            newStates[index] = { checked: false, indeterminate: false };
+            return { ...value, checked: false, indeterminate: false };
+          }
 
-    useEffect(() => {
-      if (!trackCheckAll) return;
+          const [, scopesRaw] = match.split(':');
+          const scopes = scopesRaw ? scopesRaw.split(',') : [];
+          const allChecked = scopes.includes('*');
+          const indeterminate = !allChecked && scopes.length > 0;
 
-      handlers.setState((current) =>
-        current.map((value) => {
-          const allChecked = value.scopes.every((value) => value.checked);
-          const indeterminate =
-            value.scopes.some((value) => value.checked) && !allChecked;
+          newStates[index] = { checked: allChecked, indeterminate };
 
           return {
             ...value,
             checked: allChecked,
-            indeterminate: indeterminate,
+            indeterminate: !allChecked && scopes.length > 0,
+            scopes: value.scopes.map((s) => ({
+              ...s,
+              checked: allChecked || scopes.includes(s.value),
+            })),
           };
         })
       );
 
-      setTrackCheckAll(false);
-    }, [trackCheckAll, permissionFields]);
+      setModuleCheckboxStates(newStates);
+    }, [data]);
 
+    // keep external payload in sync
     useEffect(() => {
+      setPayload(form.values);
+    }, [form.values, setPayload]);
+
+    // recompute `permissions` when checkboxes change
+    useEffect(() => {
+      const newStates: Record<
+        number,
+        { checked: boolean; indeterminate: boolean }
+      > = {};
+
       const permissions = permissionFields
-        .map((permission) => {
-          const checked = permission.scopes.every((scope) => scope.checked);
+        .map((permission, index) => {
+          const checkedScopes = permission.scopes.filter((s) => s.checked);
+          const allChecked = permission.scopes.every((p) => p.checked);
+          const indeterminate = !allChecked && checkedScopes.length > 0;
           const scopes = permission.scopes
-            .filter((scope) => scope.checked && scope.value)
-            .map((scope) => scope.value)
+            .filter((s) => s.checked)
+            .map((s) => s.value)
             .join(',');
 
-          if (checked) return `${permission.module_type}:*`;
+          newStates[index] = { checked: allChecked, indeterminate };
+
+          if (allChecked) return `${permission.module_type}:*`;
           return scopes ? `${permission.module_type}:${scopes}` : null;
         })
         .filter(Boolean);
 
-      form.setFieldValue(
-        'permissions',
-        JSON.stringify((permissions as string[]) ?? [])
-      );
+      form.setFieldValue('permissions', JSON.stringify(permissions));
+      setModuleCheckboxStates(newStates);
     }, [permissionFields]);
 
-    const dynamicScopes = (
-      scopes: ScopeFieldType[],
-      permissionModule: ModuleType
-    ) => {
-      return scopes.map((scope) => (
+    useEffect(
+      () => console.log(moduleCheckboxStates?.[0]),
+      [moduleCheckboxStates]
+    );
+
+    // render scope checkboxes
+    const renderScopes = (scopes: ScopeFieldType[], module: ModuleType) =>
+      scopes.map((scope) => (
         <Checkbox
+          key={scope.value}
           mt='xs'
           ml={33}
           label={scope.label}
-          name={`${permissionModule}.${scope.value}`}
-          color={'var(--mantine-color-primary-9)'}
-          key={scope.value}
+          name={`${module}.${scope.value}`}
+          color='var(--mantine-color-primary-9)'
           checked={scope.checked}
           onChange={(e) => {
             handlers.setState((current) =>
               current.map((value) => ({
                 ...value,
-                scopes: value.scopes.map((scope) => ({
-                  ...scope,
+                scopes: value.scopes.map((s) => ({
+                  ...s,
                   checked:
-                    value.module_type === permissionModule &&
-                    `${permissionModule}.${scope.value}` === e.target.name
-                      ? !scope.checked
-                      : scope.checked,
+                    value.module_type === module &&
+                    `${module}.${s.value}` === e.target.name
+                      ? !s.checked
+                      : s.checked,
                 })),
               }))
             );
-
-            setTrackCheckAll(true);
           }}
         />
       ));
-    };
 
     return (
       <form
@@ -162,47 +213,48 @@ const FormClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
             label='Role Name'
             placeholder='Role Name'
             value={form.values.role_name}
-            onChange={(event) =>
-              form.setFieldValue('role_name', event.currentTarget.value)
+            onChange={(e) =>
+              form.setFieldValue('role_name', e.currentTarget.value)
             }
             error={form.errors.role_name && ''}
-            size={'sm'}
+            size='sm'
             required
           />
 
           <Switch
-            label={'Status'}
+            label='Status'
             mb={20}
             onLabel='Active'
             offLabel='Inactive'
-            color={'var(--mantine-color-secondary-9)'}
+            color='var(--mantine-color-secondary-9)'
             checked={form.values.active}
-            labelPosition={'left'}
+            labelPosition='left'
             fw={500}
-            size={'sm'}
+            size='sm'
             sx={{ cursor: 'pointer' }}
-            onChange={(event) =>
-              form.setFieldValue('active', event.currentTarget.checked)
+            onChange={(e) =>
+              form.setFieldValue('active', e.currentTarget.checked)
             }
           />
 
-          <Paper shadow={'xs'} p={'lg'} withBorder>
+          <Paper shadow='xs' p='lg' withBorder>
             <Stack>
-              <Title order={4} ta={'center'}>
+              <Title order={4} ta='center'>
                 Permissions
               </Title>
               <Divider />
 
-              {permissionFields.map((permission) => (
+              {permissionFields.map((permission, index) => (
                 <React.Fragment key={permission.module_type}>
                   <Stack gap={1}>
-                    <Checkbox
-                      label={permission.label}
-                      description={permission.description}
-                      checked={permission.checked}
-                      indeterminate={permission.indeterminate}
-                      name={`${permission.module_type}`}
-                      color={'var(--mantine-color-primary-9)'}
+                    <PermissionCheckbox
+                      permission={permission}
+                      state={
+                        moduleCheckboxStates[index] ?? {
+                          checked: false,
+                          indeterminate: false,
+                        }
+                      }
                       onChange={(e) => {
                         handlers.setState((current) =>
                           current.map((value) => ({
@@ -214,16 +266,16 @@ const FormClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
                             indeterminate: false,
                             scopes:
                               value.module_type === permission.module_type
-                                ? value.scopes.map((scope) => ({
-                                    ...scope,
-                                    checked: !permission.checked,
+                                ? value.scopes.map((s) => ({
+                                    ...s,
+                                    checked: e.target.checked,
                                   }))
                                 : value.scopes,
                           }))
                         );
                       }}
                     />
-                    {dynamicScopes(permission.scopes, permission.module_type)}
+                    {renderScopes(permission.scopes, permission.module_type)}
                   </Stack>
                   <Divider />
                 </React.Fragment>
@@ -237,5 +289,4 @@ const FormClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
 );
 
 FormClient.displayName = 'FormClient';
-
 export default FormClient;

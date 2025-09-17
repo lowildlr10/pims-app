@@ -492,7 +492,6 @@ const DataTableClient = ({
                       <Button
                         fz={{ base: 10, lg: 11, xl: 'xs' }}
                         size={lgScreenAndBelow ? 'compact-xs' : 'xs'}
-                        variant={'outline'}
                         color={'var(--mantine-color-secondary-7)'}
                         rightSection={
                           collapseStates[body.id ?? ''] ? (
@@ -728,11 +727,17 @@ const DataTableClient = ({
                                         p={0}
                                       >
                                         <Button
+                                          variant='subtle'
+                                          bd={
+                                            '1px dashed var(--mantine-color-primary-8)'
+                                          }
+                                          h={lgScreenAndBelow ? 43 : 48}
                                           size={lgScreenAndBelow ? 'xs' : 'sm'}
                                           color={
-                                            'var(--mantine-color-primary-6)'
+                                            'var(--mantine-color-primary-8)'
                                           }
                                           leftSection={<IconPlus size={12} />}
+                                          radius={'xs'}
                                           onClick={(e) => {
                                             setCurrentOpenedModuleType('sub');
 
