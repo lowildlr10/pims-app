@@ -37,6 +37,11 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
+        label: 'Issue all RFQs for Canvassing',
+        value: 'issue-rfq',
+        checked: false,
+      },
+      {
         label: 'Approve Request for Quotations',
         value: 'approve-rfq',
         checked: false,
@@ -84,11 +89,6 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
       {
         label: 'Update',
         value: 'update',
-        checked: false,
-      },
-      {
-        label: 'Approve',
-        value: 'approve',
         checked: false,
       },
       {
@@ -371,25 +371,6 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
       },
     ],
   },
-  // {
-  //   label: 'Payment',
-  //   description: 'Scope for Payment module',
-  //   module_type: 'payment',
-  //   checked: false,
-  //   indeterminate: false,
-  //   scopes: [
-  //     {
-  //       label: 'View',
-  //       value: 'view',
-  //       checked: false,
-  //     },
-  //     {
-  //       label: 'Print',
-  //       value: 'print',
-  //       checked: false,
-  //     },
-  //   ],
-  // },
 
   // Account management
   {
@@ -747,6 +728,20 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         value: 'create',
         checked: false,
       },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+    ],
+  },
+  {
+    label: 'Company Profile',
+    description: 'Scope for Company Profile module',
+    module_type: 'company',
+    checked: false,
+    indeterminate: false,
+    scopes: [
       {
         label: 'Update',
         value: 'update',
