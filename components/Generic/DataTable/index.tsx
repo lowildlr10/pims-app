@@ -552,7 +552,7 @@ const DataTableClient = ({
                               stickyHeaderOffset={lgScreenAndBelow ? 77 : 96}
                               stickyHeader={!lgScreenAndBelow}
                             >
-                              <Table.Thead sx={{ zIndex: 2 }}>
+                              <Table.Thead sx={{ zIndex: '2 !important' }}>
                                 <Table.Tr
                                   bg={'var(--mantine-color-secondary-8)'}
                                   c={'white'}

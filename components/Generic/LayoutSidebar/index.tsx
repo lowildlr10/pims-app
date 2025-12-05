@@ -14,7 +14,7 @@ import {
   Title,
   Tooltip,
 } from '@mantine/core';
-import { useDisclosure, useHeadroom, useMediaQuery } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { LinksGroupClient } from '../NavbarLinksGroup';
 import {
   IconArrowBack,
@@ -122,7 +122,7 @@ export function LayoutSidebarClient({
   ));
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
-  const pinned = useHeadroom({ fixedAt: 120 });
+  // const pinned = useHeadroom({ fixedAt: 120 });
   const [opened, { open, close }] = useDisclosure(false);
 
   useEffect(() => {
@@ -148,8 +148,8 @@ export function LayoutSidebarClient({
         width: 320,
         breakpoint: 'md',
         collapsed: {
-          mobile: !mobileOpened && pinned,
-          desktop: !desktopOpened && pinned,
+          mobile: !mobileOpened,
+          desktop: !desktopOpened,
         },
       }}
       padding={'sm'}

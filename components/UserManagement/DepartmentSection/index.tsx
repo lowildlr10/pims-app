@@ -166,7 +166,7 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
         (permission) => permissions?.includes(permission)
       )
     );
-    
+
     setShowCreateSubItem(
       ['supply:*', ...getAllowedPermissions(SUB_MODULE, 'create')].some(
         (permission) => permissions?.includes(permission)
