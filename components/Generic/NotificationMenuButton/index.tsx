@@ -43,7 +43,7 @@ const getKey = (pageIndex: number, previousPageData: any) => {
 
 const NotificationMenuButtonClient = () => {
   const { push, refresh } = useRouter();
-  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
+  const lgScreenAndBelow = useMediaQuery('(max-width: 900px)', false);
   const [opened, setOpened] = useState(false);
   const [readAllLoading, setReadAllLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -162,7 +162,7 @@ const NotificationMenuButtonClient = () => {
       onChange={setOpened}
     >
       <Menu.Target>
-        <Box mx='sm'>
+        <Box mx={'sm'}>
           <Indicator
             inline
             size={lgScreenAndBelow ? 4 : 7}

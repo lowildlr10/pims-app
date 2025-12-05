@@ -167,6 +167,12 @@ const DepartmentSectionClient = ({ permissions }: DepartmentSectionProps) => {
       )
     );
 
+    setShowCreateSubItem(
+      ['supply:*', ...getAllowedPermissions(SUB_MODULE, 'create')].some(
+        (permission) => permissions?.includes(permission)
+      )
+    );
+
     setSubItemsClickable(
       ['supply:*', ...getAllowedPermissions(SUB_MODULE, 'update')].some(
         (permission) => permissions?.includes(permission)
