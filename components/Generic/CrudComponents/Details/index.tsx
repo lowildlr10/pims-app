@@ -616,7 +616,7 @@ const DetailClient = ({
       default:
         break;
     }
-  }, [currentData, status]);
+  }, [currentData]);
 
   return (
     <Stack>
