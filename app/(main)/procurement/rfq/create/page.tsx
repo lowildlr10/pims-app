@@ -50,7 +50,7 @@ const RequestQuotationCreatePage = async ({
           }}
           endpoint={'/request-quotations'}
           content={MODULE_TYPE}
-          backUrl={backUrl}
+          // backUrl={backUrl}
         />
       </MainContainerClient>
     </LayoutSidebarClient>
