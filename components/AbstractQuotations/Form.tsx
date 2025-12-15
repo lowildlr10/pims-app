@@ -178,6 +178,7 @@ const FormClient = forwardRef<
         id: 'awardee',
         label: 'Awardee',
         width: '350px',
+        required: true,
       },
       // {
       //   id: 'include_checkbox',
@@ -392,10 +393,12 @@ const FormClient = forwardRef<
                     <strong>DESCRIPTION/SPECIFICATION OF ARTICLES</strong>
                     <br />
                     {item.description?.split('\n')?.map((description) => (
-                      <>
+                      <React.Fragment
+                        key={`${Helper.formatStringHasUnderscores(description)}_${randomId()}`}
+                      >
                         {description}
                         <br />
-                      </>
+                      </React.Fragment>
                     ))}
                   </>
                 }
@@ -429,8 +432,8 @@ const FormClient = forwardRef<
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   data={[
                     {
-                      value: '',
-                      label: 'No awardee...',
+                      value: '-',
+                      label: 'No awardee',
                     },
                     ...supplierHeaders?.map((supplier) => ({
                       value: supplier.supplier_id,

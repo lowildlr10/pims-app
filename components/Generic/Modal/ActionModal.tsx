@@ -3,18 +3,11 @@
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
-import {
-  Button,
-  Group,
-  Loader,
-  Modal,
-  ScrollArea,
-  Stack,
-  Text,
-} from '@mantine/core';
+import { Button, Group, Loader, Modal, ScrollArea, Stack } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
   IconArrowBack,
+  IconArrowBackUp,
   IconArrowForward,
   IconAwardFilled,
   IconCancel,
@@ -226,6 +219,15 @@ const ActionModalClient = ({
         return (
           <IconChecks
             color={'var(--mantine-color-green-3)'}
+            size={18}
+            stroke={1.5}
+          />
+        );
+
+      case 'revert':
+        return (
+          <IconArrowBackUp
+            color={'var(--mantine-color-red-6)'}
             size={18}
             stroke={1.5}
           />

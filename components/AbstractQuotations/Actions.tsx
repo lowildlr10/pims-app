@@ -1,6 +1,6 @@
 import { Loader } from '@mantine/core';
 import { Menu } from '@mantine/core';
-import { IconThumbUpFilled } from '@tabler/icons-react';
+import { IconArrowBackUp, IconThumbUpFilled } from '@tabler/icons-react';
 import React from 'react';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 
@@ -61,6 +61,34 @@ const ActionsClient = ({
             }
           >
             Approve
+          </Menu.Item>
+        )}
+
+      {['draft', 'pending'].includes(status ?? '') &&
+        ['supply:*', ...getAllowedPermissions('aoq', 'revert')].some(
+          (permission) => permissions?.includes(permission)
+        ) && (
+          <Menu.Item
+            leftSection={
+              <IconArrowBackUp
+                color={'var(--mantine-color-red-7)'}
+                size={18}
+                stroke={1.5}
+              />
+            }
+            onClick={() =>
+              handleOpenActionModal &&
+              handleOpenActionModal(
+                'revert',
+                'Revert Changes',
+                'Are you sure you want to revert changes from this Abstract of Bids and Quotation?',
+                'var(--mantine-color-yellow-4)',
+                'Revert',
+                `/abstract-quotations/${id}/revert`
+              )
+            }
+          >
+            Revert Changes
           </Menu.Item>
         )}
 
