@@ -124,7 +124,7 @@ const UpdateModalClient = ({
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <CustomLoadingOverlay visible={loading} />
+      <CustomLoadingOverlay h={'100%'} pos={'fixed'} visible={loading} />
 
       <Stack mb={50}>
         {opened && content === 'account-department' && (
