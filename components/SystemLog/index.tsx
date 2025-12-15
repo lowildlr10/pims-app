@@ -20,20 +20,14 @@ import { IconCode } from '@tabler/icons-react';
 const defaultTableData: TableDataType = {
   head: [
     {
-      id: 'logged_at_formatted',
-      label: 'Logged At',
-      width: '13%',
+      id: 'log_id',
+      label: 'Log ID',
+      width: '12%',
       sortable: true,
     },
     {
       id: 'user_formatted',
       label: 'User',
-      width: '12%',
-      sortable: true,
-    },
-    {
-      id: 'log_id',
-      label: 'Log ID',
       width: '12%',
       sortable: true,
     },
@@ -60,6 +54,12 @@ const defaultTableData: TableDataType = {
       label: 'Details',
       width: '17%',
       sortable: false,
+    },
+    {
+      id: 'logged_at_formatted',
+      label: 'Logged At',
+      width: '13%',
+      sortable: true,
     },
     {
       id: 'data_formatted',
