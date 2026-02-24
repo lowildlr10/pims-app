@@ -136,6 +136,11 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
+        label: 'Revert Changes',
+        value: 'revert',
+        checked: false,
+      },
+      {
         label: 'Approve',
         value: 'approve',
         checked: false,

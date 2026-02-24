@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Local Development Installation
+
+This is a Next.js project bootstrapped with create-next-app.
+
+## Prerequisites
+
+Node.js v20.19.6 (LTS) or later
+One of the following package managers:
+
+npm (comes with Node.js)
+Yarn
+Bun
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install Dependencies
+
+Choose your preferred package manager:
+
+#### Using npm:
+
+```bash
+npm install
+```
+
+#### Using Yarn:
+
+```bash
+yarn install
+```
+
+#### Using Bun:
+
+```bash
+bun install
+```
+
+> Note: If you encounter dependency issues with npm, you can perform a clean install:
+
+```bash
+rm -rf node_modules && rm -f package-lock.json && npm cache clean --force && npm install
+```
+
+### 2. Environment Configuration
+
+Create a .env.local file in the root directory and add the required environment variables:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
+Replace http://localhost:8000 with your backend server URL.
+
+### 3. Run the Development Server
+
+Using npm:
 
 ```bash
 npm run dev
-# or
+```
+
+Using Yarn:
+
+```bash
 yarn dev
-# or
-pnpm dev
-# or
+```
+
+Using Bun:
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 4. View the Application
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open http://localhost:3000 in your browser to see the application.
+The page will auto-update as you edit files in the project.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Available Scripts:
 
-## Learn More
+- `dev` - Starts the development server
+- `build` - Creates an optimized production build
+- `start` - Runs the production server
+- `lint` - Runs ESLint to check code quality
+- `format` - Runs Prettier to format and standardize code style
 
-To learn more about Next.js, take a look at the following resources:
+### Troubleshooting
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Port Already in Use
+If port 3000 is already in use, you can specify a different port:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# npm
+npm run dev -- -p 3001
 
-## Deploy on Vercel
+# yarn
+yarn dev -p 3001
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# bun
+bun dev --port 3001
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Clean Installation
+
+If you experience persistent dependency issues, try removing all cached data:
+npm:
+
+```bash
+rm -rf node_modules package-lock.json .next
+npm cache clean --force
+npm install
+```
+
+Yarn:
+
+```bash
+rm -rf node_modules yarn.lock .next
+yarn cache clean
+yarn install
+```
+
+Bun:
+
+```bash
+rm -rf node_modules bun.lockb .next
+bun install
+```

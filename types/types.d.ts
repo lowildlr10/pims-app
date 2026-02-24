@@ -59,7 +59,8 @@ type ActionType =
   | 'inspect'
   | 'obligate'
   | 'disburse'
-  | 'paid';
+  | 'paid'
+  | 'revert';
 
 type CompanyType = {
   id?: string;

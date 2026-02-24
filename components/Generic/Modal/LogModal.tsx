@@ -155,7 +155,7 @@ const LogModalClient = ({
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <CustomLoadingOverlay visible={isLoading} />
+      <CustomLoadingOverlay h={'100%'} pos={'fixed'} visible={isLoading} />
 
       {opened && (
         <Stack mb={60} p={'sm'}>
