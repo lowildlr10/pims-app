@@ -215,7 +215,7 @@ const PoActionsClient = ({
         )}
 
       {status === 'for_delivery' &&
-        ['supply:*', ...getAllowedPermissions('po', 'for-inspection')].some(
+        ['supply:*', ...getAllowedPermissions('po', 'delivered')].some(
           (permission) => permissions?.includes(permission)
         ) && (
           <Menu.Item

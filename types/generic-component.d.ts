@@ -7,7 +7,7 @@ type MediaType =
 
 type SingleImageUploadProps = {
   postUrl: string;
-  params?: any;
+  params?: Record<string, unknown>;
   image: string;
   height?: string | number;
   type?: MediaType;
@@ -32,6 +32,7 @@ type LinksGroupProps = {
   permissions?: string[];
   allowedPermissions?: string[];
   label: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: React.FC<any>;
   initiallyOpened?: boolean;
   link?: string;
@@ -51,7 +52,9 @@ type UserModalProps = {
 
 type MainContainerProps = {
   secondaryTtile?: string;
-  title: string;
+  title?: string;
+  icon?: React.ReactNode;
+  actions?: React.ReactNode;
   children: React.ReactNode;
   permissions?: string[];
 };
@@ -70,7 +73,7 @@ type DynamicSelectProps = {
   name?: string;
   defaultData?: ComboboxData;
   endpoint?: string;
-  endpointParams?: Record<string, any>;
+  endpointParams?: Record<string, unknown>;
   valueColumn?: string;
   column?: string;
   label?: string;
@@ -80,7 +83,7 @@ type DynamicSelectProps = {
   defaultValue?: string | null;
   limit?: number;
   variant?: 'unstyled' | 'filled' | 'default';
-  sx?: any;
+  sx?: EmotionSx;
   readOnly?: boolean;
   required?: boolean;
   enableOnClickRefresh?: boolean;
@@ -94,7 +97,7 @@ type DynamicSelectProps = {
 
 type DynamicMultiselectProps = {
   endpoint: string;
-  endpointParams?: any;
+  endpointParams?: Record<string, unknown>;
   column?: string;
   label?: string;
   placeholder?: string;
@@ -111,7 +114,7 @@ type DynamicMultiselectProps = {
 type DynamicAutocompleteProps = {
   name?: string;
   endpoint: string;
-  endpointParams?: any;
+  endpointParams?: Record<string, unknown>;
   column?: string;
   label?: string;
   placeholder?: string;
@@ -134,10 +137,16 @@ type TableHeader = {
   clickable?: boolean;
 };
 
+type TableBodyItemType = {
+  id?: string;
+  [key: string]: unknown;
+  sub_body?: TableBodyItemType[];
+};
+
 type TableDataType = {
   head?: TableHeader[];
   subHead?: TableHeader[];
-  body?: any;
+  body?: TableBodyItemType[];
 };
 
 type FormDataType = CompanyType &
@@ -165,6 +174,7 @@ type FormDataType = CompanyType &
   InventoryIssuanceType & {
     parent_id?: string | null;
     parent_body?: FormDataType;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     other_params?: { [key: string]: any } | null;
   };
 
@@ -241,6 +251,7 @@ type DataTableProps = {
   showSearch?: boolean;
   showCreate?: boolean;
   showEdit?: boolean;
+  showTableActions?: boolean;
   createMenus?: ItemCreateMenuTableType[];
   defaultModalOnClick?: 'update' | 'details';
   showCreateSubItem?: boolean;
@@ -304,7 +315,7 @@ type DataTableActionsProps = {
   handleOpenCreateModal?: (
     parentId: string | null,
     module_type: ModuleType | null,
-    additionalParams?: { [key: string]: any } | null
+    additionalParams?: Record<string, unknown> | null
   ) => void;
 };
 
@@ -343,6 +354,7 @@ type DetailModalProps = {
   permissions?: string[];
   title: string;
   content?: ModuleType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   opened: boolean;
   fullscreen?: boolean;
@@ -413,6 +425,7 @@ type LogModalProps = {
 };
 
 type CreateProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
   content: ModuleType;
   endpoint: string;
@@ -423,6 +436,7 @@ type CreateModalProps = {
   title: string;
   content?: ModuleType;
   endpoint: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   opened: boolean;
   fullscreen?: boolean;
@@ -442,6 +456,7 @@ type UpdateModalProps = {
   title: string;
   content?: ModuleType;
   endpoint: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   opened: boolean;
   showEdit?: boolean;

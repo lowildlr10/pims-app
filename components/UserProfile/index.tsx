@@ -1,13 +1,19 @@
 'use client';
 
-import { Box, Divider, Flex, ScrollArea, Stack } from '@mantine/core';
+import {
+  Box,
+  Container,
+  Flex,
+  Paper,
+  SegmentedControl,
+  Stack,
+  Title,
+} from '@mantine/core';
 import React, { useState } from 'react';
 import { IconSignature, IconUserCog } from '@tabler/icons-react';
 import UserProfileFormClient from './UserProfileForm';
 import SignatureFormClient from './SignatureForm';
-import { Tabs } from '@mantine/core';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
-import { useViewportSize } from '@mantine/hooks';
 import { useMediaAsset } from '@/hooks/useMediaAsset';
 
 const UserProfileClient = ({ user }: UserProfileProps) => {
@@ -16,97 +22,97 @@ const UserProfileClient = ({ user }: UserProfileProps) => {
     user,
   });
 
-  const { width } = useViewportSize();
-  const [activeTab, setActiveTab] = useState<string | null>('information');
+  const [activeTab, setActiveTab] = useState<string | undefined>('information');
 
   return (
-    <Flex
-      direction={{
-        base: 'column',
-        lg: 'row',
-      }}
-    >
-      <Stack
-        align={'center'}
-        justify={'flex-start'}
-        p={'md'}
-        w={{ base: '100%', lg: '25%' }}
+    <Container size='xl' py='md'>
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        gap='lg'
+        align='flex-start'
       >
-        <Box mb={10}>
-          <SingleImageUploadClient
-            image={avatar ?? ''}
-            postUrl={'/media'}
-            params={{ type: 'avatar', parent_id: user.id }}
-            type={'avatar'}
-            clearImageCache={clearAvatarCache}
-          />
-        </Box>
-
-        <Divider size={'sm'} w={'100%'} my={20} />
-
-        <Tabs
-          color={'var(--mantine-color-primary-9)'}
-          orientation={width === 0 || width > 1199 ? 'vertical' : 'horizontal'}
-          w={'100%'}
-          value={activeTab}
-          onChange={setActiveTab}
+        <Stack
+          align='center'
+          w={{ base: '100%', md: 280 }}
+          style={{ flexShrink: 0 }}
         >
-          <Tabs.List w={width === 0 || width > 1199 ? '100%' : 'auto'} fw={500}>
-            <Tabs.Tab
-              py={10}
-              fz={'md'}
-              value='information'
-              bg={
-                activeTab === 'information'
-                  ? 'var(--mantine-color-secondary-1)'
-                  : undefined
-              }
-              leftSection={<IconUserCog size={18} stroke={1.5} />}
-            >
-              User Information
-            </Tabs.Tab>
-            <Tabs.Tab
-              py={10}
-              fz={'md'}
-              value='signature'
-              bg={
-                activeTab === 'signature'
-                  ? 'var(--mantine-color-secondary-1)'
-                  : undefined
-              }
-              leftSection={<IconSignature size={18} stroke={1.5} />}
-            >
-              Signature
-            </Tabs.Tab>
-          </Tabs.List>
-        </Tabs>
-      </Stack>
-      <Stack
-        align={'center'}
-        justify={'top'}
-        p={'md'}
-        w={{ md: '100%', lg: '75%' }}
-      >
-        <Tabs value={activeTab} onChange={setActiveTab} w={'100%'}>
-          <Tabs.Panel value={'information'}>
-            <ScrollArea
-              h={{ md: '100%', lg: 'calc(100vh - 16.5em)' }}
-              px={{ base: 'md', lg: 'xl' }}
-            >
+          <Paper
+            p='xl'
+            radius='md'
+            w='100%'
+            style={{
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            <Stack align='center' gap='md'>
+              <SingleImageUploadClient
+                image={avatar ?? ''}
+                postUrl={'/media'}
+                params={{ type: 'avatar', parent_id: user.id }}
+                type={'avatar'}
+                clearImageCache={clearAvatarCache}
+              />
+
+              <Box ta='center'>
+                <Title order={4} fw={600}>
+                  {user.fullname}
+                </Title>
+                <Title order={6} c='dimmed' fw={400}>
+                  {user.position?.position_name}
+                </Title>
+              </Box>
+            </Stack>
+          </Paper>
+        </Stack>
+
+        <Box flex={1} w={{ base: '100%', md: 'auto' }}>
+          <Paper
+            radius='md'
+            p={{ base: 'md', sm: 'lg', md: 'xl' }}
+            style={{
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            <SegmentedControl
+              fullWidth
+              value={activeTab}
+              onChange={setActiveTab}
+              data={[
+                {
+                  label: (
+                    <Flex align='center' gap='xs' justify='center'>
+                      <IconUserCog size={18} />
+                      <span>Information</span>
+                    </Flex>
+                  ),
+                  value: 'information',
+                },
+                {
+                  label: (
+                    <Flex align='center' gap='xs' justify='center'>
+                      <IconSignature size={18} />
+                      <span>Signature</span>
+                    </Flex>
+                  ),
+                  value: 'signature',
+                },
+              ]}
+              mb='lg'
+              styles={{
+                root: {
+                  backgroundColor: 'var(--mantine-color-gray-1)',
+                },
+              }}
+            />
+
+            {activeTab === 'information' && (
               <UserProfileFormClient user={user} />
-            </ScrollArea>
-          </Tabs.Panel>
-          <Tabs.Panel value='signature'>
-            <ScrollArea
-              h={{ md: '100%', lg: 'calc(100vh - 18em)' }}
-              px={{ base: 'md', lg: 100 }}
-            >
-              <SignatureFormClient user={user} />
-            </ScrollArea>
-          </Tabs.Panel>
-        </Tabs>
-      </Stack>
-    </Flex>
+            )}
+            {activeTab === 'signature' && <SignatureFormClient user={user} />}
+          </Paper>
+        </Box>
+      </Flex>
+    </Container>
   );
 };
 

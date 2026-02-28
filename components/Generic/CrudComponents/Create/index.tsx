@@ -65,7 +65,7 @@ const CreateClient = ({ data, endpoint, content, backUrl }: CreateProps) => {
 
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message || 'Record created successfully.',
           color: 'green',
         });
 

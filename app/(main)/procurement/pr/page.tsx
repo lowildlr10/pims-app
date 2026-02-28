@@ -4,8 +4,12 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import PurchaseRequestsClient from '@/components/PurchaseRequests';
+import {
+  PurchaseRequestPageActions,
+  PurchaseRequestPageContent,
+} from './client';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconFileDescription } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'pr';
 
@@ -36,10 +40,15 @@ const PurchaseRequestPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Purchase Requests'}
+        title='Purchase Requests'
+        secondaryTtile='Manage and track all purchase requests'
+        icon={<IconFileDescription size={24} stroke={1.5} />}
         permissions={permissions}
+        actions={
+          <PurchaseRequestPageActions user={user} permissions={permissions} />
+        }
       >
-        <PurchaseRequestsClient user={user} permissions={permissions} />
+        <PurchaseRequestPageContent user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

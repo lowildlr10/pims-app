@@ -74,18 +74,12 @@ export function LinksGroupClient({
           className={classes.control}
           bg={pathname === link ? 'var(--mantine-color-tertiary-1)' : undefined}
         >
-          <Anchor
-            component={Link}
-            href={link ?? '#'}
-            underline={'never'}
-            c={'inherit'}
-            fz={lgScreenAndBelow ? '0.85rem' : 'sm'}
-            prefetch={false}
-            // onNavigate={(e) =>
-            //   !hasLinks && pathname !== link && nprogress.start()
-            // }
-          >
-            <Group justify='space-between' gap={0}>
+          {hasLinks ? (
+            <Group
+              justify='space-between'
+              gap={0}
+              fz={lgScreenAndBelow ? '0.85rem' : 'sm'}
+            >
               <Flex align={'center'}>
                 <ThemeIcon
                   color={'var(--mantine-color-primary-9)'}
@@ -96,16 +90,36 @@ export function LinksGroupClient({
                 </ThemeIcon>
                 <Box ml='md'>{label}</Box>
               </Flex>
-              {hasLinks && (
-                <IconChevronRight
-                  className={classes.chevron}
-                  stroke={1.5}
-                  size={16}
-                  style={{ transform: opened ? 'rotate(-90deg)' : 'none' }}
-                />
-              )}
+              <IconChevronRight
+                className={classes.chevron}
+                stroke={1.5}
+                size={16}
+                style={{ transform: opened ? 'rotate(-90deg)' : 'none' }}
+              />
             </Group>
-          </Anchor>
+          ) : (
+            <Anchor
+              component={Link}
+              href={link ?? '#'}
+              underline={'never'}
+              c={'inherit'}
+              fz={lgScreenAndBelow ? '0.85rem' : 'sm'}
+              prefetch={false}
+            >
+              <Group justify='space-between' gap={0}>
+                <Flex align={'center'}>
+                  <ThemeIcon
+                    color={'var(--mantine-color-primary-9)'}
+                    variant='light'
+                    size={30}
+                  >
+                    <Icon size={18} />
+                  </ThemeIcon>
+                  <Box ml='md'>{label}</Box>
+                </Flex>
+              </Group>
+            </Anchor>
+          )}
         </UnstyledButton>
         {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
       </>

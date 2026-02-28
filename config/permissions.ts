@@ -365,8 +365,18 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
+        label: 'Pending for Issuance',
+        value: 'pending',
+        checked: false,
+      },
+      {
         label: 'Issue',
         value: 'issue',
+        checked: false,
+      },
+      {
+        label: 'Cancel',
+        value: 'cancel',
         checked: false,
       },
       {

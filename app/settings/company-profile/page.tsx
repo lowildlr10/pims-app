@@ -6,6 +6,7 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconBuilding } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'company';
 
@@ -34,7 +35,11 @@ const CompanyProfilePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Company Profile'}>
+      <MainContainerClient
+        title='Company Profile'
+        secondaryTtile='Configure your organization details and information'
+        icon={<IconBuilding size={24} stroke={1.5} />}
+      >
         <CompanyProfileClient company={company} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

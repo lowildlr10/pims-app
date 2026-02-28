@@ -223,7 +223,7 @@ const FormClient = forwardRef<
         sort_direction: 'asc',
       })
         .then((res) => {
-          const company: CompanyType = res?.data?.company;
+          const company: CompanyType = res?.data;
           setCompany(company);
         })
         .catch(() => {
@@ -375,10 +375,12 @@ const FormClient = forwardRef<
               <DynamicSelect
                 key={form.key('responsibility_center_id')}
                 {...form.getInputProps('responsibility_center_id')}
-                variant={readOnly ? 'unstyled' : 'default'}
+                variant={'unstyled'}
                 placeholder={'Select a responsibility center...'}
+                sx={{ borderBottom: '1px solid var(--mantine-color-gray-5)' }}
                 endpoint={'/libraries/responsibility-centers'}
                 endpointParams={{ paginated: false, show_all: true }}
+                valueColumn={'id'}
                 column={'code'}
                 defaultData={
                   responsibilityCenters ??
@@ -422,13 +424,18 @@ const FormClient = forwardRef<
             <Textarea
               key={form.key('particulars')}
               {...form.getInputProps('particulars')}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
               placeholder={readOnly ? 'None' : 'Enter particulars here...'}
               defaultValue={form?.values?.particulars}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
               required={!readOnly}
               readOnly={readOnly}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
             />
           </Table.Td>
         );
@@ -440,8 +447,9 @@ const FormClient = forwardRef<
               <DynamicMultiselect
                 key={form.key('fpps')}
                 {...form.getInputProps('fpps')}
-                variant={readOnly ? 'unstyled' : 'default'}
+                variant={'unstyled'}
                 placeholder={'Select F.P.P. here...'}
+                sx={{ borderBottom: '1px solid var(--mantine-color-gray-5)' }}
                 endpoint={'/libraries/function-program-projects'}
                 endpointParams={{
                   paginated: false,
@@ -449,7 +457,7 @@ const FormClient = forwardRef<
                   show_inactive: false,
                 }}
                 column={'code'}
-                value={(form.values.fpps as string[]) ?? undefined}
+                value={(form.values.fpps as string[]) ?? []}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 readOnly={readOnly}
               />
@@ -482,8 +490,9 @@ const FormClient = forwardRef<
           <Table.Td>
             {!readOnly ? (
               <DynamicMultiselect
-                variant={readOnly ? 'unstyled' : 'default'}
+                variant={'unstyled'}
                 placeholder={'Select account code here...'}
+                sx={{ borderBottom: '1px solid var(--mantine-color-gray-5)' }}
                 endpoint={'/libraries/accounts'}
                 endpointParams={{
                   paginated: false,
@@ -523,7 +532,7 @@ const FormClient = forwardRef<
             <Stack>
               {Helper.empty(selectedAccountObjects) && (
                 <NumberInput
-                  variant={readOnly ? 'unstyled' : 'filled'}
+                  variant={'unstyled'}
                   placeholder={'Amount'}
                   value={totalAmount}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -564,7 +573,11 @@ const FormClient = forwardRef<
                       >
                         {!readOnly ? (
                           <NumberInput
-                            variant={readOnly ? 'unstyled' : 'default'}
+                            variant={'unstyled'}
+                            sx={{
+                              borderBottom:
+                                '1px solid var(--mantine-color-gray-5)',
+                            }}
                             label={
                               !readOnly
                                 ? `Amount for ${account?.code ?? 'Account'}`
@@ -647,7 +660,11 @@ const FormClient = forwardRef<
         }
       })}
     >
-      <Stack justify={'center'}>
+      <Stack
+        p={{ base: 'xs', sm: 'md' }}
+        justify={'center'}
+        style={{ background: 'var(--mantine-color-gray-1)' }}
+      >
         {['disapproved', 'draft'].includes(currentData?.status ?? '') &&
           currentData?.disapproved_reason && (
             <Alert
@@ -661,10 +678,14 @@ const FormClient = forwardRef<
           )}
 
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Flex
             direction={lgScreenAndBelow ? 'column' : 'row'}
@@ -788,7 +809,7 @@ const FormClient = forwardRef<
               p={'sm'}
             >
               <TextInput
-                variant={!readOnly ? 'filled' : 'unstyled'}
+                variant={'unstyled'}
                 placeholder={'None'}
                 value={currentData?.payee?.supplier_name ?? ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -833,7 +854,7 @@ const FormClient = forwardRef<
                 variant={'unstyled'}
                 placeholder={!readOnly ? 'Enter the office here...' : 'None'}
                 defaultValue={readOnly ? undefined : form.values.office}
-                value={readOnly ? currentData?.office : undefined}
+                value={readOnly ? (currentData?.office ?? '') : undefined}
                 error={form.errors.sai_no && ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 sx={{
@@ -954,7 +975,12 @@ const FormClient = forwardRef<
                   <Table.Td></Table.Td>
                   <Table.Td>
                     <NumberInput
-                      variant={readOnly ? 'unstyled' : 'default'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       placeholder={'Amount'}
                       value={totalAmount}
                       size={lgScreenAndBelow ? 'sm' : 'md'}

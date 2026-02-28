@@ -28,6 +28,13 @@ import IcsFormClient from '../../InventoryIssuances/Forms/IcsForm';
 import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
 import CustomLoadingOverlay from '../CustomLoadingOverlay';
 
+const WIDE_MODAL_CONTENT = [
+  'account-user',
+  'lib-supplier',
+  'lib-signatory',
+  'lib-bid-committee',
+];
+
 const CreateModalClient = ({
   title,
   endpoint,
@@ -42,6 +49,7 @@ const CreateModalClient = ({
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
   const formRef = useRef<HTMLFormElement>(null);
+  const modalSize = WIDE_MODAL_CONTENT.includes(content ?? '') ? 'lg' : 'md';
 
   const handleCreate = (uncontrolledPayload?: object) => {
     let isControlled = true;
@@ -104,7 +112,7 @@ const CreateModalClient = ({
       opened={opened}
       onClose={close}
       title={title ?? 'Create'}
-      size={'md'}
+      size={modalSize}
       fullScreen={fullscreen}
       scrollAreaComponent={ScrollArea.Autosize}
       centered

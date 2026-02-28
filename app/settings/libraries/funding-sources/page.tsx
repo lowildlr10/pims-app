@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconCoin } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-fund-source';
 
@@ -34,7 +35,11 @@ const FundingSourcePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Funding Sources/Projects'}>
+      <MainContainerClient
+        title='Funding Sources'
+        secondaryTtile='Manage funding sources and budget allocations'
+        icon={<IconCoin size={24} stroke={1.5} />}
+      >
         <FundingSourcesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

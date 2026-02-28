@@ -18,9 +18,10 @@ export const getCompanyFavicon = async () => {
   }
 };
 
-export const getCompany = async () => {
+export const getCompany = async (): Promise<CompanyType> => {
   const data = await getCompanyData();
-  return await data?.data.company;
+  const company = data?.data;
+  return company ?? {};
 };
 
 const getCompanyData = async () => {

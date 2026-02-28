@@ -6,6 +6,7 @@ import UnitIssuesClient from '@/components/Libraries/UnitIssues';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconRuler } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-unit-issue';
 
@@ -34,7 +35,11 @@ const UnitIssuePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Unit of Issues'}>
+      <MainContainerClient
+        title='Unit of Issues'
+        secondaryTtile='Define units of measurement and issue quantities'
+        icon={<IconRuler size={24} stroke={1.5} />}
+      >
         <UnitIssuesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

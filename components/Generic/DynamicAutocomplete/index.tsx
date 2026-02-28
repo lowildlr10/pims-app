@@ -1,6 +1,6 @@
 import { Autocomplete, ComboboxStringData, Loader } from '@mantine/core';
 import { useDebounce } from 'use-debounce';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
@@ -29,20 +29,29 @@ const DynamicAutocomplete = ({
     },
   ]);
   const [inputValue, setInputValue] = useState<string | undefined>(value);
+  const isExternalUpdate = useRef(false);
 
   const [debouncedValue] = useDebounce(inputValue, 500);
 
   useEffect(() => {
-    if (onChange) onChange(debouncedValue ?? '');
+    if (!isExternalUpdate.current) {
+      if (onChange && debouncedValue !== undefined) {
+        onChange(debouncedValue ?? '');
+      }
+    }
+    isExternalUpdate.current = false;
 
     handleFetchData();
   }, [debouncedValue]);
 
   useEffect(() => {
+    isExternalUpdate.current = true;
     setInputValue(value);
   }, [value]);
 
   const handleFetchData = () => {
+    if (!endpoint) return;
+
     setLoading(true);
     setData([
       {
@@ -57,12 +66,28 @@ const DynamicAutocomplete = ({
       sort_direction: 'asc',
     })
       .then((res) => {
+        const rawData = res?.data ?? [];
+        const uniqueData = rawData.filter(
+          (item: any, index: number, self: any[]) =>
+            index ===
+            self.findIndex(
+              (t) => t[column ?? 'column'] === item[column ?? 'column']
+            )
+        );
+
         setData(
-          res?.data?.length > 0
-            ? res?.data?.map((item: any) => ({
+          uniqueData.length > 0
+            ? uniqueData.map((item: any, index: number) => ({
                 value: item[column ?? 'column'],
+                key: item[column ?? 'column'] ?? index,
               }))
-            : [{ value: 'No suggestion found.', disabled: true }]
+            : [
+                {
+                  value: 'No suggestion found.',
+                  disabled: true,
+                  key: 'no-result',
+                },
+              ]
         );
         setLoading(false);
       })
@@ -81,6 +106,13 @@ const DynamicAutocomplete = ({
       });
   };
 
+  const handleOnChange = (newValue: string) => {
+    setInputValue(newValue);
+    if (onChange) {
+      onChange(newValue);
+    }
+  };
+
   return (
     <Autocomplete
       name={name}
@@ -91,7 +123,7 @@ const DynamicAutocomplete = ({
       data={data}
       limit={limit}
       value={inputValue}
-      onChange={(value) => setInputValue(value)}
+      onChange={handleOnChange}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       maxDropdownHeight={200}
       rightSection={loading && <Loader color='blue' size='xs' />}

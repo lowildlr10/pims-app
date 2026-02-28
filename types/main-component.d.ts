@@ -2,6 +2,26 @@ type LoginProps = {
   company: CompanyType;
 };
 
+type PaginationMeta = {
+  from: number;
+  to: number;
+  total: number;
+  per_page: number;
+  last_page: number;
+  current_page: number;
+};
+
+type PaginatedResponse<T> = {
+  data: T[];
+  links?: {
+    first: string;
+    last: string;
+    prev: string | null;
+    next: string | null;
+  };
+  meta: PaginationMeta;
+};
+
 type DashboardProps = {
   user: UserType;
 };
@@ -60,15 +80,7 @@ type DashboardResponse = {
   };
 };
 
-type PurchaseRequestsResponse = {
-  data: PurchaseRequestType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type PurchaseRequestsResponse = PaginatedResponse<PurchaseRequestType>;
 
 type PurchaseRequestStatusProps = {
   size?: string;
@@ -88,15 +100,7 @@ type ModalPurchaseRequestContentProps = {
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
-type RequestQuotationsResponse = {
-  data: PurchaseRequestType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type RequestQuotationsResponse = PaginatedResponse<PurchaseRequestType>;
 
 type RequestQuotationStatusProps = {
   size?: string;
@@ -117,15 +121,7 @@ type ModalRequestQuotationContentProps = {
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
-type AbstractQuotationsResponse = {
-  data: PurchaseRequestType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type AbstractQuotationsResponse = PaginatedResponse<PurchaseRequestType>;
 
 type AbstractQuotationStatusProps = {
   size?: string;
@@ -154,15 +150,7 @@ type AbstractQuotationSupplierHeaderType = {
   total_cost: number;
 };
 
-type PurchaseOrdersResponse = {
-  data: PurchaseRequestType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type PurchaseOrdersResponse = PaginatedResponse<PurchaseRequestType>;
 
 type PurchaseOrderStatusProps = {
   size?: string;
@@ -183,15 +171,8 @@ type ModalPurchaseOrderContentProps = {
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
-type InspectionAcceptanceReportResponse = {
-  data: InspectionAcceptanceReportType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type InspectionAcceptanceReportResponse =
+  PaginatedResponse<InspectionAcceptanceReportType>;
 
 type InspectionAcceptanceReportStatusProps = {
   size?: string;
@@ -214,15 +195,7 @@ type ModalInspectionAcceptanceReportContentProps = {
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
-type ObligationRequestResponse = {
-  data: ObligationRequestType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type ObligationRequestResponse = PaginatedResponse<ObligationRequestType>;
 
 type ObligationRequestStatusProps = {
   size?: string;
@@ -244,15 +217,7 @@ type ModalObligationRequestContentProps = {
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
-type DisbursementVoucherResponse = {
-  data: DisbursementVoucherType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type DisbursementVoucherResponse = PaginatedResponse<DisbursementVoucherType>;
 
 type DisbursementVoucherStatusProps = {
   size?: string;
@@ -274,15 +239,7 @@ type ModalDisbursementVoucherContentProps = {
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
-type InventorySuppliesResponse = {
-  data: PurchaseOrderType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type InventorySuppliesResponse = PaginatedResponse<PurchaseOrderType>;
 
 type InventorySuppliesStatusProps = {
   size?: string;
@@ -303,15 +260,7 @@ type ModalInventorySupplyContentProps = {
   handleCreateUpdate?: (uncontrolledPayload?: object) => void;
 };
 
-type InventoryIssuanceResponse = {
-  data: PurchaseOrderType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type InventoryIssuanceResponse = PaginatedResponse<PurchaseOrderType>;
 
 type InventoryIssuanceStatusProps = {
   size?: string;

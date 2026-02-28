@@ -6,6 +6,7 @@ import RolesClient from '@/components/UserManagement/Roles';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconShield } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'account-role';
 
@@ -34,7 +35,11 @@ const RolePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'User Management - Roles'}>
+      <MainContainerClient
+        title='Roles'
+        secondaryTtile='Define and manage user roles with specific permissions'
+        icon={<IconShield size={24} stroke={1.5} />}
+      >
         <RolesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

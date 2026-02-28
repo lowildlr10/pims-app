@@ -147,7 +147,7 @@ const FormClient = forwardRef<
         sort_direction: 'asc',
       })
         .then((res) => {
-          const company: CompanyType = res?.data?.company;
+          const company: CompanyType = res?.data;
           setCompany(company);
         })
         .catch(() => {
@@ -219,8 +219,13 @@ const FormClient = forwardRef<
             <Textarea
               key={form.key('explanation')}
               {...form.getInputProps('explanation')}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
               placeholder={readOnly ? 'None' : 'Enter explanation here...'}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
               defaultValue={form?.values?.explanation}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               autosize
@@ -235,7 +240,7 @@ const FormClient = forwardRef<
           <Table.Td>
             <Stack>
               <NumberInput
-                variant={readOnly ? 'unstyled' : 'filled'}
+                variant={'unstyled'}
                 placeholder={'Amount'}
                 value={currentData.purchase_order?.total_amount}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -277,7 +282,11 @@ const FormClient = forwardRef<
         }
       })}
     >
-      <Stack justify={'center'}>
+      <Stack
+        p={{ base: 'xs', sm: 'md' }}
+        justify={'center'}
+        style={{ background: 'var(--mantine-color-gray-1)' }}
+      >
         {['disapproved', 'draft'].includes(currentData?.status ?? '') &&
           currentData?.disapproved_reason && (
             <Alert
@@ -291,10 +300,14 @@ const FormClient = forwardRef<
           )}
 
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Stack
             bd={'1px solid var(--mantine-color-gray-8)'}
@@ -340,11 +353,16 @@ const FormClient = forwardRef<
               p={3}
             >
               <TextInput
+                key={form.key('dv_no')}
+                {...form.getInputProps('dv_no')}
                 variant={'unstyled'}
                 size={lgScreenAndBelow ? 'md' : 'lg'}
-                value={currentData?.dv_no}
                 label={'No.'}
                 placeholder={'None'}
+                required
+                sx={{
+                  borderBottom: '1px solid var(--mantine-color-gray-5)',
+                }}
               />
             </Stack>
           </Flex>
@@ -443,7 +461,7 @@ const FormClient = forwardRef<
               p={'sm'}
             >
               <TextInput
-                variant={!readOnly ? 'filled' : 'unstyled'}
+                variant={'unstyled'}
                 placeholder={'None'}
                 value={currentData?.payee?.supplier_name ?? ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -466,7 +484,7 @@ const FormClient = forwardRef<
               p={'sm'}
             >
               <TextInput
-                variant={!readOnly ? 'filled' : 'unstyled'}
+                variant={'unstyled'}
                 placeholder={'None'}
                 label={'TIN/Employee No.'}
                 value={currentData?.payee?.tin_no ?? ''}
@@ -491,7 +509,7 @@ const FormClient = forwardRef<
               p={'sm'}
             >
               <TextInput
-                variant={!readOnly ? 'filled' : 'unstyled'}
+                variant={'unstyled'}
                 placeholder={'None'}
                 label={'Obligation Request No.'}
                 value={currentData?.obligation_request?.obr_no ?? ''}
@@ -536,7 +554,7 @@ const FormClient = forwardRef<
                 variant={'unstyled'}
                 placeholder={'Enter the address here...'}
                 defaultValue={readOnly ? undefined : form.values.address}
-                value={readOnly ? currentData?.address : undefined}
+                value={readOnly ? (currentData?.address ?? '') : undefined}
                 error={form.errors.purpose && ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 w={'100%'}
@@ -566,7 +584,7 @@ const FormClient = forwardRef<
                 label={'Office/Unit/Project:'}
                 placeholder={!readOnly ? 'Enter the office here...' : 'None'}
                 defaultValue={readOnly ? undefined : form.values.office}
-                value={readOnly ? currentData?.office : undefined}
+                value={readOnly ? (currentData?.office ?? '') : undefined}
                 error={form.errors.sai_no && ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 sx={{
@@ -596,6 +614,7 @@ const FormClient = forwardRef<
                   label={'Responsibility Code:'}
                   endpoint={'/libraries/responsibility-centers'}
                   endpointParams={{ paginated: false, show_all: true }}
+                  valueColumn={'id'}
                   column={'code'}
                   defaultData={
                     responsibilityCenters ??
@@ -704,7 +723,12 @@ const FormClient = forwardRef<
                   </Table.Td>
                   <Table.Td>
                     <NumberInput
-                      variant={readOnly ? 'unstyled' : 'default'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       placeholder={'Amount'}
                       value={totalAmount}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -1098,13 +1122,20 @@ const FormClient = forwardRef<
                     <TextInput
                       key={form.key('check_no')}
                       {...form.getInputProps('check_no')}
-                      variant={!readOnly ? 'default' : 'unstyled'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       label={'Check No.'}
                       placeholder={
                         !readOnly ? 'Enter the check no. here...' : 'None'
                       }
                       defaultValue={readOnly ? undefined : form.values.check_no}
-                      value={readOnly ? currentData?.check_no : undefined}
+                      value={
+                        readOnly ? (currentData?.check_no ?? '') : undefined
+                      }
                       error={form.errors.check_no && ''}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       w={'100%'}
@@ -1121,7 +1152,12 @@ const FormClient = forwardRef<
                     <TextInput
                       key={form.key('bank_name')}
                       {...form.getInputProps('bank_name')}
-                      variant={!readOnly ? 'default' : 'unstyled'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       label={'Bank Name'}
                       placeholder={
                         !readOnly ? 'Enter the bank name here...' : 'None'
@@ -1129,7 +1165,9 @@ const FormClient = forwardRef<
                       defaultValue={
                         readOnly ? undefined : form.values.bank_name
                       }
-                      value={readOnly ? currentData?.bank_name : undefined}
+                      value={
+                        readOnly ? (currentData?.bank_name ?? '') : undefined
+                      }
                       error={form.errors.bank_name && ''}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       w={'100%'}
@@ -1146,7 +1184,12 @@ const FormClient = forwardRef<
                     <DateInput
                       key={form.key('check_date')}
                       {...form.getInputProps('check_date')}
-                      variant={!readOnly ? 'default' : 'unstyled'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       label={'Check Date'}
                       valueFormat={'YYYY-MM-DD'}
                       defaultValue={
@@ -1196,7 +1239,12 @@ const FormClient = forwardRef<
                     <TextInput
                       key={form.key('received_name')}
                       {...form.getInputProps('received_name')}
-                      variant={!readOnly ? 'default' : 'unstyled'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       label={'Printed Name'}
                       placeholder={
                         !readOnly ? 'Enter the printed name here...' : 'None'
@@ -1204,7 +1252,11 @@ const FormClient = forwardRef<
                       defaultValue={
                         readOnly ? undefined : form.values.received_name
                       }
-                      value={readOnly ? currentData?.received_name : undefined}
+                      value={
+                        readOnly
+                          ? (currentData?.received_name ?? '')
+                          : undefined
+                      }
                       error={form.errors.received_name && ''}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       w={'100%'}
@@ -1221,7 +1273,12 @@ const FormClient = forwardRef<
                     <DateInput
                       key={form.key('received_date')}
                       {...form.getInputProps('received_date')}
-                      variant={!readOnly ? 'default' : 'unstyled'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       label={'Received Date'}
                       valueFormat={'YYYY-MM-DD'}
                       defaultValue={
@@ -1273,7 +1330,12 @@ const FormClient = forwardRef<
                     <TextInput
                       key={form.key('or_other_document')}
                       {...form.getInputProps('or_other_document')}
-                      variant={!readOnly ? 'default' : 'unstyled'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       label={'OR/Other Documents'}
                       placeholder={
                         !readOnly
@@ -1284,7 +1346,9 @@ const FormClient = forwardRef<
                         readOnly ? undefined : form.values.or_other_document
                       }
                       value={
-                        readOnly ? currentData?.or_other_document : undefined
+                        readOnly
+                          ? (currentData?.or_other_document ?? '')
+                          : undefined
                       }
                       error={form.errors.or_other_document && ''}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -1302,13 +1366,18 @@ const FormClient = forwardRef<
                     <TextInput
                       key={form.key('jev_no')}
                       {...form.getInputProps('jev_no')}
-                      variant={!readOnly ? 'default' : 'unstyled'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       label={'JEV No.'}
                       placeholder={
                         !readOnly ? 'Enter the JEV no. here...' : 'None'
                       }
                       defaultValue={readOnly ? undefined : form.values.jev_no}
-                      value={readOnly ? currentData?.jev_no : undefined}
+                      value={readOnly ? (currentData?.jev_no ?? '') : undefined}
                       error={form.errors.jev_no && ''}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       w={'100%'}
@@ -1325,7 +1394,12 @@ const FormClient = forwardRef<
                     <DateInput
                       key={form.key('jev_date')}
                       {...form.getInputProps('jev_date')}
-                      variant={!readOnly ? 'default' : 'unstyled'}
+                      variant={'unstyled'}
+                      sx={{
+                        borderBottom: readOnly
+                          ? undefined
+                          : '1px solid var(--mantine-color-gray-5)',
+                      }}
                       label={'JEV Date'}
                       valueFormat={'YYYY-MM-DD'}
                       defaultValue={

@@ -78,12 +78,35 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
+const PurchaseRequestsClient = ({
+  user,
+  permissions,
+  search: externalSearch,
+  setSearch: externalSetSearch,
+  status: externalStatus,
+  setStatus: externalSetStatus,
+  showTableActions = true,
+}: MainProps) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
-  const [search, setSearch] = useState('');
+
+  // Use external search state if provided, otherwise use internal state
+  const [internalSearch, setInternalSearch] = useState(
+    searchParams.get('search') || ''
+  );
+  const search = externalSearch !== undefined ? externalSearch : internalSearch;
+  const setSearch = externalSetSearch || setInternalSearch;
+
+  // Use external status state if provided, otherwise use internal state
+  const [internalStatus, setInternalStatus] = useState(
+    searchParams.get('status') || ''
+  );
+  const currentStatus =
+    externalStatus !== undefined ? externalStatus : internalStatus;
+  const setCurrentStatus = externalSetStatus || setInternalStatus;
+
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('pr_no');
@@ -112,8 +135,6 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
   ] = useDisclosure(false);
   const [showCreate, setShowCreate] = useState(false);
 
-  const [status, setStatus] = useState('');
-
   const { data, isLoading, mutate } = useSWR<PurchaseRequestsResponse>(
     [
       `/purchase-requests`,
@@ -123,7 +144,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
       columnSort,
       sortDirection,
       paginated,
-      status,
+      currentStatus,
     ],
     ([
       url,
@@ -240,7 +261,7 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
     const status = searchParams.get('status');
 
     if (status) {
-      setStatus(status);
+      setCurrentStatus(status);
       replace(pathname);
     }
   }, [searchParams]);
@@ -273,7 +294,9 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
 
   return (
     <>
-      {!Helper.empty(status) && <StatusFilterALert status={status} />}
+      {!Helper.empty(currentStatus) && (
+        <StatusFilterALert status={currentStatus} />
+      )}
 
       <ActionModalClient
         title={title}
@@ -303,16 +326,17 @@ const PurchaseRequestsClient = ({ user, permissions }: MainProps) => {
         search={search}
         showSearch
         showCreate={showCreate}
+        showTableActions={showTableActions}
         defaultModalOnClick={'details'}
         detailItemData={DETAIL_ITEM_CONFIG}
         data={tableData}
         perPage={perPage}
         loading={isLoading}
         page={page}
-        lastPage={data?.last_page ?? 0}
-        from={data?.from ?? 0}
-        to={data?.to ?? 0}
-        total={data?.total ?? 0}
+        lastPage={data?.meta?.last_page ?? 0}
+        from={data?.meta?.from ?? 0}
+        to={data?.meta?.to ?? 0}
+        total={data?.meta?.total ?? 0}
         refreshData={mutate}
         activeFormData={activeFormData}
         setActiveData={setActiveData}

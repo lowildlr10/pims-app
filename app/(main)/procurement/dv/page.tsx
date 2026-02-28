@@ -4,8 +4,9 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import DisbursementVouchersClient from '@/components/DisbursementVouchers';
+import { DvPageActions, DvPageContent } from './client';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconReceipt } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'dv';
 
@@ -37,9 +38,12 @@ const DisbursementVoucherPage = async () => {
     >
       <MainContainerClient
         title={'Disbursement Vouchers'}
+        secondaryTtile={'Manage and track all disbursement vouchers'}
+        icon={<IconReceipt size={24} stroke={1.5} />}
         permissions={permissions}
+        actions={<DvPageActions user={user} permissions={permissions} />}
       >
-        <DisbursementVouchersClient user={user} permissions={permissions} />
+        <DvPageContent user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

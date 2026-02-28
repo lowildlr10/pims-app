@@ -4,8 +4,9 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import InventorySuppliesClient from '@/components/InventorySupplies';
+import { SuppliesPageActions, SuppliesPageContent } from './client';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconBox } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'inv-supply';
 
@@ -36,10 +37,13 @@ const InventoryPropertySupplyPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Inventory Property and Supplies'}
+        title='Inventory Supplies'
+        secondaryTtile='Manage and track inventory property and supplies'
+        icon={<IconBox size={24} stroke={1.5} />}
         permissions={permissions}
+        actions={<SuppliesPageActions user={user} permissions={permissions} />}
       >
-        <InventorySuppliesClient user={user} permissions={permissions} />
+        <SuppliesPageContent user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

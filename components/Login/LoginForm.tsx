@@ -77,90 +77,93 @@ const LoginFormClient = () => {
   return (
     <Paper
       radius='md'
-      p='xl'
-      withBorder
-      w={{ base: 'auto', lg: '430px' }}
-      bd={'none'}
+      p={{ base: 'lg', sm: 'xl' }}
+      w='100%'
+      maw={430}
+      bd='none'
+      style={{
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+      }}
     >
-      <Stack>
-        <Title order={2} ta={'center'}>
-          Hello!
-        </Title>
-        <Text size='lg' ta={'center'}>
-          Login your account
-        </Text>
-      </Stack>
+      <Stack gap='md'>
+        <Stack gap={4}>
+          <Title order={2} ta='center' fw={600}>
+            Hello!
+          </Title>
+          <Text size='lg' ta='center' c='dimmed'>
+            Login to your account
+          </Text>
+        </Stack>
 
-      <form
-        onSubmit={form.onSubmit(async (values) => {
-          await handleLogin(values.login, values.password);
-        })}
-      >
-        <FocusTrap active={!(loggedIn || loading)}>
-          <Stack>
-            <TextInput
-              {...form.getInputProps('login')}
-              key={form.key('login')}
-              leftSection={<IconUser />}
-              size='lg'
-              style={{ marginTop: '8%' }}
-              required
-              placeholder={'Username or email'}
-              disabled={loggedIn || loading}
-            />
+        <form
+          onSubmit={form.onSubmit(async (values) => {
+            await handleLogin(values.login, values.password);
+          })}
+        >
+          <FocusTrap active={!(loggedIn || loading)}>
+            <Stack gap='md'>
+              <TextInput
+                {...form.getInputProps('login')}
+                key={form.key('login')}
+                leftSection={<IconUser size={18} />}
+                size='lg'
+                required
+                placeholder='Username or email'
+                disabled={loggedIn || loading}
+              />
 
-            <PasswordInput
-              {...form.getInputProps('password')}
-              key={form.key('password')}
-              leftSection={<IconLock />}
-              size={'lg'}
-              required
-              placeholder={'Your password'}
-              disabled={loggedIn || loading}
-            />
-          </Stack>
-        </FocusTrap>
+              <PasswordInput
+                {...form.getInputProps('password')}
+                key={form.key('password')}
+                leftSection={<IconLock size={18} />}
+                size='lg'
+                required
+                placeholder='Your password'
+                disabled={loggedIn || loading}
+              />
+            </Stack>
+          </FocusTrap>
 
-        <Group justify='right' mt='lg'>
-          <Anchor
-            onClick={(event) => {
-              event.preventDefault();
+          <Group justify='flex-end' mt='lg'>
+            <Anchor
+              onClick={(event) => {
+                event.preventDefault();
 
-              notifications.show({
-                title: 'Password Reset',
-                message:
-                  'Please contact your administrator to reset your password.',
-                color: 'blue',
-                autoClose: 3000,
-                position: 'top-right',
-              });
-            }}
-            c={'var(--mantine-color-primary-9)'}
-            href='#'
-            size='sm'
-            variant={'text'}
-            fw={700}
-          >
-            Forgot password?
-          </Anchor>
-        </Group>
+                notifications.show({
+                  title: 'Password Reset',
+                  message:
+                    'Please contact your administrator to reset your password.',
+                  color: 'blue',
+                  autoClose: 3000,
+                  position: 'top-right',
+                });
+              }}
+              c='var(--mantine-color-primary-9)'
+              href='#'
+              size='sm'
+              variant='text'
+              fw={600}
+            >
+              Forgot password?
+            </Anchor>
+          </Group>
 
-        <Group justify='space-between' mt='xl'>
           <Button
-            size='md'
+            size='lg'
             type='submit'
-            color={'var(--mantine-color-primary-9)'}
+            color='var(--mantine-color-primary-9)'
             loading={loading || loggedIn}
             loaderProps={{ type: 'dots' }}
             autoContrast
             fullWidth
             disabled={loggedIn}
+            mt='xl'
           >
             <IconLogin2 size={18} />
             &nbsp;Login
           </Button>
-        </Group>
-      </form>
+        </form>
+      </Stack>
     </Paper>
   );
 };

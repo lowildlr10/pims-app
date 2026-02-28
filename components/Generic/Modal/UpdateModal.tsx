@@ -32,6 +32,13 @@ import IcsFormClient from '../../InventoryIssuances/Forms/IcsForm';
 import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
 import CustomLoadingOverlay from '../CustomLoadingOverlay';
 
+const WIDE_MODAL_CONTENT = [
+  'account-user',
+  'lib-supplier',
+  'lib-signatory',
+  'lib-bid-committee',
+];
+
 const UpdateModalClient = ({
   title,
   endpoint,
@@ -49,6 +56,7 @@ const UpdateModalClient = ({
   const [payload, setPayload] = useState<object>();
   const [allowUpdate, setAllowUpdate] = useState(showEdit);
   const formRef = useRef<HTMLFormElement>(null);
+  const modalSize = WIDE_MODAL_CONTENT.includes(content ?? '') ? 'lg' : 'md';
 
   useEffect(() => {
     setAllowUpdate(showEdit ?? false);
@@ -77,9 +85,13 @@ const UpdateModalClient = ({
 
     API.put(endpoint, uncontrolledPayload ?? payload)
       .then((res) => {
+        const responseMessage = res.message;
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message:
+            typeof responseMessage === 'string' && responseMessage.length > 0
+              ? responseMessage
+              : 'Record updated successfully.',
           color: 'green',
         });
 
@@ -120,7 +132,7 @@ const UpdateModalClient = ({
       onClose={close}
       title={title ?? 'Update'}
       fullScreen={fullscreen}
-      size={'md'}
+      size={modalSize}
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >

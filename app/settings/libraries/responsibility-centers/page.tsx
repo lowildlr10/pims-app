@@ -6,6 +6,7 @@ import React from 'react';
 import { getCompany } from '@/actions/company';
 import ResposibilityCentersClient from '@/components/Libraries/ResposibilityCenters';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconBuildingFactory } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-responsibility-center';
 
@@ -34,7 +35,11 @@ const BidsAwardsCommitteePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Responsibility Centers'}>
+      <MainContainerClient
+        title='Responsibility Centers'
+        secondaryTtile='Manage organizational responsibility centers'
+        icon={<IconBuildingFactory size={24} stroke={1.5} />}
+      >
         <ResposibilityCentersClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

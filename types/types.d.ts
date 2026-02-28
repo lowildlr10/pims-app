@@ -114,6 +114,7 @@ type UserType = {
   section?: {
     id?: string;
     section_name?: string;
+    department_name?: string;
   };
   position?: {
     id?: string;
@@ -444,6 +445,7 @@ type PurchaseRequestType = {
   total_estimated_cost?: number;
   total_estimated_cost_formatted?: string;
   section_name?: string;
+  department_name?: string;
   funding_source_title?: string;
   funding_source_location?: string;
   requestor_fullname?: string;
@@ -623,6 +625,7 @@ type PurchaseOrderItemType = {
   pr_item?: PurchaseRequestItemType;
   description?: string;
   brand_model?: string;
+  unit?: string;
   unit_cost?: number;
   total_cost?: number;
 };
@@ -678,6 +681,8 @@ type InspectionAcceptanceReportItemType = {
   po_item?: PurchaseOrderItemType;
   accepted?: boolean;
   item_classification_id?: string;
+  unit?: string;
+  unit_cost?: number;
 };
 
 type InspectionAcceptanceReportType = {

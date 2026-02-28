@@ -17,10 +17,6 @@ type SignatureFormProps = {
   user: UserType;
 };
 
-type SignatureFormProps = {
-  user: UserType;
-};
-
 type DepartmentSectionProps = {
   permissions: string[];
 };
@@ -40,6 +36,11 @@ type LibraryProps = {
 type MainProps = {
   user: UserType;
   permissions: string[];
+  search?: string;
+  setSearch?: (search: string) => void;
+  status?: string;
+  setStatus?: (status: string) => void;
+  showTableActions?: boolean;
 };
 
 type GeneralResponse = [
@@ -53,8 +54,9 @@ type GeneralResponse = [
   status?: string,
 ];
 
-type DetailResponse = {
-  data: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DetailResponse<T = any> = {
+  data: T;
   from: number;
   to: number;
   total: number;
@@ -63,8 +65,7 @@ type DetailResponse = {
   current_page: number;
 };
 
-type DepartmentResponse = {
-  data: DepartmentType[];
+type PaginationMeta = {
   from: number;
   to: number;
   total: number;
@@ -73,152 +74,47 @@ type DepartmentResponse = {
   current_page: number;
 };
 
-type RolesResponse = {
-  data: RoleType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
+type PaginatedResponse<T> = {
+  data: T[];
+  links?: {
+    first: string;
+    last: string;
+    prev: string | null;
+    next: string | null;
+  };
+  meta: PaginationMeta;
 };
 
-type UsersResponse = {
-  data: UserType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type DepartmentResponse = PaginatedResponse<DepartmentType>;
 
-type SystemLogResponse = {
-  data: SystemLogType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type RolesResponse = PaginatedResponse<RoleType>;
 
-type BidsAwardsCommitteeResponse = {
-  data: BidsAwardsCommitteeType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type UsersResponse = PaginatedResponse<UserType>;
 
-type FundingSourcesResponse = {
-  data: FundingSourceType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type SystemLogResponse = PaginatedResponse<SystemLogType>;
 
-type ItemClassificationsResponse = {
-  data: ItemClassificationType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type BidsAwardsCommitteeResponse = PaginatedResponse<BidsAwardsCommitteeType>;
 
-type FunctionProgramProjectsResponse = {
-  data: FunctionProgramProjectType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type FundingSourcesResponse = PaginatedResponse<FundingSourceType>;
 
-type ProcurementModesResponse = {
-  data: ProcurementModeType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type ItemClassificationsResponse = PaginatedResponse<ItemClassificationType>;
 
-type PaperSizesResponse = {
-  data: PaperSizeType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type FunctionProgramProjectsResponse =
+  PaginatedResponse<FunctionProgramProjectType>;
 
-type ResposibilityCenterResponse = {
-  data: ResponsibilityCenterType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type ProcurementModesResponse = PaginatedResponse<ProcurementModeType>;
 
-type SignatoriesResponse = {
-  data: SignatoryType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type PaperSizesResponse = PaginatedResponse<PaperSizeType>;
 
-type SuppliersResponse = {
-  data: SupplierType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type ResposibilityCenterResponse = PaginatedResponse<ResponsibilityCenterType>;
 
-type AccountClassificationsResponse = {
-  data: AccountClassificationType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type SignatoriesResponse = PaginatedResponse<SignatoryType>;
 
-type AccountsResponse = {
-  data: AccountType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type SuppliersResponse = PaginatedResponse<SupplierType>;
 
-type UnitIssuesResponse = {
-  data: UnitIssueType[];
-  from: number;
-  to: number;
-  total: number;
-  per_page: number;
-  last_page: number;
-  current_page: number;
-};
+type AccountClassificationsResponse =
+  PaginatedResponse<AccountClassificationType>;
+
+type AccountsResponse = PaginatedResponse<AccountType>;
+
+type UnitIssuesResponse = PaginatedResponse<UnitIssueType>;

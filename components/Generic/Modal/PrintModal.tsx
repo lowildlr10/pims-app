@@ -37,10 +37,49 @@ const PrintModalClient = ({
   const [filename, setFilename] = useState<string>('');
   const [base64File, setBase64File] = useState<string>();
   const [paperId, setPaperId] = useState('');
+  const [paperSizes, setPaperSizes] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [pageOrientation, setPageOrientation] = useState<string>(
     defaultOrientation ?? 'P'
   );
   const [showSignatures, setShowSignatures] = useState<boolean>(false);
+
+  useEffect(() => {
+    API.get('/libraries/paper-sizes', {
+      paginated: false,
+      show_all: true,
+      sort_direction: 'asc',
+    })
+      .then((res) => {
+        const sizes = res?.data ?? [];
+        const mapped = sizes.map((item: PaperSizeType) => ({
+          value: item.id ?? '',
+          label: item.paper_type ?? '',
+        }));
+        setPaperSizes(mapped);
+
+        if (opened && !paperId && defaultPaper) {
+          const defaultSize = mapped.find(
+            (s: { label: string }) =>
+              s.label.toLowerCase() === defaultPaper.toLowerCase()
+          );
+          if (defaultSize) {
+            setPaperId(defaultSize.value);
+          }
+        }
+      })
+      .catch((err) => {
+        const errors = getErrors(err);
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
+            color: 'red',
+          });
+        });
+      });
+  }, [opened, defaultPaper]);
 
   useEffect(() => {
     if (
@@ -62,42 +101,40 @@ const PrintModalClient = ({
   }, [opened, defaultOrientation]);
 
   const handleFetchData = () => {
-    if (paperId !== defaultPaper) {
-      setLoading(true);
+    setLoading(true);
 
-      setFilename('');
-      setBase64File('');
+    setFilename('');
+    setBase64File('');
 
-      API.post(endpoint, {
-        paper_id: paperId,
-        page_orientation: pageOrientation,
-        show_signatures: showSignatures,
+    API.post(endpoint, {
+      paper_id: paperId,
+      page_orientation: pageOrientation,
+      show_signatures: showSignatures,
+    })
+      .then((res) => {
+        if (res?.data) {
+          setFilename(res?.data?.filename);
+          setBase64File(`data:application/pdf;base64,${res?.data?.blob}`);
+        } else {
+          setFilename('');
+          setBase64File('');
+        }
+
+        setLoading(false);
       })
-        .then((res) => {
-          if (res?.data) {
-            setFilename(res?.data?.filename);
-            setBase64File(`data:application/pdf;base64,${res?.data?.blob}`);
-          } else {
-            setFilename('');
-            setBase64File('');
-          }
+      .catch((err) => {
+        const errors = getErrors(err);
 
-          setLoading(false);
-        })
-        .catch((err) => {
-          const errors = getErrors(err);
-
-          errors.forEach((error) => {
-            notify({
-              title: 'Failed',
-              message: error,
-              color: 'red',
-            });
+        errors.forEach((error) => {
+          notify({
+            title: 'Failed',
+            message: error,
+            color: 'red',
           });
-
-          setLoading(false);
         });
-    }
+
+        setLoading(false);
+      });
   };
 
   const handleDownload = () => {
@@ -175,13 +212,13 @@ const PrintModalClient = ({
                   label={'Document Size'}
                   placeholder={'Select a document size'}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
-                  endpoint={'/libraries/paper-sizes'}
+                  defaultData={paperSizes}
                   column={'paper_type'}
-                  value={Helper.empty(paperId) ? defaultPaper : paperId}
+                  valueColumn={'id'}
+                  value={paperId || undefined}
                   onChange={(value) => setPaperId(value ?? '')}
-                  hasPresetValue
+                  disableFetch
                   required
-                  preLoading
                 />
                 <DynamicSelect
                   label={'Page Orientation'}

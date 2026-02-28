@@ -5,6 +5,7 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import UserProfileClient from '@/components/UserProfile';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconUser } from '@tabler/icons-react';
 
 export const metadata = {
   title: 'PIMS - User Profile',
@@ -25,7 +26,11 @@ const ProfilePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'User Profile'}>
+      <MainContainerClient
+        title='User Profile'
+        secondaryTtile='Manage your account settings and preferences'
+        icon={<IconUser size={24} stroke={1.5} />}
+      >
         <UserProfileClient user={user} />
       </MainContainerClient>
     </LayoutSidebarClient>

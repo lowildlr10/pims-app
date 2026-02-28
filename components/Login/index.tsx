@@ -57,21 +57,23 @@ const LoginClient = ({ company }: LoginProps) => {
   }, [company]);
 
   return (
-    <Box p={0} m={0}>
+    <Box p={0} m={0} style={{ minHeight: '100vh' }}>
       <Flex
         direction={{ base: 'column', lg: 'row' }}
-        mih={{ base: 'auto', lg: '100vh' }}
+        mih={{ base: '100dvh', lg: '100vh' }}
         w={'100%'}
       >
         <Stack
           bg={'var(--mantine-color-primary-9)'}
           c={'var(--mantine-color-white)'}
-          opacity={background ? 0.9 : 1}
-          w={{ base: '100vw', lg: '40%' }}
-          gap={'sm'}
+          opacity={background ? 0.92 : 1}
+          w={{ base: '100%', lg: '40%' }}
+          h={{ base: 'auto', lg: '100vh' }}
+          py={{ base: 'xl', lg: 0 }}
+          px={{ base: 'md', sm: 'lg' }}
+          gap={'md'}
           justify={'center'}
           align={'center'}
-          h={{ base: '100vh', lg: undefined }}
         >
           <LoginLogoClient company={company} />
 
@@ -79,51 +81,60 @@ const LoginClient = ({ company }: LoginProps) => {
             size={'sm'}
             bg={'var(--mantine-color-white)'}
             c={'var(--mantine-color-white)'}
-            w={{ base: 220, sm: 300, lg: '80%' }}
+            w={220}
+            style={{ opacity: 0.6 }}
           />
 
-          <Stack align={'center'} justify={'center'} px={'xl'}>
+          <Stack align={'center'} justify={'center'} px={'xs'}>
             <Title
-              fw={'bolder'}
+              fw={800}
               fz={{ base: 'h4', sm: 'h3', md: 'h2' }}
               ta={'center'}
+              lh={1.3}
             >
               PROCUREMENT & INVENTORY
               <br />
               MANAGEMENT SYSTEM
             </Title>
-            <Text fz={{ base: 'sm', lg: 'md' }}>v1.0.0</Text>
+            <Text fz={{ base: 'xs', sm: 'sm', md: 'md' }} opacity={0.9}>
+              v1.0.0
+            </Text>
           </Stack>
 
           <Button
             display={{ lg: 'none' }}
+            size='md'
             color={'var(--mantine-color-primary-7)'}
+            variant='filled'
             rightSection={<IconArrowRight size={18} stroke={1.5} />}
             onClick={() =>
               scrollIntoView({
                 alignment: 'center',
               })
             }
+            mt='sm'
           >
             Login Now
           </Button>
         </Stack>
         <Stack
           bg={'var(--mantine-color-white)'}
-          w={{ base: '100vw', lg: '60%' }}
+          w={{ base: '100%', lg: '60%' }}
+          h={{ base: 'auto', lg: '100vh' }}
+          py={{ base: 'xl', lg: 0 }}
+          px={{ base: 'md', sm: 'lg' }}
           justify={'center'}
           align={'center'}
-          h={{ base: '100vh', lg: undefined }}
           ref={targetRef}
         >
           <LoginFormClient />
           <Box
             pos={{ base: 'relative', lg: 'absolute' }}
-            bottom={0}
-            mb={{ base: 0, lg: 10 }}
+            bottom={{ base: 0, lg: 10 }}
+            mt={{ base: 'xl', lg: 0 }}
           >
-            <Text c='dimmed' size={'sm'} mt='10%'>
-              @ {dayjs().year()} ALL RIGHTS RESERVED
+            <Text c='dimmed' size='sm'>
+              @{dayjs().year()} ALL RIGHTS RESERVED
             </Text>
           </Box>
         </Stack>

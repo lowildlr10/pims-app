@@ -39,41 +39,41 @@ import { Select } from '@mantine/core';
 import { List } from '@mantine/core';
 import DynamicMultiselect from '../Generic/DynamicMultiselect';
 
-const itemHeaders: PurchaseRequestItemHeader[] = [
+const getItemHeaders = (isMobile: boolean): PurchaseRequestItemHeader[] => [
   {
     id: 'stock_no',
     label: 'Item No.',
-    width: '11%',
+    width: isMobile ? '15%' : '11%',
   },
   {
     id: 'quantity',
     label: 'QTY',
-    width: '12%',
+    width: isMobile ? '12%' : '12%',
   },
   {
     id: 'description',
-    label: 'Item & Description',
-    width: '28%',
+    label: 'Item & Desc.',
+    width: isMobile ? '30%' : '28%',
   },
   {
     id: 'brand_model',
     label: 'Brand/Model',
-    width: '16%',
+    width: isMobile ? '20%' : '16%',
   },
   {
     id: 'unit_cost',
     label: 'Unit Cost',
-    width: '16%',
+    width: isMobile ? '20%' : '16%',
   },
   {
     id: 'total_cost',
     label: 'Total Cost',
-    width: '16%',
+    width: isMobile ? '20%' : '16%',
   },
   {
     id: 'include_checkbox',
     label: '',
-    width: '2%',
+    width: isMobile ? '3%' : '2%',
   },
 ];
 
@@ -81,6 +81,7 @@ const FormClient = forwardRef<
   HTMLFormElement,
   ModalRequestQuotationContentProps
 >(({ data, isCreate, readOnly, handleCreateUpdate }, ref) => {
+  const isMobile = useMediaQuery('(max-width: 600px)');
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
@@ -131,7 +132,7 @@ const FormClient = forwardRef<
 
     API.get(`/purchase-requests/${currentData?.purchase_request_id}`)
       .then((res) => {
-        const resData: PurchaseRequestType = res?.data?.data;
+        const resData: PurchaseRequestType = res?.data;
 
         setCurrentData({
           ...currentData,
@@ -179,7 +180,7 @@ const FormClient = forwardRef<
   useEffect(() => {
     API.get('/companies')
       .then((res) => {
-        const company: CompanyType = res?.data?.company;
+        const company: CompanyType = res?.data;
 
         setMunicipality(company?.municipality?.toUpperCase() ?? '');
       })
@@ -218,7 +219,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             <NumberInput
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={`Item No ${
                 item?.stock_no?.toString() !== ''
                   ? `: ${item?.stock_no?.toString()}`
@@ -238,7 +239,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             <NumberInput
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={`Quantity ${
                 item?.quantity?.toString() !== ''
                   ? `: ${item?.quantity?.toString()}`
@@ -258,7 +259,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             <Textarea
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={'Description'}
               defaultValue={item?.description}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -274,13 +275,7 @@ const FormClient = forwardRef<
             <Textarea
               key={form.key(`items.${index}.brand_model`)}
               {...form.getInputProps(`items.${index}.brand_model`)}
-              variant={
-                (isCreate || !item.included) && !readOnly
-                  ? 'filled'
-                  : !readOnly
-                    ? 'default'
-                    : 'unstyled'
-              }
+              variant={'unstyled'}
               placeholder={
                 isCreate ? 'To be quoted' : readOnly ? '' : 'Brand/Model'
               }
@@ -289,6 +284,12 @@ const FormClient = forwardRef<
               autosize
               // required={!readOnly && !isCreate && item.included}
               readOnly={readOnly || isCreate || !item.included}
+              sx={{
+                borderBottom:
+                  !readOnly && !isCreate && item.included
+                    ? '1px solid var(--mantine-color-gray-5)'
+                    : undefined,
+              }}
             />
           </Table.Td>
         );
@@ -299,13 +300,7 @@ const FormClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.unit_cost`)}
               {...form.getInputProps(`items.${index}.unit_cost`)}
-              variant={
-                (isCreate || !item.included) && !readOnly
-                  ? 'filled'
-                  : !readOnly
-                    ? 'default'
-                    : 'unstyled'
-              }
+              variant={'unstyled'}
               placeholder={
                 isCreate ? 'To be quoted' : readOnly ? '' : 'Unit Cost'
               }
@@ -316,6 +311,12 @@ const FormClient = forwardRef<
               fixedDecimalScale
               thousandSeparator={','}
               readOnly={readOnly || isCreate || !item.included}
+              sx={{
+                borderBottom:
+                  !readOnly && !isCreate && item.included
+                    ? '1px solid var(--mantine-color-gray-5)'
+                    : undefined,
+              }}
             />
           </Table.Td>
         );
@@ -324,7 +325,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             <NumberInput
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={
                 isCreate ? 'To be quoted' : readOnly ? '' : 'Total Cost'
               }
@@ -366,12 +367,20 @@ const FormClient = forwardRef<
         }
       })}
     >
-      <Stack p={'md'} justify={'center'}>
+      <Stack
+        p={{ base: 'xs', sm: 'md' }}
+        justify={'center'}
+        style={{ background: 'var(--mantine-color-gray-1)' }}
+      >
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Flex
             w={'100%'}
@@ -382,7 +391,7 @@ const FormClient = forwardRef<
               <NumberInput
                 key={form.key('copies')}
                 {...form.getInputProps('copies')}
-                variant={readOnly ? 'unstyled' : 'default'}
+                variant={'unstyled'}
                 label={'Copies'}
                 placeholder={'Copies'}
                 defaultValue={1}
@@ -393,13 +402,14 @@ const FormClient = forwardRef<
                 clampBehavior={'strict'}
                 allowDecimal={false}
                 required
+                sx={{ borderBottom: '1px solid var(--mantine-color-gray-5)' }}
               />
             )}
 
             <Select
               key={form.key('signed_type')}
               {...form.getInputProps('signed_type')}
-              variant={readOnly ? 'default' : 'default'}
+              variant={'unstyled'}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               label={'Signed Type'}
               data={[
@@ -414,15 +424,20 @@ const FormClient = forwardRef<
               searchable
               required={!readOnly}
               readOnly={readOnly}
+              sx={{ borderBottom: '1px solid var(--mantine-color-gray-5)' }}
             />
           </Flex>
         </Card>
 
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Stack align={'center'} w={'100%'} p={0} justify={'center'}>
             <Text fz={lgScreenAndBelow ? 'h5' : 'h4'} ta={'center'}>
@@ -646,13 +661,9 @@ const FormClient = forwardRef<
                   </Box>
                   {!readOnly ? (
                     <DynamicSelect
-                      key={form.key('supplier_id')}
+                      key={`supplier-${currentData?.id ?? 'new'}`}
                       {...form.getInputProps('supplier_id')}
-                      variant={
-                        readOnly || currentData?.status === 'completed'
-                          ? 'filled'
-                          : 'unstyled'
-                      }
+                      variant={'unstyled'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
@@ -709,7 +720,7 @@ const FormClient = forwardRef<
                     <TextInput
                       variant={'unstyled'}
                       placeholder={'None'}
-                      value={currentData?.supplier?.address}
+                      value={currentData?.supplier?.address ?? ''}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -786,7 +797,7 @@ const FormClient = forwardRef<
 
                 {!readOnly ? (
                   <DynamicSelect
-                    key={form.key('sig_approval_id')}
+                    key={`sig-approval-${currentData?.id ?? 'new'}`}
                     {...form.getInputProps('sig_approval_id')}
                     variant={'unstyled'}
                     label={
@@ -846,146 +857,152 @@ const FormClient = forwardRef<
             </Flex>
 
             <Stack w={'100%'} mt={'lg'} gap={0}>
-              <Table
-                withColumnBorders
-                withRowBorders
-                verticalSpacing={'sm'}
-                withTableBorder
-                m={0}
-                borderColor={'var(--mantine-color-gray-8)'}
-              >
-                <Table.Thead>
-                  <Table.Tr>
-                    {itemHeaders.map((header) => {
-                      if (readOnly && header.id === 'include_checkbox') return;
+              <Table.ScrollContainer minWidth={isMobile ? 600 : undefined}>
+                <Table
+                  withColumnBorders
+                  withRowBorders
+                  verticalSpacing={'sm'}
+                  withTableBorder
+                  m={0}
+                  borderColor={'var(--mantine-color-gray-8)'}
+                >
+                  <Table.Thead>
+                    <Table.Tr>
+                      {getItemHeaders(lgScreenAndBelow).map((header) => {
+                        if (readOnly && header.id === 'include_checkbox')
+                          return;
 
-                      if (!readOnly && header.id === 'total_cost') return;
+                        if (!readOnly && header.id === 'total_cost') return;
 
-                      if (signedType === 'bac' && header.id === 'brand_model')
-                        return;
-
-                      return (
-                        <Table.Th
-                          key={header.id}
-                          w={header?.width ?? undefined}
-                          fz={lgScreenAndBelow ? 'sm' : 'md'}
-                        >
-                          <Group gap={1} align={'flex-start'}>
-                            {header.label}{' '}
-                            {header?.required && !readOnly && !isCreate && (
-                              <Stack>
-                                <IconAsterisk
-                                  size={7}
-                                  color={'var(--mantine-color-red-8)'}
-                                  stroke={2}
-                                />
-                              </Stack>
-                            )}
-                            {header.id === 'include_checkbox' && (
-                              <Tooltip label='Toggle All' refProp='rootRef'>
-                                <Switch
-                                  w={'100%'}
-                                  radius={lgScreenAndBelow ? 'xs' : 'sm'}
-                                  onLabel={'Yes'}
-                                  offLabel={'No'}
-                                  sx={{
-                                    justifyItems: 'center',
-                                  }}
-                                  color={'var(--mantine-color-primary-9)'}
-                                  onChange={(e) =>
-                                    handleToggleIncludedSlider(
-                                      e.currentTarget.checked
-                                    )
-                                  }
-                                  defaultChecked
-                                />
-                              </Tooltip>
-                            )}
-                          </Group>
-                        </Table.Th>
-                      );
-                    })}
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {form.getValues().items.map((item, index) => (
-                    <Table.Tr
-                      key={`item-${item.key}`}
-                      sx={{ verticalAlign: 'top' }}
-                    >
-                      {itemHeaders.map((header) => {
-                        if (
-                          header.id === 'include_checkbox' ||
-                          (!readOnly && header.id === 'total_cost') ||
-                          (signedType === 'bac' && header.id === 'brand_model')
-                        ) {
-                          return null;
-                        }
+                        if (signedType === 'bac' && header.id === 'brand_model')
+                          return;
 
                         return (
-                          <React.Fragment
-                            key={`field-${item.key}-${header.id}`}
+                          <Table.Th
+                            key={header.id}
+                            w={header?.width ?? undefined}
+                            fz={lgScreenAndBelow ? 'sm' : 'md'}
                           >
-                            {renderDynamicTdContent(header.id, item, index)}
-                          </React.Fragment>
+                            <Group gap={1} align={'flex-start'}>
+                              {header.label}{' '}
+                              {header?.required && !readOnly && !isCreate && (
+                                <Stack>
+                                  <IconAsterisk
+                                    size={7}
+                                    color={'var(--mantine-color-red-8)'}
+                                    stroke={2}
+                                  />
+                                </Stack>
+                              )}
+                              {header.id === 'include_checkbox' && (
+                                <Tooltip label='Toggle All' refProp='rootRef'>
+                                  <Switch
+                                    w={'100%'}
+                                    radius={lgScreenAndBelow ? 'xs' : 'sm'}
+                                    onLabel={'Yes'}
+                                    offLabel={'No'}
+                                    sx={{
+                                      justifyItems: 'center',
+                                    }}
+                                    color={'var(--mantine-color-primary-9)'}
+                                    onChange={(e) =>
+                                      handleToggleIncludedSlider(
+                                        e.currentTarget.checked
+                                      )
+                                    }
+                                    defaultChecked
+                                  />
+                                </Tooltip>
+                              )}
+                            </Group>
+                          </Table.Th>
                         );
                       })}
-
-                      {!readOnly && (
-                        <Table.Td valign={'top'} ta={'center'} pt={'sm'}>
-                          <Tooltip label='Included?' refProp='rootRef'>
-                            <Switch
-                              key={form.key(`items.${index}.included`)}
-                              {...form.getInputProps(`items.${index}.included`)}
-                              w={'100%'}
-                              radius={lgScreenAndBelow ? 'xs' : 'sm'}
-                              onLabel={'Yes'}
-                              offLabel={'No'}
-                              sx={{
-                                justifyItems: 'center',
-                              }}
-                              color={'var(--mantine-color-primary-9)'}
-                              defaultChecked={item.included}
-                            />
-                          </Tooltip>
-
-                          <input
-                            key={form.key(`items.${index}.quantity`)}
-                            {...form.getInputProps(`items.${index}.quantity`)}
-                            type={'hidden'}
-                            value={item.quantity}
-                          />
-                          <input
-                            key={form.key(`items.${index}.pr_item_id`)}
-                            {...form.getInputProps(`items.${index}.pr_item_id`)}
-                            type={'hidden'}
-                            value={item.pr_item_id}
-                          />
-                        </Table.Td>
-                      )}
                     </Table.Tr>
-                  ))}
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {form.getValues().items.map((item, index) => (
+                      <Table.Tr
+                        key={`item-${item.key}`}
+                        sx={{ verticalAlign: 'top' }}
+                      >
+                        {getItemHeaders(lgScreenAndBelow).map((header) => {
+                          if (
+                            header.id === 'include_checkbox' ||
+                            (!readOnly && header.id === 'total_cost') ||
+                            (signedType === 'bac' &&
+                              header.id === 'brand_model')
+                          ) {
+                            return null;
+                          }
 
-                  <Table.Tr>
-                    <Table.Td colSpan={6}>
-                      <Textarea
-                        variant={readOnly ? 'unstyled' : 'filled'}
-                        label={'Purpose'}
-                        placeholder={'Purpose'}
-                        value={
-                          currentData?.purchase_request?.purpose ??
-                          currentData?.purpose ??
-                          '-'
-                        }
-                        size={lgScreenAndBelow ? 'sm' : 'md'}
-                        autosize
-                        autoCapitalize={'sentences'}
-                        readOnly
-                      />
-                    </Table.Td>
-                  </Table.Tr>
-                </Table.Tbody>
-              </Table>
+                          return (
+                            <React.Fragment
+                              key={`field-${item.key}-${header.id}`}
+                            >
+                              {renderDynamicTdContent(header.id, item, index)}
+                            </React.Fragment>
+                          );
+                        })}
+
+                        {!readOnly && (
+                          <Table.Td valign={'top'} ta={'center'} pt={'sm'}>
+                            <Tooltip label='Included?' refProp='rootRef'>
+                              <Switch
+                                key={form.key(`items.${index}.included`)}
+                                {...form.getInputProps(
+                                  `items.${index}.included`
+                                )}
+                                w={'100%'}
+                                radius={lgScreenAndBelow ? 'xs' : 'sm'}
+                                onLabel={'Yes'}
+                                offLabel={'No'}
+                                sx={{
+                                  justifyItems: 'center',
+                                }}
+                                color={'var(--mantine-color-primary-9)'}
+                                defaultChecked={item.included}
+                              />
+                            </Tooltip>
+
+                            <input
+                              key={form.key(`items.${index}.quantity`)}
+                              {...form.getInputProps(`items.${index}.quantity`)}
+                              type={'hidden'}
+                            />
+                            <input
+                              key={form.key(`items.${index}.pr_item_id`)}
+                              {...form.getInputProps(
+                                `items.${index}.pr_item_id`
+                              )}
+                              type={'hidden'}
+                            />
+                          </Table.Td>
+                        )}
+                      </Table.Tr>
+                    ))}
+
+                    <Table.Tr>
+                      <Table.Td colSpan={6}>
+                        <Textarea
+                          variant={'unstyled'}
+                          label={'Purpose'}
+                          placeholder={'Purpose'}
+                          value={
+                            currentData?.purchase_request?.purpose ??
+                            currentData?.purpose ??
+                            '-'
+                          }
+                          size={lgScreenAndBelow ? 'sm' : 'md'}
+                          autosize
+                          autoCapitalize={'sentences'}
+                          readOnly
+                        />
+                      </Table.Td>
+                    </Table.Tr>
+                  </Table.Tbody>
+                </Table>
+              </Table.ScrollContainer>
             </Stack>
 
             <Stack p={'md'} gap={0}>

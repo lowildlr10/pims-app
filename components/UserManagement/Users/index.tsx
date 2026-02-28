@@ -48,13 +48,13 @@ const defaultTableData: TableDataType = {
     },
     {
       id: 'department_section',
-      label: 'Department - Section',
+      label: 'Department',
       width: '20%',
       sortable: true,
     },
     {
       id: 'position_designation',
-      label: 'Position - Designation',
+      label: 'Position',
       width: '20%',
       sortable: true,
     },
@@ -219,10 +219,10 @@ const UsersClient = ({ permissions }: UsersProps) => {
       perPage={perPage}
       loading={isLoading}
       page={page}
-      lastPage={data?.last_page ?? 0}
-      from={data?.from ?? 0}
-      to={data?.to ?? 0}
-      total={data?.total ?? 0}
+      lastPage={data?.meta?.last_page ?? 0}
+      from={data?.meta?.from ?? 0}
+      to={data?.meta?.to ?? 0}
+      total={data?.meta?.total ?? 0}
       refreshData={mutate}
       activeFormData={activeFormData}
       setActiveData={setActiveData}

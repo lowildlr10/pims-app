@@ -38,13 +38,23 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
   const [loading, setLoading] = useState(false);
   const [initialPreloading, setInitialPreloading] = useState(preLoading);
   const effectiveValue = isControlled ? value : internalValue;
+  const prevValueRef = useRef<string | null>(effectiveValue);
+  const isFirstRender = useRef(true);
+
+  // Use refs for values that change frequently but shouldn't recreate fetchData
+  const endpointParamsRef = useRef(endpointParams);
+  endpointParamsRef.current = endpointParams;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const valueRef = useRef(value);
+  valueRef.current = value;
 
   const fetchData = useCallback(async () => {
     if (disableFetch || !endpoint) return;
     setLoading(true);
     try {
       const res = await API.get(endpoint, {
-        ...endpointParams,
+        ...endpointParamsRef.current,
         sort_direction: 'asc',
       });
       const items = res?.data ?? [];
@@ -55,10 +65,25 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
           label: item[column],
         }));
 
-        setData(mappedData);
+        const mergedData =
+          defaultData.length > 0
+            ? [
+                ...defaultData,
+                ...mappedData.filter(
+                  (md: DynamicSelectComboboxDataType[number]) =>
+                    !defaultData.some(
+                      (dd: DynamicSelectComboboxDataType[number]) =>
+                        dd.value === md.value
+                    )
+                ),
+              ]
+            : mappedData;
+        setData(mergedData);
 
         if (hasPresetValue && !presetValueApplied) {
-          const valueToCompare = !isControlled ? defaultValue : value;
+          const valueToCompare = !isControlled
+            ? defaultValue
+            : valueRef.current;
           const presetItem = valueToCompare
             ? items.find(
                 (item: any) =>
@@ -72,8 +97,8 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
 
           if (!isControlled) {
             setInternalValue(presetVal);
-          } else {
-            onChange?.(presetVal);
+          } else if (isFirstRender.current) {
+            onChangeRef.current?.(presetVal);
           }
 
           setPresetValueApplied(true);
@@ -92,13 +117,12 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
   }, [
     disableFetch,
     endpoint,
-    endpointParams,
     valueColumn,
     column,
     defaultValue,
     hasPresetValue,
     isControlled,
-    internalValue,
+    presetValueApplied,
   ]);
 
   useEffect(() => {
@@ -109,10 +133,41 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
   }, [fetchData, preLoading, initialPreloading]);
 
   useEffect(() => {
-    if (defaultData.length) {
-      setData(defaultData);
+    if (defaultData.length > 0) {
+      setData((prevData) => {
+        const existingValues = new Set(prevData.map((item) => item.value));
+        const merged = prevData.slice();
+        defaultData.forEach((item: DynamicSelectComboboxDataType[number]) => {
+          if (!existingValues.has(item.value)) {
+            merged.push(item);
+          }
+        });
+        return merged;
+      });
     }
   }, [defaultData]);
+
+  useEffect(() => {
+    if (!effectiveValue) return;
+    if (
+      data.some(
+        (item: DynamicSelectComboboxDataType[number]) =>
+          item.value === effectiveValue
+      )
+    )
+      return;
+    if (
+      defaultData.some(
+        (item: DynamicSelectComboboxDataType[number]) =>
+          item.value === effectiveValue
+      )
+    )
+      return;
+    setData((prev) => [
+      ...prev,
+      { value: effectiveValue, label: effectiveValue },
+    ]);
+  }, [effectiveValue]);
 
   useEffect(() => {
     if (!isControlled) {
@@ -125,18 +180,24 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
       setInternalValue(val);
     }
 
-    onChange?.(val);
+    if (val !== prevValueRef.current) {
+      prevValueRef.current = val;
+      onChangeRef.current?.(val);
+    }
   };
 
   useEffect(() => {
-    if (!isControlled) return;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
-    onChange?.(effectiveValue);
+    if (!isControlled) return;
 
     if (effectiveValue && !isLoading) {
       fetchData();
     }
-  }, [effectiveValue, isControlled, isLoading]);
+  }, [effectiveValue, isControlled, isLoading, fetchData]);
 
   return (
     <Select
@@ -145,7 +206,10 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
       label={label}
       placeholder={placeholder ?? label}
       limit={limit}
-      data={data}
+      data={data.filter(
+        (item, index, self) =>
+          self.findIndex((t) => t.value === item.value) === index
+      )}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       value={effectiveValue}
       defaultValue={!isControlled ? defaultValue : undefined}
@@ -158,7 +222,6 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
       }
       variant={variant}
       sx={sx}
-      // onClick={!readOnly && enableOnClickRefresh ? fetchData : undefined}
       onFocus={!readOnly && enableOnClickRefresh ? fetchData : undefined}
       searchable
       clearable

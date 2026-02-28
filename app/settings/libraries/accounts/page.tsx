@@ -6,6 +6,7 @@ import AccountsClient from '@/components/Libraries/Accounts';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconCoin } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-account';
 
@@ -34,7 +35,11 @@ const AccountPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Accounts'}>
+      <MainContainerClient
+        title='Accounts'
+        secondaryTtile='Maintain chart of accounts'
+        icon={<IconCoin size={24} stroke={1.5} />}
+      >
         <AccountsClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

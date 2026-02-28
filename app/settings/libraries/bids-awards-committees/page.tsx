@@ -6,6 +6,7 @@ import React from 'react';
 import { getCompany } from '@/actions/company';
 import BidsAwardsCommitteesClient from '@/components/Libraries/BidsAwardsCommittees';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconUsersGroup } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-bid-committee';
 
@@ -34,7 +35,11 @@ const BidsAwardsCommitteePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Bids and Awards Committees'}>
+      <MainContainerClient
+        title='Bids and Awards Committees'
+        secondaryTtile='Manage BAC members and committees'
+        icon={<IconUsersGroup size={24} stroke={1.5} />}
+      >
         <BidsAwardsCommitteesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

@@ -5,6 +5,7 @@ import { LayoutSidebarClient } from '@/components/Generic/LayoutSidebar';
 import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconDashboard } from '@tabler/icons-react';
 
 export const metadata = {
   title: 'Procurement System - Dashboard',
@@ -26,8 +27,9 @@ const DashboardPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        secondaryTtile={'Welcome Back,'}
-        title={user.fullname ?? ''}
+        title='Dashboard'
+        secondaryTtile={`Welcome back, ${user.fullname ?? 'User'}! Here's an overview of your procurement activities`}
+        icon={<IconDashboard size={24} stroke={1.5} />}
       >
         <DashboardClient user={user} />
       </MainContainerClient>

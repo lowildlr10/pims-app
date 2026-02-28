@@ -4,8 +4,9 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import RequestQuotationsClient from '@/components/RequestQuotations';
+import { RfqPageActions, RfqPageContent } from './client';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconFileInvoice } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'rfq';
 
@@ -36,10 +37,13 @@ const RequestQuotationPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Request for Quotations'}
+        title='Request for Quotations'
+        secondaryTtile='Manage and track all request for quotations'
+        icon={<IconFileInvoice size={24} stroke={1.5} />}
         permissions={permissions}
+        actions={<RfqPageActions user={user} permissions={permissions} />}
       >
-        <RequestQuotationsClient user={user} permissions={permissions} />
+        <RfqPageContent user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

@@ -85,12 +85,16 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
       return {
         po_date: currentData?.po_date ?? dayjs().format('YYYY-MM-DD'),
         place_delivery: currentData?.place_delivery?.location_name ?? '',
+        place_delivery_id: currentData?.place_delivery_id ?? '',
         delivery_date: currentData?.delivery_date ?? '',
         delivery_term: currentData?.delivery_term?.term_name ?? '',
+        delivery_term_id: currentData?.delivery_term_id ?? '',
         payment_term: currentData?.payment_term?.term_name ?? '',
+        payment_term_id: currentData?.payment_term_id ?? '',
         total_amount_words:
-          currentData?.total_amount_words ??
-          handleConvertAmountToWords(currentData?.total_amount ?? 0),
+          (currentData?.total_amount_words ??
+            handleConvertAmountToWords(currentData?.total_amount ?? 0)) ||
+          '',
         sig_approval_id: currentData?.sig_approval_id ?? '',
         items:
           currentData?.items &&
@@ -132,7 +136,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
     useEffect(() => {
       API.get('/companies')
         .then((res) => {
-          const company: CompanyType = res?.data?.company;
+          const company: CompanyType = res?.data;
 
           setProvince(company?.province ?? '');
           setMunicipality(company?.municipality?.toUpperCase() ?? '');
@@ -161,7 +165,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
             <Table.Td>
               <NumberInput
                 size={lgScreenAndBelow ? 'sm' : 'md'}
-                variant={readOnly ? 'unstyled' : 'filled'}
+                variant={'unstyled'}
                 value={item?.stock_no}
                 readOnly
               />
@@ -172,7 +176,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
           return (
             <Table.Td align={'center'}>
               <TextInput
-                variant={readOnly ? 'unstyled' : 'filled'}
+                variant={'unstyled'}
                 placeholder={'None'}
                 defaultValue={item.unit_issue}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -188,13 +192,18 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
               <Textarea
                 key={form.key(`items.${index}.description`)}
                 {...form.getInputProps(`items.${index}.description`)}
-                variant={readOnly ? 'unstyled' : 'default'}
+                variant={'unstyled'}
                 placeholder={'Description'}
                 defaultValue={readOnly ? undefined : item.description}
                 value={readOnly ? item.description : undefined}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 autosize
                 readOnly={readOnly}
+                sx={{
+                  borderBottom: readOnly
+                    ? undefined
+                    : '1px solid var(--mantine-color-gray-5)',
+                }}
               />
             </Table.Td>
           );
@@ -204,7 +213,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
             <Table.Td>
               <NumberInput
                 size={lgScreenAndBelow ? 'sm' : 'md'}
-                variant={readOnly ? 'unstyled' : 'filled'}
+                variant={'unstyled'}
                 value={item?.quantity}
                 readOnly
               />
@@ -216,7 +225,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
             <Table.Td colSpan={readOnly ? 1 : 2}>
               <NumberInput
                 size={lgScreenAndBelow ? 'sm' : 'md'}
-                variant={readOnly ? 'unstyled' : 'filled'}
+                variant={'unstyled'}
                 value={item?.unit_cost}
                 decimalScale={2}
                 fixedDecimalScale
@@ -231,7 +240,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
             <Table.Td>
               <NumberInput
                 size={lgScreenAndBelow ? 'sm' : 'md'}
-                variant={readOnly ? 'unstyled' : 'filled'}
+                variant={'unstyled'}
                 value={item?.total_cost}
                 decimalScale={2}
                 fixedDecimalScale
@@ -266,7 +275,11 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
           }
         })}
       >
-        <Stack p={'md'} justify={'center'}>
+        <Stack
+          p={{ base: 'xs', sm: 'md' }}
+          justify={'center'}
+          style={{ background: 'var(--mantine-color-gray-1)' }}
+        >
           {/* <Card
           shadow={'xs'}
           padding={lgScreenAndBelow ? 'md' : 'lg'}
@@ -297,10 +310,14 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
         </Card> */}
 
           <Card
-            shadow={'xs'}
-            padding={lgScreenAndBelow ? 'md' : 'lg'}
-            radius={'xs'}
+            shadow={'sm'}
+            padding={lgScreenAndBelow ? 'sm' : 'md'}
+            radius={0}
             withBorder
+            style={{
+              borderColor: 'var(--mantine-color-gray-4)',
+              background: 'white',
+            }}
           >
             <Stack align={'center'} w={'100%'} p={0} justify={'center'}>
               <Stack
@@ -366,7 +383,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
                     <Group sx={{ flexWrap: 'nowrap' }}>
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Number:</Text>
                       <TextInput
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         placeholder={'None'}
                         value={currentData?.po_no ?? '-'}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -454,7 +471,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
                         Supplier
                       </Text>
                       <TextInput
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         placeholder={'None'}
                         value={currentData?.supplier?.supplier_name ?? '-'}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -500,7 +517,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
                     <Group sx={{ flexWrap: 'nowrap' }}>
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Address</Text>
                       <TextInput
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         placeholder={'None'}
                         value={currentData?.supplier?.address ?? '-'}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -518,7 +535,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
                     <Group sx={{ flexWrap: 'nowrap' }}>
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'}>TIN</Text>
                       <TextInput
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         placeholder={'None'}
                         value={currentData?.supplier?.tin_no ?? '-'}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -903,7 +920,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
                         </Table.Td>
                         <Table.Td colSpan={4}>
                           <Textarea
-                            variant={readOnly ? 'unstyled' : 'filled'}
+                            variant={'unstyled'}
                             value={
                               currentData?.purchase_request?.purpose ?? '-'
                             }
@@ -938,7 +955,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
                           <Textarea
                             key={form.key('total_amount_words')}
                             {...form.getInputProps('total_amount_words')}
-                            variant={readOnly ? 'unstyled' : 'default'}
+                            variant={'unstyled'}
                             placeholder={
                               readOnly
                                 ? 'None'
@@ -951,13 +968,18 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
                             }
                             value={
                               readOnly
-                                ? currentData?.total_amount_words
+                                ? (currentData?.total_amount_words ?? '')
                                 : undefined
                             }
                             size={lgScreenAndBelow ? 'sm' : 'md'}
                             autosize
                             readOnly={readOnly}
-                            sx={{ fontWeight: 600 }}
+                            sx={{
+                              fontWeight: 600,
+                              borderBottom: readOnly
+                                ? undefined
+                                : '1px solid var(--mantine-color-gray-5)',
+                            }}
                           />
                         </Table.Td>
                         <Table.Td
@@ -966,7 +988,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalPurchaseOrderContentProps>(
                           align={'right'}
                         >
                           <NumberInput
-                            variant={readOnly ? 'unstyled' : 'filled'}
+                            variant={'unstyled'}
                             value={currentData?.total_amount}
                             thousandSeparator
                             decimalScale={2}

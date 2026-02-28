@@ -518,7 +518,11 @@ const ActionsClient = ({
           </Menu.Item>
         )}
 
-      {status === 'cancelled' && (
+      {(status === 'cancelled' ||
+        (status === 'disapproved' &&
+          !['supply:*', ...getAllowedPermissions('pr', 'cancel')].some(
+            (permission) => permissions?.includes(permission)
+          ))) && (
         <Menu.Item color={'var(--mantine-color-gray-5)'}>
           No available action
         </Menu.Item>

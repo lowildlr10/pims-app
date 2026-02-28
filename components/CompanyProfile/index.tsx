@@ -2,31 +2,39 @@
 
 import { colors } from '@/config/theme';
 import {
+  ActionIcon,
   Box,
   Button,
+  Container,
   Divider,
   Flex,
   Group,
+  InputBase,
+  Paper,
   ScrollArea,
+  SimpleGrid,
   Stack,
   Text,
   Textarea,
   TextInput,
+  Title,
   Tooltip,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import {
+  IconBuilding,
   IconCancel,
   IconColorPicker,
+  IconPalette,
   IconPencil,
   IconPencilCog,
+  IconPhoto,
 } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import { getErrors } from '@/libs/Errors';
-import { ActionIcon } from '@mantine/core';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import CustomColorPickerClient from '../Generic/CustomColorPicker';
 import DynamicSelect from '../Generic/DynamicSelect';
@@ -173,52 +181,89 @@ const CompanyProfileClient = ({
   };
 
   return (
-    <ScrollArea
-      h={{ md: '100%', lg: 'calc(100vh - 15.5em)' }}
-      px={{ base: 'md', lg: 'xl' }}
-      scrollbars={'y'}
-    >
-      <form onSubmit={form.onSubmit(() => handleUpdateProfile())}>
-        <CustomLoadingOverlay
-          visible={loading || logoLoading || backgroundImageLoading}
-        />
-        <Stack mb={'12em'} gap={'8em'}>
-          <Stack>
-            <Text fw={500} size={'xl'}>
-              Company Details
-            </Text>
+    <Container size='xl' py='md'>
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        gap='lg'
+        align='flex-start'
+      >
+        {/* Sidebar - Company Logo */}
+        <Stack
+          align='center'
+          w={{ base: '100%', md: 280 }}
+          style={{ flexShrink: 0 }}
+        >
+          <Paper
+            p='xl'
+            radius='md'
+            w='100%'
+            style={{
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            <Stack align='center' gap='md'>
+              <SingleImageUploadClient
+                image={logo ?? '/images/logo-black-fallback.png'}
+                postUrl={'/media'}
+                params={{ parent_id: company.id, type: 'logo' }}
+                type={'logo'}
+                clearImageCache={clearLogoCache}
+              />
 
-            <Divider />
+              <Box ta='center'>
+                <Title order={4} fw={600}>
+                  {company.company_name}
+                </Title>
+                <Title order={6} c='dimmed' fw={400}>
+                  {company.company_type}
+                </Title>
+              </Box>
+            </Stack>
+          </Paper>
+        </Stack>
 
-            <Flex
-              direction={{
-                base: 'column',
-                lg: 'row',
-              }}
-              justify={{ base: 'center', lg: 'space-between' }}
-              gap={'xl'}
-            >
-              <Stack align={'center'} p={'md'} w={{ base: '100%', lg: '25%' }}>
-                <Box mb={10}>
-                  <SingleImageUploadClient
-                    image={logo ?? '/images/logo-black-fallback.png'}
-                    postUrl={'/media'}
-                    params={{ parent_id: company.id, type: 'logo' }}
-                    type={'logo'}
-                    clearImageCache={clearLogoCache}
-                  />
-                </Box>
-              </Stack>
+        {/* Main Content */}
+        <Box flex={1} w={{ base: '100%', md: 'auto' }}>
+          <form onSubmit={form.onSubmit(() => handleUpdateProfile())}>
+            <CustomLoadingOverlay
+              visible={loading || logoLoading || backgroundImageLoading}
+            />
+            <Stack gap='lg'>
+              {/* Company Details Section */}
+              <Paper p='md' radius='md' withBorder>
+                <Stack gap='md'>
+                  <Group justify='space-between'>
+                    <Group gap='xs'>
+                      <IconBuilding size={20} />
+                      <Title order={5}>Company Information</Title>
+                    </Group>
+                    {!enableUpdate &&
+                      getAllowedPermissions('company', 'update')?.some(
+                        (permission) => permissions.includes(permission)
+                      ) && (
+                        <Tooltip
+                          label='Edit Company Profile'
+                          withArrow
+                          position='top'
+                        >
+                          <ActionIcon
+                            color='var(--mantine-color-primary-9)'
+                            radius='xl'
+                            size='lg'
+                            variant='filled'
+                            onClick={() => setEnableUpdate(true)}
+                          >
+                            <IconPencilCog size={18} stroke={1.5} />
+                          </ActionIcon>
+                        </Tooltip>
+                      )}
+                  </Group>
 
-              <Stack justify={'center'} w={{ base: '100%', lg: '75%' }}>
-                <Flex
-                  direction={{ base: 'column', lg: 'row' }}
-                  justify={{ base: 'center', lg: 'space-between' }}
-                  w={'100%'}
-                  gap={{ base: 'md', lg: 'xl' }}
-                >
-                  <Stack flex={1}>
+                  <Divider />
+
+                  <SimpleGrid cols={{ base: 1, sm: 2 }} spacing='md'>
                     <TextInput
+                      size='sm'
                       label='Company Name'
                       placeholder='Company Name'
                       value={form.values.company_name}
@@ -229,12 +274,12 @@ const CompanyProfileClient = ({
                         )
                       }
                       error={form.errors.company_name && ''}
-                      size={'md'}
                       readOnly={!enableUpdate}
                       required={enableUpdate}
                     />
 
                     <TextInput
+                      size='sm'
                       label='Company Type'
                       placeholder='Company Type'
                       value={form.values.company_type}
@@ -245,7 +290,6 @@ const CompanyProfileClient = ({
                         )
                       }
                       error={form.errors.company_type && ''}
-                      size={'md'}
                       readOnly={!enableUpdate}
                     />
 
@@ -254,28 +298,16 @@ const CompanyProfileClient = ({
                       endpointParams={{ paginated: false, show_all: true }}
                       column={'fullname'}
                       label='Company Head'
-                      size={'md'}
+                      size='sm'
                       value={form.values.company_head_id}
                       onChange={(value) =>
                         form.setFieldValue('company_head_id', value ?? '')
                       }
-                    />
-
-                    <Textarea
-                      label='Address'
-                      placeholder='Address'
-                      value={form.values.address}
-                      onChange={(event) =>
-                        form.setFieldValue('address', event.currentTarget.value)
-                      }
-                      error={form.errors.address && ''}
-                      size={'md'}
                       readOnly={!enableUpdate}
                     />
-                  </Stack>
 
-                  <Stack flex={1}>
                     <TextInput
+                      size='sm'
                       label='Municipality/City'
                       placeholder='Municipality/City'
                       value={form.values.municipality}
@@ -286,11 +318,11 @@ const CompanyProfileClient = ({
                         )
                       }
                       error={form.errors.municipality && ''}
-                      size={'md'}
                       readOnly={!enableUpdate}
                     />
 
                     <TextInput
+                      size='sm'
                       label='Province'
                       placeholder='Province'
                       value={form.values.province}
@@ -301,11 +333,11 @@ const CompanyProfileClient = ({
                         )
                       }
                       error={form.errors.province && ''}
-                      size={'md'}
                       readOnly={!enableUpdate}
                     />
 
                     <TextInput
+                      size='sm'
                       label='Region'
                       placeholder='Region'
                       value={form.values.region}
@@ -313,154 +345,167 @@ const CompanyProfileClient = ({
                         form.setFieldValue('region', event.currentTarget.value)
                       }
                       error={form.errors.region && ''}
-                      size={'md'}
                       readOnly={!enableUpdate}
                     />
-                  </Stack>
-                </Flex>
-              </Stack>
-            </Flex>
-          </Stack>
+                  </SimpleGrid>
 
-          <Stack>
-            <Text fw={500} size={'xl'}>
-              Login Background Image
-            </Text>
+                  <Textarea
+                    size='sm'
+                    label='Address'
+                    placeholder='Address'
+                    value={form.values.address}
+                    onChange={(event) =>
+                      form.setFieldValue('address', event.currentTarget.value)
+                    }
+                    error={form.errors.address && ''}
+                    readOnly={!enableUpdate}
+                    minRows={3}
+                  />
+                </Stack>
+              </Paper>
 
-            <Divider />
+              {/* Login Background Section */}
+              <Paper p='md' radius='md' withBorder>
+                <Stack gap='md'>
+                  <Group gap='xs'>
+                    <IconPhoto size={20} />
+                    <Title order={5}>Login Background</Title>
+                  </Group>
+                  <Divider />
 
-            <SingleImageUploadClient
-              image={backgroundImage ?? '/images/background-fallback.png'}
-              postUrl={'/media'}
-              params={{ parent_id: company.id, type: 'login-background' }}
-              height={500}
-              type={'login-background'}
-              clearImageCache={clearBackgroundImageCache}
-            />
-          </Stack>
-
-          <Stack>
-            <Text fw={500} size={'xl'}>
-              System Theme Colors
-            </Text>
-
-            <Divider />
-
-            <Flex
-              direction={{
-                base: 'column',
-                lg: 'row',
-              }}
-              justify={'space-between'}
-              gap={'xl'}
-            >
-              <CustomColorPickerClient
-                label={'Primary Color'}
-                placeholder={'Enter color value'}
-                value={(primary ?? colors.primary[9]).toUpperCase()}
-                onChange={setPrimary}
-                size={'sm'}
-                format={'hex'}
-                rightSection={<IconColorPicker size={18} stroke={1.5} />}
-                swatches={generateColorPalettes(primary)}
-                swatchesPerRow={5}
-                required={enableUpdate}
-                readOnly={!enableUpdate}
-              />
-
-              <CustomColorPickerClient
-                label={'Secondary Color'}
-                placeholder={'Enter color value'}
-                value={(secondary ?? colors.secondary[9]).toUpperCase()}
-                onChange={setSecondary}
-                size={'sm'}
-                format={'hex'}
-                rightSection={<IconColorPicker size={18} stroke={1.5} />}
-                swatches={generateColorPalettes(secondary)}
-                swatchesPerRow={5}
-                required={enableUpdate}
-                readOnly={!enableUpdate}
-              />
-
-              <CustomColorPickerClient
-                label={'Tertiary Color'}
-                placeholder={'Enter color value'}
-                value={(tertiary ?? colors.tertiary[9]).toUpperCase()}
-                onChange={setTertiary}
-                size={'sm'}
-                format={'hex'}
-                rightSection={<IconColorPicker size={18} stroke={1.5} />}
-                swatches={generateColorPalettes(tertiary)}
-                swatchesPerRow={5}
-                required={enableUpdate}
-                readOnly={!enableUpdate}
-              />
-            </Flex>
-          </Stack>
-
-          {getAllowedPermissions('company', 'update')?.some((permission) =>
-            permissions.includes(permission)
-          ) && (
-            <Stack
-              pos={'absolute'}
-              bottom={5}
-              right={0}
-              w={{ base: '100%', lg: 'auto' }}
-              px={20}
-              align={'end'}
-              sx={{ zIndex: 100 }}
-            >
-              {!enableUpdate ? (
-                <Tooltip
-                  arrowPosition={'center'}
-                  arrowOffset={10}
-                  arrowSize={4}
-                  label={'Toggle Update'}
-                  withArrow
-                  position={'top-end'}
-                >
-                  <ActionIcon
-                    color={'var(--mantine-color-primary-9)'}
-                    radius={'100%'}
-                    size={80}
-                    onClick={() => setEnableUpdate(!enableUpdate)}
+                  <Box
+                    style={{
+                      border: '1px dashed var(--mantine-color-gray-4)',
+                      borderRadius: 'var(--mantine-radius-md)',
+                      padding: 'var(--mantine-spacing-md)',
+                    }}
                   >
-                    <IconPencilCog size={40} stroke={1.5} />
-                  </ActionIcon>
-                </Tooltip>
-              ) : (
-                <Group justify={'space-between'}>
-                  <Button
-                    type={'submit'}
-                    size={'md'}
-                    leftSection={<IconPencil size={18} />}
-                    variant='filled'
-                    color={'var(--mantine-color-primary-9)'}
-                    loading={loading}
-                    loaderProps={{ type: 'dots' }}
-                    autoContrast
-                    fullWidth
+                    <SingleImageUploadClient
+                      image={
+                        backgroundImage ?? '/images/background-fallback.png'
+                      }
+                      postUrl={'/media'}
+                      params={{
+                        parent_id: company.id,
+                        type: 'login-background',
+                      }}
+                      height={300}
+                      type={'login-background'}
+                      clearImageCache={clearBackgroundImageCache}
+                    />
+                  </Box>
+                </Stack>
+              </Paper>
+
+              {/* Theme Colors Section */}
+              <Paper p='md' radius='md' withBorder>
+                <Stack gap='md'>
+                  <Group gap='xs'>
+                    <IconPalette size={20} />
+                    <Title order={5}>Theme Colors</Title>
+                  </Group>
+                  <Divider />
+
+                  <SimpleGrid cols={{ base: 1, sm: 3 }} spacing='md'>
+                    <CustomColorPickerClient
+                      label={'Primary Color'}
+                      placeholder={'Enter color value'}
+                      value={(primary ?? colors.primary[9]).toUpperCase()}
+                      onChange={setPrimary}
+                      size={'sm'}
+                      format={'hex'}
+                      rightSection={<IconColorPicker size={18} stroke={1.5} />}
+                      swatches={generateColorPalettes(primary)}
+                      swatchesPerRow={5}
+                      required={enableUpdate}
+                      readOnly={!enableUpdate}
+                    />
+
+                    <CustomColorPickerClient
+                      label={'Secondary Color'}
+                      placeholder={'Enter color value'}
+                      value={(secondary ?? colors.secondary[9]).toUpperCase()}
+                      onChange={setSecondary}
+                      size={'sm'}
+                      format={'hex'}
+                      rightSection={<IconColorPicker size={18} stroke={1.5} />}
+                      swatches={generateColorPalettes(secondary)}
+                      swatchesPerRow={5}
+                      required={enableUpdate}
+                      readOnly={!enableUpdate}
+                    />
+
+                    <CustomColorPickerClient
+                      label={'Tertiary Color'}
+                      placeholder={'Enter color value'}
+                      value={(tertiary ?? colors.tertiary[9]).toUpperCase()}
+                      onChange={setTertiary}
+                      size={'sm'}
+                      format={'hex'}
+                      rightSection={<IconColorPicker size={18} stroke={1.5} />}
+                      swatches={generateColorPalettes(tertiary)}
+                      swatchesPerRow={5}
+                      required={enableUpdate}
+                      readOnly={!enableUpdate}
+                    />
+                  </SimpleGrid>
+                </Stack>
+              </Paper>
+
+              {/* Action Bar */}
+              {enableUpdate &&
+                getAllowedPermissions('company', 'update')?.some((permission) =>
+                  permissions.includes(permission)
+                ) && (
+                  <Paper
+                    p='md'
+                    radius='md'
+                    style={{
+                      position: 'sticky',
+                      bottom: 0,
+                      backgroundColor: 'var(--mantine-color-white)',
+                      boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.1)',
+                      zIndex: 10,
+                    }}
                   >
-                    Update
-                  </Button>
-                  <Button
-                    size={'md'}
-                    leftSection={<IconCancel size={18} />}
-                    variant='outline'
-                    bg={'white'}
-                    color={'var(--mantine-color-gray-8)'}
-                    fullWidth
-                    onClick={() => setEnableUpdate(!enableUpdate)}
-                  >
-                    Cancel
-                  </Button>
-                </Group>
-              )}
+                    <Group justify='space-between'>
+                      <Text size='sm' c='dimmed'>
+                        You are in edit mode
+                      </Text>
+                      <Group>
+                        <Button
+                          size='sm'
+                          leftSection={<IconCancel size={16} />}
+                          variant='outline'
+                          color='var(--mantine-color-gray-7)'
+                          onClick={() => {
+                            form.reset();
+                            setEnableUpdate(false);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type='submit'
+                          size='sm'
+                          leftSection={<IconPencil size={16} />}
+                          variant='filled'
+                          color='var(--mantine-color-primary-9)'
+                          loading={loading}
+                          loaderProps={{ type: 'dots' }}
+                          autoContrast
+                        >
+                          Save Changes
+                        </Button>
+                      </Group>
+                    </Group>
+                  </Paper>
+                )}
             </Stack>
-          )}
-        </Stack>
-      </form>
-    </ScrollArea>
+          </form>
+        </Box>
+      </Flex>
+    </Container>
   );
 };
 

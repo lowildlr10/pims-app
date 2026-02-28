@@ -8,14 +8,16 @@ const DepartmentFormClient = forwardRef<
   ModalDepartmentContentProps
 >(({ data, handleCreateUpdate, setPayload }, ref) => {
   const [currentData, setCurrentData] = useState(data);
+
   const currentForm = useMemo(
     () => ({
       department_name: currentData?.department_name ?? '',
       active: currentData?.active ?? false,
-      department_head_id: currentData?.department_head_id,
+      department_head_id: currentData?.department_head_id ?? null,
     }),
     [currentData]
   );
+
   const form = useForm({
     mode: 'controlled',
     initialValues: currentForm,
@@ -26,13 +28,16 @@ const DepartmentFormClient = forwardRef<
   }, [data]);
 
   useEffect(() => {
-    form.reset();
-    form.setValues(currentForm);
+    if (currentData) {
+      form.setValues(currentForm);
+    }
   }, [currentForm]);
 
   useEffect(() => {
-    setPayload(form.values);
-  }, [form.values]);
+    if (setPayload) {
+      setPayload(form.values);
+    }
+  }, [form.values, setPayload]);
 
   return (
     <form
@@ -48,7 +53,7 @@ const DepartmentFormClient = forwardRef<
             form.setFieldValue('department_name', event.currentTarget.value)
           }
           error={form.errors.department_name && ''}
-          size={'sm'}
+          size='sm'
           required
         />
         <DynamicSelect
@@ -67,22 +72,20 @@ const DepartmentFormClient = forwardRef<
               : undefined
           }
           value={form.values.department_head_id}
-          size={'sm'}
-          onChange={(value) =>
-            form.setFieldValue('department_head_id', value ?? '')
-          }
+          size='sm'
+          onChange={(value) => form.setFieldValue('department_head_id', value)}
         />
         <Switch
-          label={'Status'}
+          label='Status'
           my={20}
           onLabel='Active'
           offLabel='Inactive'
           color={'var(--mantine-color-secondary-9)'}
           checked={form.values.active}
-          labelPosition={'left'}
+          labelPosition='left'
           fw={500}
           sx={{ cursor: 'pointer' }}
-          size={'sm'}
+          size='sm'
           onChange={(event) =>
             form.setFieldValue('active', event.currentTarget.checked)
           }
