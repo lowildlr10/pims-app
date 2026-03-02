@@ -11,7 +11,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalFundingSourceContentProps>(
         location: currentData?.location?.location_name ?? '',
         title: currentData?.title ?? '',
         total_cost: currentData?.total_cost ?? '',
-        active: currentData?.active ?? false,
+        active: currentData?.active ?? true,
       }),
       [currentData]
     );

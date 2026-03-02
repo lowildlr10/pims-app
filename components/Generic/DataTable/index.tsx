@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   Collapse,
+  Divider,
   Grid,
   Group,
   Paper,
@@ -599,389 +600,405 @@ const DataTableClient = ({
 
   const dynamicMainTable = () => {
     return (
-      <Table
-        verticalSpacing={'xs'}
-        stickyHeaderOffset={lgScreenAndBelow ? 39 : 49}
-        stickyHeader={!lgScreenAndBelow}
-        highlightOnHover
-        withTableBorder
-        sx={{
-          borderTopLeftRadius: '6px',
-          borderTopRightRadius: '6px',
-          border: '1px solid var(--mantine-color-gray-3)',
+      <Box
+        style={{
+          flex: 1,
+          minWidth: 0,
+          borderRadius: 'var(--mantine-radius-md)',
+          padding: 0,
+          paddingBottom: '15px',
+          border: '2px solid var(--mantine-color-primary-8)',
         }}
       >
-        <Table.Thead>
-          <Table.Tr
-            bg={'var(--mantine-color-primary-8)'}
-            c={'white'}
-            h={lgScreenAndBelow ? '2.25rem' : '2.75rem'}
-          >
-            {data.head?.map((head) => (
-              <Table.Th
-                key={head.id}
-                w={head.width ?? undefined}
-                p={0}
-                ta={head.align ?? undefined}
-                bg={'var(--mantine-color-primary-8)'}
-                fz={lgScreenAndBelow ? 'xs' : 'sm'}
-                fw={600}
-              >
-                {head.sortable ? (
-                  <Button
-                    size={lgScreenAndBelow ? 'compact-xs' : 'compact-sm'}
-                    variant={'transparent'}
-                    c={'var(--mantine-color-white-9)'}
-                    m={0}
-                    h={'auto'}
-                    px={lgScreenAndBelow ? 8 : 12}
-                    py={6}
-                    ta={head.align ?? undefined}
-                    justify={'left'}
-                    fz={lgScreenAndBelow ? 'xs' : 'sm'}
-                    fw={600}
-                    sx={{
-                      '&:hover': {
-                        bg: 'rgba(255, 255, 255, 0.1)',
-                      },
-                    }}
-                    rightSection={
-                      <>
-                        {columnSort === head.id ? (
-                          <>
-                            {sortDirection === 'desc' ? (
-                              <IconSortDescending2Filled size={14} />
-                            ) : (
-                              <IconSortAscending2Filled size={14} />
-                            )}
-                          </>
-                        ) : (
-                          <IconSortDescending2Filled size={14} />
-                        )}
-                      </>
+        <Table
+          verticalSpacing={'xs'}
+          stickyHeaderOffset={lgScreenAndBelow ? 39 : 49}
+          stickyHeader={!lgScreenAndBelow}
+          highlightOnHover
+          // withTableBorder
+          sx={{
+            borderRadius: '0.75em',
+            border: 0,
+            background: 'white',
+          }}
+        >
+          <Table.Thead>
+            <Table.Tr
+              bg={'var(--mantine-color-primary-8)'}
+              c={'white'}
+              h={lgScreenAndBelow ? '2.25rem' : '2.75rem'}
+            >
+              {data.head?.map((head) => (
+                <Table.Th
+                  key={head.id}
+                  w={head.width ?? undefined}
+                  p={0}
+                  ta={head.align ?? undefined}
+                  bg={'var(--mantine-color-primary-8)'}
+                  fz={lgScreenAndBelow ? 'xs' : 'sm'}
+                  fw={600}
+                >
+                  {head.sortable ? (
+                    <Button
+                      size={lgScreenAndBelow ? 'compact-xs' : 'compact-sm'}
+                      variant={'transparent'}
+                      c={'var(--mantine-color-white-9)'}
+                      m={0}
+                      h={'auto'}
+                      px={lgScreenAndBelow ? 8 : 12}
+                      py={6}
+                      ta={head.align ?? undefined}
+                      justify={'left'}
+                      fz={lgScreenAndBelow ? 'xs' : 'sm'}
+                      fw={600}
+                      sx={{
+                        '&:hover': {
+                          bg: 'rgba(255, 255, 255, 0.1)',
+                        },
+                      }}
+                      rightSection={
+                        <>
+                          {columnSort === head.id ? (
+                            <>
+                              {sortDirection === 'desc' ? (
+                                <IconSortDescending2Filled size={14} />
+                              ) : (
+                                <IconSortAscending2Filled size={14} />
+                              )}
+                            </>
+                          ) : (
+                            <IconSortDescending2Filled size={14} />
+                          )}
+                        </>
+                      }
+                      onClick={() => {
+                        if (loading) return;
+                        setTableColumnSort(head.id);
+                        setTableSortDirection(
+                          tableSortDirection === 'desc' ? 'asc' : 'desc'
+                        );
+                      }}
+                      fullWidth
+                    >
+                      {head.label}
+                    </Button>
+                  ) : (
+                    <Box px={lgScreenAndBelow ? 8 : 12} py={6}>
+                      {head.label}
+                    </Box>
+                  )}
+                </Table.Th>
+              ))}
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {loading &&
+              Array.from({ length: perPage }).map((_, i) => (
+                <Table.Tr key={i}>
+                  <Table.Td
+                    colSpan={
+                      (data.head?.length ?? 0) +
+                      (hasSubBody || subModule ? 1 : 0)
                     }
-                    onClick={() => {
-                      if (loading) return;
-                      setTableColumnSort(head.id);
-                      setTableSortDirection(
-                        tableSortDirection === 'desc' ? 'asc' : 'desc'
-                      );
-                    }}
-                    fullWidth
                   >
-                    {head.label}
-                  </Button>
-                ) : (
-                  <Box px={lgScreenAndBelow ? 8 : 12} py={6}>
-                    {head.label}
-                  </Box>
-                )}
-              </Table.Th>
-            ))}
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {loading &&
-            Array.from({ length: perPage }).map((_, i) => (
-              <Table.Tr key={i}>
+                    <Skeleton height={40} radius='sm' />
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+
+            {!loading && data.body?.length === 0 && (
+              <Table.Tr>
                 <Table.Td
+                  c={'dimmed'}
+                  ta={'center'}
                   colSpan={
                     (data.head?.length ?? 0) + (hasSubBody || subModule ? 1 : 0)
                   }
+                  fz={'sm'}
+                  h={'calc(100vh - 28em)'}
                 >
-                  <Skeleton height={40} radius='sm' />
+                  <Stack align='center' gap='xs'>
+                    <Text size='sm' c='dimmed'>
+                      No data found.
+                    </Text>
+                  </Stack>
                 </Table.Td>
               </Table.Tr>
-            ))}
+            )}
 
-          {!loading && data.body?.length === 0 && (
-            <Table.Tr>
-              <Table.Td
-                c={'dimmed'}
-                ta={'center'}
-                colSpan={
-                  (data.head?.length ?? 0) + (hasSubBody || subModule ? 1 : 0)
-                }
-                fz={'sm'}
-                h={'calc(100vh - 28em)'}
-              >
-                <Stack align='center' gap='xs'>
-                  <Text size='sm' c='dimmed'>
-                    No data found.
-                  </Text>
-                </Stack>
-              </Table.Td>
-            </Table.Tr>
-          )}
-
-          {!loading &&
-            tableBody?.map((body: any, index: number) => (
-              <React.Fragment key={body.id}>
-                <Table.Tr
-                  sx={{
-                    cursor: mainItemsClickable ? 'pointer' : 'default',
-                    borderBottom:
-                      (hasSubBody || subModule) && collapseStates[body.id ?? '']
-                        ? '2px solid var(--mantine-color-primary-3)'
-                        : '1px solid var(--mantine-color-gray-2)',
-                    transition: 'all 150ms ease',
-                    '&:hover': {
-                      backgroundColor: 'var(--mantine-color-gray-0)',
-                    },
-                  }}
-                >
-                  {data.head?.map(
-                    (head, i) =>
-                      typeof body[head.id] !== 'undefined' && (
-                        <Tooltip.Floating
-                          key={`${body.id}-${body[head.id]}-${i}`}
-                          fz={'xs'}
-                          label={getTooltipLabel(
-                            mainModule,
-                            mainItemsClickable
-                          )}
-                          disabled={
-                            !mainItemsClickable || head?.clickable === false
-                          }
-                        >
-                          <Table.Td
-                            fz={lgScreenAndBelow ? 'xs' : 'sm'}
-                            py={8}
-                            px={lgScreenAndBelow ? 10 : 12}
-                            valign={'top'}
-                            onClick={(e) => handleMainRowClick(body, head, e)}
-                          >
-                            {renderDynamicTdContent(body[head.id])}
-                          </Table.Td>
-                        </Tooltip.Floating>
-                      )
-                  )}
-
-                  {(hasSubBody || subModule) && (
-                    <Table.Td valign={'top'}>
-                      <Button
-                        variant='light'
-                        fz={{ base: 10, lg: 11, xl: 'xs' }}
-                        size={lgScreenAndBelow ? 'compact-xs' : 'xs'}
-                        color={'var(--mantine-color-secondary-7)'}
-                        rightSection={
-                          collapseStates[body.id ?? ''] ? (
-                            <IconChevronUp size={12} />
-                          ) : (
-                            <IconChevronDown size={12} />
-                          )
-                        }
-                        radius='md'
-                        onClick={() => handleToggleCollapse(body.id)}
-                      >
-                        {collapseStates[body.id ?? ''] ? 'Hide' : 'Show'}{' '}
-                        {subButtonLabel}
-                      </Button>
-                    </Table.Td>
-                  )}
-                </Table.Tr>
-
-                {(hasSubBody || subModule) && (
+            {!loading &&
+              tableBody?.map((body: any, index: number) => (
+                <React.Fragment key={body.id}>
                   <Table.Tr
+                    bg={'white'}
                     sx={{
+                      cursor: mainItemsClickable ? 'pointer' : 'default',
                       borderBottom:
                         (hasSubBody || subModule) &&
                         collapseStates[body.id ?? '']
                           ? '2px solid var(--mantine-color-primary-3)'
-                          : undefined,
+                          : '1px solid var(--mantine-color-gray-2)',
+                      transition: 'all 150ms ease',
+                      '&:hover': {
+                        backgroundColor: 'var(--mantine-color-gray-0)',
+                      },
                     }}
                   >
-                    <Table.Td
-                      bg={'var(--mantine-color-tertiary-2)'}
-                      colSpan={data.head?.length}
-                      p={0}
-                    >
-                      <Collapse
-                        in={collapseStates[body.id ?? '']}
-                        p={lgScreenAndBelow ? 'xs' : 'sm'}
-                        onTransitionEnd={() => handleSubTableSticky(body.id)}
-                      >
-                        <Grid
-                          display={
-                            !subTableStickyStates[body.id ?? '']
-                              ? 'initial'
-                              : 'none'
-                          }
-                        >
-                          <Grid.Col span={'content'} px={0}>
-                            <IconCaretRightFilled
-                              color={'var(--mantine-color-secondary-7)'}
-                              size={lgScreenAndBelow ? 18 : 22}
-                            />
-                          </Grid.Col>
-                          <Grid.Col span={'auto'} pl={0}>
-                            <Table
-                              bg={'white'}
-                              verticalSpacing={'sm'}
-                              highlightOnHover
-                              withTableBorder
-                              stickyHeaderOffset={lgScreenAndBelow ? 77 : 96}
-                              stickyHeader={!lgScreenAndBelow}
+                    {data.head?.map(
+                      (head, i) =>
+                        typeof body[head.id] !== 'undefined' && (
+                          <Tooltip.Floating
+                            key={`${body.id}-${body[head.id]}-${i}`}
+                            fz={'xs'}
+                            label={getTooltipLabel(
+                              mainModule,
+                              mainItemsClickable
+                            )}
+                            disabled={
+                              !mainItemsClickable || head?.clickable === false
+                            }
+                          >
+                            <Table.Td
+                              fz={lgScreenAndBelow ? 'xs' : 'sm'}
+                              py={8}
+                              px={lgScreenAndBelow ? 10 : 12}
+                              valign={'top'}
+                              onClick={(e) => handleMainRowClick(body, head, e)}
                             >
-                              <Table.Thead sx={{ zIndex: '2 !important' }}>
-                                <Table.Tr
-                                  bg={'var(--mantine-color-secondary-7)'}
-                                  c={'white'}
-                                >
-                                  {data.subHead?.map((subHead) => (
-                                    <Table.Th
-                                      key={subHead.id}
-                                      w={subHead.width}
-                                      fw={600}
-                                      ta={subHead.align ?? undefined}
-                                      fz={lgScreenAndBelow ? 'xs' : 'sm'}
-                                      bg={'var(--mantine-color-secondary-8)'}
-                                    >
-                                      {subHead.label}
-                                    </Table.Th>
-                                  ))}
-                                </Table.Tr>
-                              </Table.Thead>
+                              {renderDynamicTdContent(body[head.id])}
+                            </Table.Td>
+                          </Tooltip.Floating>
+                        )
+                    )}
 
-                              <Table.Tbody>
-                                {!loading && body?.sub_body?.length === 0 && (
-                                  <Table.Tr>
-                                    <Table.Td
-                                      c={'dimmed'}
-                                      ta={'center'}
-                                      colSpan={data.subHead?.length}
-                                      fz={'sm'}
-                                      py='md'
-                                    >
-                                      No data.
-                                    </Table.Td>
-                                  </Table.Tr>
-                                )}
+                    {(hasSubBody || subModule) && (
+                      <Table.Td valign={'top'}>
+                        <Button
+                          variant='light'
+                          fz={{ base: 10, lg: 11, xl: 'xs' }}
+                          size={lgScreenAndBelow ? 'compact-xs' : 'xs'}
+                          color={'var(--mantine-color-secondary-7)'}
+                          rightSection={
+                            collapseStates[body.id ?? ''] ? (
+                              <IconChevronUp size={12} />
+                            ) : (
+                              <IconChevronDown size={12} />
+                            )
+                          }
+                          radius='md'
+                          onClick={() => handleToggleCollapse(body.id)}
+                        >
+                          {collapseStates[body.id ?? ''] ? 'Hide' : 'Show'}{' '}
+                          {subButtonLabel}
+                        </Button>
+                      </Table.Td>
+                    )}
+                  </Table.Tr>
 
-                                {body?.sub_body?.map((subBody: any) => (
+                  {(hasSubBody || subModule) && (
+                    <Table.Tr
+                      sx={{
+                        borderBottom:
+                          (hasSubBody || subModule) &&
+                          collapseStates[body.id ?? '']
+                            ? '2px solid var(--mantine-color-primary-3)'
+                            : undefined,
+                      }}
+                    >
+                      <Table.Td
+                        bg={'var(--mantine-color-tertiary-2)'}
+                        colSpan={data.head?.length}
+                        p={0}
+                      >
+                        <Collapse
+                          in={collapseStates[body.id ?? '']}
+                          p={lgScreenAndBelow ? 'xs' : 'sm'}
+                          onTransitionEnd={() => handleSubTableSticky(body.id)}
+                        >
+                          <Grid
+                            display={
+                              !subTableStickyStates[body.id ?? '']
+                                ? 'initial'
+                                : 'none'
+                            }
+                          >
+                            <Grid.Col span={'content'} px={0}>
+                              <IconCaretRightFilled
+                                color={'var(--mantine-color-secondary-7)'}
+                                size={lgScreenAndBelow ? 18 : 22}
+                              />
+                            </Grid.Col>
+                            <Grid.Col span={'auto'} pl={0}>
+                              <Table
+                                bg={'white'}
+                                verticalSpacing={'sm'}
+                                highlightOnHover
+                                withTableBorder
+                                stickyHeaderOffset={lgScreenAndBelow ? 77 : 96}
+                                stickyHeader={!lgScreenAndBelow}
+                              >
+                                <Table.Thead sx={{ zIndex: '2 !important' }}>
                                   <Table.Tr
-                                    key={subBody.id}
-                                    sx={{
-                                      cursor: subItemsClickable
-                                        ? 'pointer'
-                                        : 'default',
-                                      transition: 'background-color 150ms ease',
-                                    }}
+                                    bg={'var(--mantine-color-secondary-7)'}
+                                    c={'white'}
                                   >
-                                    {data.subHead?.map(
-                                      (subHead, subHeadIndex) =>
-                                        subBody[subHead.id] && (
-                                          <Tooltip.Floating
-                                            key={`${subBody.id}-${subHeadIndex}`}
-                                            fz={'xs'}
-                                            label={getTooltipLabel(
-                                              subModule,
-                                              subItemsClickable
-                                            )}
-                                            disabled={
-                                              !subItemsClickable ||
-                                              subHead?.clickable === false
-                                            }
-                                          >
-                                            <Table.Td
-                                              valign={'top'}
-                                              fz={
-                                                lgScreenAndBelow ? 'xs' : 'sm'
-                                              }
-                                              py={10}
-                                              px={
-                                                lgScreenAndBelow ? 'xs' : 'sm'
-                                              }
-                                              onClick={(e) =>
-                                                handleSubRowClick(
-                                                  body,
-                                                  subBody,
-                                                  subHead,
-                                                  e
-                                                )
-                                              }
-                                            >
-                                              {renderDynamicTdContent(
-                                                subBody[subHead.id]
-                                              )}
-                                            </Table.Td>
-                                          </Tooltip.Floating>
-                                        )
-                                    )}
+                                    {data.subHead?.map((subHead) => (
+                                      <Table.Th
+                                        key={subHead.id}
+                                        w={subHead.width}
+                                        fw={600}
+                                        ta={subHead.align ?? undefined}
+                                        fz={lgScreenAndBelow ? 'xs' : 'sm'}
+                                        bg={'var(--mantine-color-secondary-8)'}
+                                      >
+                                        {subHead.label}
+                                      </Table.Th>
+                                    ))}
                                   </Table.Tr>
-                                ))}
+                                </Table.Thead>
 
-                                {showCreateSubItem &&
-                                  getAllowedPermissions(
-                                    subModule,
-                                    'create'
-                                  )?.some((permission) =>
-                                    permissions.includes(permission)
-                                  ) && (
+                                <Table.Tbody>
+                                  {!loading && body?.sub_body?.length === 0 && (
                                     <Table.Tr>
                                       <Table.Td
-                                        bg={'white'}
+                                        c={'dimmed'}
+                                        ta={'center'}
                                         colSpan={data.subHead?.length}
-                                        p={0}
+                                        fz={'sm'}
+                                        py='md'
                                       >
-                                        <Button
-                                          variant='subtle'
-                                          bd={
-                                            '1px dashed var(--mantine-color-gray-4)'
-                                          }
-                                          h={40}
-                                          size={'xs'}
-                                          color={
-                                            'var(--mantine-color-primary-8)'
-                                          }
-                                          leftSection={<IconPlus size={12} />}
-                                          radius={'sm'}
-                                          onClick={(e) => {
-                                            setCurrentOpenedModuleType('sub');
-
-                                            if (
-                                              defaultModalOnClick === 'details'
-                                            ) {
-                                              setPageLoading(true);
-                                              e.preventDefault();
-
-                                              if (
-                                                detailItemData?.sub?.base_url
-                                              ) {
-                                                push(
-                                                  `${detailItemData?.sub?.base_url}/create?parent_id=${body.id}`
-                                                );
-                                              } else {
-                                                push(
-                                                  `${pathname}/create?parent_id=${body.id}`
-                                                );
-                                              }
-                                            } else {
-                                              handleOpenCreateModal(
-                                                body.id,
-                                                subModule ?? null
-                                              );
-                                            }
-                                          }}
-                                          fullWidth
-                                        >
-                                          Add {subButtonLabel}
-                                        </Button>
+                                        No data.
                                       </Table.Td>
                                     </Table.Tr>
                                   )}
-                              </Table.Tbody>
-                            </Table>
-                          </Grid.Col>
-                        </Grid>
-                      </Collapse>
-                    </Table.Td>
-                  </Table.Tr>
-                )}
-              </React.Fragment>
-            ))}
-        </Table.Tbody>
-      </Table>
+
+                                  {body?.sub_body?.map((subBody: any) => (
+                                    <Table.Tr
+                                      key={subBody.id}
+                                      sx={{
+                                        cursor: subItemsClickable
+                                          ? 'pointer'
+                                          : 'default',
+                                        transition:
+                                          'background-color 150ms ease',
+                                      }}
+                                    >
+                                      {data.subHead?.map(
+                                        (subHead, subHeadIndex) =>
+                                          subBody[subHead.id] && (
+                                            <Tooltip.Floating
+                                              key={`${subBody.id}-${subHeadIndex}`}
+                                              fz={'xs'}
+                                              label={getTooltipLabel(
+                                                subModule,
+                                                subItemsClickable
+                                              )}
+                                              disabled={
+                                                !subItemsClickable ||
+                                                subHead?.clickable === false
+                                              }
+                                            >
+                                              <Table.Td
+                                                valign={'top'}
+                                                fz={
+                                                  lgScreenAndBelow ? 'xs' : 'sm'
+                                                }
+                                                py={10}
+                                                px={
+                                                  lgScreenAndBelow ? 'xs' : 'sm'
+                                                }
+                                                onClick={(e) =>
+                                                  handleSubRowClick(
+                                                    body,
+                                                    subBody,
+                                                    subHead,
+                                                    e
+                                                  )
+                                                }
+                                              >
+                                                {renderDynamicTdContent(
+                                                  subBody[subHead.id]
+                                                )}
+                                              </Table.Td>
+                                            </Tooltip.Floating>
+                                          )
+                                      )}
+                                    </Table.Tr>
+                                  ))}
+
+                                  {showCreateSubItem &&
+                                    getAllowedPermissions(
+                                      subModule,
+                                      'create'
+                                    )?.some((permission) =>
+                                      permissions.includes(permission)
+                                    ) && (
+                                      <Table.Tr>
+                                        <Table.Td
+                                          bg={'white'}
+                                          colSpan={data.subHead?.length}
+                                          p={0}
+                                        >
+                                          <Button
+                                            variant='subtle'
+                                            bd={
+                                              '1px dashed var(--mantine-color-gray-4)'
+                                            }
+                                            h={40}
+                                            size={'xs'}
+                                            color={
+                                              'var(--mantine-color-primary-8)'
+                                            }
+                                            leftSection={<IconPlus size={12} />}
+                                            radius={'sm'}
+                                            onClick={(e) => {
+                                              setCurrentOpenedModuleType('sub');
+
+                                              if (
+                                                defaultModalOnClick ===
+                                                'details'
+                                              ) {
+                                                setPageLoading(true);
+                                                e.preventDefault();
+
+                                                if (
+                                                  detailItemData?.sub?.base_url
+                                                ) {
+                                                  push(
+                                                    `${detailItemData?.sub?.base_url}/create?parent_id=${body.id}`
+                                                  );
+                                                } else {
+                                                  push(
+                                                    `${pathname}/create?parent_id=${body.id}`
+                                                  );
+                                                }
+                                              } else {
+                                                handleOpenCreateModal(
+                                                  body.id,
+                                                  subModule ?? null
+                                                );
+                                              }
+                                            }}
+                                            fullWidth
+                                          >
+                                            Add {subButtonLabel}
+                                          </Button>
+                                        </Table.Td>
+                                      </Table.Tr>
+                                    )}
+                                </Table.Tbody>
+                              </Table>
+                            </Grid.Col>
+                          </Grid>
+                        </Collapse>
+                      </Table.Td>
+                    </Table.Tr>
+                  )}
+                </React.Fragment>
+              ))}
+          </Table.Tbody>
+        </Table>
+      </Box>
     );
   };
 
@@ -1115,6 +1132,8 @@ const DataTableClient = ({
           updateTable={handleUpdateTable}
         />
       )}
+
+      <Divider my='md' />
 
       <DataTablePaginationClient
         perPage={perPage}

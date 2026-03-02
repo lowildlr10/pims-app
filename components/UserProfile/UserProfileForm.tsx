@@ -68,7 +68,7 @@ const UserProfileFormClient = ({ user }: UserProfileFormProps) => {
       .then((res) => {
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message,
           color: 'green',
         });
 

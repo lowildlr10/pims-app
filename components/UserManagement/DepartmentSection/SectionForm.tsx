@@ -11,7 +11,7 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
       () => ({
         department_id: currentData?.department_id ?? null,
         section_name: currentData?.section_name ?? '',
-        active: currentData?.active ?? false,
+        active: currentData?.active ?? true,
         section_head_id: currentData?.section_head_id ?? null,
       }),
       [currentData]

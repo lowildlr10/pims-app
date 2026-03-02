@@ -78,7 +78,7 @@ const CreateModalClient = ({
 
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message,
           color: 'green',
         });
 

@@ -81,7 +81,7 @@ const PageHeader = ({
             right: isSmallMobile ? '-5%' : isMobile ? '-10%' : '-20%',
             width: isSmallMobile ? '120px' : isMobile ? '150px' : '300px',
             height: isSmallMobile ? '120px' : isMobile ? '150px' : '300px',
-            background: 'rgba(255, 255, 255, 0.1)',
+            background: 'var(--mantine-color-primary-9)',
             borderRadius: '50%',
             pointerEvents: 'none',
           }}

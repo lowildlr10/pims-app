@@ -10,7 +10,7 @@ export const getCompanyFavicon = async () => {
       `${basePath}/api/v1/media/?type=favicon&parent_id=${company.id}`
     );
     const media = await mediaData.json();
-    const favicon = media?.data?.data ?? undefined;
+    const favicon = media?.data ?? undefined;
 
     return favicon ?? undefined;
   } catch (error) {
@@ -27,11 +27,12 @@ export const getCompany = async (): Promise<CompanyType> => {
 const getCompanyData = async () => {
   try {
     const basePath = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const accessToken = getAccessToken();
+    const accessToken = await getAccessToken();
     const response = await fetch(`${basePath}/api/v1/companies`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      cache: 'no-store',
     });
 
     if (response.status !== 200) {

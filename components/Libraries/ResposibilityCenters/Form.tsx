@@ -11,7 +11,7 @@ const FormClient = forwardRef<
     () => ({
       code: currentData?.code ?? '',
       description: currentData?.description ?? '',
-      active: currentData?.active ?? false,
+      active: currentData?.active ?? true,
     }),
     [currentData]
   );

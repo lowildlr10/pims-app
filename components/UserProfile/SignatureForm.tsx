@@ -37,7 +37,7 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
       .then((res) => {
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message,
           color: 'green',
         });
         form.resetDirty();

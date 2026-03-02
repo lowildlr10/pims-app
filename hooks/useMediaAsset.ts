@@ -73,12 +73,6 @@ export function useMediaAsset({
     return id ? getCacheKey(type, id) : '';
   }, [type, id]);
 
-  const clearCache = useCallback(() => {
-    if (cacheKey) {
-      localStorage.removeItem(cacheKey);
-    }
-  }, [cacheKey]);
-
   const fetchMedia = useCallback(() => {
     if (!id || !initialData) return;
 
@@ -107,8 +101,7 @@ export function useMediaAsset({
         parent_id: id,
       })
         .then((res) => {
-          const mediaUrl =
-            res?.data?.data ?? fallback ?? DEFAULT_FALLBACKS[type];
+          const mediaUrl = res?.data ?? fallback ?? DEFAULT_FALLBACKS[type];
           setMedia(mediaUrl);
 
           localStorage.setItem(
@@ -134,6 +127,13 @@ export function useMediaAsset({
 
     attemptFetch();
   }, [type, id, initialData, cacheKey, fallback]);
+
+  const clearCache = useCallback(() => {
+    if (cacheKey) {
+      localStorage.removeItem(cacheKey);
+      fetchMedia();
+    }
+  }, [cacheKey, fetchMedia]);
 
   useEffect(() => {
     fetchMedia();

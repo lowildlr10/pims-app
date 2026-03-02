@@ -1,6 +1,7 @@
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
+import { useRouter } from 'next/navigation';
 import {
   Avatar,
   Button,
@@ -21,6 +22,7 @@ const SingleImageUploadClient = ({
   type,
   clearImageCache,
 }: SingleImageUploadProps) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -84,7 +86,7 @@ const SingleImageUploadClient = ({
       .then((res) => {
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message,
           color: 'green',
         });
         form.resetDirty();
@@ -93,6 +95,7 @@ const SingleImageUploadClient = ({
         if (clearImageCache) {
           clearImageCache();
         }
+        router.refresh();
       })
       .catch((err) => {
         const errors = getErrors(err);

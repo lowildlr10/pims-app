@@ -13,7 +13,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalSignatoryContentProps>(
       () => ({
         user_id: currentData?.user_id ?? '',
         details: JSON.stringify(currentData?.details ?? []),
-        active: currentData?.active ?? false,
+        active: currentData?.active ?? true,
       }),
       [currentData]
     );

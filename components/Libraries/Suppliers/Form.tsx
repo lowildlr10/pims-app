@@ -14,7 +14,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalSupplierContentProps>(
         telephone: currentData?.telephone ?? '',
         vat_no: currentData?.vat_no ?? '',
         contact_person: currentData?.contact_person ?? '',
-        active: currentData?.active ?? false,
+        active: currentData?.active ?? true,
       }),
       [currentData]
     );

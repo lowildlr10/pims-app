@@ -9,9 +9,7 @@ import {
   Divider,
   Flex,
   Group,
-  InputBase,
   Paper,
-  ScrollArea,
   SimpleGrid,
   Stack,
   Text,
@@ -157,7 +155,7 @@ const CompanyProfileClient = ({
       .then((res) => {
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message,
           color: 'green',
         });
 

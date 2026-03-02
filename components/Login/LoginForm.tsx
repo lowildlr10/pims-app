@@ -7,6 +7,7 @@ import { notifications } from '@mantine/notifications';
 import {
   Anchor,
   Button,
+  Divider,
   FocusTrap,
   Group,
   Paper,
@@ -76,24 +77,28 @@ const LoginFormClient = () => {
 
   return (
     <Paper
-      radius='md'
-      p={{ base: 'lg', sm: 'xl' }}
+      radius='xl'
+      p={{ base: 'xl', sm: '2.25rem' }}
       w='100%'
-      maw={430}
+      maw={440}
       bd='none'
       style={{
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        boxShadow:
+          '0 4px 6px -1px rgba(0,0,0,0.07), 0 20px 50px -8px rgba(0,0,0,0.12)',
       }}
     >
-      <Stack gap='md'>
-        <Stack gap={4}>
-          <Title order={2} ta='center' fw={600}>
-            Hello!
+      <Stack gap='lg'>
+        {/* Header */}
+        <Stack gap={4} align='center'>
+          <Title order={2} fw={700} ta='center' fz={{ base: 'h3', sm: 'h2' }}>
+            Welcome Back
           </Title>
-          <Text size='lg' ta='center' c='dimmed'>
-            Login to your account
+          <Text size='sm' ta='center' c='dimmed'>
+            Sign in to your account to continue
           </Text>
         </Stack>
+
+        <Divider />
 
         <form
           onSubmit={form.onSubmit(async (values) => {
@@ -105,26 +110,30 @@ const LoginFormClient = () => {
               <TextInput
                 {...form.getInputProps('login')}
                 key={form.key('login')}
-                leftSection={<IconUser size={18} />}
-                size='lg'
+                label='Username or Email'
+                leftSection={<IconUser size={16} />}
+                size='md'
                 required
-                placeholder='Username or email'
+                placeholder='Enter your username or email'
                 disabled={loggedIn || loading}
+                radius='md'
               />
 
               <PasswordInput
                 {...form.getInputProps('password')}
                 key={form.key('password')}
-                leftSection={<IconLock size={18} />}
-                size='lg'
+                label='Password'
+                leftSection={<IconLock size={16} />}
+                size='md'
                 required
-                placeholder='Your password'
+                placeholder='Enter your password'
                 disabled={loggedIn || loading}
+                radius='md'
               />
             </Stack>
           </FocusTrap>
 
-          <Group justify='flex-end' mt='lg'>
+          <Group justify='flex-end' mt='xs'>
             <Anchor
               onClick={(event) => {
                 event.preventDefault();
@@ -138,18 +147,18 @@ const LoginFormClient = () => {
                   position: 'top-right',
                 });
               }}
-              c='var(--mantine-color-primary-9)'
+              c='var(--mantine-color-primary-7)'
               href='#'
               size='sm'
               variant='text'
-              fw={600}
+              fw={500}
             >
               Forgot password?
             </Anchor>
           </Group>
 
           <Button
-            size='lg'
+            size='md'
             type='submit'
             color='var(--mantine-color-primary-9)'
             loading={loading || loggedIn}
@@ -157,10 +166,14 @@ const LoginFormClient = () => {
             autoContrast
             fullWidth
             disabled={loggedIn}
-            mt='xl'
+            mt='lg'
+            radius='md'
+            leftSection={
+              !loading && !loggedIn ? <IconLogin2 size={17} /> : undefined
+            }
+            fw={600}
           >
-            <IconLogin2 size={18} />
-            &nbsp;Login
+            Sign In
           </Button>
         </form>
       </Stack>

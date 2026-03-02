@@ -134,7 +134,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       initialValues: {
         role_name: data?.role_name ?? '',
         permissions: JSON.stringify(data?.permissions ?? []),
-        active: data?.active ?? false,
+        active: data?.active ?? true,
       },
     });
 
@@ -147,7 +147,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalRoleContentProps>(
       if (!data) return;
       form.setValues({
         role_name: data.role_name ?? '',
-        active: data.active ?? false,
+        active: data.active ?? true,
       });
       setPermissionFields(buildPermissionFields(data.permissions ?? []));
     }, [data]);
