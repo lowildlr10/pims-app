@@ -136,7 +136,7 @@ const LoginClient = ({ company }: LoginProps) => {
           <Stack
             c='var(--mantine-color-white)'
             w='100%'
-            h={{ base: 'auto', lg: '100vh' }}
+            h={{ base: '100vh', lg: '100vh' }}
             py={{ base: 'xl', lg: 0 }}
             px={{ base: 'xl', sm: '3rem' }}
             gap='lg'
@@ -218,7 +218,7 @@ const LoginClient = ({ company }: LoginProps) => {
         {/* ── Right Panel – Form ── */}
         <Flex
           w={{ base: '100%', lg: '58%' }}
-          mih={{ base: 'auto', lg: '100vh' }}
+          mih={{ base: '100vh', lg: '100vh' }}
           py={{ base: 'xl', lg: 0 }}
           px={{ base: 'md', sm: 'xl' }}
           justify='center'
