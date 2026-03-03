@@ -123,6 +123,12 @@ const libraryItems: LibraryItem[] = [
     link: '/settings/libraries/unit-issues',
     permission: 'lib-unit-issue:view',
   },
+  {
+    title: 'Tax Withholdings',
+    description: 'Manage tax withholding configurations',
+    link: '/settings/libraries/tax-withholdings',
+    permission: 'lib-tax-withholding:view',
+  },
 ];
 
 const userManagementItems: UserManagementItem[] = [

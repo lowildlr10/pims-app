@@ -35,6 +35,7 @@ type ModuleType =
   | 'lib-signatory-detail'
   | 'lib-supplier'
   | 'lib-unit-issue'
+  | 'lib-tax-withholding'
   | 'super'
   | 'head'
   | 'supply'
@@ -782,6 +783,16 @@ type ObligationRequestType = {
   accounts?: ObligationRequestAccountType[];
 };
 
+type TaxWithholdingType = {
+  id?: string;
+  name?: string;
+  type?: string;
+  is_vat?: boolean;
+  ewt_rate?: number;
+  ptax_rate?: number;
+  active?: boolean;
+};
+
 type DisbursementVoucherType = {
   id?: string;
   purchase_request_id?: string;
@@ -790,6 +801,8 @@ type DisbursementVoucherType = {
   purchase_order?: PurchaseOrderType;
   obligation_request_id?: string;
   obligation_request?: ObligationRequestType;
+  tax_withholding_id?: string;
+  tax_withholding?: TaxWithholdingType;
   dv_no?: string;
   transaction_type?: 'procurement' | 'bills_payment';
   mode_payment?: 'check' | 'cash' | 'other';
@@ -800,6 +813,7 @@ type DisbursementVoucherType = {
   office?: string;
   responsibility_center_id?: string;
   responsibility_center?: ResponsibilityCenterType;
+  gross_amount?: number;
   explanation?: string;
   total_amount?: number;
   accountant_certified_choices?: {

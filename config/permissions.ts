@@ -756,6 +756,30 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     ],
   },
   {
+    label: 'Tax Withholding Library',
+    description: 'Scope for Tax Withholding Library module',
+    module_type: 'lib-tax-withholding',
+    checked: false,
+    indeterminate: false,
+    scopes: [
+      {
+        label: 'View',
+        value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Create',
+        value: 'create',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+    ],
+  },
+  {
     label: 'Company Profile',
     description: 'Scope for Company Profile module',
     module_type: 'company',

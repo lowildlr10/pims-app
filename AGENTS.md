@@ -15,10 +15,9 @@ PIMS (Procurement Information Management System) is a Next.js 16 application wit
 | Command          | Description                                  |
 | ---------------- | -------------------------------------------- |
 | `npm run dev`    | Start development server (Turbopack enabled) |
+| `npm run format` | Run Prettier to format code                  |
 | `npm run build`  | Create optimized production build            |
 | `npm run start`  | Run production server                        |
-| `npm run lint`   | Run ESLint to check code quality             |
-| `npm run format` | Run Prettier to format code                  |
 
 ### Running a Single Test
 

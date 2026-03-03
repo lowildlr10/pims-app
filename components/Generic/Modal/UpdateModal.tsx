@@ -17,6 +17,7 @@ import SupplierFormClient from '../../Libraries/Suppliers/Form';
 import AccountClassificationFormClient from '../../Libraries/AccountClassifications/Form';
 import AccountFormClient from '../../Libraries/Accounts/Form';
 import UnitIssueFormClient from '../../Libraries/UnitIssues/Form';
+import TaxWithholdingFormClient from '../../Libraries/TaxWithholdings/Form';
 import SignatoryFormClient from '../../Libraries/Signatories/Form';
 import BidsAwardsCommitteeFormClient from '../../Libraries/BidsAwardsCommittees/Form';
 import ResponsibilityCenterFormClient from '../../Libraries/ResposibilityCenters/Form';
@@ -276,6 +277,15 @@ const UpdateModalClient = ({
 
         {opened && content === 'lib-unit-issue' && (
           <UnitIssueFormClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleUpdate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {opened && content === 'lib-tax-withholding' && (
+          <TaxWithholdingFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleUpdate}

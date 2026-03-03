@@ -118,3 +118,5 @@ type AccountClassificationsResponse =
 type AccountsResponse = PaginatedResponse<AccountType>;
 
 type UnitIssuesResponse = PaginatedResponse<UnitIssueType>;
+
+type TaxWithholdingsResponse = PaginatedResponse<TaxWithholdingType>;

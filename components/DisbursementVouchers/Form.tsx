@@ -2,6 +2,7 @@ import {
   Alert,
   Card,
   Checkbox,
+  Divider,
   Flex,
   Group,
   NumberFormatter,
@@ -16,13 +17,14 @@ import {
 import React, {
   forwardRef,
   ReactNode,
+  useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import DynamicSelect from '../Generic/DynamicSelect';
 import { useForm } from '@mantine/form';
-import { randomId, useMediaQuery } from '@mantine/hooks';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   IconAsterisk,
   IconCalendar,
@@ -92,7 +94,18 @@ const FormClient = forwardRef<
   const [modePayment, setModePayment] = useState<
     'check' | 'cash' | 'other' | undefined
   >(currentForm?.mode_payment);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(
+    currentData?.total_amount ?? 0
+  );
+  const [grossAmount, setGrossAmount] = useState(
+    currentData?.gross_amount || currentData?.total_amount || 0
+  );
+  const [selectedTaxWithholding, setSelectedTaxWithholding] = useState<
+    TaxWithholdingType | undefined
+  >(currentData?.tax_withholding);
+  const [taxWithholdingId, setTaxWithholdingId] = useState<string | undefined>(
+    currentData?.tax_withholding_id
+  );
   const [
     selectedAccountantCertifiedChoices,
     setSelectedAccountantCertifiedChoices,
@@ -107,6 +120,9 @@ const FormClient = forwardRef<
       label: string;
     }[]
   >([]);
+  const [taxWithholdings, setTaxWithholdings] = useState<TaxWithholdingType[]>(
+    []
+  );
 
   useEffect(() => {
     form.reset();
@@ -115,9 +131,59 @@ const FormClient = forwardRef<
 
   useEffect(() => {
     setCurrentData(data);
-    setTotalAmount(currentData.total_amount ?? 0);
-    setModePayment(currentData?.mode_payment);
+    setTotalAmount(data.total_amount ?? 0);
+    setGrossAmount(data.gross_amount || data.total_amount || 0);
+    setTaxWithholdingId(data.tax_withholding_id);
+    setSelectedTaxWithholding(data.tax_withholding);
+    setModePayment(data?.mode_payment);
   }, [data]);
+
+  const computeTax = useCallback(
+    (
+      tax: TaxWithholdingType | undefined,
+      gross: number
+    ): {
+      vat: number;
+      base: number;
+      ewt: number;
+      ptax: number;
+      totalDeductions: number;
+      netAmount: number;
+    } | null => {
+      if (!tax || gross <= 0) return null;
+
+      const ewt_rate = tax.ewt_rate ?? 0;
+      const ptax_rate = tax.ptax_rate ?? 0;
+
+      if (tax.is_vat) {
+        const vat = Math.round(gross * (10 / 11.2) * 0.12 * 100) / 100;
+        const base = Math.round((gross - vat) * 100) / 100;
+        const ewt = Math.round(base * ewt_rate * 100) / 100;
+        const ptax = Math.round(base * ptax_rate * 100) / 100;
+        const totalDeductions = Math.round((ewt + ptax) * 100) / 100;
+        const netAmount = Math.round((gross - totalDeductions) * 100) / 100;
+        return { vat, base, ewt, ptax, totalDeductions, netAmount };
+      } else {
+        const ewt = Math.round(gross * ewt_rate * 100) / 100;
+        const ptax = Math.round(gross * ptax_rate * 100) / 100;
+        const totalDeductions = Math.round((ewt + ptax) * 100) / 100;
+        const netAmount = Math.round((gross - totalDeductions) * 100) / 100;
+        return { vat: 0, base: gross, ewt, ptax, totalDeductions, netAmount };
+      }
+    },
+    []
+  );
+
+  const taxComputation = useMemo(
+    () => computeTax(selectedTaxWithholding, grossAmount),
+    [selectedTaxWithholding, grossAmount, computeTax]
+  );
+
+  useEffect(() => {
+    if (taxComputation) {
+      setTotalAmount(taxComputation.netAmount);
+    }
+  }, [taxComputation]);
 
   useEffect(() => {
     if (Helper.empty(currentData)) return;
@@ -211,27 +277,244 @@ const FormClient = forwardRef<
     fetch();
   }, []);
 
+  useEffect(() => {
+    API.get('/libraries/tax-withholdings', {
+      paginated: false,
+      show_all: true,
+    })
+      .then((res) => {
+        setTaxWithholdings(res?.data ?? []);
+      })
+      .catch(() => {});
+  }, []);
+
   const renderDynamicTdContent = (id: string): ReactNode => {
     switch (id) {
       case 'explanation':
         return (
           <Table.Td>
-            <Textarea
-              key={form.key('explanation')}
-              {...form.getInputProps('explanation')}
-              variant={'unstyled'}
-              placeholder={readOnly ? 'None' : 'Enter explanation here...'}
-              sx={{
-                borderBottom: readOnly
-                  ? undefined
-                  : '1px solid var(--mantine-color-gray-5)',
-              }}
-              defaultValue={form?.values?.explanation}
-              size={lgScreenAndBelow ? 'sm' : 'md'}
-              autosize
-              required={!readOnly}
-              readOnly={readOnly}
-            />
+            <Stack>
+              <Textarea
+                key={form.key('explanation')}
+                {...form.getInputProps('explanation')}
+                variant={'unstyled'}
+                placeholder={readOnly ? 'None' : 'Enter explanation here...'}
+                sx={{
+                  borderBottom: readOnly
+                    ? undefined
+                    : '1px solid var(--mantine-color-gray-5)',
+                }}
+                defaultValue={form?.values?.explanation}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                autosize
+                required={!readOnly}
+                readOnly={readOnly}
+              />
+              <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                Attached are supporting papers with the amount of . . . . . . .
+                . . . . . . . . . . . . . .
+              </Text>
+
+              <Stack mt={lgScreenAndBelow ? 'sm' : 'md'}>
+                <Stack flex={1}>
+                  {!readOnly ? (
+                    <DynamicSelect
+                      variant={'unstyled'}
+                      label={'Tax Withholding Type'}
+                      placeholder={'Select tax type (optional)...'}
+                      endpoint={'/libraries/tax-withholdings'}
+                      endpointParams={{ paginated: false, show_all: true }}
+                      valueColumn={'id'}
+                      column={'name'}
+                      defaultData={
+                        taxWithholdingId
+                          ? [
+                              {
+                                value: taxWithholdingId,
+                                label:
+                                  selectedTaxWithholding?.name ??
+                                  taxWithholdingId,
+                              },
+                            ]
+                          : undefined
+                      }
+                      value={taxWithholdingId}
+                      size={lgScreenAndBelow ? 'sm' : 'md'}
+                      sx={{
+                        borderBottom: '1px solid var(--mantine-color-gray-5)',
+                      }}
+                      onChange={(value) => {
+                        setTaxWithholdingId(value ?? undefined);
+                        if (value) {
+                          const found = taxWithholdings.find(
+                            (t) => t.id === value
+                          );
+                          setSelectedTaxWithholding(found);
+                        } else {
+                          setSelectedTaxWithholding(undefined);
+                          setTotalAmount(grossAmount);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </Stack>
+
+                <Group
+                  fz={lgScreenAndBelow ? 'sm' : 'md'}
+                  gap={0}
+                  justify='space-between'
+                >
+                  <Text ta={'right'}>Gross Amount</Text>
+                  <NumberFormatter
+                    value={grossAmount}
+                    decimalScale={2}
+                    fixedDecimalScale
+                    thousandSeparator
+                  />
+                </Group>
+
+                {taxComputation && (
+                  <Stack flex={1} gap={0}>
+                    {selectedTaxWithholding?.is_vat && (
+                      <Stack gap={0}>
+                        <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                          Less: 12% VAT
+                        </Text>
+                        <Stack gap={0} pl={lgScreenAndBelow ? 'xs' : 'sm'}>
+                          <Group
+                            fz={lgScreenAndBelow ? 'sm' : 'md'}
+                            gap={0}
+                            justify='start'
+                            grow
+                          >
+                            <Text>
+                              (
+                              <NumberFormatter
+                                value={grossAmount}
+                                decimalScale={2}
+                                fixedDecimalScale
+                                thousandSeparator
+                              />{' '}
+                              x 10/11.2 x 12% ={' '}
+                              <NumberFormatter
+                                value={taxComputation.vat}
+                                decimalScale={2}
+                                fixedDecimalScale
+                                thousandSeparator
+                              />
+                              )
+                            </Text>
+                          </Group>
+                          <Group
+                            fz={lgScreenAndBelow ? 'sm' : 'md'}
+                            gap={0}
+                            justify='start'
+                            grow
+                          >
+                            <Text>
+                              (
+                              <NumberFormatter
+                                value={grossAmount}
+                                decimalScale={2}
+                                fixedDecimalScale
+                                thousandSeparator
+                              />{' '}
+                              -{' '}
+                              <NumberFormatter
+                                value={taxComputation.vat}
+                                decimalScale={2}
+                                fixedDecimalScale
+                                thousandSeparator
+                              />{' '}
+                              ={' '}
+                              <NumberFormatter
+                                value={taxComputation.base}
+                                decimalScale={2}
+                                fixedDecimalScale
+                                thousandSeparator
+                              />
+                              )
+                            </Text>
+                          </Group>
+                        </Stack>
+                        <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
+                          Base ={' '}
+                          <NumberFormatter
+                            value={taxComputation.base}
+                            decimalScale={2}
+                            fixedDecimalScale
+                            thousandSeparator
+                          />
+                        </Text>
+                      </Stack>
+                    )}
+
+                    <Stack gap={0}>
+                      <Text>Less: Deductions</Text>
+                      <Stack gap={0} pl={lgScreenAndBelow ? 'xs' : 'sm'}>
+                        <Group
+                          fz={lgScreenAndBelow ? 'sm' : 'md'}
+                          gap={0}
+                          justify='space-between'
+                        >
+                          <Text>
+                            {(
+                              (selectedTaxWithholding?.ewt_rate ?? 0) * 100
+                            ).toFixed(0)}
+                            % W/Tax{' '}
+                            {selectedTaxWithholding?.is_vat
+                              ? `(P ${taxComputation.base.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} x ${((selectedTaxWithholding?.ewt_rate ?? 0) * 100).toFixed(0)}%)`
+                              : `(P ${grossAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} x ${((selectedTaxWithholding?.ewt_rate ?? 0) * 100).toFixed(0)}%)`}
+                          </Text>
+                          <NumberFormatter
+                            value={taxComputation.ewt}
+                            decimalScale={2}
+                            fixedDecimalScale
+                            thousandSeparator
+                          />
+                        </Group>
+                        <Group
+                          fz={lgScreenAndBelow ? 'sm' : 'md'}
+                          gap={0}
+                          justify='space-between'
+                        >
+                          <Text>
+                            {(
+                              (selectedTaxWithholding?.ptax_rate ?? 0) * 100
+                            ).toFixed(0)}
+                            % P/Tax{' '}
+                            {selectedTaxWithholding?.is_vat
+                              ? `(P ${taxComputation.base.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} x ${((selectedTaxWithholding?.ptax_rate ?? 0) * 100).toFixed(0)}%)`
+                              : `(P ${grossAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} x ${((selectedTaxWithholding?.ptax_rate ?? 0) * 100).toFixed(0)}%)`}
+                          </Text>
+                          <NumberFormatter
+                            value={taxComputation.ptax}
+                            decimalScale={2}
+                            fixedDecimalScale
+                            thousandSeparator
+                          />
+                        </Group>
+                        <Divider />
+                        <Group
+                          fz={lgScreenAndBelow ? 'sm' : 'md'}
+                          fw={500}
+                          justify='end'
+                        >
+                          <NumberFormatter
+                            value={taxComputation.netAmount}
+                            decimalScale={2}
+                            fixedDecimalScale
+                            thousandSeparator
+                          />
+                        </Group>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                )}
+              </Stack>
+            </Stack>
           </Table.Td>
         );
 
@@ -277,6 +560,8 @@ const FormClient = forwardRef<
                 ),
             },
             mode_payment: modePayment,
+            tax_withholding_id: taxWithholdingId ?? null,
+            gross_amount: grossAmount,
             total_amount: totalAmount,
           });
         }

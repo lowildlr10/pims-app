@@ -563,6 +563,12 @@ type ModalUnitIssueContentProps = {
   setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
 };
 
+type ModalTaxWithholdingContentProps = {
+  data: TaxWithholdingType;
+  handleCreateUpdate?: () => void;
+  setPayload: React.Dispatch<React.SetStateAction<object | undefined>>;
+};
+
 type CollapseType = {
   [id: string]: boolean;
 };
