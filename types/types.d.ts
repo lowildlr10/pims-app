@@ -429,6 +429,7 @@ type PurchaseRequestType = {
   sai_date?: string;
   alobs_no?: string;
   alobs_date?: string;
+  notes?: string;
   funding_source_id?: string;
   funding_source?: FundingSourceType;
   purpose?: string;
@@ -738,12 +739,14 @@ type ObligationRequestType = {
   purchase_request?: PurchaseRequestType;
   purchase_order_id?: string;
   purchase_order?: PurchaseOrderType;
+  transaction_type?: 'procurement' | 'bills_payment';
   funding?: {
     general?: boolean;
     mdf_20?: boolean;
     gf_mdrrmf_5?: boolean;
     sef?: boolean;
   };
+  payee_type?: string;
   payee_id?: string;
   payee?: SupplierType;
   obr_no?: string;
@@ -765,6 +768,8 @@ type ObligationRequestType = {
   budget_signed_date?: string;
   disapproved_reason?: string;
   status?: ObligationRequestStatus;
+  transaction_type_formatted?: string;
+  payee_name?: string;
   status_timestamps?: {
     draft_at?: string;
     pending_at?: string;
@@ -786,7 +791,9 @@ type DisbursementVoucherType = {
   obligation_request_id?: string;
   obligation_request?: ObligationRequestType;
   dv_no?: string;
+  transaction_type?: 'procurement' | 'bills_payment';
   mode_payment?: 'check' | 'cash' | 'other';
+  payee_type?: string;
   payee_id?: string;
   payee?: SupplierType;
   address?: string;

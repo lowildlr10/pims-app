@@ -33,7 +33,7 @@ export const PurchaseRequestPageActions = ({
       showCreate={true}
       showSearch={true}
       defaultModalOnClick='details'
-      createPermissions={['super:*', 'supply:*']}
+      createPermissions={['super:*', 'supply:*', 'pr:*', 'pr:create']}
       setSearch={setSearch}
     />
   );

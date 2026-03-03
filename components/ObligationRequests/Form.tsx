@@ -1,5 +1,6 @@
 import {
   Alert,
+  Box,
   Card,
   Checkbox,
   Flex,
@@ -68,11 +69,14 @@ const itemHeaders: PurchaseRequestItemHeader[] = [
 const FormClient = forwardRef<
   HTMLFormElement,
   ModalObligationRequestContentProps
->(({ data, readOnly, handleCreateUpdate }, ref) => {
+>(({ data, readOnly, handleCreateUpdate, isCreate }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [currentData, setCurrentData] = useState(data);
   const currentForm = useMemo(
     () => ({
+      transaction_type: isCreate
+        ? 'bills_payment'
+        : currentData?.transaction_type,
       funding: currentData?.funding ?? {
         general: false,
         mdf_20: false,
@@ -85,7 +89,7 @@ const FormClient = forwardRef<
       address: currentData?.address ?? '',
       responsibility_center_id: currentData?.responsibility_center_id ?? '',
       particulars: currentData?.particulars ?? '',
-      total_amount: currentData.total_amount,
+      total_amount: currentData?.total_amount ?? 0,
       compliance_status: currentData?.compliance_status ?? {
         allotment_necessary: false,
         document_valid: false,
@@ -133,6 +137,9 @@ const FormClient = forwardRef<
     useState(false);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
   const [loadingFpps, setLoadingFpps] = useState(false);
+  const [payeeValue, setPayeeValue] = useState<string | null>(
+    data?.payee_id ?? null
+  );
   const [company, setCompany] = useState<CompanyType>();
   const [responsibilityCenters, setResponsibilityCenters] = useState<
     {
@@ -150,8 +157,9 @@ const FormClient = forwardRef<
 
   useEffect(() => {
     setCurrentData(data);
-    setRemainingAmount(currentData.purchase_order?.total_amount ?? 0);
-    setTotalAmount(currentData.purchase_order?.total_amount ?? 0);
+    setRemainingAmount(currentData.total_amount ?? 0);
+    setTotalAmount(currentData.total_amount ?? 0);
+    setPayeeValue(data?.payee_id ?? null);
   }, [data]);
 
   useEffect(() => {
@@ -191,25 +199,36 @@ const FormClient = forwardRef<
   }, [currentData]);
 
   useEffect(() => {
-    const accountObjs = selectedAccounts
-      .map((selAccount, index) => ({
-        key: randomId(),
-        code: accounts.find((account) => account.id === selAccount)?.code,
-        obligation_request_id: currentData.id,
-        account_id: selAccount,
-        amount:
-          currentData.accounts?.find(
-            (account) => account.account_id === selAccount
-          )?.amount ?? selectedAccountObjects[index]?.amount,
-      }))
-      .sort((a, b) => {
-        if (a.code === undefined) return 1;
-        if (b.code === undefined) return -1;
-        return a.code.localeCompare(b.code);
-      });
+    setSelectedAccountObjects((prevObjects) => {
+      const existingAmounts = new Map(
+        prevObjects.map((obj) => [obj.account_id, obj.amount])
+      );
 
-    setSelectedAccountObjects(accountObjs);
-  }, [selectedAccounts, accounts]);
+      return selectedAccounts.map((selAccount) => {
+        const existingAmount = existingAmounts.get(selAccount);
+        const savedAmount = currentData.accounts?.find(
+          (account) => account.account_id === selAccount
+        )?.amount;
+
+        return {
+          key: randomId(),
+          code: accounts.find((account) => account.id === selAccount)?.code,
+          obligation_request_id: currentData.id,
+          account_id: selAccount,
+          amount: savedAmount ?? existingAmount,
+        };
+      });
+    });
+  }, [selectedAccounts]);
+
+  useEffect(() => {
+    setSelectedAccountObjects((prev) =>
+      prev.map((acc) => ({
+        ...acc,
+        code: accounts.find((a) => a.id === acc.account_id)?.code,
+      }))
+    );
+  }, [accounts]);
 
   useEffect(() => {
     setLoadingCompany(true);
@@ -355,7 +374,7 @@ const FormClient = forwardRef<
     fetch();
   }, []);
 
-  const handleCalculateRemaining = () => {
+  const handleCalculateRemaining = (newTotalAmount?: number) => {
     if (Helper.empty(selectedAccountObjects)) return;
     const accountTotalAmount =
       selectedAccountObjects?.reduce(
@@ -363,7 +382,7 @@ const FormClient = forwardRef<
         0
       ) || 0;
 
-    setRemainingAmount(totalAmount - accountTotalAmount);
+    setRemainingAmount((newTotalAmount ?? totalAmount) - accountTotalAmount);
   };
 
   const renderDynamicTdContent = (id: string): ReactNode => {
@@ -502,8 +521,7 @@ const FormClient = forwardRef<
                 column={'code'}
                 value={selectedAccounts}
                 onChange={(value) => {
-                  value.sort();
-                  setSelectedAccounts(value);
+                  setSelectedAccounts([...value].sort());
                 }}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 readOnly={readOnly}
@@ -592,6 +610,7 @@ const FormClient = forwardRef<
                             fixedDecimalScale
                             thousandSeparator=','
                             value={amount}
+                            onFocus={() => handleCalculateRemaining()}
                             onChange={(value) => {
                               setSelectedAccountObjects((prev) =>
                                 prev.map((acc) =>
@@ -778,9 +797,47 @@ const FormClient = forwardRef<
               flex={lgScreenAndBelow ? 1 : '0 0 40%'}
               p={3}
             >
-              <Title order={lgScreenAndBelow ? 3 : 2}>
-                No. {currentData?.obr_no}
-              </Title>
+              {isCreate ? (
+                <Title order={lgScreenAndBelow ? 3 : 2}>
+                  No.{' '}
+                  <Text
+                    fz={lgScreenAndBelow ? 'h3' : 'h2'}
+                    fw={'bold'}
+                    component='span'
+                    c='dimmed'
+                  >
+                    Autogenerated
+                  </Text>
+                </Title>
+              ) : !readOnly ? (
+                <Group gap={4} align={'center'} wrap={'nowrap'}>
+                  <Title order={lgScreenAndBelow ? 3 : 2}>No.</Title>
+                  <IconAsterisk
+                    size={12}
+                    color={'var(--mantine-color-red-8)'}
+                    stroke={2}
+                  />
+                  <TextInput
+                    key={form.key('obr_no')}
+                    {...form.getInputProps('obr_no')}
+                    variant={'unstyled'}
+                    defaultValue={form.values.obr_no}
+                    size={lgScreenAndBelow ? 'sm' : 'md'}
+                    sx={{
+                      borderBottom: '2px solid var(--mantine-color-gray-5)',
+                      input: {
+                        fontWeight: 700,
+                        fontSize: lgScreenAndBelow ? '1.17em' : '1.5em',
+                        padding: 0,
+                      },
+                    }}
+                  />
+                </Group>
+              ) : (
+                <Title order={lgScreenAndBelow ? 3 : 2}>
+                  No. {currentData?.obr_no}
+                </Title>
+              )}
             </Stack>
           </Flex>
 
@@ -799,6 +856,16 @@ const FormClient = forwardRef<
                 <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
                   Payee/ Office:
                 </Text>
+                {!readOnly &&
+                  currentData?.transaction_type !== 'procurement' && (
+                    <Stack>
+                      <IconAsterisk
+                        size={7}
+                        color={'var(--mantine-color-red-8)'}
+                        stroke={2}
+                      />
+                    </Stack>
+                  )}
               </Group>
             </Stack>
             <Stack
@@ -808,23 +875,59 @@ const FormClient = forwardRef<
               flex={lgScreenAndBelow ? 1 : '0 0 85%'}
               p={'sm'}
             >
-              <TextInput
-                variant={'unstyled'}
-                placeholder={'None'}
-                value={currentData?.payee?.supplier_name ?? ''}
-                size={lgScreenAndBelow ? 'sm' : 'md'}
-                w={'100%'}
-                sx={{
-                  borderBottom: '2px solid var(--mantine-color-gray-5)',
-                  input: {
-                    minHeight: '30px',
-                    height: '30px',
+              {!readOnly && currentData?.transaction_type !== 'procurement' ? (
+                <DynamicSelect
+                  value={payeeValue}
+                  onChange={(value) => {
+                    setPayeeValue(value);
+                    form.setFieldValue('payee_id', value ?? '');
+                  }}
+                  variant={'unstyled'}
+                  placeholder={'Select a payee...'}
+                  endpoint={'/libraries/suppliers'}
+                  endpointParams={{
+                    paginated: false,
+                    show_all: true,
+                    show_inactive: false,
+                  }}
+                  valueColumn={'id'}
+                  column={'supplier_name'}
+                  defaultData={
+                    currentData?.payee_id
+                      ? [
+                          {
+                            value: currentData.payee_id,
+                            label: currentData.payee_name ?? '',
+                          },
+                        ]
+                      : undefined
+                  }
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  sx={{
                     width: '100%',
-                  },
-                }}
-                flex={1}
-                readOnly
-              />
+                    borderBottom: '2px solid var(--mantine-color-gray-5)',
+                  }}
+                  required
+                />
+              ) : (
+                <TextInput
+                  variant={'unstyled'}
+                  placeholder={'None'}
+                  value={currentData?.payee_name ?? ''}
+                  size={lgScreenAndBelow ? 'sm' : 'md'}
+                  w={'100%'}
+                  sx={{
+                    borderBottom: '2px solid var(--mantine-color-gray-5)',
+                    input: {
+                      minHeight: '30px',
+                      height: '30px',
+                      width: '100%',
+                    },
+                  }}
+                  flex={1}
+                  readOnly
+                />
+              )}
             </Stack>
           </Flex>
 
@@ -896,7 +999,7 @@ const FormClient = forwardRef<
                 variant={'unstyled'}
                 placeholder={'Enter the address here...'}
                 defaultValue={readOnly ? undefined : form.values.address}
-                value={readOnly ? currentData?.address : undefined}
+                value={readOnly ? (currentData?.address ?? '') : undefined}
                 error={form.errors.purpose && ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 w={'100%'}
@@ -989,7 +1092,10 @@ const FormClient = forwardRef<
                       decimalScale={2}
                       fixedDecimalScale
                       thousandSeparator={','}
-                      onChange={(value) => setTotalAmount(value as number)}
+                      onChange={(value) => {
+                        setTotalAmount(value as number);
+                        handleCalculateRemaining(value as number);
+                      }}
                       readOnly={readOnly}
                     />
                   </Table.Td>

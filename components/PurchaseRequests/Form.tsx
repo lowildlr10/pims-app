@@ -92,6 +92,7 @@ const FormClient = forwardRef<
       sai_date: currentData?.sai_date ?? '',
       alobs_no: currentData?.alobs_no ?? '',
       alobs_date: currentData?.alobs_date ?? '',
+      notes: currentData?.notes ?? '',
       funding_source_id: currentData?.funding_source_id ?? '',
       purpose: currentData?.purpose ?? '',
       requested_by_id: currentData?.requested_by_id ?? '',
@@ -954,6 +955,33 @@ const FormClient = forwardRef<
                 </Table.ScrollContainer>
               </Stack>
             )}
+
+            <Group
+              align={'flex-start'}
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              p={'md'}
+            >
+              <Textarea
+                key={form.key('notes')}
+                {...form.getInputProps('notes')}
+                variant={'unstyled'}
+                label={'Notes'}
+                placeholder={'Enter additional notes here...'}
+                defaultValue={readOnly ? undefined : form.values.notes}
+                value={readOnly ? (currentData?.notes ?? '') : undefined}
+                error={form.errors.notes && ''}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                autosize
+                autoCapitalize={'sentences'}
+                readOnly={readOnly}
+                w={'100%'}
+                sx={{
+                  borderBottom: readOnly
+                    ? undefined
+                    : '1px solid var(--mantine-color-gray-5)',
+                }}
+              />
+            </Group>
 
             <Group
               align={'flex-start'}

@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { usePathname } from 'next/navigation';
 import DisapproveContent from './ActionModalContents/DisapproveContent';
+import ApproveRfqContent from './ActionModalContents/ApproveRfqContent';
 
 const NavigationMenus = ({
   id,
@@ -368,12 +369,12 @@ const RfqActionsClient = ({
               handleOpenActionModal(
                 'approve',
                 'Approve RFQs',
-                `Are you sure you want to approve the 
-                ${status === 'for_canvassing' ? 'RFQs' : 'new RFQs'} 
-                for this Purchase Request for Abstract of Quotation?`,
+                <ApproveRfqContent />,
                 'var(--mantine-color-green-7)',
                 'Approve',
-                `/purchase-requests/${id}/approve-request-quotations`
+                `/purchase-requests/${id}/approve-request-quotations`,
+                undefined,
+                true
               )
             }
           >

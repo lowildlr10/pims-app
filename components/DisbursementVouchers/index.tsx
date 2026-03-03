@@ -37,21 +37,27 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
+      id: 'transaction_type_formatted',
+      label: 'Type',
+      width: '10%',
+      sortable: true,
+    },
+    {
       id: 'po_no',
       label: 'PO No',
-      width: '12%',
+      width: '10%',
       sortable: true,
     },
     {
       id: 'explanation_formatted',
       label: 'Explanation',
-      width: '44%',
+      width: '38%',
       sortable: true,
     },
     {
       id: 'payee_name',
       label: 'Payee',
-      width: '16%',
+      width: '14%',
       sortable: true,
     },
     {

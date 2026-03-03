@@ -25,9 +25,10 @@ export const ObrPageActions = ({ user, permissions }: ObrPageActionsProps) => {
   return (
     <PageHeaderActionsClient
       permissions={permissions}
+      createPermissions={['obr:*', 'obr:create', 'budget:*', 'super:*']}
       search={search}
       mainModule='obr'
-      showCreate={false}
+      showCreate={true}
       showSearch={true}
       defaultModalOnClick='details'
       setSearch={setSearch}

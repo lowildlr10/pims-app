@@ -253,6 +253,11 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
+        label: 'Create',
+        value: 'create',
+        checked: false,
+      },
+      {
         label: 'Update',
         value: 'update',
         checked: false,

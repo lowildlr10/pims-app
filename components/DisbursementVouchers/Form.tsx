@@ -62,7 +62,7 @@ const FormClient = forwardRef<
       office: currentData?.office ?? '',
       responsibility_center_id: currentData?.responsibility_center_id ?? '',
       explanation: currentData?.explanation ?? '',
-      total_amount: currentData.total_amount,
+      total_amount: currentData.total_amount ?? 0,
       accountant_certified_choices:
         currentData?.accountant_certified_choices ?? {
           allotment_obligated: false,
@@ -115,7 +115,7 @@ const FormClient = forwardRef<
 
   useEffect(() => {
     setCurrentData(data);
-    setTotalAmount(currentData.purchase_order?.total_amount ?? 0);
+    setTotalAmount(currentData.total_amount ?? 0);
     setModePayment(currentData?.mode_payment);
   }, [data]);
 
@@ -242,7 +242,7 @@ const FormClient = forwardRef<
               <NumberInput
                 variant={'unstyled'}
                 placeholder={'Amount'}
-                value={currentData.purchase_order?.total_amount}
+                value={currentData.total_amount}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 min={0}
                 clampBehavior={'strict'}
@@ -359,7 +359,7 @@ const FormClient = forwardRef<
                 size={lgScreenAndBelow ? 'md' : 'lg'}
                 label={'No.'}
                 placeholder={'None'}
-                required
+                required={!readOnly}
                 sx={{
                   borderBottom: '1px solid var(--mantine-color-gray-5)',
                 }}

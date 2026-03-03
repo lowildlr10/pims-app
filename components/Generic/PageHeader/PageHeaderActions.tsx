@@ -68,11 +68,11 @@ const PageHeaderActionsClient = ({
   return (
     <Group gap='xs'>
       {showCreate &&
-      (createPermissions
-        ? createPermissions.some((perm) => permissions.includes(perm))
-        : getAllowedPermissions(mainModule as any, 'create')?.some(
-            (permission) => permissions.includes(permission)
-          )) ? (
+      [
+        ...(createPermissions ??
+          getAllowedPermissions(mainModule as any, 'create') ??
+          []),
+      ].some((permission) => permissions?.includes(permission)) ? (
         <>
           {createMenus && createMenus.length > 0 ? (
             <Menu width={350} position='bottom-start'>

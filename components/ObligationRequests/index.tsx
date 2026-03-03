@@ -37,21 +37,27 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
+      id: 'transaction_type_formatted',
+      label: 'Type',
+      width: '10%',
+      sortable: true,
+    },
+    {
       id: 'po_no',
       label: 'PO No',
-      width: '12%',
+      width: '10%',
       sortable: true,
     },
     {
       id: 'particulars_formatted',
       label: 'Particulars',
-      width: '44%',
+      width: '38%',
       sortable: true,
     },
     {
       id: 'payee_name',
       label: 'Payee',
-      width: '16%',
+      width: '14%',
       sortable: true,
     },
     {
@@ -182,6 +188,8 @@ const ObligationRequestsClient = ({
             status={body.status}
           />
         ),
+        transaction_type_formatted:
+          body.transaction_type_formatted ?? 'Procurement',
         po_no: purchase_order?.po_no ?? '-',
         particulars_formatted: body.particulars ? (
           Helper.shortenText(body.particulars, lgScreenAndBelow ? 80 : 150)
@@ -199,7 +207,7 @@ const ObligationRequestsClient = ({
             </Text>
           </Group>
         ),
-        payee_name: body.payee?.supplier_name ?? '-',
+        payee_name: body.payee_name ?? '-',
         action: (
           <Menu
             position={'left-start'}
