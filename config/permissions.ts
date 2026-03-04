@@ -880,9 +880,9 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     ],
   },
   {
-    label: 'Cashier',
-    description: 'Scope for Cashier role',
-    module_type: 'cashier',
+    label: 'Treasurer',
+    description: 'Scope for Treasurer role',
+    module_type: 'treasurer',
     checked: false,
     indeterminate: false,
     scopes: [

@@ -7,11 +7,9 @@ import { useForm } from '@mantine/form';
 const FormClient = forwardRef<HTMLFormElement, ModalTaxWithholdingContentProps>(
   ({ data, handleCreateUpdate, setPayload }, ref) => {
     const [currentData, setCurrentData] = useState(data);
-    const isCreate = !currentData?.id;
     const currentForm = useMemo(
       () => ({
         name: currentData?.name ?? '',
-        type: currentData?.type ?? '',
         is_vat: currentData?.is_vat ?? false,
         ewt_rate: (currentData?.ewt_rate ?? 0) * 100,
         ptax_rate: (currentData?.ptax_rate ?? 0) * 100,
@@ -60,20 +58,6 @@ const FormClient = forwardRef<HTMLFormElement, ModalTaxWithholdingContentProps>(
             size={'sm'}
             required
           />
-          {isCreate && (
-            <TextInput
-              label='Type'
-              description='Unique identifier (e.g. vat_goods, non_vat_services)'
-              placeholder='e.g. vat_goods'
-              value={form.values.type}
-              onChange={(event) =>
-                form.setFieldValue('type', event.currentTarget.value)
-              }
-              error={form.errors.type && ''}
-              size={'sm'}
-              required
-            />
-          )}
           <NumberInput
             label='W/Tax Rate (%)'
             description='Expanded Withholding Tax rate (e.g. 1 for 1%)'

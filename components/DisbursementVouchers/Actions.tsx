@@ -141,9 +141,11 @@ const DvActionsClient = ({
         )}
 
       {status === 'for_payment' &&
-        ['accountant:*', ...getAllowedPermissions('dv', 'paid')].some(
-          (permission) => permissions?.includes(permission)
-        ) && (
+        [
+          'accountant:*',
+          'treasurer:*',
+          ...getAllowedPermissions('dv', 'paid'),
+        ].some((permission) => permissions?.includes(permission)) && (
           <Menu.Item
             leftSection={
               <IconChecks

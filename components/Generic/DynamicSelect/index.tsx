@@ -34,20 +34,24 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
     defaultValue
   );
   const [data, setData] = useState<DynamicSelectComboboxDataType>(defaultData);
-  const [presetValueApplied, setPresetValueApplied] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [initialPreloading, setInitialPreloading] = useState(preLoading);
-  const effectiveValue = isControlled ? value : internalValue;
-  const prevValueRef = useRef<string | null>(effectiveValue);
-  const isFirstRender = useRef(true);
 
-  // Use refs for values that change frequently but shouldn't recreate fetchData
+  const effectiveValue = isControlled ? value : internalValue;
+
+  // Stable refs to avoid stale closures without recreating callbacks
   const endpointParamsRef = useRef(endpointParams);
   endpointParamsRef.current = endpointParams;
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
-  const valueRef = useRef(value);
-  valueRef.current = value;
+  const defaultDataRef = useRef(defaultData);
+  defaultDataRef.current = defaultData;
+  const effectiveValueRef = useRef(effectiveValue);
+  effectiveValueRef.current = effectiveValue;
+
+  // Use a ref instead of state so preset logic never causes fetchData to recreate
+  const presetAppliedRef = useRef(false);
+  // Track previous effectiveValue to avoid triggering cascading fetch on mount
+  const prevEffectiveValueRef = useRef<string | null | undefined>(undefined);
 
   const fetchData = useCallback(async () => {
     if (disableFetch || !endpoint) return;
@@ -57,60 +61,65 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
         ...endpointParamsRef.current,
         sort_direction: 'asc',
       });
-      const items = res?.data ?? [];
+      const items: any[] = res?.data ?? [];
 
       if (items.length > 0) {
-        const mappedData = items.map((item: any) => ({
-          value: item[valueColumn],
+        const mappedData = items.map((item) => ({
+          value: String(item[valueColumn]),
           label: item[column],
         }));
 
+        const currentDefaultData = defaultDataRef.current;
         const mergedData =
-          defaultData.length > 0
+          currentDefaultData.length > 0
             ? [
-                ...defaultData,
+                ...currentDefaultData,
                 ...mappedData.filter(
-                  (md: DynamicSelectComboboxDataType[number]) =>
-                    !defaultData.some(
+                  (md) =>
+                    !currentDefaultData.some(
                       (dd: DynamicSelectComboboxDataType[number]) =>
                         dd.value === md.value
                     )
                 ),
               ]
             : mappedData;
+
         setData(mergedData);
 
-        if (hasPresetValue && !presetValueApplied) {
-          const valueToCompare = !isControlled
-            ? defaultValue
-            : valueRef.current;
+        if (hasPresetValue && !presetAppliedRef.current) {
+          const valueToCompare = isControlled
+            ? effectiveValueRef.current
+            : defaultValue;
           const presetItem = valueToCompare
             ? items.find(
-                (item: any) =>
-                  item[valueColumn] === valueToCompare ||
+                (item) =>
+                  String(item[valueColumn]) === String(valueToCompare) ||
                   item[column]?.toLowerCase() ===
                     (valueToCompare as string).toLowerCase()
               )
             : null;
 
-          const presetVal = presetItem?.[valueColumn] ?? items[0][valueColumn];
+          const presetVal = String(
+            presetItem ? presetItem[valueColumn] : items[0][valueColumn]
+          );
 
           if (!isControlled) {
             setInternalValue(presetVal);
-          } else if (isFirstRender.current) {
+          } else {
             onChangeRef.current?.(presetVal);
           }
 
-          setPresetValueApplied(true);
+          presetAppliedRef.current = true;
         }
       } else {
-        setData([]);
+        setData(
+          defaultDataRef.current.length > 0 ? defaultDataRef.current : []
+        );
       }
     } catch (err) {
       getErrors(err).forEach((msg) =>
         notify({ title: 'Failed', message: msg, color: 'red' })
       );
-      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -119,85 +128,82 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
     endpoint,
     valueColumn,
     column,
-    defaultValue,
     hasPresetValue,
     isControlled,
-    presetValueApplied,
+    defaultValue,
   ]);
 
+  // Initial preload
   useEffect(() => {
-    if (preLoading && initialPreloading) {
-      fetchData();
-      setInitialPreloading(false);
-    }
-  }, [fetchData, preLoading, initialPreloading]);
+    if (preLoading) fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // Cascading fetch: re-fetch when effectiveValue changes in controlled mode,
+  // but only after the initial mount (skip the very first render)
   useEffect(() => {
-    if (defaultData.length > 0) {
-      setData((prevData) => {
-        const existingValues = new Set(prevData.map((item) => item.value));
-        const merged = prevData.slice();
-        defaultData.forEach((item: DynamicSelectComboboxDataType[number]) => {
-          if (!existingValues.has(item.value)) {
-            merged.push(item);
-          }
-        });
-        return merged;
-      });
-    }
-  }, [defaultData]);
-
-  useEffect(() => {
-    if (!effectiveValue) return;
-    if (
-      data.some(
-        (item: DynamicSelectComboboxDataType[number]) =>
-          item.value === effectiveValue
-      )
-    )
-      return;
-    if (
-      defaultData.some(
-        (item: DynamicSelectComboboxDataType[number]) =>
-          item.value === effectiveValue
-      )
-    )
-      return;
-    setData((prev) => [
-      ...prev,
-      { value: effectiveValue, label: effectiveValue },
-    ]);
-  }, [effectiveValue]);
-
-  useEffect(() => {
-    if (!isControlled) {
-      setInternalValue(defaultValue);
-    }
-  }, [defaultValue, isControlled]);
-
-  const handleChange = (val: string | null) => {
-    if (!isControlled) {
-      setInternalValue(val);
-    }
-
-    if (val !== prevValueRef.current) {
-      prevValueRef.current = val;
-      onChangeRef.current?.(val);
-    }
-  };
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (prevEffectiveValueRef.current === undefined) {
+      prevEffectiveValueRef.current = effectiveValue;
       return;
     }
+    if (prevEffectiveValueRef.current === effectiveValue) return;
+    prevEffectiveValueRef.current = effectiveValue;
 
-    if (!isControlled) return;
-
-    if (effectiveValue && !isLoading) {
+    if (isControlled && effectiveValue && !isLoading) {
       fetchData();
     }
   }, [effectiveValue, isControlled, isLoading, fetchData]);
+
+  // Sync defaultData changes into data state
+  useEffect(() => {
+    if (defaultData.length === 0) return;
+    setData((prevData) => {
+      const defaultMap = new Map<string, DynamicSelectComboboxDataType[number]>(
+        (defaultData as DynamicSelectComboboxDataType).map((item) => [
+          item.value,
+          item,
+        ])
+      );
+      const merged = prevData.map(
+        (item: DynamicSelectComboboxDataType[number]) => {
+          const defaultItem = defaultMap.get(item.value);
+          return defaultItem?.label
+            ? { ...item, label: defaultItem.label }
+            : item;
+        }
+      );
+      const existingValues = new Set(prevData.map((item) => item.value));
+      (defaultData as DynamicSelectComboboxDataType).forEach((item) => {
+        if (!existingValues.has(item.value)) merged.push(item);
+      });
+      return merged;
+    });
+  }, [defaultData]);
+
+  // Ensure effectiveValue has a corresponding option (fallback label = value)
+  useEffect(() => {
+    if (!effectiveValue) return;
+    setData((prev) => {
+      if (prev.some((item) => item.value === effectiveValue)) return prev;
+      if (
+        (defaultDataRef.current as DynamicSelectComboboxDataType).some(
+          (item) => item.value === effectiveValue
+        )
+      )
+        return prev;
+      return [...prev, { value: effectiveValue, label: effectiveValue }];
+    });
+  }, [effectiveValue]);
+
+  // Sync defaultValue into internal state for uncontrolled mode
+  useEffect(() => {
+    if (!isControlled) setInternalValue(defaultValue);
+  }, [defaultValue, isControlled]);
+
+  const handleChange = (val: string | null) => {
+    if (!isControlled) setInternalValue(val);
+    onChangeRef.current?.(val);
+  };
 
   return (
     <Select
@@ -211,9 +217,8 @@ const DynamicSelect: React.FC<DynamicSelectProps> = ({
           self.findIndex((t) => t.value === item.value) === index
       )}
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
-      value={effectiveValue}
-      defaultValue={!isControlled ? defaultValue : undefined}
-      onChange={(_, option) => handleChange(option?.value ?? null)}
+      value={effectiveValue ?? null}
+      onChange={handleChange}
       nothingFoundMessage='Nothing found...'
       leftSection={
         (loading || isLoading) && (

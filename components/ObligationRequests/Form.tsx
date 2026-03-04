@@ -414,7 +414,6 @@ const FormClient = forwardRef<
                       ]
                     : undefined)
                 }
-                value={form.values.responsibility_center_id}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 required={!readOnly}
                 readOnly={readOnly}
@@ -1171,7 +1170,6 @@ const FormClient = forwardRef<
                     }
                     valueColumn={'signatory_id'}
                     column={'fullname_designation'}
-                    value={form.values.sig_head_id}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -1273,7 +1271,6 @@ const FormClient = forwardRef<
                     }
                     valueColumn={'signatory_id'}
                     column={'fullname_designation'}
-                    value={form.values.sig_budget_id}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',

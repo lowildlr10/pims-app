@@ -1,7 +1,7 @@
 'use client';
 
 import { Loader, MultiSelect } from '@mantine/core';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
@@ -24,25 +24,12 @@ const DynamicMultiselect = ({
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{ label: string; value: string }[]>([]);
   const [inputValue, setInputValue] = useState<string[] | undefined>(value);
-  const isExternalUpdate = useRef(false);
 
   useEffect(() => {
     handleFetchData();
   }, []);
 
   useEffect(() => {
-    if (isExternalUpdate.current) {
-      isExternalUpdate.current = false;
-      return;
-    }
-
-    if (onChange && inputValue !== undefined) {
-      onChange(inputValue ?? []);
-    }
-  }, [inputValue]);
-
-  useEffect(() => {
-    isExternalUpdate.current = true;
     setInputValue(value);
   }, [value]);
 
@@ -97,7 +84,10 @@ const DynamicMultiselect = ({
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       data={data}
       value={inputValue}
-      onChange={(value) => setInputValue(value ?? null)}
+      onChange={(newValue) => {
+        setInputValue(newValue);
+        onChange?.(newValue ?? []);
+      }}
       onFocus={() => handleFetchData()}
       nothingFoundMessage={'Nothing found...'}
       leftSection={

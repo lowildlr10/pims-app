@@ -120,12 +120,19 @@ export const PROCUREMENT_LINKS = [
   },
   {
     label: 'Obligation Request',
-    allowedPermissions: ['super:*', 'head:*', 'obr:* ', 'obr:view'],
+    allowedPermissions: ['super:*', 'head:*', 'budget:*', 'obr:* ', 'obr:view'],
     link: '/procurement/obr',
   },
   {
     label: 'Disbursement Voucher',
-    allowedPermissions: ['super:*', 'head:*', 'dv:*', 'dv:view'],
+    allowedPermissions: [
+      'super:*',
+      'head:*',
+      'accountant:*',
+      'treasurer:*',
+      'dv:*',
+      'dv:view',
+    ],
     link: '/procurement/dv',
   },
 ];

@@ -41,7 +41,7 @@ type ModuleType =
   | 'supply'
   | 'budget'
   | 'accountant'
-  | 'cashier'
+  | 'treasurer'
   | 'user';
 
 type ActionType =
@@ -786,7 +786,6 @@ type ObligationRequestType = {
 type TaxWithholdingType = {
   id?: string;
   name?: string;
-  type?: string;
   is_vat?: boolean;
   ewt_rate?: number;
   ptax_rate?: number;

@@ -44,7 +44,7 @@ const PERMISSION_GROUPS: GroupDef[] = [
       'supply',
       'budget',
       'accountant',
-      'cashier',
+      'treasurer',
       'user',
     ] as ModuleType[],
   },
