@@ -525,7 +525,7 @@ const FormClient = forwardRef<
               <NumberInput
                 variant={'unstyled'}
                 placeholder={'Amount'}
-                value={currentData.total_amount}
+                value={totalAmount}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 min={0}
                 clampBehavior={'strict'}
