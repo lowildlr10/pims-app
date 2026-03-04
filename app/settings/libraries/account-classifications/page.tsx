@@ -6,6 +6,7 @@ import AccountClassificationsClient from '@/components/Libraries/AccountClassifi
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconLibrary } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-account-class';
 
@@ -34,7 +35,11 @@ const AccountClassificationsPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Account Classifications'}>
+      <MainContainerClient
+        title='Account Classifications'
+        secondaryTtile='Manage chart of accounts and financial classifications'
+        icon={<IconLibrary size={24} stroke={1.5} />}
+      >
         <AccountClassificationsClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

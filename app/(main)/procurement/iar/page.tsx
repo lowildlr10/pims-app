@@ -4,8 +4,9 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import InspectionAcceptanceReportsClient from '@/components/InspectionAcceptanceReports';
+import { IarPageActions, IarPageContent } from './client';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconClipboardCheck } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'iar';
 
@@ -37,12 +38,14 @@ const InspectionAcceptanceReportPage = async () => {
     >
       <MainContainerClient
         title={'Inspection and Acceptance Reports'}
+        secondaryTtile={
+          'Manage and track all inspection and acceptance reports'
+        }
+        icon={<IconClipboardCheck size={24} stroke={1.5} />}
         permissions={permissions}
+        actions={<IarPageActions user={user} permissions={permissions} />}
       >
-        <InspectionAcceptanceReportsClient
-          user={user}
-          permissions={permissions}
-        />
+        <IarPageContent user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

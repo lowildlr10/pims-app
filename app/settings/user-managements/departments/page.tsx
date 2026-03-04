@@ -6,6 +6,7 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconUserCog } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'account-department';
 
@@ -34,7 +35,11 @@ const DepartmentPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'User Management - Departments and Sections'}>
+      <MainContainerClient
+        title='Departments and Sections'
+        secondaryTtile='Organize company structure with departments and sections'
+        icon={<IconUserCog size={24} stroke={1.5} />}
+      >
         <DepartmentSectionClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

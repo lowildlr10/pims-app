@@ -57,7 +57,7 @@ const UpdateClient = ({
   );
 
   useEffect(() => {
-    setCurrentData(data?.data?.data);
+    setCurrentData(data?.data);
   }, [data]);
 
   const handleCancel = (id?: string) => {
@@ -111,7 +111,7 @@ const UpdateClient = ({
       .then((res) => {
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res.message || 'Record updated successfully.',
           color: 'green',
         });
 
@@ -227,6 +227,7 @@ const UpdateClient = ({
                 ref={formRef}
                 data={currentData}
                 handleCreateUpdate={handleUpdate}
+                isCreate={false}
               />
             )}
 

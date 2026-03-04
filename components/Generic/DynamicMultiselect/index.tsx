@@ -1,7 +1,7 @@
 'use client';
 
 import { Loader, MultiSelect } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
@@ -25,17 +25,17 @@ const DynamicMultiselect = ({
   const [data, setData] = useState<{ label: string; value: string }[]>([]);
   const [inputValue, setInputValue] = useState<string[] | undefined>(value);
 
-  useEffect(() => handleFetchData(), []);
-
   useEffect(() => {
-    if (onChange) onChange(inputValue ?? []);
-  }, [inputValue]);
+    handleFetchData();
+  }, []);
 
   useEffect(() => {
     setInputValue(value);
   }, [value]);
 
   const handleFetchData = () => {
+    if (!endpoint) return;
+
     setLoading(true);
 
     API.get(endpoint, {
@@ -43,9 +43,15 @@ const DynamicMultiselect = ({
       sort_direction: 'asc',
     })
       .then((res) => {
+        const rawData = res?.data ?? [];
+        const uniqueData = rawData.filter(
+          (item: any, index: number, self: any[]) =>
+            index === self.findIndex((t) => t.id === item.id)
+        );
+
         setData(
-          res?.data?.length > 0
-            ? res.data.map((item: any) => ({
+          uniqueData.length > 0
+            ? uniqueData.map((item: any) => ({
                 value: item.id,
                 label: item[column ?? 'column'],
               }))
@@ -78,7 +84,10 @@ const DynamicMultiselect = ({
       comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
       data={data}
       value={inputValue}
-      onChange={(value) => setInputValue(value ?? null)}
+      onChange={(newValue) => {
+        setInputValue(newValue);
+        onChange?.(newValue ?? []);
+      }}
       onFocus={() => handleFetchData()}
       nothingFoundMessage={'Nothing found...'}
       leftSection={

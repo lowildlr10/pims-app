@@ -68,7 +68,7 @@ const ActionModalClient = ({
       .then((res) => {
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message || 'Status updated successfully.',
           color: 'green',
         });
 

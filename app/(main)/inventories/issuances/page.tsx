@@ -4,8 +4,9 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import InventoryIssuancesClient from '@/components/InventoryIssuances';
+import { IssuancesPageActions, IssuancesPageContent } from './client';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconPackage } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'inv-issuance';
 
@@ -36,10 +37,13 @@ const InventoryIssuancePage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'PIMS - Inventory Issuances'}
+        title='Inventory Issuances'
+        secondaryTtile='Manage and track inventory item issuances'
+        icon={<IconPackage size={24} stroke={1.5} />}
         permissions={permissions}
+        actions={<IssuancesPageActions user={user} permissions={permissions} />}
       >
-        <InventoryIssuancesClient user={user} permissions={permissions} />
+        <IssuancesPageContent user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

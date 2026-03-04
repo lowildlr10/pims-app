@@ -6,6 +6,7 @@ import SuppliersClient from '@/components/Libraries/Suppliers';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconTruck } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-supplier';
 
@@ -34,7 +35,11 @@ const SupplierPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Suppliers'}>
+      <MainContainerClient
+        title='Suppliers'
+        secondaryTtile='Maintain supplier database and vendor information'
+        icon={<IconTruck size={24} stroke={1.5} />}
+      >
         <SuppliersClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

@@ -175,7 +175,7 @@ const IcsFormClient = forwardRef<
 
       API.get('/companies')
         .then((res) => {
-          const company: CompanyType = res?.data?.company;
+          const company: CompanyType = res?.data;
 
           setCompanyData(company);
         })
@@ -266,7 +266,12 @@ const IcsFormClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.quantity`)}
               {...form.getInputProps(`items.${index}.quantity`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
               placeholder={`Quantity`}
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -295,7 +300,7 @@ const IcsFormClient = forwardRef<
         return (
           <Table.Td align={'center'}>
             <TextInput
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={'None'}
               defaultValue={item.unit_issue}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -311,7 +316,12 @@ const IcsFormClient = forwardRef<
             <Textarea
               key={form.key(`items.${index}.description`)}
               {...form.getInputProps(`items.${index}.description`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
               placeholder={'Description'}
               defaultValue={readOnly ? undefined : item.description}
               value={readOnly ? item.description : undefined}
@@ -328,7 +338,12 @@ const IcsFormClient = forwardRef<
             <TextInput
               key={form.key(`items.${index}.inventory_item_no`)}
               {...form.getInputProps(`items.${index}.inventory_item_no`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
               placeholder={
                 readOnly ? 'None' : 'Enter inventory item number here...'
               }
@@ -346,7 +361,12 @@ const IcsFormClient = forwardRef<
             <TextInput
               key={form.key(`items.${index}.estimated_useful_life`)}
               {...form.getInputProps(`items.${index}.estimated_useful_life`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
               placeholder={
                 readOnly ? 'None' : 'Enter estimated useful life here...'
               }
@@ -364,7 +384,12 @@ const IcsFormClient = forwardRef<
             <DateInput
               key={form.key(`items.${index}.acquired_date`)}
               {...form.getInputProps(`items.${index}.acquired_date`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
               valueFormat={'YYYY-MM-DD'}
               defaultValue={
                 readOnly
@@ -396,7 +421,7 @@ const IcsFormClient = forwardRef<
           <Table.Td>
             <NumberInput
               size={lgScreenAndBelow ? 'sm' : 'md'}
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               value={item?.total_cost}
               decimalScale={2}
               fixedDecimalScale
@@ -444,22 +469,24 @@ const IcsFormClient = forwardRef<
     >
       <CustomLoadingOverlay visible={loading} />
 
-      <Stack p={'md'} justify={'center'}>
+      <Stack
+        p={{ base: 'xs', sm: 'md' }}
+        justify={'center'}
+        style={{ background: 'var(--mantine-color-gray-1)' }}
+      >
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Stack>
             <TextInput
-              variant={
-                !readOnly && isCreate
-                  ? 'filled'
-                  : !readOnly && !isCreate
-                    ? 'filled'
-                    : 'default'
-              }
+              variant={'unstyled'}
               label={'Document Type'}
               placeholder={'None'}
               value={Helper.mapInventoryIssuanceDocumentType(
@@ -472,7 +499,12 @@ const IcsFormClient = forwardRef<
 
             {isCreate ? (
               <DynamicSelect
-                variant={readOnly ? 'unstyled' : 'default'}
+                variant={'unstyled'}
+                sx={{
+                  borderBottom: readOnly
+                    ? undefined
+                    : '1px solid var(--mantine-color-gray-5)',
+                }}
                 endpoint={'/purchase-orders'}
                 endpointParams={{
                   paginated: false,
@@ -506,7 +538,7 @@ const IcsFormClient = forwardRef<
               <TextInput
                 label={'Purchase Order'}
                 placeholder={'None'}
-                variant={readOnly ? 'default' : 'filled'}
+                variant={'unstyled'}
                 value={currentData?.purchase_order?.po_no ?? '-'}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
@@ -518,10 +550,14 @@ const IcsFormClient = forwardRef<
 
         {poId && (
           <Card
-            shadow={'xs'}
-            padding={lgScreenAndBelow ? 'md' : 'lg'}
-            radius={'xs'}
+            shadow={'sm'}
+            padding={lgScreenAndBelow ? 'sm' : 'md'}
+            radius={0}
             withBorder
+            style={{
+              borderColor: 'var(--mantine-color-gray-4)',
+              background: 'white',
+            }}
           >
             <Stack align={'center'} w={'100%'} p={0} justify={'center'} gap={0}>
               <Stack
@@ -572,7 +608,7 @@ const IcsFormClient = forwardRef<
                           ICS No.:
                         </Text>
                         <TextInput
-                          variant={readOnly ? 'unstyled' : 'filled'}
+                          variant={'unstyled'}
                           placeholder={'Autogenerated'}
                           value={currentData.inventory_no ?? ''}
                           size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -765,7 +801,7 @@ const IcsFormClient = forwardRef<
                     </Table.Td>
                     <Table.Td colSpan={5}>
                       <Textarea
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         value={poData?.purchase_request?.purpose ?? '-'}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         autosize

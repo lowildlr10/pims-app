@@ -8,7 +8,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalUnitIssueContentProps>(
     const currentForm = useMemo(
       () => ({
         unit_name: currentData?.unit_name ?? '',
-        active: currentData?.active ?? false,
+        active: currentData?.active ?? true,
       }),
       [currentData]
     );

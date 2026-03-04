@@ -157,9 +157,19 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
+const RequestQuotationsClient = ({
+  user,
+  permissions,
+  search: externalSearch,
+  setSearch: externalSetSearch,
+  showTableActions = true,
+}: MainProps) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
-  const [search, setSearch] = useState('');
+
+  const [internalSearch, setInternalSearch] = useState('');
+  const search = externalSearch !== undefined ? externalSearch : internalSearch;
+  const setSearch = externalSetSearch || setInternalSearch;
+
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('pr_no');
@@ -440,6 +450,7 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
         sortDirection={sortDirection}
         search={search}
         showSearch
+        showTableActions={showTableActions}
         defaultModalOnClick={'details'}
         showCreateSubItem={showCreateSubItem}
         subItemsClickable
@@ -449,10 +460,10 @@ const RequestQuotationsClient = ({ user, permissions }: MainProps) => {
         perPage={perPage}
         loading={isLoading}
         page={page}
-        lastPage={data?.last_page ?? 0}
-        from={data?.from ?? 0}
-        to={data?.to ?? 0}
-        total={data?.total ?? 0}
+        lastPage={data?.meta?.last_page ?? 0}
+        from={data?.meta?.from ?? 0}
+        to={data?.meta?.to ?? 0}
+        total={data?.meta?.total ?? 0}
         refreshData={mutate}
         activeFormData={activeFormData}
         setActiveData={setActiveData}

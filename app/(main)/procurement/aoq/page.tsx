@@ -4,8 +4,9 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import AbstractQuotationsClient from '@/components/AbstractQuotations';
+import { AoqPageActions, AoqPageContent } from './client';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconListSearch } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'aoq';
 
@@ -36,10 +37,13 @@ const AbstractQuotationPage = async () => {
       type={'main'}
     >
       <MainContainerClient
-        title={'Abstract of Bids and Quotations'}
+        title='Abstract of Bids and Quotations'
+        secondaryTtile='Manage and track all abstract of bids and quotations'
+        icon={<IconListSearch size={24} stroke={1.5} />}
         permissions={permissions}
+        actions={<AoqPageActions user={user} permissions={permissions} />}
       >
-        <AbstractQuotationsClient user={user} permissions={permissions} />
+        <AoqPageContent user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

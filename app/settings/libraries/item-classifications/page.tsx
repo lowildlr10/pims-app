@@ -6,6 +6,7 @@ import ItemClassificationsClient from '@/components/Libraries/ItemClassification
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconCategory } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-item-class';
 
@@ -34,7 +35,11 @@ const ItemClassificationPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Item Classifications'}>
+      <MainContainerClient
+        title='Item Classifications'
+        secondaryTtile='Categorize and classify inventory items'
+        icon={<IconCategory size={24} stroke={1.5} />}
+      >
         <ItemClassificationsClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

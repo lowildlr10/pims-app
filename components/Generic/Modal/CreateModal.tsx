@@ -17,6 +17,7 @@ import SupplierFormClient from '../../Libraries/Suppliers/Form';
 import AccountClassificationFormClient from '../../Libraries/AccountClassifications/Form';
 import AccountFormClient from '../../Libraries/Accounts/Form';
 import UnitIssueFormClient from '../../Libraries/UnitIssues/Form';
+import TaxWithholdingFormClient from '../../Libraries/TaxWithholdings/Form';
 import SignatoryFormClient from '../../Libraries/Signatories/Form';
 import BidsAwardsCommitteeFormClient from '../../Libraries/BidsAwardsCommittees/Form';
 import ResponsibilityCenterFormClient from '../../Libraries/ResposibilityCenters/Form';
@@ -27,6 +28,13 @@ import RisFormClient from '../../InventoryIssuances/Forms/RisForm';
 import IcsFormClient from '../../InventoryIssuances/Forms/IcsForm';
 import AreFormClient from '../../InventoryIssuances/Forms/AreForm';
 import CustomLoadingOverlay from '../CustomLoadingOverlay';
+
+const WIDE_MODAL_CONTENT = [
+  'account-user',
+  'lib-supplier',
+  'lib-signatory',
+  'lib-bid-committee',
+];
 
 const CreateModalClient = ({
   title,
@@ -42,6 +50,7 @@ const CreateModalClient = ({
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<object>();
   const formRef = useRef<HTMLFormElement>(null);
+  const modalSize = WIDE_MODAL_CONTENT.includes(content ?? '') ? 'lg' : 'md';
 
   const handleCreate = (uncontrolledPayload?: object) => {
     let isControlled = true;
@@ -70,7 +79,7 @@ const CreateModalClient = ({
 
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message,
           color: 'green',
         });
 
@@ -104,7 +113,7 @@ const CreateModalClient = ({
       opened={opened}
       onClose={close}
       title={title ?? 'Create'}
-      size={'md'}
+      size={modalSize}
       fullScreen={fullscreen}
       scrollAreaComponent={ScrollArea.Autosize}
       centered
@@ -250,6 +259,15 @@ const CreateModalClient = ({
 
         {opened && content === 'lib-unit-issue' && (
           <UnitIssueFormClient
+            ref={formRef}
+            data={data}
+            handleCreateUpdate={handleCreate}
+            setPayload={setPayload}
+          />
+        )}
+
+        {opened && content === 'lib-tax-withholding' && (
+          <TaxWithholdingFormClient
             ref={formRef}
             data={data}
             handleCreateUpdate={handleCreate}

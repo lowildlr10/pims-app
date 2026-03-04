@@ -54,7 +54,7 @@ export default async function LoginLayout({
   return (
     <html lang='en' {...mantineHtmlProps}>
       <head>
-        <link rel='icon' href={favIcon ?? 'favicon.ico'} sizes='any' />
+        <link rel='icon' href={favIcon ?? '/images/favicon.ico'} sizes='any' />
         <ColorSchemeScript />
       </head>
       <body className='bg-background'>

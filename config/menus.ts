@@ -50,6 +50,7 @@ export const LIBRARY_ALLOWED_PERMISSIONS = [
   'lib-account-class:*',
   'lib-account:*',
   'lib-unit-issue:*',
+  'lib-tax-withholding:*',
   'lib-bid-committee:view',
   'lib-fund-source:view',
   'lib-item-class:view',
@@ -62,6 +63,7 @@ export const LIBRARY_ALLOWED_PERMISSIONS = [
   'lib-account-class:view',
   'lib-account:view',
   'lib-unit-issue:view',
+  'lib-tax-withholding:view',
 ];
 
 export const USER_MANAGEMENT_ALLOWED_PERMISSIONS = [
@@ -118,12 +120,19 @@ export const PROCUREMENT_LINKS = [
   },
   {
     label: 'Obligation Request',
-    allowedPermissions: ['super:*', 'head:*', 'obr:* ', 'obr:view'],
+    allowedPermissions: ['super:*', 'head:*', 'budget:*', 'obr:* ', 'obr:view'],
     link: '/procurement/obr',
   },
   {
     label: 'Disbursement Voucher',
-    allowedPermissions: ['super:*', 'head:*', 'dv:*', 'dv:view'],
+    allowedPermissions: [
+      'super:*',
+      'head:*',
+      'accountant:*',
+      'treasurer:*',
+      'dv:*',
+      'dv:view',
+    ],
     link: '/procurement/dv',
   },
 ];
@@ -279,6 +288,16 @@ export const LIBRARY_LINKS = [
       'lib-unit-issue:view',
     ],
     link: '/settings/libraries/unit-issues',
+  },
+  {
+    label: 'Tax Withholdings',
+    allowedPermissions: [
+      'super:*',
+      'head:*',
+      'lib-tax-withholding:*',
+      'lib-tax-withholding:view',
+    ],
+    link: '/settings/libraries/tax-withholdings',
   },
 ];
 

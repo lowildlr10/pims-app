@@ -10,7 +10,7 @@ const FormClient = forwardRef<
   const currentForm = useMemo(
     () => ({
       committee_name: currentData?.committee_name ?? '',
-      active: currentData?.active ?? false,
+      active: currentData?.active ?? true,
     }),
     [currentData]
   );

@@ -188,7 +188,7 @@ const FormClient = forwardRef<
               {...form.getInputProps('sku')}
               placeholder={readOnly ? 'None' : 'Enter SKU here...'}
               defaultValue={readOnly ? undefined : form.values.sku}
-              value={readOnly ? currentData?.sku : undefined}
+              value={readOnly ? (currentData?.sku ?? '') : undefined}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               label={'SKU'}
               readOnly={readOnly}
@@ -198,7 +198,7 @@ const FormClient = forwardRef<
               {...form.getInputProps('upc')}
               placeholder={readOnly ? 'None' : 'Enter UPC here...'}
               defaultValue={readOnly ? undefined : form.values.upc}
-              value={readOnly ? currentData?.upc : undefined}
+              value={readOnly ? (currentData?.upc ?? '') : undefined}
               size={lgScreenAndBelow ? 'sm' : 'md'}
               label={'UPC'}
               readOnly={readOnly}

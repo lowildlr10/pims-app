@@ -35,12 +35,13 @@ type ModuleType =
   | 'lib-signatory-detail'
   | 'lib-supplier'
   | 'lib-unit-issue'
+  | 'lib-tax-withholding'
   | 'super'
   | 'head'
   | 'supply'
   | 'budget'
   | 'accountant'
-  | 'cashier'
+  | 'treasurer'
   | 'user';
 
 type ActionType =
@@ -114,6 +115,7 @@ type UserType = {
   section?: {
     id?: string;
     section_name?: string;
+    department_name?: string;
   };
   position?: {
     id?: string;
@@ -428,6 +430,7 @@ type PurchaseRequestType = {
   sai_date?: string;
   alobs_no?: string;
   alobs_date?: string;
+  notes?: string;
   funding_source_id?: string;
   funding_source?: FundingSourceType;
   purpose?: string;
@@ -444,6 +447,7 @@ type PurchaseRequestType = {
   total_estimated_cost?: number;
   total_estimated_cost_formatted?: string;
   section_name?: string;
+  department_name?: string;
   funding_source_title?: string;
   funding_source_location?: string;
   requestor_fullname?: string;
@@ -623,6 +627,7 @@ type PurchaseOrderItemType = {
   pr_item?: PurchaseRequestItemType;
   description?: string;
   brand_model?: string;
+  unit?: string;
   unit_cost?: number;
   total_cost?: number;
 };
@@ -678,6 +683,8 @@ type InspectionAcceptanceReportItemType = {
   po_item?: PurchaseOrderItemType;
   accepted?: boolean;
   item_classification_id?: string;
+  unit?: string;
+  unit_cost?: number;
 };
 
 type InspectionAcceptanceReportType = {
@@ -733,12 +740,14 @@ type ObligationRequestType = {
   purchase_request?: PurchaseRequestType;
   purchase_order_id?: string;
   purchase_order?: PurchaseOrderType;
+  transaction_type?: 'procurement' | 'bills_payment';
   funding?: {
     general?: boolean;
     mdf_20?: boolean;
     gf_mdrrmf_5?: boolean;
     sef?: boolean;
   };
+  payee_type?: string;
   payee_id?: string;
   payee?: SupplierType;
   obr_no?: string;
@@ -760,6 +769,8 @@ type ObligationRequestType = {
   budget_signed_date?: string;
   disapproved_reason?: string;
   status?: ObligationRequestStatus;
+  transaction_type_formatted?: string;
+  payee_name?: string;
   status_timestamps?: {
     draft_at?: string;
     pending_at?: string;
@@ -772,6 +783,15 @@ type ObligationRequestType = {
   accounts?: ObligationRequestAccountType[];
 };
 
+type TaxWithholdingType = {
+  id?: string;
+  name?: string;
+  is_vat?: boolean;
+  ewt_rate?: number;
+  ptax_rate?: number;
+  active?: boolean;
+};
+
 type DisbursementVoucherType = {
   id?: string;
   purchase_request_id?: string;
@@ -780,14 +800,19 @@ type DisbursementVoucherType = {
   purchase_order?: PurchaseOrderType;
   obligation_request_id?: string;
   obligation_request?: ObligationRequestType;
+  tax_withholding_id?: string;
+  tax_withholding?: TaxWithholdingType;
   dv_no?: string;
+  transaction_type?: 'procurement' | 'bills_payment';
   mode_payment?: 'check' | 'cash' | 'other';
+  payee_type?: string;
   payee_id?: string;
   payee?: SupplierType;
   address?: string;
   office?: string;
   responsibility_center_id?: string;
   responsibility_center?: ResponsibilityCenterType;
+  gross_amount?: number;
   explanation?: string;
   total_amount?: number;
   accountant_certified_choices?: {

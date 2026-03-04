@@ -1,18 +1,38 @@
 'use client';
 
-import { Divider, Group, Text, Title } from '@mantine/core';
+import {
+  Box,
+  Divider,
+  Group,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
 import { Stack } from '@mantine/core';
 import { Paper } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import React from 'react';
 import { DirectoryPathClient } from '../DirectoryPath';
+import PageHeader from '../PageHeader';
+
+type MainContainerProps = {
+  secondaryTtile?: string;
+  title?: string;
+  icon?: React.ReactNode;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+  permissions?: string[];
+};
 
 const MainContainerClient = ({
   secondaryTtile,
   title,
   children,
   permissions,
+  icon,
+  actions,
 }: MainContainerProps) => {
+  const theme = useMantineTheme();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
 
   return (
@@ -21,33 +41,26 @@ const MainContainerClient = ({
       p={lgScreenAndBelow ? 'md' : 'xl'}
       mih={lgScreenAndBelow ? 'calc(100vh - 45px)' : 'calc(100vh - 50px)'}
     >
-      <Group>
-        <Stack gap={0}>
-          {secondaryTtile && (
-            <Text size={lgScreenAndBelow ? 'sm' : 'md'} c={'gray'}>
-              {secondaryTtile}
-            </Text>
-          )}
+      {title && (
+        <PageHeader
+          title={title}
+          subtitle={secondaryTtile || ''}
+          icon={icon}
+          background={theme.colors.primary[8]}
+          textColor='white'
+          actions={actions}
+        />
+      )}
 
-          <Title
-            order={
-              lgScreenAndBelow
-                ? secondaryTtile
-                  ? 5
-                  : 4
-                : secondaryTtile
-                  ? 4
-                  : 3
-            }
-            fw={600}
-          >
-            {title}
-          </Title>
+      {title && (
+        <Box mt='md'>
           <DirectoryPathClient permissions={permissions} />
-        </Stack>
-      </Group>
+        </Box>
+      )}
 
-      <Divider my={20} />
+      {!title && <DirectoryPathClient permissions={permissions} />}
+
+      <Divider my='lg' />
 
       {children}
     </Paper>

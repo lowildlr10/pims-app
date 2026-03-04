@@ -2,16 +2,35 @@
 
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-import { Box, Divider, Flex, Stack, Text, Title } from '@mantine/core';
+import {
+  Badge,
+  Box,
+  Divider,
+  Flex,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
+} from '@mantine/core';
 import LoginFormClient from './LoginForm';
 import LoginLogoClient from './LoginLogo';
-import Image from 'next/image';
 import { useScrollIntoView } from '@mantine/hooks';
 import { Button } from '@mantine/core';
-import { IconArrowRight } from '@tabler/icons-react';
+import {
+  IconArrowDown,
+  IconBox,
+  IconBuildingWarehouse,
+  IconShieldCheck,
+} from '@tabler/icons-react';
 import Helper from '@/utils/Helpers';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
+
+const FEATURES = [
+  { icon: IconShieldCheck, label: 'Secure & Role-based Access' },
+  { icon: IconBox, label: 'Real-time Inventory Tracking' },
+  { icon: IconBuildingWarehouse, label: 'End-to-end Procurement Flow' },
+];
 
 const LoginClient = ({ company }: LoginProps) => {
   const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
@@ -34,7 +53,7 @@ const LoginClient = ({ company }: LoginProps) => {
         parent_id: company.id,
       })
         .then((res) => {
-          const backgroundImage = res?.data?.data ?? undefined;
+          const backgroundImage = res?.data ?? undefined;
           setBackground(backgroundImage);
         })
         .catch(() => {
@@ -57,88 +76,188 @@ const LoginClient = ({ company }: LoginProps) => {
   }, [company]);
 
   return (
-    <Box p={0} m={0}>
+    <Box p={0} m={0} style={{ minHeight: '100vh', overflow: 'hidden' }}>
       <Flex
         direction={{ base: 'column', lg: 'row' }}
-        mih={{ base: 'auto', lg: '100vh' }}
-        w={'100%'}
+        mih={{ base: '100dvh', lg: '100vh' }}
+        w='100%'
       >
-        <Stack
-          bg={'var(--mantine-color-primary-9)'}
-          c={'var(--mantine-color-white)'}
-          opacity={background ? 0.9 : 1}
-          w={{ base: '100vw', lg: '40%' }}
-          gap={'sm'}
-          justify={'center'}
-          align={'center'}
-          h={{ base: '100vh', lg: undefined }}
+        {/* ── Left Panel – Branding ── */}
+        <Box
+          pos='relative'
+          w={{ base: '100%', lg: '42%' }}
+          style={{
+            overflow: 'hidden',
+            flexShrink: 0,
+            backgroundColor: background
+              ? 'color-mix(in srgb, var(--mantine-color-primary-9) 94%, transparent)'
+              : 'var(--mantine-color-primary-9)',
+            backdropFilter: background ? 'blur(2px)' : undefined,
+          }}
         >
-          <LoginLogoClient company={company} />
-
-          <Divider
-            size={'sm'}
-            bg={'var(--mantine-color-white)'}
-            c={'var(--mantine-color-white)'}
-            w={{ base: 220, sm: 300, lg: '80%' }}
+          {/* Decorative blobs */}
+          <Box
+            pos='absolute'
+            style={{
+              width: 380,
+              height: 380,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.06)',
+              top: -120,
+              right: -120,
+              pointerEvents: 'none',
+            }}
+          />
+          <Box
+            pos='absolute'
+            style={{
+              width: 260,
+              height: 260,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.05)',
+              bottom: -60,
+              left: -80,
+              pointerEvents: 'none',
+            }}
+          />
+          <Box
+            pos='absolute'
+            style={{
+              width: 140,
+              height: 140,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.04)',
+              bottom: 200,
+              right: 30,
+              pointerEvents: 'none',
+            }}
           />
 
-          <Stack align={'center'} justify={'center'} px={'xl'}>
-            <Title
-              fw={'bolder'}
-              fz={{ base: 'h4', sm: 'h3', md: 'h2' }}
-              ta={'center'}
-            >
-              PROCUREMENT & INVENTORY
-              <br />
-              MANAGEMENT SYSTEM
-            </Title>
-            <Text fz={{ base: 'sm', lg: 'md' }}>v1.0.0</Text>
-          </Stack>
-
-          <Button
-            display={{ lg: 'none' }}
-            color={'var(--mantine-color-primary-7)'}
-            rightSection={<IconArrowRight size={18} stroke={1.5} />}
-            onClick={() =>
-              scrollIntoView({
-                alignment: 'center',
-              })
-            }
+          <Stack
+            c='var(--mantine-color-white)'
+            w='100%'
+            h={{ base: '100vh', lg: '100vh' }}
+            py={{ base: 'xl', lg: 0 }}
+            px={{ base: 'xl', sm: '3rem' }}
+            gap='lg'
+            justify='center'
+            align='center'
+            style={{ position: 'relative', zIndex: 1 }}
           >
-            Login Now
-          </Button>
-        </Stack>
-        <Stack
-          bg={'var(--mantine-color-white)'}
-          w={{ base: '100vw', lg: '60%' }}
-          justify={'center'}
-          align={'center'}
-          h={{ base: '100vh', lg: undefined }}
+            <LoginLogoClient company={company} />
+
+            <Divider
+              size='xs'
+              w={160}
+              style={{ borderColor: 'rgba(255,255,255,0.3)' }}
+            />
+
+            <Stack align='center' gap='xs'>
+              <Title
+                fw={800}
+                fz={{ base: 'h4', sm: 'h3', lg: 'h3' }}
+                ta='center'
+                lh={1.35}
+                style={{ letterSpacing: '-0.01em' }}
+              >
+                PROCUREMENT &amp;
+                <br />
+                INVENTORY MANAGEMENT
+                <br />
+                SYSTEM
+              </Title>
+
+              <Badge
+                variant='light'
+                color='gray'
+                size='sm'
+                mt={4}
+                style={{ opacity: 0.75 }}
+              >
+                v1.0.0
+              </Badge>
+            </Stack>
+
+            {/* Feature highlights */}
+            <Stack gap='sm' mt='md' w='100%' maw={270}>
+              {FEATURES.map(({ icon: Icon, label }) => (
+                <Flex key={label} align='center' gap='sm'>
+                  <ThemeIcon
+                    size='sm'
+                    variant='white'
+                    color='var(--mantine-color-primary-9)'
+                    radius='xl'
+                    style={{ opacity: 0.9, flexShrink: 0 }}
+                  >
+                    <Icon size={13} />
+                  </ThemeIcon>
+                  <Text size='sm' style={{ opacity: 0.85 }}>
+                    {label}
+                  </Text>
+                </Flex>
+              ))}
+            </Stack>
+
+            {/* Mobile scroll-to-form button */}
+            <Button
+              display={{ lg: 'none' }}
+              size='md'
+              variant='white'
+              color='var(--mantine-color-primary-9)'
+              rightSection={<IconArrowDown size={16} stroke={2} />}
+              onClick={() => scrollIntoView({ alignment: 'center' })}
+              mt='sm'
+              radius='xl'
+              fw={600}
+            >
+              Sign In
+            </Button>
+          </Stack>
+        </Box>
+
+        {/* ── Right Panel – Form ── */}
+        <Flex
+          w={{ base: '100%', lg: '58%' }}
+          mih={{ base: '100vh', lg: '100vh' }}
+          py={{ base: 'xl', lg: 0 }}
+          px={{ base: 'md', sm: 'xl' }}
+          justify='center'
+          align='center'
+          direction='column'
           ref={targetRef}
+          style={{
+            position: 'relative',
+            backgroundColor: background
+              ? 'color-mix(in srgb, var(--mantine-color-gray-0) 94%, transparent)'
+              : 'var(--mantine-color-gray-0)',
+            backdropFilter: background ? 'blur(2px)' : undefined,
+          }}
         >
           <LoginFormClient />
-          <Box
+
+          <Text
             pos={{ base: 'relative', lg: 'absolute' }}
-            bottom={0}
-            mb={{ base: 0, lg: 10 }}
+            bottom={{ base: 0, lg: 24 }}
+            mt={{ base: 'xl', lg: 0 }}
+            c='dimmed'
+            size='xs'
+            ta='center'
           >
-            <Text c='dimmed' size={'sm'} mt='10%'>
-              @ {dayjs().year()} ALL RIGHTS RESERVED
-            </Text>
-          </Box>
-        </Stack>
+            &copy; {dayjs().year()} All Rights Reserved
+          </Text>
+        </Flex>
       </Flex>
 
       {background && (
-        <Image
-          src={background ?? undefined}
-          alt={'Background Image'}
-          loading={'lazy'}
+        <div
           style={{
+            position: 'fixed',
+            inset: 0,
             zIndex: -100,
-            objectFit: 'cover',
+            backgroundImage: `url(${background})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
           }}
-          fill
         />
       )}
     </Box>

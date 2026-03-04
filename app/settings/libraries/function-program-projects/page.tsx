@@ -6,6 +6,7 @@ import FunctionProgramProjectClient from '@/components/Libraries/FunctionProgram
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconBuilding } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-fpp';
 
@@ -34,7 +35,11 @@ const FunctionProgramProjectsPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Function, Program, and Projects'}>
+      <MainContainerClient
+        title='Function, Program, and Projects'
+        secondaryTtile='Organize functions and program projects'
+        icon={<IconBuilding size={24} stroke={1.5} />}
+      >
         <FunctionProgramProjectClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

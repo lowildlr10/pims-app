@@ -429,7 +429,7 @@ const DetailClient = ({
   );
 
   useEffect(() => {
-    setCurrentData(data?.data?.data);
+    setCurrentData(data?.data);
   }, [data]);
 
   useEffect(() => {

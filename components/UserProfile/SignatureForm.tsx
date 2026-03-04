@@ -1,9 +1,9 @@
 import API from '@/libs/API';
 import { getErrors } from '@/libs/Errors';
 import { notify } from '@/libs/Notification';
-import { Button, Paper, Stack, Switch } from '@mantine/core';
+import { Button, Group, Paper, Stack, Switch, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconPencil } from '@tabler/icons-react';
+import { IconSignature, IconUpload } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import SingleImageUploadClient from '../Generic/SingleImageUpload';
 import { useMediaAsset } from '@/hooks/useMediaAsset';
@@ -37,7 +37,7 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
       .then((res) => {
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message,
           color: 'green',
         });
         form.resetDirty();
@@ -61,45 +61,72 @@ const SignatureFormClient = ({ user }: SignatureFormProps) => {
   return (
     <form onSubmit={form.onSubmit(() => handleUpdateSignature())}>
       <CustomLoadingOverlay visible={loading || signatureLoading} />
-      <Stack justify={'flex-start'} gap={'xl'} px={'xl'}>
-        <Paper>
-          <SingleImageUploadClient
-            image={signature ?? ''}
-            postUrl={'/media'}
-            params={{ type: 'signature', parent_id: user.id }}
-            type={'signature'}
-            clearImageCache={clearSignatureCache}
-          />
+      <Stack gap='lg'>
+        <Paper
+          p='xl'
+          radius='md'
+          withBorder
+          style={{
+            borderStyle: 'dashed',
+            borderColor: 'var(--mantine-color-gray-4)',
+            backgroundColor: 'var(--mantine-color-gray-0)',
+          }}
+        >
+          <Stack align='center' gap='md'>
+            <IconSignature
+              size={48}
+              stroke={1.5}
+              color='var(--mantine-color-gray-5)'
+            />
+            <Text size='sm' c='dimmed' ta='center'>
+              Upload your signature image
+            </Text>
+            <SingleImageUploadClient
+              image={signature ?? ''}
+              postUrl={'/media'}
+              params={{ type: 'signature', parent_id: user.id }}
+              type={'signature'}
+              clearImageCache={clearSignatureCache}
+            />
+          </Stack>
         </Paper>
 
-        <Paper p={'md'}>
-          <Switch
-            label={'Enable signature?'}
-            description={
-              'Once enabled, it will appear on the required forms and documents.'
-            }
-            color={'var(--mantine-color-primary-9)'}
-            size='md'
-            mb={80}
-            onLabel='YES'
-            offLabel='NO'
-            checked={form.values.allow_signature}
-            onChange={(event) =>
-              form.setFieldValue('allow_signature', event.currentTarget.checked)
-            }
-          />
+        <Paper p='md' radius='md' withBorder>
+          <Stack gap='md'>
+            <Switch
+              label='Enable Signature'
+              description='Once enabled, it will appear on required forms and documents'
+              color='var(--mantine-color-primary-9)'
+              size='md'
+              onLabel='YES'
+              offLabel='NO'
+              checked={form.values.allow_signature}
+              onChange={(event) =>
+                form.setFieldValue(
+                  'allow_signature',
+                  event.currentTarget.checked
+                )
+              }
+              styles={{
+                root: {
+                  display: 'flex',
+                  alignItems: 'center',
+                },
+              }}
+            />
 
-          <Button
-            loading={loading}
-            loaderProps={{ type: 'dots' }}
-            size={'md'}
-            type={'submit'}
-            color={'var(--mantine-color-primary-9)'}
-            leftSection={<IconPencil size={18} />}
-            fullWidth
-          >
-            Save
-          </Button>
+            <Button
+              loading={loading}
+              loaderProps={{ type: 'dots' }}
+              size='sm'
+              type='submit'
+              color='var(--mantine-color-primary-9)'
+              leftSection={<IconUpload size={16} />}
+              fullWidth
+            >
+              Save Settings
+            </Button>
+          </Stack>
         </Paper>
       </Stack>
     </form>

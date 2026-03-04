@@ -92,15 +92,14 @@ const FormClient = forwardRef<
       sai_date: currentData?.sai_date ?? '',
       alobs_no: currentData?.alobs_no ?? '',
       alobs_date: currentData?.alobs_date ?? '',
+      notes: currentData?.notes ?? '',
       funding_source_id: currentData?.funding_source_id ?? '',
       purpose: currentData?.purpose ?? '',
       requested_by_id: currentData?.requested_by_id ?? '',
       sig_cash_availability_id: currentData?.sig_cash_availability_id ?? '',
       sig_approved_by_id: currentData?.sig_approved_by_id ?? '',
       items:
-        currentData?.items &&
-        typeof currentData?.items !== undefined &&
-        currentData?.items.length > 0
+        currentData?.items && currentData?.items.length > 0
           ? currentData?.items?.map((item, index) => ({
               key: randomId(),
               quantity: item.quantity,
@@ -169,7 +168,7 @@ const FormClient = forwardRef<
   useEffect(() => {
     API.get('/companies')
       .then((res) => {
-        const company: CompanyType = res?.data?.company;
+        const company: CompanyType = res?.data;
         setLocation(
           `${company?.municipality}, ${company?.province}`.toUpperCase()
         );
@@ -234,7 +233,7 @@ const FormClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.quantity`)}
               {...form.getInputProps(`items.${index}.quantity`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
               placeholder={`Quantity`}
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -243,6 +242,11 @@ const FormClient = forwardRef<
               allowDecimal={false}
               required={!readOnly}
               readOnly={readOnly}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
             />
           </Table.Td>
         );
@@ -254,8 +258,9 @@ const FormClient = forwardRef<
               <Select
                 key={form.key(`items.${index}.unit_issue_id`)}
                 {...form.getInputProps(`items.${index}.unit_issue_id`)}
-                variant={readOnly ? 'unstyled' : 'default'}
+                variant={'unstyled'}
                 placeholder={'Unit of Issue'}
+                sx={{ borderBottom: '1px solid var(--mantine-color-gray-5)' }}
                 data={
                   !loadingUnitIssues
                     ? (unitIssueData ??
@@ -295,7 +300,7 @@ const FormClient = forwardRef<
             <Textarea
               key={form.key(`items.${index}.description`)}
               {...form.getInputProps(`items.${index}.description`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
               placeholder={
                 item?.description?.trim() === '' || !item?.description?.trim()
                   ? 'Description'
@@ -306,6 +311,11 @@ const FormClient = forwardRef<
               autosize
               required={!readOnly}
               readOnly={readOnly}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
             />
           </Table.Td>
         );
@@ -316,7 +326,7 @@ const FormClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.stock_no`)}
               {...form.getInputProps(`items.${index}.stock_no`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
               placeholder={`Stock No ${
                 item?.stock_no?.toString() !== ''
                   ? `: ${item?.stock_no?.toString()}`
@@ -329,6 +339,11 @@ const FormClient = forwardRef<
               allowDecimal={false}
               required={!readOnly}
               readOnly={readOnly}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
             />
           </Table.Td>
         );
@@ -339,7 +354,7 @@ const FormClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.estimated_unit_cost`)}
               {...form.getInputProps(`items.${index}.estimated_unit_cost`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
               placeholder={`Estimated Unit Cost`}
               defaultValue={item?.estimated_unit_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -350,6 +365,11 @@ const FormClient = forwardRef<
               thousandSeparator={','}
               required={!readOnly}
               readOnly={readOnly}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
             />
           </Table.Td>
         );
@@ -360,7 +380,7 @@ const FormClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.estimated_cost`)}
               {...form.getInputProps(`items.${index}.estimated_cost`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
               placeholder={`Estimated Cost`}
               defaultValue={item?.estimated_cost}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -371,6 +391,11 @@ const FormClient = forwardRef<
               thousandSeparator={','}
               required={!readOnly}
               readOnly={readOnly}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
             />
           </Table.Td>
         );
@@ -403,7 +428,11 @@ const FormClient = forwardRef<
         }
       })}
     >
-      <Stack p={'md'} justify={'center'}>
+      <Stack
+        p={{ base: 'xs', sm: 'md' }}
+        justify={'center'}
+        style={{ background: 'var(--mantine-color-gray-1)' }}
+      >
         {['disapproved', 'draft'].includes(currentData?.status ?? '') &&
           currentData?.disapproved_reason && (
             <Alert
@@ -417,10 +446,14 @@ const FormClient = forwardRef<
           )}
 
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Stack
             bd={'1px solid var(--mantine-color-gray-8)'}
@@ -456,7 +489,7 @@ const FormClient = forwardRef<
               gap={0}
               bd={'1px solid var(--mantine-color-gray-8)'}
             >
-              <Stack p={'md'} flex={0.35}>
+              <Stack p={'md'} flex={lgScreenAndBelow ? undefined : 0.35}>
                 <Group>
                   <Group gap={1} align={'flex-start'}>
                     <Text size={lgScreenAndBelow ? 'sm' : 'md'}>
@@ -475,6 +508,7 @@ const FormClient = forwardRef<
                   <Stack justify={'center'} flex={1}>
                     {!readOnly ? (
                       <DynamicSelect
+                        key={`dept-${currentData?.id ?? 'new'}`}
                         variant='unstyled'
                         endpoint='/accounts/departments'
                         endpointParams={{ paginated: false, show_all: true }}
@@ -513,7 +547,11 @@ const FormClient = forwardRef<
                       <TextInput
                         variant={'unstyled'}
                         placeholder={'None'}
-                        value={currentData?.department?.department_name ?? ''}
+                        value={
+                          currentData?.department?.department_name ??
+                          currentData?.department_name ??
+                          ''
+                        }
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         sx={{
                           borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -535,6 +573,7 @@ const FormClient = forwardRef<
                   <Stack justify={'center'} flex={1}>
                     {!readOnly ? (
                       <DynamicSelect
+                        key={`section-${currentData?.id ?? 'new'}`}
                         variant={'unstyled'}
                         endpoint={'/accounts/sections'}
                         endpointParams={{
@@ -578,7 +617,11 @@ const FormClient = forwardRef<
                       <TextInput
                         variant={'unstyled'}
                         placeholder={'None'}
-                        value={currentData?.section?.section_name ?? ''}
+                        value={
+                          currentData?.section?.section_name ??
+                          currentData?.section_name ??
+                          ''
+                        }
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         sx={{
                           borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -597,8 +640,12 @@ const FormClient = forwardRef<
 
               <Stack
                 p={'md'}
-                flex={0.65}
-                sx={{ borderLeft: '1px solid var(--mantine-color-gray-8)' }}
+                flex={lgScreenAndBelow ? undefined : 0.65}
+                sx={{
+                  borderLeft: lgScreenAndBelow
+                    ? undefined
+                    : '1px solid var(--mantine-color-gray-8)',
+                }}
               >
                 <Group>
                   <Text size={lgScreenAndBelow ? 'sm' : 'md'}>PR No.</Text>
@@ -606,7 +653,7 @@ const FormClient = forwardRef<
                     variant={'unstyled'}
                     placeholder={'Autogenerated'}
                     defaultValue={readOnly ? undefined : currentData?.pr_no}
-                    value={readOnly ? currentData?.pr_no : undefined}
+                    value={readOnly ? (currentData?.pr_no ?? '') : undefined}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
                       borderBottom: '2px solid var(--mantine-color-gray-5)',
@@ -667,7 +714,7 @@ const FormClient = forwardRef<
                       !readOnly ? 'Enter the SAI number here...' : 'None'
                     }
                     defaultValue={readOnly ? undefined : form.values.sai_no}
-                    value={readOnly ? currentData?.sai_no : undefined}
+                    value={readOnly ? (currentData?.sai_no ?? '') : undefined}
                     error={form.errors.sai_no && ''}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
@@ -728,7 +775,7 @@ const FormClient = forwardRef<
                       !readOnly ? 'Enter the ALOBS number here...' : 'None'
                     }
                     defaultValue={readOnly ? undefined : form.values.alobs_no}
-                    value={readOnly ? currentData?.alobs_no : undefined}
+                    value={readOnly ? (currentData?.alobs_no ?? '') : undefined}
                     error={form.errors.alobs_no && ''}
                     size={lgScreenAndBelow ? 'sm' : 'md'}
                     sx={{
@@ -787,121 +834,154 @@ const FormClient = forwardRef<
                 currentData?.status ?? ''
               )) && (
               <Stack>
-                <Table
-                  withColumnBorders
-                  withRowBorders
-                  verticalSpacing={'sm'}
-                  withTableBorder
-                  m={0}
-                  borderColor={'var(--mantine-color-gray-8)'}
+                <Table.ScrollContainer
+                  minWidth={lgScreenAndBelow ? 800 : undefined}
                 >
-                  <Table.Thead>
-                    <Table.Tr>
-                      {itemHeaders.map((header) => {
-                        if (readOnly && header.id === 'delete') return;
-
-                        if (!readOnly && header.id === 'estimated_cost') return;
-
-                        return (
-                          <Table.Th
-                            key={header.id}
-                            w={header?.width ?? undefined}
-                            fz={lgScreenAndBelow ? 'sm' : 'md'}
-                          >
-                            <Group gap={1} align={'flex-start'}>
-                              {header.label}{' '}
-                              {header?.required && !readOnly && (
-                                <Stack>
-                                  <IconAsterisk
-                                    size={7}
-                                    color={'var(--mantine-color-red-8)'}
-                                    stroke={2}
-                                  />
-                                </Stack>
-                              )}
-                            </Group>
-                          </Table.Th>
-                        );
-                      })}
-                    </Table.Tr>
-                  </Table.Thead>
-                  <Table.Tbody>
-                    {form.getValues()?.items?.map((item, index) => (
-                      <Table.Tr
-                        key={`item-${item.key}`}
-                        sx={{ verticalAlign: 'top' }}
-                      >
+                  <Table
+                    withColumnBorders
+                    withRowBorders
+                    verticalSpacing={'sm'}
+                    withTableBorder
+                    m={0}
+                    borderColor={'var(--mantine-color-gray-8)'}
+                  >
+                    <Table.Thead>
+                      <Table.Tr>
                         {itemHeaders.map((header) => {
-                          if (
-                            header.id === 'delete' ||
-                            (!readOnly && header.id === 'estimated_cost')
-                          ) {
-                            return null;
-                          }
+                          if (readOnly && header.id === 'delete') return;
+
+                          if (!readOnly && header.id === 'estimated_cost')
+                            return;
 
                           return (
-                            <React.Fragment
-                              key={`field-${item.key}-${header.id}`}
+                            <Table.Th
+                              key={header.id}
+                              w={header?.width ?? undefined}
+                              fz={lgScreenAndBelow ? 'sm' : 'md'}
                             >
-                              {renderDynamicTdContent(header.id, item, index)}
-                            </React.Fragment>
+                              <Group gap={1} align={'flex-start'}>
+                                {header.label}{' '}
+                                {header?.required && !readOnly && (
+                                  <Stack>
+                                    <IconAsterisk
+                                      size={7}
+                                      color={'var(--mantine-color-red-8)'}
+                                      stroke={2}
+                                    />
+                                  </Stack>
+                                )}
+                              </Group>
+                            </Table.Th>
                           );
                         })}
-
-                        {!readOnly && (
-                          <Table.Td>
-                            <ActionIcon
-                              w={'100%'}
-                              color={'var(--mantine-color-red-7)'}
-                              variant={'light'}
-                              disabled={form.getValues().items.length === 1}
-                              onClick={() => {
-                                if (form.getValues().items.length === 1) return;
-                                form.removeListItem('items', index);
-                              }}
-                            >
-                              <IconTrash size={18} stroke={2} />
-                            </ActionIcon>
-                          </Table.Td>
-                        )}
                       </Table.Tr>
-                    ))}
-                  </Table.Tbody>
-
-                  {!readOnly && (
-                    <Table.Tfoot>
-                      <Table.Tr>
-                        <Table.Td colSpan={readOnly ? 7 : 6}>
-                          <Button
-                            size={lgScreenAndBelow ? 'sm' : 'md'}
-                            variant={'light'}
-                            color={'var(--mantine-color-primary-9)'}
-                            leftSection={<IconPlus size={18} stroke={2} />}
-                            onClick={() =>
-                              form.insertListItem('items', {
-                                key: randomId(),
-                                quantity: undefined,
-                                unit_issue_id: undefined,
-                                description: undefined,
-                                stock_no:
-                                  (form.getValues().items[
-                                    form.getValues().items.length - 1
-                                  ]?.stock_no ?? 1) + 1,
-                                estimated_unit_cost: undefined,
-                                estimated_cost: undefined,
-                              })
+                    </Table.Thead>
+                    <Table.Tbody>
+                      {form.getValues()?.items?.map((item, index) => (
+                        <Table.Tr
+                          key={`item-${item.key}`}
+                          sx={{ verticalAlign: 'top' }}
+                        >
+                          {itemHeaders.map((header) => {
+                            if (
+                              header.id === 'delete' ||
+                              (!readOnly && header.id === 'estimated_cost')
+                            ) {
+                              return null;
                             }
-                            fullWidth
-                          >
-                            Add Item
-                          </Button>
-                        </Table.Td>
-                      </Table.Tr>
-                    </Table.Tfoot>
-                  )}
-                </Table>
+
+                            return (
+                              <React.Fragment
+                                key={`field-${item.key}-${header.id}`}
+                              >
+                                {renderDynamicTdContent(header.id, item, index)}
+                              </React.Fragment>
+                            );
+                          })}
+
+                          {!readOnly && (
+                            <Table.Td>
+                              <ActionIcon
+                                w={'100%'}
+                                color={'var(--mantine-color-red-7)'}
+                                variant={'light'}
+                                disabled={form.getValues().items.length === 1}
+                                onClick={() => {
+                                  if (form.getValues().items.length === 1)
+                                    return;
+                                  form.removeListItem('items', index);
+                                }}
+                              >
+                                <IconTrash size={18} stroke={2} />
+                              </ActionIcon>
+                            </Table.Td>
+                          )}
+                        </Table.Tr>
+                      ))}
+                    </Table.Tbody>
+
+                    {!readOnly && (
+                      <Table.Tfoot>
+                        <Table.Tr>
+                          <Table.Td colSpan={readOnly ? 7 : 6}>
+                            <Button
+                              size={lgScreenAndBelow ? 'sm' : 'md'}
+                              variant={'light'}
+                              color={'var(--mantine-color-primary-9)'}
+                              leftSection={<IconPlus size={18} stroke={2} />}
+                              onClick={() =>
+                                form.insertListItem('items', {
+                                  key: randomId(),
+                                  quantity: undefined,
+                                  unit_issue_id: undefined,
+                                  description: undefined,
+                                  stock_no:
+                                    (form.getValues().items[
+                                      form.getValues().items.length - 1
+                                    ]?.stock_no ?? 1) + 1,
+                                  estimated_unit_cost: undefined,
+                                  estimated_cost: undefined,
+                                })
+                              }
+                              fullWidth
+                            >
+                              Add Item
+                            </Button>
+                          </Table.Td>
+                        </Table.Tr>
+                      </Table.Tfoot>
+                    )}
+                  </Table>
+                </Table.ScrollContainer>
               </Stack>
             )}
+
+            <Group
+              align={'flex-start'}
+              bd={'1px solid var(--mantine-color-gray-8)'}
+              p={'md'}
+            >
+              <Textarea
+                key={form.key('notes')}
+                {...form.getInputProps('notes')}
+                variant={'unstyled'}
+                label={'Notes'}
+                placeholder={'Enter additional notes here...'}
+                defaultValue={readOnly ? undefined : form.values.notes}
+                value={readOnly ? (currentData?.notes ?? '') : undefined}
+                error={form.errors.notes && ''}
+                size={lgScreenAndBelow ? 'sm' : 'md'}
+                autosize
+                autoCapitalize={'sentences'}
+                readOnly={readOnly}
+                w={'100%'}
+                sx={{
+                  borderBottom: readOnly
+                    ? undefined
+                    : '1px solid var(--mantine-color-gray-5)',
+                }}
+              />
+            </Group>
 
             <Group
               align={'flex-start'}
@@ -912,24 +992,29 @@ const FormClient = forwardRef<
               <Textarea
                 key={form.key('purpose')}
                 {...form.getInputProps('purpose')}
-                variant={readOnly ? 'unstyled' : 'default'}
+                variant={'unstyled'}
                 label={'Purpose'}
                 placeholder={'Enter the purpose here...'}
                 defaultValue={readOnly ? undefined : form.values.purpose}
-                value={readOnly ? currentData?.purpose : undefined}
+                value={readOnly ? (currentData?.purpose ?? '') : undefined}
                 error={form.errors.purpose && ''}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 autosize
                 autoCapitalize={'sentences'}
                 required={!readOnly}
                 readOnly={readOnly}
+                sx={{
+                  borderBottom: readOnly
+                    ? undefined
+                    : '1px solid var(--mantine-color-gray-5)',
+                }}
               />
 
               {!readOnly ? (
                 <DynamicSelect
                   key={form.key('funding_source_id')}
                   {...form.getInputProps('funding_source_id')}
-                  variant={readOnly ? 'unstyled' : 'default'}
+                  variant={'unstyled'}
                   label={'Funding Source / Project'}
                   placeholder={
                     !readOnly ? 'Select a funding source or project...' : 'None'
@@ -953,6 +1038,7 @@ const FormClient = forwardRef<
                   defaultValue={form.values.funding_source_id}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   readOnly={readOnly}
+                  sx={{ borderBottom: '1px solid var(--mantine-color-gray-5)' }}
                 />
               ) : (
                 <TextInput
@@ -967,7 +1053,12 @@ const FormClient = forwardRef<
               )}
             </Group>
 
-            <Group align={'flex-start'} gap={0} grow>
+            <Group
+              align={'flex-start'}
+              gap={0}
+              grow
+              style={{ flexWrap: lgScreenAndBelow ? 'wrap' : undefined }}
+            >
               <Stack bd={'1px solid var(--mantine-color-gray-8)'} p={'md'}>
                 {!readOnly ? (
                   <DynamicSelect

@@ -173,7 +173,7 @@ const RisFormClient = forwardRef<
 
       API.get('/companies')
         .then((res) => {
-          const company: CompanyType = res?.data?.company;
+          const company: CompanyType = res?.data;
 
           setCompanyData(company);
         })
@@ -263,7 +263,7 @@ const RisFormClient = forwardRef<
           <Table.Td>
             <NumberInput
               size={lgScreenAndBelow ? 'sm' : 'md'}
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               value={item?.stock_no}
               readOnly
             />
@@ -274,7 +274,7 @@ const RisFormClient = forwardRef<
         return (
           <Table.Td align={'center'}>
             <TextInput
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={'None'}
               defaultValue={item.unit_issue}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -290,7 +290,12 @@ const RisFormClient = forwardRef<
             <Textarea
               key={form.key(`items.${index}.description`)}
               {...form.getInputProps(`items.${index}.description`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
               placeholder={'Description'}
               defaultValue={readOnly ? undefined : item.description}
               value={readOnly ? item.description : undefined}
@@ -307,7 +312,12 @@ const RisFormClient = forwardRef<
             <NumberInput
               key={form.key(`items.${index}.quantity`)}
               {...form.getInputProps(`items.${index}.quantity`)}
-              variant={readOnly ? 'unstyled' : 'default'}
+              variant={'unstyled'}
+              sx={{
+                borderBottom: readOnly
+                  ? undefined
+                  : '1px solid var(--mantine-color-gray-5)',
+              }}
               placeholder={`Quantity`}
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -331,7 +341,7 @@ const RisFormClient = forwardRef<
           <Table.Td>
             <NumberInput
               size={lgScreenAndBelow ? 'sm' : 'md'}
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               value={item?.unit_cost}
               decimalScale={2}
               fixedDecimalScale
@@ -346,7 +356,7 @@ const RisFormClient = forwardRef<
           <Table.Td>
             <NumberInput
               size={lgScreenAndBelow ? 'sm' : 'md'}
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               value={item?.total_cost}
               decimalScale={2}
               fixedDecimalScale
@@ -394,22 +404,24 @@ const RisFormClient = forwardRef<
     >
       <CustomLoadingOverlay visible={loading} />
 
-      <Stack p={'md'} justify={'center'}>
+      <Stack
+        p={{ base: 'xs', sm: 'md' }}
+        justify={'center'}
+        style={{ background: 'var(--mantine-color-gray-1)' }}
+      >
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Stack>
             <TextInput
-              variant={
-                !readOnly && isCreate
-                  ? 'filled'
-                  : !readOnly && !isCreate
-                    ? 'filled'
-                    : 'default'
-              }
+              variant={'unstyled'}
               label={'Document Type'}
               placeholder={'None'}
               value={Helper.mapInventoryIssuanceDocumentType(
@@ -422,7 +434,12 @@ const RisFormClient = forwardRef<
 
             {isCreate ? (
               <DynamicSelect
-                variant={readOnly ? 'unstyled' : 'default'}
+                variant={'unstyled'}
+                sx={{
+                  borderBottom: readOnly
+                    ? undefined
+                    : '1px solid var(--mantine-color-gray-5)',
+                }}
                 endpoint={'/purchase-orders'}
                 endpointParams={{
                   paginated: false,
@@ -456,7 +473,7 @@ const RisFormClient = forwardRef<
               <TextInput
                 label={'Purchase Order'}
                 placeholder={'None'}
-                variant={readOnly ? 'default' : 'filled'}
+                variant={'unstyled'}
                 value={currentData?.purchase_order?.po_no ?? '-'}
                 size={lgScreenAndBelow ? 'sm' : 'md'}
                 flex={1}
@@ -468,9 +485,13 @@ const RisFormClient = forwardRef<
 
         {poId && (
           <Card
-            shadow={'xs'}
-            padding={lgScreenAndBelow ? 'md' : 'lg'}
-            radius={'xs'}
+            shadow={'sm'}
+            padding={lgScreenAndBelow ? 'sm' : 'md'}
+            radius={0}
+            style={{
+              borderColor: 'var(--mantine-color-gray-4)',
+              background: 'white',
+            }}
             withBorder
           >
             <Stack align={'center'} w={'100%'} p={0} justify={'center'} gap={0}>
@@ -520,7 +541,7 @@ const RisFormClient = forwardRef<
                         Division:
                       </Text>
                       <TextInput
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         placeholder={'None'}
                         value={
                           currentData?.purchase_order?.purchase_request
@@ -544,7 +565,7 @@ const RisFormClient = forwardRef<
                     <Group sx={{ flexWrap: 'nowrap' }}>
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'}>Office:</Text>
                       <TextInput
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         placeholder={'None'}
                         value={
                           poData?.purchase_request?.section?.section_name ?? '-'
@@ -633,7 +654,7 @@ const RisFormClient = forwardRef<
                     <Group sx={{ flexWrap: 'nowrap' }}>
                       <Text size={lgScreenAndBelow ? 'sm' : 'md'}>PO No.:</Text>
                       <TextInput
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         placeholder={'None'}
                         value={poData?.po_no ?? '-'}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -662,7 +683,7 @@ const RisFormClient = forwardRef<
                           RIS No.:
                         </Text>
                         <TextInput
-                          variant={readOnly ? 'unstyled' : 'filled'}
+                          variant={'unstyled'}
                           placeholder={'Autogenerated'}
                           value={currentData.inventory_no ?? ''}
                           size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -752,7 +773,9 @@ const RisFormClient = forwardRef<
                           defaultValue={
                             readOnly ? undefined : form.values.sai_no
                           }
-                          value={readOnly ? currentData?.sai_no : undefined}
+                          value={
+                            readOnly ? (currentData?.sai_no ?? '') : undefined
+                          }
                           size={lgScreenAndBelow ? 'sm' : 'md'}
                           flex={1}
                           sx={{
@@ -928,7 +951,7 @@ const RisFormClient = forwardRef<
                     </Table.Td>
                     <Table.Td colSpan={5}>
                       <Textarea
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         value={poData?.purchase_request?.purpose ?? '-'}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
                         autosize

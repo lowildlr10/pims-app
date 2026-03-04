@@ -6,6 +6,7 @@ import PaperSizesClient from '@/components/Libraries/PaperSizes';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconFile } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-paper-size';
 
@@ -34,7 +35,11 @@ const PaperSizePage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Print Paper Sizes'}>
+      <MainContainerClient
+        title='Paper Sizes'
+        secondaryTtile='Define standard paper sizes for documents'
+        icon={<IconFile size={24} stroke={1.5} />}
+      >
         <PaperSizesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

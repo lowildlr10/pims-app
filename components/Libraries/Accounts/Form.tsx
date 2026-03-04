@@ -12,7 +12,7 @@ const FormClient = forwardRef<HTMLFormElement, ModalAccountContentProps>(
         account_title: currentData?.account_title ?? '',
         code: currentData?.code ?? '',
         description: currentData?.description ?? '',
-        active: currentData?.active ?? false,
+        active: currentData?.active ?? true,
       }),
       [currentData]
     );

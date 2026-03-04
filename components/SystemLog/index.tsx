@@ -7,15 +7,21 @@ import useSWR from 'swr';
 import {
   ActionIcon,
   Badge,
+  Box,
+  Divider,
+  Group,
   JsonInput,
   Modal,
   ScrollArea,
+  SimpleGrid,
+  Stack,
+  Text,
   Tooltip,
 } from '@mantine/core';
 import DataTableClient from '../Generic/DataTable';
 import dayjs from 'dayjs';
 import { useDisclosure } from '@mantine/hooks';
-import { IconCode } from '@tabler/icons-react';
+import { IconEye } from '@tabler/icons-react';
 
 const defaultTableData: TableDataType = {
   head: [
@@ -44,72 +50,146 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
-      id: 'message',
+      id: 'message_formatted',
       label: 'Message',
-      width: '17%',
+      width: '19%',
       sortable: false,
     },
     {
-      id: 'details',
+      id: 'details_formatted',
       label: 'Details',
-      width: '17%',
+      width: '19%',
       sortable: false,
     },
     {
       id: 'logged_at_formatted',
       label: 'Logged At',
-      width: '13%',
+      width: '14%',
       sortable: true,
     },
     {
-      id: 'data_formatted',
-      label: 'Data',
-      width: '7%',
+      id: 'actions_formatted',
+      label: '',
+      width: '2%',
       sortable: false,
     },
   ],
   body: [],
 };
 
-const DataDisplay = ({
-  data,
+const TruncatedCell = ({ value }: { value?: string }) => {
+  if (!value) return <>-</>;
+  return (
+    <Tooltip label={value} multiline maw={320} withArrow>
+      <Text size='sm' lineClamp={2} style={{ cursor: 'default' }}>
+        {value}
+      </Text>
+    </Tooltip>
+  );
+};
+
+const LogDetailModal = ({
+  entry,
   opened,
   close,
 }: {
-  data: string;
+  entry: SystemLogType | null;
   opened: boolean;
   close: () => void;
 }) => {
+  if (!entry) return null;
+
   return (
     <Modal
-      overlayProps={{
-        backgroundOpacity: 0.55,
-        blur: 3,
-      }}
+      title={
+        <Group gap='xs' align='center'>
+          <Text fw={700} size='sm'>
+            Log Details
+          </Text>
+          <Text size='xs' c='dimmed' ff='monospace'>
+            #{entry.log_id}
+          </Text>
+        </Group>
+      }
+      overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
       opened={opened}
       onClose={close}
-      size={'lg'}
+      size='lg'
       scrollAreaComponent={ScrollArea.Autosize}
       centered
     >
-      <ScrollArea
-        h={{
-          md: '100%',
-          lg: 'calc(100vh - 18em)',
-        }}
-        sx={{ borderRadius: 5 }}
-        mb={'lg'}
-      >
-        <JsonInput
-          variant={'filled'}
-          placeholder='Payload'
-          value={data}
-          formatOnBlur
-          autosize
-          minRows={4}
-          readOnly
-        />
-      </ScrollArea>
+      <Stack gap='md' pb='md'>
+        <SimpleGrid cols={2} spacing='sm'>
+          <Box>
+            <Text size='xs' c='dimmed' fw={600} tt='uppercase' mb={4}>
+              User
+            </Text>
+            <Text size='sm'>{entry.user?.fullname ?? '—'}</Text>
+          </Box>
+          <Box>
+            <Text size='xs' c='dimmed' fw={600} tt='uppercase' mb={4}>
+              Logged At
+            </Text>
+            <Text size='sm'>
+              {dayjs(entry.logged_at).format('YYYY-MM-DD h:mm A')}
+            </Text>
+          </Box>
+          <Box>
+            <Text size='xs' c='dimmed' fw={600} tt='uppercase' mb={4}>
+              Module
+            </Text>
+            <Badge color='var(--mantine-color-primary-9)' variant='light'>
+              {entry.log_module ?? '—'}
+            </Badge>
+          </Box>
+          <Box>
+            <Text size='xs' c='dimmed' fw={600} tt='uppercase' mb={4}>
+              Type
+            </Text>
+            <Badge
+              color={
+                entry.log_type === 'log'
+                  ? 'var(--mantine-color-primary-9)'
+                  : 'var(--mantine-color-red-7)'
+              }
+            >
+              {entry.log_type ?? '—'}
+            </Badge>
+          </Box>
+        </SimpleGrid>
+
+        <Divider />
+
+        <Box>
+          <Text size='xs' c='dimmed' fw={600} tt='uppercase' mb={4}>
+            Message
+          </Text>
+          <Text size='sm'>{entry.message || '—'}</Text>
+        </Box>
+
+        <Box>
+          <Text size='xs' c='dimmed' fw={600} tt='uppercase' mb={4}>
+            Details
+          </Text>
+          <Text size='sm' style={{ whiteSpace: 'pre-wrap' }}>
+            {entry.details || '—'}
+          </Text>
+        </Box>
+
+        {entry.data && (
+          <>
+            <Divider label='Payload' labelPosition='left' />
+            <JsonInput
+              variant='filled'
+              value={JSON.stringify(entry.data, null, 2)}
+              formatOnBlur
+              autosize
+              minRows={4}
+              readOnly
+            />
+          </>
+        )}
+      </Stack>
     </Modal>
   );
 };
@@ -151,7 +231,9 @@ const SystemLogsClient = ({ permissions }: LibraryProps) => {
   );
 
   const [opened, { open, close }] = useDisclosure(false);
-  const [jsonData, setJsonData] = useState('');
+  const [selectedEntry, setSelectedEntry] = useState<SystemLogType | null>(
+    null
+  );
 
   useEffect(() => {
     const _data = data?.data?.map((body: SystemLogType) => {
@@ -177,21 +259,21 @@ const SystemLogsClient = ({ permissions }: LibraryProps) => {
             {body.log_type}
           </Badge>
         ),
-        data_formatted: body?.data ? (
-          <Tooltip label={'Click to show data/payload'}>
+        message_formatted: <TruncatedCell value={body.message} />,
+        details_formatted: <TruncatedCell value={body.details} />,
+        actions_formatted: (
+          <Tooltip label='View details'>
             <ActionIcon
-              variant={'outline'}
-              color={'var(--mantine-color-secondary-7)'}
+              variant='outline'
+              color='var(--mantine-color-secondary-7)'
               onClick={() => {
-                setJsonData(JSON.stringify(body?.data, null, 2));
+                setSelectedEntry(body);
                 open();
               }}
             >
-              <IconCode size={18} stroke={1.5} />
+              <IconEye size={18} stroke={1.5} />
             </ActionIcon>
           </Tooltip>
-        ) : (
-          '-'
         ),
       };
     });
@@ -216,10 +298,10 @@ const SystemLogsClient = ({ permissions }: LibraryProps) => {
         perPage={perPage}
         loading={isLoading}
         page={page}
-        lastPage={data?.last_page ?? 0}
-        from={data?.from ?? 0}
-        to={data?.to ?? 0}
-        total={data?.total ?? 0}
+        lastPage={data?.meta?.last_page ?? 0}
+        from={data?.meta?.from ?? 0}
+        to={data?.meta?.to ?? 0}
+        total={data?.meta?.total ?? 0}
         refreshData={mutate}
         onChange={(_search, _page, _perPage, _columnSort, _sortDirection) => {
           setSearch(_search ?? '');
@@ -230,7 +312,7 @@ const SystemLogsClient = ({ permissions }: LibraryProps) => {
         }}
       />
 
-      <DataDisplay data={jsonData} opened={opened} close={close} />
+      <LogDetailModal entry={selectedEntry} opened={opened} close={close} />
     </>
   );
 };

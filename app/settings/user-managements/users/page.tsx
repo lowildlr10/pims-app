@@ -6,6 +6,7 @@ import UserssClient from '@/components/UserManagement/Users';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconUsers } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'account-user';
 
@@ -34,7 +35,11 @@ const UsersPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'User Management - Users'}>
+      <MainContainerClient
+        title='Users'
+        secondaryTtile='Manage user accounts, credentials, and access permissions'
+        icon={<IconUsers size={24} stroke={1.5} />}
+      >
         <UserssClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

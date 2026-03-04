@@ -78,8 +78,8 @@ const FormClient = forwardRef<
     mode: 'uncontrolled',
     initialValues: currentForm,
   });
-  const [inspected, setInspected] = useState<boolean | undefined>(
-    currentForm.inspected
+  const [inspected, setInspected] = useState<boolean>(
+    currentForm.inspected ?? false
   );
   const [acceptanceCompleted, setAcceptanceCompleted] = useState<
     boolean | undefined
@@ -90,7 +90,7 @@ const FormClient = forwardRef<
 
   useEffect(() => {
     setCurrentData(data);
-    setInspected(data?.inspected);
+    setInspected(data?.inspected ?? false);
     setAcceptanceCompleted(data?.acceptance_completed);
   }, [data]);
 
@@ -132,7 +132,7 @@ const FormClient = forwardRef<
           <Table.Td>
             <NumberInput
               size={lgScreenAndBelow ? 'sm' : 'md'}
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               value={item?.stock_no}
               readOnly
             />
@@ -143,7 +143,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td align={'center'}>
             <TextInput
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={'None'}
               defaultValue={item.unit_issue}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -157,7 +157,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             <Textarea
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={'Description'}
               defaultValue={readOnly ? undefined : item.description}
               value={readOnly ? item.description : undefined}
@@ -173,7 +173,7 @@ const FormClient = forwardRef<
           <Table.Td>
             <NumberInput
               size={lgScreenAndBelow ? 'sm' : 'md'}
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               value={item?.quantity}
               readOnly
             />
@@ -207,12 +207,20 @@ const FormClient = forwardRef<
         }
       })}
     >
-      <Stack p={'md'} justify={'center'}>
+      <Stack
+        p={{ base: 'xs', sm: 'md' }}
+        justify={'center'}
+        style={{ background: 'var(--mantine-color-gray-1)' }}
+      >
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Stack align={'center'} w={'100%'} p={0} justify={'center'}>
             <Stack
@@ -252,7 +260,7 @@ const FormClient = forwardRef<
                       </Text>
                     </Flex>
                     <TextInput
-                      variant={readOnly ? 'unstyled' : 'filled'}
+                      variant={'unstyled'}
                       placeholder={'None'}
                       defaultValue={
                         readOnly
@@ -287,10 +295,10 @@ const FormClient = forwardRef<
                       </Text>
                     </Flex>
                     <TextInput
-                      variant={readOnly ? 'unstyled' : 'filled'}
+                      variant={'unstyled'}
                       placeholder={'None'}
                       defaultValue={readOnly ? undefined : currentData?.iar_no}
-                      value={readOnly ? currentData?.iar_no : undefined}
+                      value={readOnly ? (currentData?.iar_no ?? '') : undefined}
                       size={lgScreenAndBelow ? 'sm' : 'md'}
                       sx={{
                         flexBasis: '70%',
@@ -379,7 +387,7 @@ const FormClient = forwardRef<
                       </Text>
                     </Flex>
                     <TextInput
-                      variant={readOnly ? 'unstyled' : 'filled'}
+                      variant={'unstyled'}
                       placeholder={'None'}
                       defaultValue={
                         readOnly
@@ -414,7 +422,7 @@ const FormClient = forwardRef<
                       </Text>
                     </Flex>
                     <DateInput
-                      variant={readOnly ? 'unstyled' : 'filled'}
+                      variant={'unstyled'}
                       valueFormat={'YYYY-MM-DD'}
                       defaultValue={
                         readOnly
@@ -545,7 +553,7 @@ const FormClient = forwardRef<
                       Requesting Office/Dept.
                     </Text>
                     <TextInput
-                      variant={readOnly ? 'unstyled' : 'filled'}
+                      variant={'unstyled'}
                       placeholder={'None'}
                       defaultValue={
                         readOnly
@@ -916,6 +924,7 @@ const FormClient = forwardRef<
                         show_all: true,
                         document: 'iar',
                       }}
+                      valueColumn={'id'}
                       column={'fullname'}
                       defaultData={
                         currentData?.acceptance_id

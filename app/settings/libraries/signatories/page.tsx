@@ -6,6 +6,7 @@ import SignatoriesClient from '@/components/Libraries/Signatories';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconSignature } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-signatory';
 
@@ -34,7 +35,11 @@ const SignatoryPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Signatories'}>
+      <MainContainerClient
+        title='Signatories'
+        secondaryTtile='Manage authorized signatories and approval authorities'
+        icon={<IconSignature size={24} stroke={1.5} />}
+      >
         <SignatoriesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

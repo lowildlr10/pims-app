@@ -6,6 +6,7 @@ import ProcurementModesClient from '@/components/Libraries/ProcurementModes';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconClipboard } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'lib-mode-proc';
 
@@ -34,7 +35,11 @@ const ModesProcurementPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'Library - Modes of Procurement'}>
+      <MainContainerClient
+        title='Modes of Procurement'
+        secondaryTtile='Define procurement methods and procedures'
+        icon={<IconClipboard size={24} stroke={1.5} />}
+      >
         <ProcurementModesClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

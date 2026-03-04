@@ -37,7 +37,7 @@ const ActionsClient = ({
         )}
 
       {status === 'pending' &&
-        ['supply:*', ...getAllowedPermissions('rfq', 'complete')].some(
+        ['supply:*', ...getAllowedPermissions('aoq', 'approve')].some(
           (permission) => permissions?.includes(permission)
         ) && (
           <Menu.Item

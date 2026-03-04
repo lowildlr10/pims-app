@@ -1,8 +1,20 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ActionIcon, Button, Group, Menu, Paper, Tooltip } from '@mantine/core';
-import { IconPencilPlus, IconRefresh, IconSearch } from '@tabler/icons-react';
+import {
+  ActionIcon,
+  Button,
+  Group,
+  Menu,
+  TextInput,
+  Tooltip,
+} from '@mantine/core';
+import {
+  IconPencilPlus,
+  IconRefresh,
+  IconSearch,
+  IconX,
+} from '@tabler/icons-react';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import SearchModalClient from '../Modal/SearchModal';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
@@ -35,149 +47,145 @@ const DataTableActionsClient = ({
   }, [search]);
 
   return (
-    <Paper p={'sm'} shadow={'sm'} bg={'var(--mantine-color-gray-0)'}>
-      <Group justify={'space-between'}>
-        {showCreate &&
-        getAllowedPermissions(mainModule, 'create')?.some((permission) =>
-          permissions.includes(permission)
-        ) ? (
-          <>
-            {createMenus && createMenus.length > 0 ? (
-              <Menu width={350} position='bottom-start'>
-                <Menu.Target>
-                  <Button
-                    size={'xs'}
-                    radius={'sm'}
-                    color={'var(--mantine-color-primary-9)'}
-                    leftSection={
-                      <IconPencilPlus size={lgScreenAndBelow ? 12 : 14} />
-                    }
-                  >
-                    Create
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  {createMenus.map((menu) => (
-                    <>
-                      {defaultModalOnClick === 'update' && (
-                        <Menu.Item
-                          key={menu.label}
-                          onClick={() =>
-                            handleOpenCreateModal &&
-                            handleOpenCreateModal(menu.value, menu.moduleType, {
-                              document_type: menu?.value,
-                            })
-                          }
-                        >
-                          {menu.label}
-                        </Menu.Item>
-                      )}
+    <Group justify={'space-between'} gap={'xs'}>
+      {showCreate &&
+      getAllowedPermissions(mainModule, 'create')?.some((permission) =>
+        permissions.includes(permission)
+      ) ? (
+        <>
+          {createMenus && createMenus.length > 0 ? (
+            <Menu width={350} position='bottom-start'>
+              <Menu.Target>
+                <Button
+                  size={'xs'}
+                  radius={'md'}
+                  color={'var(--mantine-color-primary-9)'}
+                  leftSection={
+                    <IconPencilPlus size={lgScreenAndBelow ? 12 : 14} />
+                  }
+                >
+                  Create
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {createMenus.map((menu) => (
+                  <React.Fragment key={menu.label}>
+                    {defaultModalOnClick === 'update' && (
+                      <Menu.Item
+                        onClick={() =>
+                          handleOpenCreateModal &&
+                          handleOpenCreateModal(menu.value, menu.moduleType, {
+                            document_type: menu?.value,
+                          })
+                        }
+                      >
+                        {menu.label}
+                      </Menu.Item>
+                    )}
 
-                      {defaultModalOnClick === 'details' && (
-                        <Menu.Item
-                          key={menu.label}
-                          href={`${pathname}/create?type=${menu.value}`}
-                          component={Link}
-                          onClick={() => setPageLoading?.(true)}
-                        >
-                          {menu.label}
-                        </Menu.Item>
-                      )}
-                    </>
-                  ))}
-                </Menu.Dropdown>
-              </Menu>
+                    {defaultModalOnClick === 'details' && (
+                      <Menu.Item
+                        href={`${pathname}/create?type=${menu.value}`}
+                        component={Link}
+                        onClick={() => setPageLoading?.(true)}
+                      >
+                        {menu.label}
+                      </Menu.Item>
+                    )}
+                  </React.Fragment>
+                ))}
+              </Menu.Dropdown>
+            </Menu>
+          ) : (
+            <>
+              {defaultModalOnClick === 'update' && (
+                <Button
+                  size={'xs'}
+                  radius={'md'}
+                  color={'var(--mantine-color-primary-9)'}
+                  leftSection={
+                    <IconPencilPlus size={lgScreenAndBelow ? 12 : 14} />
+                  }
+                  onClick={() =>
+                    handleOpenCreateModal &&
+                    handleOpenCreateModal(null, mainModule ?? null)
+                  }
+                >
+                  Create
+                </Button>
+              )}
+
+              {defaultModalOnClick === 'details' && (
+                <Button
+                  href={`${pathname}/create`}
+                  size={'xs'}
+                  radius={'md'}
+                  color={'var(--mantine-color-primary-9)'}
+                  leftSection={
+                    <IconPencilPlus size={lgScreenAndBelow ? 12 : 14} />
+                  }
+                  component={Link}
+                  onClick={() => setPageLoading?.(true)}
+                >
+                  Create
+                </Button>
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        <div></div>
+      )}
+
+      <Group gap={'xs'}>
+        {showSearch && (
+          <Tooltip label={'Search'} withArrow>
+            {search ? (
+              <Button
+                variant={'light'}
+                radius={'md'}
+                color={'var(--mantine-color-primary-9)'}
+                size={'xs'}
+                leftSection={
+                  <IconSearch size={lgScreenAndBelow ? 12 : 14} stroke={2.5} />
+                }
+                onClick={openSearchModal}
+              >
+                &quot;
+                {currentSearch !== undefined && currentSearch.length > 10
+                  ? currentSearch.slice(0, 10) + '....'
+                  : currentSearch}
+                &quot;
+              </Button>
             ) : (
-              <>
-                {defaultModalOnClick === 'update' && (
-                  <Button
-                    size={'xs'}
-                    radius={'sm'}
-                    color={'var(--mantine-color-primary-9)'}
-                    leftSection={
-                      <IconPencilPlus size={lgScreenAndBelow ? 12 : 14} />
-                    }
-                    onClick={() =>
-                      handleOpenCreateModal &&
-                      handleOpenCreateModal(null, mainModule ?? null)
-                    }
-                  >
-                    Create
-                  </Button>
-                )}
-
-                {defaultModalOnClick === 'details' && (
-                  <Button
-                    href={`${pathname}/create`}
-                    size={'xs'}
-                    radius={'sm'}
-                    color={'var(--mantine-color-primary-9)'}
-                    leftSection={
-                      <IconPencilPlus size={lgScreenAndBelow ? 12 : 14} />
-                    }
-                    component={Link}
-                    onClick={() => setPageLoading?.(true)}
-                  >
-                    Create
-                  </Button>
-                )}
-              </>
+              <ActionIcon
+                variant={'light'}
+                size='md'
+                radius='md'
+                color={'var(--mantine-color-primary-9)'}
+                onClick={openSearchModal}
+              >
+                <IconSearch size={lgScreenAndBelow ? 12 : 14} stroke={2.5} />
+              </ActionIcon>
             )}
-          </>
-        ) : (
-          <div></div>
+          </Tooltip>
         )}
 
-        <Group>
-          {showSearch && (
-            <Tooltip label={'Search'} withArrow>
-              {search ? (
-                <Button
-                  variant={'outline'}
-                  radius={'xl'}
-                  color={'var(--mantine-color-primary-9)'}
-                  size={'xs'}
-                  leftSection={
-                    <IconSearch size={lgScreenAndBelow ? 12 : 14} stroke={3} />
-                  }
-                  onClick={openSearchModal}
-                >
-                  &quot;
-                  {currentSearch !== undefined && currentSearch.length > 10
-                    ? currentSearch.slice(0, 10) + '....'
-                    : currentSearch}
-                  &quot;
-                </Button>
-              ) : (
-                <ActionIcon
-                  variant={'outline'}
-                  size='md'
-                  radius='xl'
-                  color={'var(--mantine-color-primary-9)'}
-                  onClick={openSearchModal}
-                >
-                  <IconSearch size={lgScreenAndBelow ? 12 : 14} stroke={3} />
-                </ActionIcon>
-              )}
-            </Tooltip>
-          )}
-
-          <Tooltip label={'Refresh'} withArrow>
-            <ActionIcon
-              variant={'outline'}
-              size={'md'}
-              radius='xl'
-              color={'var(--mantine-color-primary-9)'}
-              loading={refreshLoading}
-              onClick={() => {
-                setRefreshLoading(true);
-                window.location.href = pathname;
-              }}
-            >
-              <IconRefresh size={lgScreenAndBelow ? 12 : 14} stroke={3} />
-            </ActionIcon>
-          </Tooltip>
-        </Group>
+        <Tooltip label={'Refresh'} withArrow>
+          <ActionIcon
+            variant={'light'}
+            size={'md'}
+            radius='md'
+            color={'var(--mantine-color-primary-9)'}
+            loading={refreshLoading}
+            onClick={() => {
+              setRefreshLoading(true);
+              window.location.href = pathname;
+            }}
+          >
+            <IconRefresh size={lgScreenAndBelow ? 12 : 14} stroke={2.5} />
+          </ActionIcon>
+        </Tooltip>
       </Group>
 
       {showSearch && (
@@ -188,7 +196,7 @@ const DataTableActionsClient = ({
           setSearch={setSearch}
         />
       )}
-    </Paper>
+    </Group>
   );
 };
 

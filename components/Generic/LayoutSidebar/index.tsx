@@ -20,6 +20,7 @@ import {
   IconArrowBack,
   IconBuildingWarehouse,
   IconGauge,
+  IconHome2,
   IconLibrary,
   IconLogs,
   IconSettings2,
@@ -69,11 +70,15 @@ const defaultMainMenus: LinksGroupProps[] = [
     initiallyOpened: false,
     links: INVENTORY_LINKS,
   },
-  { label: 'Settings', icon: IconSettings2, link: '/settings/user-profile' },
+  { label: 'Settings', icon: IconSettings2, link: '/settings' },
 ];
 
 const defaultSettingsMenus: LinksGroupProps[] = [
-  { label: 'User Profile', icon: IconUser, link: '/settings/user-profile' },
+  {
+    label: 'User Profile',
+    icon: IconUser,
+    link: '/settings/user-profile',
+  },
   {
     label: 'Company Profile',
     allowedPermissions: COMPANY_PROFILE_ALLOWED_PERMISSIONS,

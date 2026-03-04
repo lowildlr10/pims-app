@@ -4,8 +4,9 @@ import MainContainerClient from '@/components/Generic/MainContainer';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { getCompany } from '@/actions/company';
-import ObligationRequestsClient from '@/components/ObligationRequests';
+import { ObrPageActions, ObrPageContent } from './client';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
+import { IconFileStack } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'obr';
 
@@ -37,9 +38,12 @@ const ObligationRequestPage = async () => {
     >
       <MainContainerClient
         title={'Obligation Requests'}
+        secondaryTtile={'Manage and track all obligation requests'}
+        icon={<IconFileStack size={24} stroke={1.5} />}
         permissions={permissions}
+        actions={<ObrPageActions user={user} permissions={permissions} />}
       >
-        <ObligationRequestsClient user={user} permissions={permissions} />
+        <ObrPageContent user={user} permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>
   );

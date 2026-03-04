@@ -189,7 +189,7 @@ const LogModalClient = ({
             <Pagination
               size={'sm'}
               color={'var(--mantine-color-primary-9)'}
-              total={data?.last_page ?? 0}
+              total={data?.meta?.last_page ?? 0}
               value={page}
               onChange={setPage}
             />

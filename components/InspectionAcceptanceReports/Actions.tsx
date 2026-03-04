@@ -43,7 +43,7 @@ const NavigationMenus = ({
       {['supply:*', ...getAllowedPermissions('obr', 'view')].some(
         (permission) => permissions?.includes(permission)
       ) &&
-        ['inspected', 'partially_completed', 'completed'].includes(status) &&
+        ['inspected', 'partially_accepted', 'accepted'].includes(status) &&
         pathname.includes('/procurement/iar') && (
           <Menu.Item
             leftSection={
@@ -62,7 +62,7 @@ const NavigationMenus = ({
       {['supply:*', ...getAllowedPermissions('obr', 'view')].some(
         (permission) => permissions?.includes(permission)
       ) &&
-        ['inspected', 'partially_completed', 'completed'].includes(status) &&
+        ['inspected', 'partially_accepted', 'accepted'].includes(status) &&
         pathname.includes('/procurement/iar') && (
           <Menu.Item
             leftSection={
@@ -150,7 +150,7 @@ const ActionsClient = ({
           </Menu.Item>
         )}
 
-      {['inspected'].includes(status) && (
+      {['inspected', 'partially_accepted', 'accepted'].includes(status) && (
         <>
           <Menu.Item color={'var(--mantine-color-gray-5)'}>
             No available action

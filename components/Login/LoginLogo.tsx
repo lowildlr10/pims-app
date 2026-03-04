@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Image, Loader, Stack, Title } from '@mantine/core';
-import { Box } from '@mantine/core';
+import { Box, Image, Loader, Stack, Text, Title } from '@mantine/core';
 import API from '@/libs/API';
 import { notify } from '@/libs/Notification';
 import Helper from '@/utils/Helpers';
@@ -24,7 +23,7 @@ const LoginLogoClient = ({ company }: LoginLogoProps) => {
         parent_id: company.id,
       })
         .then((res) => {
-          const logoImage = res?.data?.data ?? undefined;
+          const logoImage = res?.data ?? undefined;
           setLogo(logoImage);
         })
         .catch(() => {
@@ -47,26 +46,54 @@ const LoginLogoClient = ({ company }: LoginLogoProps) => {
   }, [company]);
 
   return (
-    <Stack justify={'center'} align={'center'}>
-      <Box h={{ base: 100, sm: 120, md: 150, lg: 200 }}>
+    <Stack justify='center' align='center' gap='sm'>
+      <Box
+        h={{ base: 90, sm: 110, md: 130, lg: 150 }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         {loading ? (
-          <Loader color={'var(--mantine-color-tertiary-0)'} type={'bars'} />
+          <Loader color='var(--mantine-color-tertiary-0)' type='bars' />
         ) : (
           <Image
             src={logo}
-            radius={'md'}
-            h={{ base: 100, sm: 120, md: 150, lg: 200 }}
-            w={'auto'}
-            fit={'contain'}
+            radius='md'
+            h={{ base: 90, sm: 110, md: 130, lg: 150 }}
+            w='auto'
+            fit='contain'
             draggable={false}
-            alt={company?.company_name}
+            alt={company?.company_name ?? 'Logo'}
+            style={{
+              filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))',
+            }}
           />
         )}
       </Box>
 
-      <Title order={3} fz={{ base: 'h5', sm: 'h4', lg: 'h3' }}>
-        {company?.company_name?.toUpperCase()}
-      </Title>
+      <Stack gap={2} align='center'>
+        <Title
+          order={3}
+          fz={{ base: 'h5', sm: 'h4', lg: 'h4' }}
+          ta='center'
+          fw={700}
+        >
+          {company?.company_name?.toUpperCase()}
+        </Title>
+        {company?.address && (
+          <Text
+            size='xs'
+            ta='center'
+            style={{ opacity: 0.65 }}
+            maw={260}
+            lh={1.4}
+          >
+            {company.address}
+          </Text>
+        )}
+      </Stack>
     </Stack>
   );
 };

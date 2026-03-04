@@ -44,9 +44,14 @@ const getKey = (pageIndex: number, previousPageData: any) => {
 const NotificationMenuButtonClient = () => {
   const { push, refresh } = useRouter();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)', false);
+  const [mounted, setMounted] = useState(false);
   const [opened, setOpened] = useState(false);
   const [readAllLoading, setReadAllLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -157,7 +162,7 @@ const NotificationMenuButtonClient = () => {
   return (
     <Menu
       shadow='md'
-      width={lgScreenAndBelow ? '100%' : 400}
+      width={!mounted ? 400 : lgScreenAndBelow ? '100%' : 400}
       opened={opened}
       onChange={setOpened}
     >
@@ -165,7 +170,7 @@ const NotificationMenuButtonClient = () => {
         <Box mx={'sm'}>
           <Indicator
             inline
-            size={lgScreenAndBelow ? 4 : 7}
+            size={!mounted ? 7 : lgScreenAndBelow ? 4 : 7}
             offset={7}
             position='bottom-end'
             color='var(--mantine-color-red-7)'
@@ -178,37 +183,42 @@ const NotificationMenuButtonClient = () => {
             <ActionIcon
               variant='transparent'
               color='white'
-              size={lgScreenAndBelow ? 'md' : 'lg'}
+              size={!mounted ? 'lg' : lgScreenAndBelow ? 'md' : 'lg'}
               pt={'xs'}
               px={0}
             >
-              <IconBellFilled size={lgScreenAndBelow ? 17 : 20} stroke={1.5} />
+              <IconBellFilled
+                size={!mounted ? 20 : lgScreenAndBelow ? 17 : 20}
+                stroke={1.5}
+              />
             </ActionIcon>
           </Indicator>
         </Box>
       </Menu.Target>
 
-      <Menu.Dropdown left={lgScreenAndBelow ? 0 : undefined}>
+      <Menu.Dropdown
+        left={!mounted ? undefined : lgScreenAndBelow ? 0 : undefined}
+      >
         <Menu.Label
-          fz={lgScreenAndBelow ? 'xs' : 'sm'}
-          py={lgScreenAndBelow ? 'xs' : 'sm'}
+          fz={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
+          py={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
         >
           <Group justify='space-between'>
             Notifications
             <ActionIcon
               color='var(--mantine-color-gray-7)'
-              size={lgScreenAndBelow ? 'xs' : 'sm'}
+              size={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
               variant='subtle'
               onClick={() => setOpened(false)}
             >
-              <IconX size={lgScreenAndBelow ? 13 : 15} />
+              <IconX size={!mounted ? 15 : lgScreenAndBelow ? 13 : 15} />
             </ActionIcon>
           </Group>
         </Menu.Label>
 
         <Menu.Item
           component={ScrollArea}
-          h={lgScreenAndBelow ? 'calc(100vh - 12.2em)' : 400}
+          h={!mounted ? 400 : lgScreenAndBelow ? 'calc(100vh - 12.2em)' : 400}
           p='5px'
           m={0}
           bg='var(--mantine-color-gray-0)'
@@ -253,8 +263,13 @@ const NotificationMenuButtonClient = () => {
                     h='8.7em'
                     cite={
                       <Group align='center' gap={4}>
-                        <IconCalendarWeek size={lgScreenAndBelow ? 13 : 15} />
-                        <Text fz={lgScreenAndBelow ? 11 : 12} pt={1}>
+                        <IconCalendarWeek
+                          size={!mounted ? 15 : lgScreenAndBelow ? 13 : 15}
+                        />
+                        <Text
+                          fz={!mounted ? 12 : lgScreenAndBelow ? 11 : 12}
+                          pt={1}
+                        >
                           {notif.created_at
                             ? dayjs(notif.created_at).isSame(dayjs(), 'day')
                               ? `Today at ${dayjs(notif.created_at).format('h:mm A')}`
@@ -274,11 +289,14 @@ const NotificationMenuButtonClient = () => {
                     mt={1}
                   >
                     <Stack gap={'xs'}>
-                      <Text fw={500} size={lgScreenAndBelow ? 'xs' : 'sm'}>
+                      <Text
+                        fw={500}
+                        size={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
+                      >
                         {notif?.data?.title}
                       </Text>
                       <Text
-                        size={lgScreenAndBelow ? 'xs' : 'sm'}
+                        size={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
                         sx={{
                           display: '-webkit-box',
                           WebkitBoxOrient: 'vertical',
@@ -305,7 +323,7 @@ const NotificationMenuButtonClient = () => {
                 <Button
                   color={'var(--mantine-color-primary-9)'}
                   variant='transparent'
-                  size={lgScreenAndBelow ? 'xs' : 'sm'}
+                  size={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
                   loaderProps={{ type: 'bars' }}
                   loading
                   style={{ ...styles, justifyContent: 'center' }}
@@ -320,7 +338,7 @@ const NotificationMenuButtonClient = () => {
         <Menu.Divider />
 
         <Menu.Item
-          fz={lgScreenAndBelow ? 'xs' : 'sm'}
+          fz={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
           ta='center'
           closeMenuOnClick={false}
           onClick={() => handleReadAllNotifications()}
@@ -330,7 +348,7 @@ const NotificationMenuButtonClient = () => {
               <Loader
                 color='var(--mantine-color-gray-5)'
                 type='dots'
-                size={lgScreenAndBelow ? 'xs' : 'sm'}
+                size={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
               />
             </Stack>
           ) : (
@@ -339,7 +357,7 @@ const NotificationMenuButtonClient = () => {
         </Menu.Item>
 
         <Menu.Item
-          fz={lgScreenAndBelow ? 'xs' : 'sm'}
+          fz={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
           ta='center'
           color='var(--mantine-color-red-7)'
           closeMenuOnClick={false}
@@ -350,7 +368,7 @@ const NotificationMenuButtonClient = () => {
               <Loader
                 color='var(--mantine-color-red-5)'
                 type='dots'
-                size={lgScreenAndBelow ? 'xs' : 'sm'}
+                size={!mounted ? 'sm' : lgScreenAndBelow ? 'xs' : 'sm'}
               />
             </Stack>
           ) : (

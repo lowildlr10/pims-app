@@ -100,7 +100,7 @@ const ActionsClient = ({
           </Menu.Item>
         )}
 
-      {status !== 'cancelled' &&
+      {!['cancelled', 'issued'].includes(status) &&
         ['supply:*', ...getAllowedPermissions('inv-issuance', 'cancel')].some(
           (permission) => permissions?.includes(permission)
         ) && (
@@ -128,7 +128,7 @@ const ActionsClient = ({
           </Menu.Item>
         )}
 
-      {['cancelled'].includes(status) && (
+      {['cancelled', 'issued'].includes(status) && (
         <>
           <Menu.Item color={'var(--mantine-color-gray-5)'}>
             No available action

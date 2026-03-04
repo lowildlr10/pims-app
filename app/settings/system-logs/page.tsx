@@ -6,6 +6,7 @@ import SystemLogsClient from '@/components/SystemLog';
 import { getAllowedPermissions } from '@/utils/GenerateAllowedPermissions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { IconLogs } from '@tabler/icons-react';
 
 const MODULE_TYPE: ModuleType = 'system-log';
 
@@ -35,7 +36,11 @@ const SystemLogPage = async () => {
       permissions={permissions}
       type={'settings'}
     >
-      <MainContainerClient title={'System Logs'}>
+      <MainContainerClient
+        title='System Logs'
+        secondaryTtile='View system activity logs and audit trails'
+        icon={<IconLogs size={24} stroke={1.5} />}
+      >
         <SystemLogsClient permissions={permissions} />
       </MainContainerClient>
     </LayoutSidebarClient>

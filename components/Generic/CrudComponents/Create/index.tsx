@@ -13,6 +13,7 @@ import RequestQuotionFormClient from '../../../RequestQuotations/Form';
 import RisFormClient from '../../../InventoryIssuances/Forms/RisForm';
 import IcsFormClient from '../../../InventoryIssuances/Forms/IcsForm';
 import AreFormClient from '../../../InventoryIssuances/Forms/AreForm';
+import ObligationRequestFormClient from '../../../ObligationRequests/Form';
 import Helper from '@/utils/Helpers';
 import CustomLoadingOverlay from '../../CustomLoadingOverlay';
 
@@ -65,7 +66,7 @@ const CreateClient = ({ data, endpoint, content, backUrl }: CreateProps) => {
 
         notify({
           title: 'Success!',
-          message: res?.data?.message,
+          message: res?.message || 'Record created successfully.',
           color: 'green',
         });
 
@@ -139,6 +140,15 @@ const CreateClient = ({ data, endpoint, content, backUrl }: CreateProps) => {
                 />
               )}
             </>
+          )}
+
+          {content === 'obr' && (
+            <ObligationRequestFormClient
+              ref={formRef}
+              data={{ ...data, transaction_type: 'bills_payment' }}
+              handleCreateUpdate={handleCreate}
+              isCreate
+            />
           )}
         </Paper>
       </Stack>

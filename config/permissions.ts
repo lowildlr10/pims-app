@@ -253,6 +253,11 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
+        label: 'Create',
+        value: 'create',
+        checked: false,
+      },
+      {
         label: 'Update',
         value: 'update',
         checked: false,
@@ -365,8 +370,18 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
         checked: false,
       },
       {
+        label: 'Pending for Issuance',
+        value: 'pending',
+        checked: false,
+      },
+      {
         label: 'Issue',
         value: 'issue',
+        checked: false,
+      },
+      {
+        label: 'Cancel',
+        value: 'cancel',
         checked: false,
       },
       {
@@ -741,6 +756,30 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     ],
   },
   {
+    label: 'Tax Withholding Library',
+    description: 'Scope for Tax Withholding Library module',
+    module_type: 'lib-tax-withholding',
+    checked: false,
+    indeterminate: false,
+    scopes: [
+      {
+        label: 'View',
+        value: 'view',
+        checked: false,
+      },
+      {
+        label: 'Create',
+        value: 'create',
+        checked: false,
+      },
+      {
+        label: 'Update',
+        value: 'update',
+        checked: false,
+      },
+    ],
+  },
+  {
     label: 'Company Profile',
     description: 'Scope for Company Profile module',
     module_type: 'company',
@@ -841,9 +880,9 @@ export const PERMISSIONS_CONFIG: PermissionsFieldType[] = [
     ],
   },
   {
-    label: 'Cashier',
-    description: 'Scope for Cashier role',
-    module_type: 'cashier',
+    label: 'Treasurer',
+    description: 'Scope for Treasurer role',
+    module_type: 'treasurer',
     checked: false,
     indeterminate: false,
     scopes: [

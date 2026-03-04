@@ -37,21 +37,27 @@ const defaultTableData: TableDataType = {
       sortable: true,
     },
     {
+      id: 'transaction_type_formatted',
+      label: 'Type',
+      width: '10%',
+      sortable: true,
+    },
+    {
       id: 'po_no',
       label: 'PO No',
-      width: '12%',
+      width: '10%',
       sortable: true,
     },
     {
       id: 'particulars_formatted',
       label: 'Particulars',
-      width: '44%',
+      width: '38%',
       sortable: true,
     },
     {
       id: 'payee_name',
       label: 'Payee',
-      width: '16%',
+      width: '14%',
       sortable: true,
     },
     {
@@ -70,12 +76,21 @@ const defaultTableData: TableDataType = {
   body: [],
 };
 
-const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
+const ObligationRequestsClient = ({
+  user,
+  permissions,
+  search: externalSearch,
+  setSearch: externalSetSearch,
+  showTableActions = true,
+}: MainProps) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
-  const [search, setSearch] = useState('');
+
+  const [internalSearch, setInternalSearch] = useState('');
+  const search = externalSearch !== undefined ? externalSearch : internalSearch;
+  const setSearch = externalSetSearch || setInternalSearch;
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
   const [columnSort, setColumnSort] = useState('obr_no');
@@ -173,6 +188,8 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
             status={body.status}
           />
         ),
+        transaction_type_formatted:
+          body.transaction_type_formatted ?? 'Procurement',
         po_no: purchase_order?.po_no ?? '-',
         particulars_formatted: body.particulars ? (
           Helper.shortenText(body.particulars, lgScreenAndBelow ? 80 : 150)
@@ -190,7 +207,7 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
             </Text>
           </Group>
         ),
-        payee_name: body.payee?.supplier_name ?? '-',
+        payee_name: body.payee_name ?? '-',
         action: (
           <Menu
             position={'left-start'}
@@ -297,16 +314,17 @@ const ObligationRequestsClient = ({ user, permissions }: MainProps) => {
         sortDirection={sortDirection}
         search={search}
         showSearch
+        showTableActions={showTableActions}
         defaultModalOnClick={'details'}
         detailItemData={DETAIL_ITEM_CONFIG}
         data={tableData}
         perPage={perPage}
         loading={isLoading}
         page={page}
-        lastPage={data?.last_page ?? 0}
-        from={data?.from ?? 0}
-        to={data?.to ?? 0}
-        total={data?.total ?? 0}
+        lastPage={data?.meta?.last_page ?? 0}
+        from={data?.meta?.from ?? 0}
+        to={data?.meta?.to ?? 0}
+        total={data?.meta?.total ?? 0}
         refreshData={mutate}
         activeFormData={activeFormData}
         setActiveData={setActiveData}

@@ -6,15 +6,17 @@ import { useForm } from '@mantine/form';
 const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
   ({ data, handleCreateUpdate, setPayload, isCreate }, ref) => {
     const [currentData, setCurrentData] = useState(data);
+
     const currentForm = useMemo(
       () => ({
-        department_id: currentData?.department_id,
+        department_id: currentData?.department_id ?? null,
         section_name: currentData?.section_name ?? '',
-        active: currentData?.active ?? false,
-        section_head_id: currentData?.section_head_id,
+        active: currentData?.active ?? true,
+        section_head_id: currentData?.section_head_id ?? null,
       }),
       [currentData]
     );
+
     const form = useForm({
       mode: 'controlled',
       initialValues: currentForm,
@@ -25,13 +27,16 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
     }, [data]);
 
     useEffect(() => {
-      form.reset();
-      form.setValues(currentForm);
+      if (currentData) {
+        form.setValues(currentForm);
+      }
     }, [currentForm]);
 
     useEffect(() => {
-      setPayload(form.values);
-    }, [form.values]);
+      if (setPayload) {
+        setPayload(form.values);
+      }
+    }, [form.values, setPayload]);
 
     return (
       <form
@@ -62,10 +67,8 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
                   : undefined
               }
               value={form.values.department_id}
-              size={'sm'}
-              onChange={(value) =>
-                form.setFieldValue('department_id', value ?? '')
-              }
+              size='sm'
+              onChange={(value) => form.setFieldValue('department_id', value)}
               required
             />
           )}
@@ -73,12 +76,12 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
           <TextInput
             label='Section Name'
             placeholder='Section name'
-            size={'sm'}
+            size='sm'
             value={form.values.section_name}
             onChange={(event) =>
               form.setFieldValue('section_name', event.currentTarget.value)
             }
-            error={form.errors.department_name && ''}
+            error={form.errors.section_name && ''}
             required
           />
           <DynamicSelect
@@ -86,7 +89,7 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
             endpointParams={{ paginated: false, show_all: true }}
             column={'fullname'}
             label='Section Head'
-            size={'sm'}
+            size='sm'
             defaultData={
               currentData?.section_head_id
                 ? [
@@ -98,20 +101,18 @@ const SectionFormClient = forwardRef<HTMLFormElement, ModalSectionContentProps>(
                 : undefined
             }
             value={form.values.section_head_id}
-            onChange={(value) =>
-              form.setFieldValue('section_head_id', value ?? '')
-            }
+            onChange={(value) => form.setFieldValue('section_head_id', value)}
           />
           <Switch
-            label={'Status'}
+            label='Status'
             my={20}
             onLabel='Active'
             offLabel='Inactive'
             color={'var(--mantine-color-secondary-9)'}
             checked={form.values.active}
-            labelPosition={'left'}
+            labelPosition='left'
             fw={500}
-            size={'sm'}
+            size='sm'
             sx={{ cursor: 'pointer' }}
             onChange={(event) =>
               form.setFieldValue('active', event.currentTarget.checked)

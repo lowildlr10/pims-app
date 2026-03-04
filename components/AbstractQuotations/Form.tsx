@@ -61,6 +61,9 @@ const FormClient = forwardRef<
 >(({ data, isCreate, readOnly, refreshData, handleCreateUpdate }, ref) => {
   const lgScreenAndBelow = useMediaQuery('(max-width: 900px)');
   const [currentData, setCurrentData] = useState(data);
+  const refetchAttempts = React.useRef(0);
+  const MAX_REFETCH_ATTEMPTS = 10;
+  const REFETCH_INTERVAL_MS = 1000;
   const currentForm = useMemo(
     () => ({
       bids_awards_committee_id: currentData?.bids_awards_committee_id ?? '',
@@ -130,8 +133,27 @@ const FormClient = forwardRef<
   useEffect(() => {
     setCurrentData(data);
 
-    if (!data?.items?.length && refreshData) {
-      refreshData();
+    const hasNoItems = !data?.items?.length;
+
+    if (
+      hasNoItems &&
+      refreshData &&
+      refetchAttempts.current < MAX_REFETCH_ATTEMPTS
+    ) {
+      const intervalId = setInterval(() => {
+        if (data?.items?.length) {
+          clearInterval(intervalId);
+          refetchAttempts.current = 0;
+        } else if (refetchAttempts.current >= MAX_REFETCH_ATTEMPTS) {
+          clearInterval(intervalId);
+          refetchAttempts.current = 0;
+        } else {
+          refetchAttempts.current += 1;
+          refreshData();
+        }
+      }, REFETCH_INTERVAL_MS);
+
+      return () => clearInterval(intervalId);
     }
   }, [data, refreshData]);
 
@@ -199,7 +221,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             <NumberInput
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={'Stock No'}
               defaultValue={item?.stock_no}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -215,7 +237,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             <NumberInput
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={'QTY'}
               defaultValue={item?.quantity}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -231,7 +253,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             <TextInput
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={'None'}
               defaultValue={item.unit_issue}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -245,7 +267,7 @@ const FormClient = forwardRef<
         return (
           <Table.Td>
             <Textarea
-              variant={readOnly ? 'unstyled' : 'filled'}
+              variant={'unstyled'}
               placeholder={'Description'}
               defaultValue={item?.description ?? ''}
               size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -295,13 +317,7 @@ const FormClient = forwardRef<
                   {...form.getInputProps(
                     `items.${index}.details.${detalIndex}.brand_model`
                   )}
-                  variant={
-                    isCreate || !item.included
-                      ? 'filled'
-                      : readOnly
-                        ? 'unstyled'
-                        : 'default'
-                  }
+                  variant={'unstyled'}
                   placeholder={
                     isCreate
                       ? 'To be quoted'
@@ -313,6 +329,12 @@ const FormClient = forwardRef<
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   autosize
                   readOnly={readOnly || isCreate || !item.included}
+                  sx={{
+                    borderBottom:
+                      !readOnly && !isCreate && item.included
+                        ? '1px solid var(--mantine-color-gray-5)'
+                        : undefined,
+                  }}
                 />
               </Tooltip>
             </Table.Td>
@@ -345,13 +367,7 @@ const FormClient = forwardRef<
                   {...form.getInputProps(
                     `items.${index}.details.${detalIndex}.unit_cost`
                   )}
-                  variant={
-                    isCreate || !item.included
-                      ? 'filled'
-                      : readOnly
-                        ? 'unstyled'
-                        : 'default'
-                  }
+                  variant={'unstyled'}
                   placeholder={isCreate ? 'To be quoted' : 'Unit Cost'}
                   defaultValue={detail?.unit_cost}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -360,6 +376,12 @@ const FormClient = forwardRef<
                   fixedDecimalScale
                   thousandSeparator={','}
                   readOnly={readOnly || isCreate || !item.included}
+                  sx={{
+                    borderBottom:
+                      !readOnly && !isCreate && item.included
+                        ? '1px solid var(--mantine-color-gray-5)'
+                        : undefined,
+                  }}
                 />
               </Tooltip>
             </Table.Td>
@@ -367,7 +389,7 @@ const FormClient = forwardRef<
             {readOnly && (
               <Table.Td>
                 <NumberInput
-                  variant={readOnly ? 'unstyled' : 'filled'}
+                  variant={'unstyled'}
                   placeholder={'Total Cost'}
                   defaultValue={detail?.total_cost}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -427,8 +449,9 @@ const FormClient = forwardRef<
                 <Select
                   key={form.key(`items.${index}.awardee_id`)}
                   {...form.getInputProps(`items.${index}.awardee_id`)}
-                  variant={readOnly ? 'unstyled' : 'default'}
+                  variant={'unstyled'}
                   placeholder={'Select an awardee here...'}
+                  sx={{ borderBottom: '1px solid var(--mantine-color-gray-5)' }}
                   size={lgScreenAndBelow ? 'sm' : 'md'}
                   data={[
                     {
@@ -514,12 +537,20 @@ const FormClient = forwardRef<
         }
       })}
     >
-      <Stack p={'md'} justify={'center'}>
+      <Stack
+        p={{ base: 'xs', sm: 'md' }}
+        justify={'center'}
+        style={{ background: 'var(--mantine-color-gray-1)' }}
+      >
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Stack w={'100%'}>
             {!readOnly ? (
@@ -527,13 +558,10 @@ const FormClient = forwardRef<
                 key={form.key('bids_awards_committee_id')}
                 {...form.getInputProps('bids_awards_committee_id')}
                 label={'Bids and Awards Committee'}
-                variant={
-                  readOnly ||
-                  currentData?.status === 'approved' ||
-                  currentData?.status === 'awarded'
-                    ? 'filled'
-                    : 'default'
-                }
+                variant={'unstyled'}
+                sx={{
+                  borderBottom: '2px solid var(--mantine-color-gray-5)',
+                }}
                 endpoint={'/libraries/bids-awards-committees'}
                 endpointParams={{
                   paginated: false,
@@ -585,13 +613,10 @@ const FormClient = forwardRef<
                 key={form.key('mode_procurement_id')}
                 {...form.getInputProps('mode_procurement_id')}
                 label={'Mode of Procurement'}
-                variant={
-                  readOnly ||
-                  currentData?.status === 'approved' ||
-                  currentData?.status === 'awarded'
-                    ? 'filled'
-                    : 'default'
-                }
+                variant={'unstyled'}
+                sx={{
+                  borderBottom: '2px solid var(--mantine-color-gray-5)',
+                }}
                 endpoint={'/libraries/procurement-modes'}
                 endpointParams={{
                   paginated: false,
@@ -637,10 +662,14 @@ const FormClient = forwardRef<
         </Card>
 
         <Card
-          shadow={'xs'}
-          padding={lgScreenAndBelow ? 'md' : 'lg'}
-          radius={'xs'}
+          shadow={'sm'}
+          padding={lgScreenAndBelow ? 'sm' : 'md'}
+          radius={0}
           withBorder
+          style={{
+            borderColor: 'var(--mantine-color-gray-4)',
+            background: 'white',
+          }}
         >
           <Stack align={'center'} w={'100%'} p={0} justify={'center'}>
             <Stack
@@ -1097,7 +1126,7 @@ const FormClient = forwardRef<
                     <Table.Td>
                       <Textarea
                         label={'Purpose'}
-                        variant={readOnly ? 'unstyled' : 'filled'}
+                        variant={'unstyled'}
                         placeholder={'Purpose'}
                         value={currentData?.purchase_request?.purpose}
                         size={lgScreenAndBelow ? 'sm' : 'md'}
@@ -1112,7 +1141,12 @@ const FormClient = forwardRef<
                         key={form.key('bac_action')}
                         {...form.getInputProps('bac_action')}
                         label={'BAC Action'}
-                        variant={readOnly ? 'unstyled' : 'default'}
+                        variant={'unstyled'}
+                        sx={{
+                          borderBottom: readOnly
+                            ? undefined
+                            : '1px solid var(--mantine-color-gray-5)',
+                        }}
                         placeholder={readOnly ? '' : 'Enter BAC action here...'}
                         defaultValue={
                           readOnly ? undefined : (form.values.bac_action ?? '')
@@ -1149,13 +1183,7 @@ const FormClient = forwardRef<
                       key={form.key('sig_twg_chairperson_id')}
                       {...form.getInputProps('sig_twg_chairperson_id')}
                       label={'BAC-TWG Chairperson'}
-                      variant={
-                        readOnly ||
-                        currentData?.status === 'approved' ||
-                        currentData?.status === 'awarded'
-                          ? 'filled'
-                          : 'unstyled'
-                      }
+                      variant={'unstyled'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
@@ -1218,13 +1246,7 @@ const FormClient = forwardRef<
                       key={form.key('sig_twg_member_1_id')}
                       {...form.getInputProps('sig_twg_member_1_id')}
                       label={'TWG Member'}
-                      variant={
-                        readOnly ||
-                        currentData?.status === 'approved' ||
-                        currentData?.status === 'awarded'
-                          ? 'filled'
-                          : 'unstyled'
-                      }
+                      variant={'unstyled'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
@@ -1286,13 +1308,7 @@ const FormClient = forwardRef<
                       key={form.key('sig_twg_member_2_id')}
                       {...form.getInputProps('sig_twg_member_2_id')}
                       label={'TWG Member'}
-                      variant={
-                        readOnly ||
-                        currentData?.status === 'approved' ||
-                        currentData?.status === 'awarded'
-                          ? 'filled'
-                          : 'unstyled'
-                      }
+                      variant={'unstyled'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
@@ -1368,13 +1384,7 @@ const FormClient = forwardRef<
                       key={form.key('sig_chairman_id')}
                       {...form.getInputProps('sig_chairman_id')}
                       label={'Chairman & Presiding Officer'}
-                      variant={
-                        readOnly ||
-                        currentData?.status === 'approved' ||
-                        currentData?.status === 'awarded'
-                          ? 'filled'
-                          : 'unstyled'
-                      }
+                      variant={'unstyled'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
@@ -1435,13 +1445,7 @@ const FormClient = forwardRef<
                       key={form.key('sig_vice_chairman_id')}
                       {...form.getInputProps('sig_vice_chairman_id')}
                       label={'Vice Chairman'}
-                      variant={
-                        readOnly ||
-                        currentData?.status === 'approved' ||
-                        currentData?.status === 'awarded'
-                          ? 'filled'
-                          : 'unstyled'
-                      }
+                      variant={'unstyled'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
@@ -1517,13 +1521,7 @@ const FormClient = forwardRef<
                       key={form.key('sig_member_1_id')}
                       {...form.getInputProps('sig_member_1_id')}
                       label={'Member'}
-                      variant={
-                        readOnly ||
-                        currentData?.status === 'approved' ||
-                        currentData?.status === 'awarded'
-                          ? 'filled'
-                          : 'unstyled'
-                      }
+                      variant={'unstyled'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
@@ -1584,13 +1582,7 @@ const FormClient = forwardRef<
                       key={form.key('sig_member_2_id')}
                       {...form.getInputProps('sig_member_2_id')}
                       label={'Member'}
-                      variant={
-                        readOnly ||
-                        currentData?.status === 'approved' ||
-                        currentData?.status === 'awarded'
-                          ? 'filled'
-                          : 'unstyled'
-                      }
+                      variant={'unstyled'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
@@ -1651,13 +1643,7 @@ const FormClient = forwardRef<
                       key={form.key('sig_member_3_id')}
                       {...form.getInputProps('sig_member_3_id')}
                       label={'Member'}
-                      variant={
-                        readOnly ||
-                        currentData?.status === 'approved' ||
-                        currentData?.status === 'awarded'
-                          ? 'filled'
-                          : 'unstyled'
-                      }
+                      variant={'unstyled'}
                       sx={{
                         borderBottom: '2px solid var(--mantine-color-gray-5)',
                         input: {
